@@ -1,0 +1,35 @@
+spring: 
+  application: 
+     name: LoginService
+  datasource: 
+    url: jdbc:mysql://localhost:3306/ulearn_dev
+    username: root
+    password: 12345678
+  jpa:
+    hibernate: 
+      ddl-auto: none
+ 
+server: 
+  port: 8080
+  servlet: 
+    contextPath: /default
+name: default-yml
+environment: default
+enabled: true
+contextpath: /default
+servers: 
+   - www.default.com
+   - www.default1.com
+logging: 
+      file: 
+        name: logs/default_logs.log
+      pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+        file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+      level:
+        org.springframework.web: ERROR
+        org.ulearn.*: INFO
+        org.hibernate: ERROR
+        
+jwt.secret.key: secret
+jwt.token.validity: 1296000000
