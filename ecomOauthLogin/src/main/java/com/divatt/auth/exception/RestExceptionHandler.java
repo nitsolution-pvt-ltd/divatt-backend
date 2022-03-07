@@ -1,4 +1,4 @@
-package com.ecom.auth.exception;
+package com.divatt.auth.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

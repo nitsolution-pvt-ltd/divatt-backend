@@ -1,4 +1,4 @@
-package com.ecom.auth.config;
+package com.divatt.auth.config;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -22,11 +22,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.ecom.auth.entity.LoginEntity;
-import com.ecom.auth.exception.CustomException;
-import com.ecom.auth.helper.JwtUtil;
-import com.ecom.auth.repo.LoginRepository;
-import com.ecom.auth.services.LoginUserDetails;
+import com.divatt.auth.entity.LoginEntity;
+import com.divatt.auth.exception.CustomException;
+import com.divatt.auth.helper.JwtUtil;
+import com.divatt.auth.repo.LoginRepository;
+import com.divatt.auth.services.LoginUserDetails;
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 

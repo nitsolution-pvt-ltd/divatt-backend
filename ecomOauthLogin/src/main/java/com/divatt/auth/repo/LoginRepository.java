@@ -1,11 +1,13 @@
-package com.ecom.auth.repo;
+package com.divatt.auth.repo;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.ecom.auth.entity.LoginEntity;
+import com.divatt.auth.entity.LoginEntity;
+
+
 
 
 

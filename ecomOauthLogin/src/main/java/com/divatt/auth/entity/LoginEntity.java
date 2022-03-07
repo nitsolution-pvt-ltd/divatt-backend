@@ -1,24 +1,42 @@
-package com.ecom.auth.entity;
+package com.divatt.auth.entity;
 
-public class GlobalEntity {
-	private int uid;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "tbl_login")
+public class LoginEntity {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "UID")
+	private Long uid;
+	@Column(name = "FNAME")
 	private String firstName;
+	@Column(name = "LNAME")
 	private String lastName;
+	@Column(name = "EMAIL")
 	private String email;
+	@Column(name = "USERNAME")
 	private String userName;
+	@Column(name = "PASSWORD")
 	private String password;
+	@Column(name = "PPIC")
 	private String ppic;
+	@Column(name = "ATOKEN")
 	private String accessToken;
-	private String oldPass;
-	private String newPass;
 
-	public GlobalEntity() {
+	public LoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public GlobalEntity(int uid, String firstName, String lastName, String email, String userName, String password,
-			String ppic, String accessToken, String oldPass, String newPass) {
+	public LoginEntity(Long uid, String firstName, String lastName, String email, String userName, String password,
+			String ppic, String accessToken) {
 		super();
 		this.uid = uid;
 		this.firstName = firstName;
@@ -28,22 +46,20 @@ public class GlobalEntity {
 		this.password = password;
 		this.ppic = ppic;
 		this.accessToken = accessToken;
-		this.oldPass = oldPass;
-		this.newPass = newPass;
 	}
 
 	@Override
 	public String toString() {
-		return "GlobalEntity [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+		return "Login [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
 				+ ", userName=" + userName + ", password=" + password + ", ppic=" + ppic + ", accessToken="
-				+ accessToken + ", oldPass=" + oldPass + ", newPass=" + newPass + "]";
+				+ accessToken + "]";
 	}
 
-	public int getUid() {
+	public Long getUid() {
 		return uid;
 	}
 
-	public void setUid(int uid) {
+	public void setUid(Long uid) {
 		this.uid = uid;
 	}
 
@@ -101,22 +117,6 @@ public class GlobalEntity {
 
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
-	}
-
-	public String getOldPass() {
-		return oldPass;
-	}
-
-	public void setOldPass(String oldPass) {
-		this.oldPass = oldPass;
-	}
-
-	public String getNewPass() {
-		return newPass;
-	}
-
-	public void setNewPass(String newPass) {
-		this.newPass = newPass;
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.ecom.auth.config;
+package com.divatt.auth.config;
 
 import java.util.ArrayList;
 import java.util.List;

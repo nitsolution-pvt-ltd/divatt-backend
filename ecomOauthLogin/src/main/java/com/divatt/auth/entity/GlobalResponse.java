@@ -1,4 +1,4 @@
-package com.ecom.auth.entity;
+package com.divatt.auth.entity;
 
 public class GlobalResponse {
 	private String resion;

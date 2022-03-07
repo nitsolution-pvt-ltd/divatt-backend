@@ -1,4 +1,4 @@
-package com.ecom.auth.services;
+package com.divatt.auth.services;
 
 import java.util.Optional;
 
@@ -6,12 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.ecom.auth.entity.GlobalEntity;
-import com.ecom.auth.entity.GlobalResponse;
-import com.ecom.auth.entity.LoginEntity;
-import com.ecom.auth.exception.CustomException;
-import com.ecom.auth.helper.JwtUtil;
-import com.ecom.auth.repo.LoginRepository;
+import com.divatt.auth.entity.GlobalEntity;
+import com.divatt.auth.entity.GlobalResponse;
+import com.divatt.auth.entity.LoginEntity;
+import com.divatt.auth.exception.CustomException;
+import com.divatt.auth.helper.JwtUtil;
+import com.divatt.auth.repo.LoginRepository;
+
 
 
 @Service

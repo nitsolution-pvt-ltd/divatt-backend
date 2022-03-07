@@ -1,4 +1,4 @@
-package com.ecom.auth.entity;
+package com.divatt.auth.entity;
 
 import java.util.Collection;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.ecom.auth.services;
+package com.divatt.auth.services;
 
 import java.util.Optional;
 
@@ -9,10 +9,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.ecom.auth.entity.LoginEntity;
-import com.ecom.auth.entity.LoginUserData;
-import com.ecom.auth.exception.CustomException;
-import com.ecom.auth.repo.LoginRepository;
+import com.divatt.auth.entity.LoginEntity;
+import com.divatt.auth.entity.LoginUserData;
+import com.divatt.auth.exception.CustomException;
+import com.divatt.auth.repo.LoginRepository;
 
 
 @Service

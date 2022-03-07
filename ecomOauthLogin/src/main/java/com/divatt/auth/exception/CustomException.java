@@ -1,4 +1,4 @@
-package com.ecom.auth.exception;
+package com.divatt.auth.exception;
 
 public class CustomException extends RuntimeException{
 public CustomException() {

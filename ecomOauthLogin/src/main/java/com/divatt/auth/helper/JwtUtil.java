@@ -1,4 +1,4 @@
-package com.ecom.auth.helper;
+package com.divatt.auth.helper;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

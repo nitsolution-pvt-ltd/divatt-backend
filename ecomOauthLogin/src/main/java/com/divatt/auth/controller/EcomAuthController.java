@@ -1,4 +1,4 @@
-package com.ecom.auth.controller;
+package com.divatt.auth.controller;
 
 import java.security.Principal;
 import java.util.Map;
@@ -19,13 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ecom.auth.entity.LoginEntity;
-import com.ecom.auth.entity.LoginUserData;
-import com.ecom.auth.exception.CustomException;
-import com.ecom.auth.helper.JwtUtil;
-import com.ecom.auth.repo.LoginRepository;
-import com.ecom.auth.services.LoginService;
-import com.ecom.auth.services.LoginUserDetails;
+import com.divatt.auth.entity.LoginEntity;
+import com.divatt.auth.entity.LoginUserData;
+import com.divatt.auth.exception.CustomException;
+import com.divatt.auth.helper.JwtUtil;
+import com.divatt.auth.repo.LoginRepository;
+import com.divatt.auth.services.LoginService;
+import com.divatt.auth.services.LoginUserDetails;
+
 
 @RestController
 @SuppressWarnings("All")

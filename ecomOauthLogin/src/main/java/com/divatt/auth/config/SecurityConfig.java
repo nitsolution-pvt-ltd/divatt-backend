@@ -1,4 +1,4 @@
-package com.ecom.auth.config;
+package com.divatt.auth.config;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,8 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-
-import com.ecom.auth.services.LoginUserDetails;
+import com.divatt.auth.services.LoginUserDetails;
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
