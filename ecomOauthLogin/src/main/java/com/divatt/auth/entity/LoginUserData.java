@@ -1,8 +1,10 @@
 package com.divatt.auth.entity;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class LoginUserData implements UserDetails{
@@ -13,16 +15,18 @@ public class LoginUserData implements UserDetails{
 	}
 
 		private String token;
-		private Long UId;
-		private String username;
+		private Object UId;
+		private String email;
 		private String password;
 		private String message;
+		private String role;
 		private int status;
 
 		
 		public LoginUserData(LoginEntity vendor) {
-			this.username = vendor.getUserName();
+			this.email = vendor.getEmail();
 			this.password = vendor.getPassword();
+			this.role = vendor.getRole();
 			
 		}
 		
@@ -41,7 +45,7 @@ public class LoginUserData implements UserDetails{
 
 
 		public void setUsername(String username) {
-			this.username = username;
+			this.email = username;
 		}
 
 
@@ -69,18 +73,18 @@ public class LoginUserData implements UserDetails{
 		}
 
 
-		public LoginUserData(String token, Long uId, String username, String password, String message, int status) {
+		public LoginUserData(String token, Object uId, String username, String password, String message, int status) {
 			super();
 			this.token = token;
-			UId = uId;
-			this.username = username;
+			this.UId = uId;
+			this.email = username;
 			this.password = password;
 			this.message = message;
 			this.status = status;
 		}
 
 
-		public Long getUId() {
+		public Object getUId() {
 			return UId;
 		}
 
@@ -93,6 +97,7 @@ public class LoginUserData implements UserDetails{
 		@Override
 		public Collection<? extends GrantedAuthority> getAuthorities() {
 			// TODO Auto-generated method stub
+//			return Arrays.asList(new SimpleGrantedAuthority(role));
 			return null;
 		}
 
@@ -105,7 +110,7 @@ public class LoginUserData implements UserDetails{
 		@Override
 		public String getUsername() {
 			// TODO Auto-generated method stub
-			return username;
+			return email;
 		}
 
 		@Override

@@ -1,122 +1,495 @@
 package com.divatt.auth.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
-@Entity
-@Table(name = "tbl_login")
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+
+@Document(collection = "tbl_admin")
 public class LoginEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "UID")
-	private Long uid;
-	@Column(name = "FNAME")
-	private String firstName;
-	@Column(name = "LNAME")
-	private String lastName;
-	@Column(name = "EMAIL")
+	private Object uid;
+	
+	private String first_name;
+	
+	private String last_name;
+	
 	private String email;
-	@Column(name = "USERNAME")
-	private String userName;
-	@Column(name = "PASSWORD")
+	
 	private String password;
-	@Column(name = "PPIC")
-	private String ppic;
-	@Column(name = "ATOKEN")
-	private String accessToken;
-
+	
+	private String mobile_no;
+	
+	private String dob;
+	
+	private boolean is_active;
+	
+	private boolean is_deleted;
+	
+	private String role;
+	
+	private String auth_token;
+	
+	private String created_by;
+	
+	private String created_on;
+	
+	private String modified_by;
+	
+	private String modified_on;
+	
+	private String profile_pic;
+	
+	private Object logins;
+	
 	public LoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public LoginEntity(Long uid, String firstName, String lastName, String email, String userName, String password,
-			String ppic, String accessToken) {
+	
+
+	
+
+
+	
+
+	public LoginEntity(Object id, String first_name, String last_name, String email, String password, String mobile_no,
+			String dob, boolean is_active, boolean is_deleted, String role, String auth_token, String created_by,
+			String created_on, String modified_by, String modified_on, String profile_pic, Object logins) {
 		super();
-		this.uid = uid;
-		this.firstName = firstName;
-		this.lastName = lastName;
+		this.uid = id;
+		this.first_name = first_name;
+		this.last_name = last_name;
 		this.email = email;
-		this.userName = userName;
 		this.password = password;
-		this.ppic = ppic;
-		this.accessToken = accessToken;
+		this.mobile_no = mobile_no;
+		this.dob = dob;
+		this.is_active = is_active;
+		this.is_deleted = is_deleted;
+		this.role = role;
+		this.auth_token = auth_token;
+		this.created_by = created_by;
+		this.created_on = created_on;
+		this.modified_by = modified_by;
+		this.modified_on = modified_on;
+		this.profile_pic = profile_pic;
+		this.logins = logins;
 	}
+
+
+
+
+
+
+
+
+	
+
+
 
 	@Override
 	public String toString() {
-		return "Login [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", userName=" + userName + ", password=" + password + ", ppic=" + ppic + ", accessToken="
-				+ accessToken + "]";
+		return "LoginEntity [id=" + uid + ", first_name=" + first_name + ", last_name=" + last_name + ", email=" + email
+				+ ", password=" + password + ", mobile_no=" + mobile_no + ", dob=" + dob + ", is_active=" + is_active
+				+ ", is_deleted=" + is_deleted + ", role=" + role + ", auth_token=" + auth_token + ", created_by="
+				+ created_by + ", created_on=" + created_on + ", modified_by=" + modified_by + ", modified_on="
+				+ modified_on + ", profile_pic=" + profile_pic + ", logins=" + logins + "]";
 	}
 
-	public Long getUid() {
+
+
+
+
+
+
+
+	public Object getId() {
 		return uid;
 	}
 
-	public void setUid(Long uid) {
-		this.uid = uid;
+
+
+
+
+
+
+
+	public void setId(Object id) {
+		this.uid = id;
 	}
 
-	public String getFirstName() {
-		return firstName;
+
+
+
+
+
+
+
+	public String getFirst_name() {
+		return first_name;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+
+
+
+
+
+
+
+	public void setFirst_name(String first_name) {
+		this.first_name = first_name;
 	}
 
-	public String getLastName() {
-		return lastName;
+
+
+
+
+
+
+
+	public String getLast_name() {
+		return last_name;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+
+
+
+
+
+
+
+	public void setLast_name(String last_name) {
+		this.last_name = last_name;
 	}
+
+
+
+
+
+
+
 
 	public String getEmail() {
 		return email;
 	}
 
+
+
+
+
+
+
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
-	public String getUserName() {
-		return userName;
-	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+
+
+
+
+
 
 	public String getPassword() {
 		return password;
 	}
 
+
+
+
+
+
+
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
-	public String getPpic() {
-		return ppic;
+
+
+
+
+
+
+
+	public String getMobile_no() {
+		return mobile_no;
 	}
 
-	public void setPpic(String ppic) {
-		this.ppic = ppic;
+
+
+
+
+
+
+
+	public void setMobile_no(String mobile_no) {
+		this.mobile_no = mobile_no;
 	}
 
-	public String getAccessToken() {
-		return accessToken;
+
+
+
+
+
+
+
+	public String getDob() {
+		return dob;
 	}
 
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
+
+
+
+
+
+
+
+	public void setDob(String dob) {
+		this.dob = dob;
 	}
+
+
+
+
+
+
+
+
+	public boolean isIs_active() {
+		return is_active;
+	}
+
+
+
+
+
+
+
+
+	public void setIs_active(boolean is_active) {
+		this.is_active = is_active;
+	}
+
+
+
+
+
+
+
+
+	public boolean isIs_deleted() {
+		return is_deleted;
+	}
+
+
+
+
+
+
+
+
+	public void setIs_deleted(boolean is_deleted) {
+		this.is_deleted = is_deleted;
+	}
+
+
+
+
+
+
+
+
+	public String getRole() {
+		return role;
+	}
+
+
+
+
+
+
+
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+
+
+
+
+
+
+
+	public String getAuth_token() {
+		return auth_token;
+	}
+
+
+
+
+
+
+
+
+	public void setAuth_token(String auth_token) {
+		this.auth_token = auth_token;
+	}
+
+
+
+
+
+
+
+
+	public String getCreated_by() {
+		return created_by;
+	}
+
+
+
+
+
+
+
+
+	public void setCreated_by(String created_by) {
+		this.created_by = created_by;
+	}
+
+
+
+
+
+
+
+
+	public String getCreated_on() {
+		return created_on;
+	}
+
+
+
+
+
+
+
+
+	public void setCreated_on(String created_on) {
+		this.created_on = created_on;
+	}
+
+
+
+
+
+
+
+
+	public String getModified_by() {
+		return modified_by;
+	}
+
+
+
+
+
+
+
+
+	public void setModified_by(String modified_by) {
+		this.modified_by = modified_by;
+	}
+
+
+
+
+
+
+
+
+	public String getModified_on() {
+		return modified_on;
+	}
+
+
+
+
+
+
+
+
+	public void setModified_on(String modified_on) {
+		this.modified_on = modified_on;
+	}
+
+
+
+
+
+
+
+
+	public String getProfile_pic() {
+		return profile_pic;
+	}
+
+
+
+
+
+
+
+
+	public void setProfile_pic(String profile_pic) {
+		this.profile_pic = profile_pic;
+	}
+
+
+
+
+
+
+
+
+	public Object getLogins() {
+		return logins;
+	}
+
+
+
+
+
+
+
+
+	public void setLogins(Object logins) {
+		this.logins = logins;
+	}
+
+
+
+
+
+
+
+
+	
+
+
+
+	
+
+	
+	
+	
+
+	
 
 }

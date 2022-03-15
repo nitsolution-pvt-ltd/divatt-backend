@@ -24,7 +24,7 @@ import com.divatt.auth.entity.LoginUserData;
 import com.divatt.auth.exception.CustomException;
 import com.divatt.auth.helper.JwtUtil;
 import com.divatt.auth.repo.LoginRepository;
-import com.divatt.auth.services.LoginService;
+
 import com.divatt.auth.services.LoginUserDetails;
 
 
@@ -48,8 +48,7 @@ public class EcomAuthController {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
-	@Autowired
-	private LoginService loginService;
+
 	
 	@PostMapping("/login")
 	public ResponseEntity<?> superAdminLogin(@RequestBody LoginEntity loginEntity) {
@@ -61,32 +60,36 @@ public class EcomAuthController {
 		try {
 			try {
 				this.authenticationManager.authenticate(
-						new UsernamePasswordAuthenticationToken(loginEntity.getUserName(), loginEntity.getPassword()));
+						new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
 			}
 
-			UserDetails vendor = this.loginUserDetails.loadUserByUsername(loginEntity.getUserName());
+			UserDetails vendor = this.loginUserDetails.loadUserByUsername(loginEntity.getEmail());
 
 			String token = jwtUtil.generateToken(vendor);
 
-			Optional<LoginEntity> findByUserName = loginRepository.findByUserName(vendor.getUsername());
+			Optional<LoginEntity> findByUserName = loginRepository.findByEmail(vendor.getUsername());
 			
 			LoginEntity loginEntityAfterCheck = findByUserName.get();
-			loginEntityAfterCheck.setAccessToken(token);
+			loginEntityAfterCheck.setAuth_token(token);
 			LoginEntity save = loginRepository.save(loginEntityAfterCheck);
 			
 			if(save.equals(null)) {
 				throw new CustomException("Data Not Save Try Again");
 			}
-//			HttpHeaders responseHeaders = new HttpHeaders();
-//		    responseHeaders.set("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
 
-			return ResponseEntity.ok(new LoginUserData(token,findByUserName.get().getUid(),findByUserName.get().getUserName() , findByUserName.get().getPassword(), "Login successful", 200));
+			return ResponseEntity.ok(new LoginUserData(token,findByUserName.get().getId(),findByUserName.get().getEmail() , findByUserName.get().getPassword(), "Login successful", 200));
 		
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}	
+	
+	@GetMapping("/admin/testapi")
+	public String test() {
+		return "Jwtwork";
+	}
+	
 	
 }

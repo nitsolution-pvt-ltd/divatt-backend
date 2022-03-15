@@ -24,7 +24,7 @@ public class LoginUserDetails implements UserDetailsService {
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<LoginEntity> findByUserName = loginRepository.findByUserName(username);
+		Optional<LoginEntity> findByUserName = loginRepository.findByEmail(username);
 		if (findByUserName.isPresent()) {
 			findByUserName.orElseThrow(() -> new CustomException("Not found "+username));
 			return findByUserName.map(LoginUserData :: new).get();

@@ -1,13 +1,25 @@
 spring: 
   application: 
-     name: LoginService
-  datasource: 
-    url: jdbc:mysql://localhost:3306/ulearn_dev
-    username: shan
-    password: TanuShan@1998
-  jpa:
-    hibernate: 
-      ddl-auto: none
+     name: LoginService 
+#  jpa:
+#    show-sql: true
+#    generate-ddl: true
+#    hibernate:
+#      ddl-auto: update
+#      format_sql: true
+#  datasource:
+#    driverClassName: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://15.207.103.249:3306/divatt
+#    username: divatt_user
+#    password: P@ssw0rd123
+  data:
+    mongodb:
+      authentication-database: admin
+      database: divatt
+      host: 65.1.190.195  #65.1.190.195:27017,,,,, 65.0.194.170
+      password: word_pass
+      port: 27017
+      username: dbuser 
  
 server: 
   port: 8080
@@ -31,5 +43,5 @@ logging:
         org.ulearn.*: INFO
         org.hibernate: ERROR
         
-jwt.secret.key: secret
+jwt.secret.key: c2VjcmV0
 jwt.token.validity: 1296000000
