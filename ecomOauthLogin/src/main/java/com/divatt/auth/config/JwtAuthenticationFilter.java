@@ -69,7 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				}
 				
 				
-				 Optional<LoginEntity> findByUserName = loginRepository.findByUserNameAndToken(username,jwtToken);
+				 Optional<LoginEntity> findByUserName = loginRepository.findByEmail(username);
 				 
 				if (findByUserName.isPresent()) {
 					this.userDetails = loginUserDetails.loadUserByUsername(username);

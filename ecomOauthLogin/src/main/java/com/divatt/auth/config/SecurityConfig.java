@@ -69,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET,"/v2/api-docs").permitAll()
 				.antMatchers(HttpMethod.POST,"/login/resetPassword/{link}/{linktime}").permitAll()
 				.antMatchers(HttpMethod.GET,"/login/mailForgotPasswordLink/{email}").permitAll()
-				
+//				.antMatchers("/auth/admin/testapi").hasRole("ADMIN")
 				.anyRequest().authenticated()
 				.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
