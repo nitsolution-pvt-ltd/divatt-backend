@@ -3,6 +3,10 @@ package com.divatt.auth.entity;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,14 +23,14 @@ public class LoginUserData implements UserDetails{
 		private String email;
 		private String password;
 		private String message;
-		private String role;
+		private List<GrantedAuthority> role;
 		private int status;
 
 		
 		public LoginUserData(LoginEntity vendor) {
 			this.email = vendor.getEmail();
 			this.password = vendor.getPassword();
-			this.role = vendor.getRole();
+			this.role = Stream.of(vendor.getRole()).map(SimpleGrantedAuthority::new).collect(Collectors.toList())  ;
 			
 		}
 		
@@ -96,9 +100,8 @@ public class LoginUserData implements UserDetails{
 
 		@Override
 		public Collection<? extends GrantedAuthority> getAuthorities() {
-			// TODO Auto-generated method stub
-//			return Arrays.asList(new SimpleGrantedAuthority(role));
-			return null;
+			
+			return role;
 		}
 
 		@Override
