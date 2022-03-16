@@ -1,0 +1,32 @@
+server:
+  port: 8089
+#  servlet: 
+#    contextPath: /default
+#name: default-yml
+#environment: default
+#enabled: true
+#contextpath: /default
+#servers: 
+#   - www.default.com
+#   - www.default1.com
+    
+spring:  application:    name: CategoryService
+
+  data:
+    mongodb:
+      authentication-database: admin
+      database: divatt
+      host: 65.1.190.195  #65.1.190.195:27017,,,,, 65.0.194.170
+      password: word_pass
+      port: 27017
+      username: dbuser
+#logging: 
+#      file: 
+#        name: logs/default_logs.log
+#      pattern:
+#        console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+#        file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+#      level:
+#        org.springframework.web: ERROR
+#        org.Divatt.*: INFO
+#        org.hibernate: ERROR
