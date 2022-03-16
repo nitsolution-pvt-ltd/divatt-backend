@@ -1,5 +1,7 @@
 package com.divatt.category.helper;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,5 +31,20 @@ public class CustomFunction {
 		{
 			return null;
 		}
+	}
+	public ResponseEntity<?> deleteCategory(Long categotyId, Optional<CategoryEntity> prevoiusData)
+	{
+		CategoryEntity _category=prevoiusData.get();
+		if(_category.getIs_deleted().equals(true))
+		{
+			return ResponseEntity.ok("Deleted");
 		}
+		else
+		{
+			_category.setIs_deleted(true);
+			_category.setIs_Active(false);
+			categoryRepo.save(_category);
+			return ResponseEntity.ok("Success");
+		}
+	}
 }
