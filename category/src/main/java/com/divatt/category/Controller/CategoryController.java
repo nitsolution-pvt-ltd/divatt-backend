@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.category.Entity.CategoryEntity;
 import com.divatt.category.Exception.CustomException;
+import com.divatt.category.response.GlobalResponse;
 import com.divatt.category.service.CategoryService;
 
 @RestController
@@ -40,7 +41,7 @@ public class CategoryController {
 //		return "Okk";
 //	}
 	@PostMapping("/addCategory")
-	public String addCategory(@RequestBody CategoryEntity categoryData)
+	public GlobalResponse addCategory(@RequestBody CategoryEntity categoryData)
 	{
 		try
 		{
@@ -48,7 +49,7 @@ public class CategoryController {
 		}
 		catch(Exception e)
 		{
-			return e.getMessage();
+			throw new CustomException(e.getMessage());
 		}
 	}
 }

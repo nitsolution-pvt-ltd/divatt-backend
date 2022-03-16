@@ -8,12 +8,16 @@ import org.springframework.stereotype.Service;
 import com.divatt.category.Entity.CategoryEntity;
 import com.divatt.category.Exception.CustomException;
 import com.divatt.category.Repository.CategoryRepo;
+import com.divatt.category.helper.CustomFunction;
+import com.divatt.category.response.GlobalResponse;
 
 @Service
 public class CategoryService {
 	
 	@Autowired
 	private CategoryRepo categoryRepo;
+	@Autowired
+	private CustomFunction customFunction;
 
 	public  List<CategoryEntity> listAllData()
 	{
@@ -28,16 +32,32 @@ public class CategoryService {
 	}
 	
 	
-	public String addCategory(CategoryEntity categoryData)
+	public GlobalResponse addCategory(CategoryEntity categoryData)
 	{
 		try
 		{
-			categoryRepo.save(categoryData);
-			return "okk";
+			if(categoryData.getCategoryId()!=0)
+			{
+
+				if(!categoryRepo.existsById(categoryData.getCategoryId()))
+				{
+					CategoryEntity validatedCategoryData=(CategoryEntity) customFunction.addCategoryFieldValidation(categoryData).getBody();
+					categoryRepo.save(validatedCategoryData);
+					return new GlobalResponse("Success", "Category Added Succesfully", 200);
+				}
+				else
+				{
+					return new GlobalResponse("Category Exist", "Category Id Already exists", 200);
+				}
+			}
+			else
+			{
+				return new GlobalResponse("Field Required", "Category Id required", 200);
+			}
 		}
 		catch(Exception e)
 		{
-			return e.getMessage();
+			throw new CustomException(e.getMessage());
 		}
 	}
 }
