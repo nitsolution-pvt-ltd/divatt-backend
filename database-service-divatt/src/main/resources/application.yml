@@ -1,0 +1,12 @@
+server:
+  port: 8083
+spring:  application:    name: Database-service-divatt
+  data:    mongodb:      database: divatt
+      host: 65.1.190.195  #65.1.190.195:27017,,,,, 65.0.194.170
+      password: word_pass
+      port: 27017
+      username: dbuser
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka     

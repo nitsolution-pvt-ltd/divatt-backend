@@ -7,4 +7,4 @@ eureka:
       defaultZone: http://localhost:8761/eureka
   instance:
     hostname: localhost
-    preferIpAddress: true# For routing
+    preferIpAddress: true# For routing# Secrit key for JWTjwt.secret.key: secretjwt.token.validity: 1296000000

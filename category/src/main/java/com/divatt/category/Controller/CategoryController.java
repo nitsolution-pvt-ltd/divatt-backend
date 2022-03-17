@@ -22,48 +22,5 @@ import com.divatt.category.service.CategoryService;
 @RequestMapping("/category")
 public class CategoryController {
 	
-	@Autowired
-	private CategoryService categoryService;
-
-	@GetMapping("/categoryList")
-	public List<CategoryEntity> CategoryList()
-	{
-		try
-		{
-			return this.categoryService.listAllData();
-		}
-		catch(Exception e)
-		{
-			throw new CustomException(e.getMessage());
-		}
-	}
-//	@GetMapping("/main")
-//	public String main()
-//	{
-//		return "Okk";
-//	}
-	@PostMapping("/addCategory")
-	public GlobalResponse addCategory(@RequestBody CategoryEntity categoryData)
-	{
-		try
-		{
-			return this.categoryService.addCategory(categoryData);
-		}
-		catch(Exception e)
-		{
-			throw new CustomException(e.getMessage());
-		}
-	}
-	@PutMapping("/deleteCategory/{categoryId}")
-	public GlobalResponse deleteCategory(@PathVariable Long categoryId)
-	{
-		try
-		{
-			return categoryService.deleteCategory(categoryId);
-		}
-		catch(Exception e)
-		{
-			throw new CustomException(e.getMessage());
-		}
-	}
+	
 }
