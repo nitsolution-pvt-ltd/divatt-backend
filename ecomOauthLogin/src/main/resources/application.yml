@@ -45,3 +45,7 @@ logging:
         
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 1296000000
+
+
+
+
