@@ -40,6 +40,7 @@ import com.divatt.auth.repo.LoginRepository;
 import com.divatt.auth.repo.PasswordResetRepo;
 import com.divatt.auth.services.LoginUserDetails;
 import com.divatt.auth.services.MailService;
+import com.divatt.auth.services.SequenceGenerator;
 
 
 @RestController
@@ -68,6 +69,9 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	
 	@Autowired
 	private PasswordResetRepo loginResetRepo;
+	
+	@Autowired
+	private SequenceGenerator sequenceGenerator;
 
 	Logger LOGGER = LoggerFactory.getLogger(EcomAuthController.class);
 	
@@ -153,12 +157,14 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 				loginResetEntity.setUser_id(id);
 				loginResetEntity.setPrtoken(uuid.toString() + "/" + format);
 				loginResetEntity.setStatus("ACTIVE");
+				loginResetEntity.setId(sequenceGenerator.getNextSequence(PasswordResetEntity.SEQUENCE_NAME));
 				Date dateObjForLinkCreateTime = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss")
 						.parse(format);
+				
 				loginResetEntity.setCreated_on(dateObjForLinkCreateTime);
 				//** SAVE THE DETAILS IN DATABASE **//
 				PasswordResetEntity save = loginResetRepo.save(loginResetEntity);
-				System.out.println("save "+save.toString());
+				
 				if (save.equals(null)) {
 					throw new CustomException("Data Not Save Try Again");
 				}else {

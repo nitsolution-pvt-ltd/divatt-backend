@@ -2,12 +2,23 @@ package com.divatt.auth.entity;
 
 import java.util.Date;
 
+
+
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "tbl_password_reset")
 public class PasswordResetEntity {
 	
+
+	
+	
+	@Transient
+	public static final String SEQUENCE_NAME = "tbl_password_reset";
+
+	private Integer id;
 	private Object user_id;
 	private String prtoken;
 	private String user_type;
@@ -18,9 +29,10 @@ public class PasswordResetEntity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public PasswordResetEntity(Object user_id, String prtoken, String user_type, Date created_on, String status,
-			String link) {
+	public PasswordResetEntity(Integer id, Object user_id, String prtoken, String user_type, Date created_on,
+			String status, String link) {
 		super();
+		this.id = id;
 		this.user_id = user_id;
 		this.prtoken = prtoken;
 		this.user_type = user_type;
@@ -30,8 +42,14 @@ public class PasswordResetEntity {
 	}
 	@Override
 	public String toString() {
-		return "PasswordResetEntity [user_id=" + user_id + ", prtoken=" + prtoken + ", user_type=" + user_type
-				+ ", created_on=" + created_on + ", status=" + status + ", link=" + link + "]";
+		return "PasswordResetEntity [id=" + id + ", user_id=" + user_id + ", prtoken=" + prtoken + ", user_type="
+				+ user_type + ", created_on=" + created_on + ", status=" + status + ", link=" + link + "]";
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	public Object getUser_id() {
 		return user_id;

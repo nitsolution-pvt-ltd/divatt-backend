@@ -1,4 +1,4 @@
-package com.divatt.auth.entity;
+package com.divatt.profile.entity;
 
 
 
