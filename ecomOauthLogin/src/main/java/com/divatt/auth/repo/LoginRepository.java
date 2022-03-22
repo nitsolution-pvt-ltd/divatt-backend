@@ -11,11 +11,13 @@ import com.divatt.auth.entity.LoginEntity;
 
 
 
-public interface LoginRepository extends MongoRepository<LoginEntity, Long> {
+public interface LoginRepository extends MongoRepository<LoginEntity, Object> {
 
 //	Optional<LoginEntity> findByUserName(String userName);
 
 	public Optional<LoginEntity> findByEmail(String email);
+	
+	
 	
 //	@Query(value = "select login from LoginEntity login where userName = ?1 and accessToken = ?2")
 //	Optional<LoginEntity> findByUserNameAndToken(String userName,String accessToken);

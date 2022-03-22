@@ -1,11 +1,6 @@
-package com.divatt.auth.entity;
+package com.divatt.databaseservice.login.model;
 
 
-
-
-
-import javax.annotation.Generated;
-																																																																																																																																																																																																																	
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

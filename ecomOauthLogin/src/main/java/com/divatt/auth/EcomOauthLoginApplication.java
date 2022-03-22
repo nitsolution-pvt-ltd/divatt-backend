@@ -1,5 +1,6 @@
 package com.divatt.auth;
 
+import java.lang.reflect.Method;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -15,6 +16,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.divatt.auth.config.YMLConfig;
+import com.divatt.auth.controller.EcomAuthContollerMethod;
+import com.divatt.auth.controller.EcomAuthController;
+import com.divatt.auth.exception.CustomException;
 
 @SpringBootApplication
 @EnableEurekaClient
@@ -30,6 +34,16 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
+		
+		EcomAuthController ecomAuthController = new EcomAuthController();
+		
+		
+		
+		if(! (ecomAuthController instanceof EcomAuthContollerMethod))
+			System.exit(0);
+		if(!EcomAuthContollerMethod.check())
+			System.exit(0);
+		
 		LOGGER.info("-------------------------------------");
 		LOGGER.info("name : "+myConfig.getName());
 		LOGGER.info("environment : "+myConfig.getEnvironment());
@@ -54,8 +68,8 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setHost("smtp.gmail.com");
 		mailSender.setPort(587);
-		mailSender.setUsername("");
-		mailSender.setPassword("");
+		mailSender.setUsername("soumendolui077@gmail.com");
+		mailSender.setPassword("Soumen@1234c2");
 		 
 		Properties properties = new Properties();
 		properties.setProperty("mail.smtp.auth", "true");
