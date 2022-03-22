@@ -5,6 +5,7 @@ public class CustomErrorMessage {
 	private int status;
 	private String message;
 	private long timeStamp;
+	
 	public CustomErrorMessage(int status, String message, long timeStamp) {
 		super();
 		this.status = status;
