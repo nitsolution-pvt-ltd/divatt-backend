@@ -5,24 +5,21 @@ import java.util.Date;
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 @Document(collection = "tbl_categories")
 public class SubCategoryEntity {
 
-		@Id
-//		@Field("_id")
-//		  @JsonIgnore
-		  
-		private String id;
+		@Id		  
+		private Integer id;
 
-//		@Field("my_object_id")
-//		private Long myObjectId;
+		@Transient
+		public static final String SEQUENCE_NAME = "tbl_categories";
+		
 		@NotEmpty(message = "Category Name is Required")
 		private String categoryName;
 		@NotEmpty(message = "Category Descrition is Required")
@@ -54,12 +51,12 @@ public class SubCategoryEntity {
 		}
 
 
-		public String getId() {
+		public Integer getId() {
 			return id;
 		}
 
 
-		public void setId(String id) {
+		public void setId(Integer id) {
 			this.id = id;
 		}
 

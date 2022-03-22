@@ -11,7 +11,7 @@ import com.divatt.category.Entity.SubCategoryEntity;
 
 
 @Repository
-public interface SubCategoryRepo extends MongoRepository<SubCategoryEntity,String> {
+public interface SubCategoryRepo extends MongoRepository<SubCategoryEntity,Integer> {
 
 	Optional<SubCategoryEntity> findByCategoryName(String categoryName);
 	

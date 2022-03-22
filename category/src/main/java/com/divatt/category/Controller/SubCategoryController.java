@@ -70,7 +70,7 @@ public class SubCategoryController {
 	}
 	
 	@GetMapping("/view/{catId}")
-	public Optional<SubCategoryEntity> viewSubCategoryDetails(@PathVariable() String catId) {
+	public Optional<SubCategoryEntity> viewSubCategoryDetails(@PathVariable() Integer catId) {
 		LOGGER.info("Inside - SubCategoryController.viewSubCategoryDetails()");
 		try {
 			return this.subCategoryService.viewSubCategoryDetails(catId);
@@ -81,7 +81,7 @@ public class SubCategoryController {
 	
 	@PutMapping("/update/{catId}")
 	public GlobalResponse putSubCategoryDetails(@Valid @RequestBody SubCategoryEntity subCategoryEntity,
-			@PathVariable("catId") String catId) {
+			@PathVariable("catId") Integer catId) {
 		LOGGER.info("Inside - SubCategoryController.putSubCategoryDetails()");
 		try {
 			return this.subCategoryService.putSubCategoryDetailsService(subCategoryEntity, catId);

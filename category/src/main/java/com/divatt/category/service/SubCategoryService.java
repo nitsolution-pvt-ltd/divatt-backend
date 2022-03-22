@@ -12,16 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Query.query;
-import static org.springframework.data.mongodb.core.FindAndModifyOptions.options;
-
 
 import com.divatt.category.Exception.CustomException;
 import com.divatt.category.Entity.SubCategoryEntity;
@@ -39,18 +31,9 @@ public class SubCategoryService {
 	
 //	@Autowired
 //	private FieldValidation fieldValidation;
-	
-	    @Autowired private MongoOperations mongo;
 
-	    public Object getNextSequence(String seqName)
-	    {
-	    	SubCategoryEntity  counter = mongo.findAndModify(
-	            query(where("_id").is(seqName)),
-	            new Update().inc("seq",1),
-	            options().returnNew(true).upsert(true),
-	            SubCategoryEntity.class);
-	        return counter.getId();
-	    }
+	@Autowired
+	SequenceGenerator sequenceGenerator;
 	
 	
 	public GlobalResponse postSubCategoryDetails(@RequestBody SubCategoryEntity subCategoryEntity) {
@@ -64,6 +47,8 @@ public class SubCategoryService {
 			} else {
 				SubCategoryEntity filterSubCatDetails = new SubCategoryEntity();
 
+				
+				filterSubCatDetails.setId(sequenceGenerator.getNextSequence(SubCategoryEntity.SEQUENCE_NAME));
 				filterSubCatDetails.setCategoryName(subCategoryEntity.getCategoryName());
 				filterSubCatDetails.setCategoryDescrition(subCategoryEntity.getCategoryDescrition());
 				filterSubCatDetails.setCategoryImage(subCategoryEntity.getCategoryImage());
@@ -138,7 +123,7 @@ public class SubCategoryService {
 	}
 
 
-	public Optional<SubCategoryEntity> viewSubCategoryDetails(String catId) {
+	public Optional<SubCategoryEntity> viewSubCategoryDetails(Integer catId) {
 		try {
 			Optional<SubCategoryEntity> findById = this.subCategoryRepo.findById(catId);
 			if (!(findById.isPresent())) {
@@ -153,7 +138,7 @@ public class SubCategoryService {
 	}
 
 
-	public GlobalResponse putSubCategoryDetailsService(SubCategoryEntity subCategoryEntity, String catId) {
+	public GlobalResponse putSubCategoryDetailsService(SubCategoryEntity subCategoryEntity, Integer catId) {
 			
 		try {						
 			Optional<SubCategoryEntity> findByCategoryRow = subCategoryRepo.findById(catId);
@@ -186,9 +171,9 @@ public class SubCategoryService {
 	
 
 
-	public GlobalResponse putSubCategoryDeleteService(Object id) {
+	public GlobalResponse putSubCategoryDeleteService(Integer CatId) {
 		try {
-			Optional<SubCategoryEntity> findById = subCategoryRepo.findById((String) id);
+			Optional<SubCategoryEntity> findById = subCategoryRepo.findById(CatId);
 			SubCategoryEntity filterSubCatDetails = findById.get();
 			if (!findById.isPresent()) {
 				throw new CustomException("Sub Category Not Exists!");
@@ -205,10 +190,10 @@ public class SubCategoryService {
 	}
 
 
-	public GlobalResponse putSubCategoryStatusService(Object id) {
+	public GlobalResponse putSubCategoryStatusService(Integer CatId) {
 		try {
 			
-			Optional<SubCategoryEntity> findById = subCategoryRepo.findById((String) id);
+			Optional<SubCategoryEntity> findById = subCategoryRepo.findById(CatId);
 			SubCategoryEntity filterSubCatDetails = findById.get();
 			
 			if (filterSubCatDetails.getId() == null) {
