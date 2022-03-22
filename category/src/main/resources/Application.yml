@@ -22,7 +22,7 @@ spring:
       username: dbuser 
  
 server: 
-  port: 8080
+  port: 8084
   servlet: 
     contextPath: /default
 name: default-yml
@@ -42,6 +42,131 @@ logging:
         org.springframework.web: ERROR
         org.ulearn.*: INFO
         org.hibernate: ERROR
+eureka:
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
+    preferIpAddress: true
+        
+jwt.secret.key: c2VjcmV0
+jwt.token.validity: 1296000000
+
+---
+spring: 
+  application: 
+     name: CategoryService 
+#  jpa:
+#    show-sql: true
+#    generate-ddl: true
+#    hibernate:
+#      ddl-auto: update
+#      format_sql: true
+#  datasource:
+#    driverClassName: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://15.207.103.249:3306/divatt
+#    username: divatt_user
+#    password: P@ssw0rd123
+  data:
+    mongodb:
+      authentication-database: admin
+      database: divatt
+      host: 65.1.190.195
+      password: word_pass
+      port: 27017
+      username: dbuser 
+ 
+server: 
+  port: 8084
+  servlet: 
+    contextPath: /dev
+name: dev-yml
+environment: dev
+enabled: true
+contextpath: /dev
+servers: 
+   - www.dev.com
+   - www.dev1.com
+logging: 
+      file: 
+        name: logs/dev_logs.log
+      pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+        file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+      level:
+        org.springframework.web: ERROR
+        org.ulearn.*: INFO
+        org.hibernate: ERROR
+eureka:
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
+    preferIpAddress: true
+        
+jwt.secret.key: c2VjcmV0
+jwt.token.validity: 1296000000
+
+---
+spring: 
+  application: 
+     name: CategoryService 
+#  jpa:
+#    show-sql: true
+#    generate-ddl: true
+#    hibernate:
+#      ddl-auto: update
+#      format_sql: true
+#  datasource:
+#    driverClassName: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://15.207.103.249:3306/divatt
+#    username: divatt_user
+#    password: P@ssw0rd123
+  data:
+    mongodb:
+      authentication-database: admin
+      database: divatt
+      host: 65.1.190.195
+      password: word_pass
+      port: 27017
+      username: dbuser 
+ 
+server: 
+  port: 8084
+  servlet: 
+    contextPath: /prod
+name: prod-yml
+environment: prod
+enabled: true
+contextpath: /prod
+servers: 
+   - www.prod.com
+   - www.prod1.com
+logging: 
+      file: 
+        name: logs/prod_logs.log
+      pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+        file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+      level:
+        org.springframework.web: ERROR
+        org.ulearn.*: INFO
+        org.hibernate: ERROR
+eureka:
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
+    preferIpAddress: true
         
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 1296000000
