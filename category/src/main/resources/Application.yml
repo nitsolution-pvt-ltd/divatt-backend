@@ -1,4 +1,5 @@
-spring: 
+spring:
+  profiles: default
   application: 
      name: CategoryService 
 #  jpa:
@@ -54,9 +55,9 @@ eureka:
         
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 1296000000
-
 ---
-spring: 
+spring:
+  profiles: dev
   application: 
      name: CategoryService 
 #  jpa:
@@ -114,7 +115,8 @@ jwt.secret.key: c2VjcmV0
 jwt.token.validity: 1296000000
 
 ---
-spring: 
+spring:
+  profiles: prod
   application: 
      name: CategoryService 
 #  jpa:
