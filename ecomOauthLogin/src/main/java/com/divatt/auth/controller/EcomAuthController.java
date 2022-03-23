@@ -146,7 +146,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 			String encodedString = Base64.getEncoder().encodeToString(format.getBytes());
 			byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
 			String decodedString = new String(decodedBytes);
-			String forgotPasswordLink = "https://ulearn.nichetechnosolution.com/resetpassword/" + uuid.toString() + "/"+ format;
+			String forgotPasswordLink = "https://dapp.nichetechnosolution.com/resetpassword/" + uuid.toString() + "/"+ format;
 			
 			//** CHECKING THE EMAIL IS PREASENT IN DATABASE **//
 			Optional<LoginEntity> findByUserName = loginRepository.findByEmail(email);
