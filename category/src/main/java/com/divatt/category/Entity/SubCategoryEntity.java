@@ -38,7 +38,7 @@ public class SubCategoryEntity {
 		
 		public SubCategoryEntity() {
 			super();
-			// TODO Auto-generated constructor stub
+			
 		}
 
 

@@ -43,7 +43,5 @@ public class DatabaseSequence {
 		this.seq = seq;
 	}
 
-    
-    
-    //getters and setters omitted
+
 }
