@@ -68,7 +68,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 
 
 	public Map<String, Object> getCategoryDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			Optional<String> keyword, Optional<String> sortBy) {
+			String keyword, Optional<String> sortBy) {
 		try {
 			int CountData = (int) categoryRepo.count();
 			Pageable pagingSort = null;
@@ -84,10 +84,11 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 
 			Page<CategoryEntity> findAll = null;
 
-			if (keyword.get().isEmpty()) {
+			if (keyword.isEmpty()) {
 				findAll = categoryRepo.findByIsDeleted(isDeleted,pagingSort);
 			} else {
-//				findAll = categoryRepo.Search(keyword.get(), isDeleted, pagingSort);
+				LOGGER.info("Inside - CategoryController.getListCategoryDetails()KEY"+isDeleted);
+				findAll = categoryRepo.Search(keyword, isDeleted, pagingSort);
 
 			}
 			
