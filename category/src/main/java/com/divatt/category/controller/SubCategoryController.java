@@ -56,7 +56,7 @@ public class SubCategoryController {
 			@RequestParam(defaultValue = "DESC") String sort, 
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, 			
-			@RequestParam(defaultValue = "") Optional<String> keyword,
+			@RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - SubCategoryController.getSubCategoryDetails()");
 

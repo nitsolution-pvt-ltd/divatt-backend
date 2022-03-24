@@ -82,7 +82,8 @@ public class ProfileContoller {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
-			loginEntity.setId(sequenceGenerator.getNextSequence(LoginEntity.SEQUENCE_NAME));
+			loginEntity.setUid((long)sequenceGenerator.getNextSequence(LoginEntity.SEQUENCE_NAME));
+			loginEntity.setRole(loginEntity.getRole());
 			loginEntity.setIs_active(true);
 			loginEntity.setIs_deleted(false);
 			loginEntity.setCreated_on(date.toString());
@@ -100,28 +101,28 @@ public class ProfileContoller {
 	public ResponseEntity<?> updateProfile(@Valid @RequestBody LoginEntity loginEntity,Errors error){
 		
 		try {		
+			
 			if (error.hasErrors()) {
 				throw new CustomException("Check The Fields");
 			}
-			if(!mongoOperations.exists(query(where("uid").is(loginEntity.getId())), LoginEntity.class)) {
+			
+			if(!mongoOperations.exists(query(where("uid").is(loginEntity.getUid())), LoginEntity.class)) {
 				throw new CustomException("Id Not Found");
 			}
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
-			loginEntity.setId(sequenceGenerator.getNextSequence(LoginEntity.SEQUENCE_NAME));
-			loginEntity.setIs_active(true);
-			loginEntity.setIs_deleted(false);
-			loginEntity.setCreated_on(date.toString());
+			LoginEntity findById = loginRepository.findById(loginEntity.getUid()).get();
+			loginEntity.setUid(findById.getUid());
+			loginEntity.setIs_active(findById.isIs_active());
+			loginEntity.setIs_deleted(findById.isIs_deleted());
+			loginEntity.setCreated_on(findById.toString());
 			loginEntity.setModified_on(date.toString());
 			loginRepository.save(loginEntity);
-			return new ResponseEntity<>("Added Successfully", HttpStatus.OK);
+			return new ResponseEntity<>("Updated Successfully", HttpStatus.OK);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
-		
-		
 	}
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteProfById(@PathVariable("id") Long id) {

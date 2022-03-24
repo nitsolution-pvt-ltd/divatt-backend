@@ -56,9 +56,9 @@ public class CategoryController {
 			@RequestParam(defaultValue = "DESC") String sort, 
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, 			
-			@RequestParam(defaultValue = "") Optional<String> keyword,
+			@RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		LOGGER.info("Inside - CategoryController.getCategoryDetails()");
+		LOGGER.info("Inside - CategoryController.getListCategoryDetails()");
 
 		try {		
 			return this.categoryService.getCategoryDetails(page, limit, sort, sortName, isDeleted, keyword,

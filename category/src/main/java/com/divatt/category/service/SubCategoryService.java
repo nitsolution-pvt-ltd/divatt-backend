@@ -72,7 +72,7 @@ public class SubCategoryService {
 
 
 	public Map<String, Object> getSubCategoryDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			Optional<String> keyword, Optional<String> sortBy) {
+			String keyword, Optional<String> sortBy) {
 		try {
 			int CountData = (int) subCategoryRepo.count();
 			Pageable pagingSort = null;
@@ -88,13 +88,12 @@ public class SubCategoryService {
 
 			Page<SubCategoryEntity> findAll = null;
 
-			if (keyword.get().isEmpty()) {
+			if (keyword.isEmpty()) {
 				findAll = subCategoryRepo.findByIsDeleted(isDeleted,pagingSort);
-//				findAll = subCategoryRepo.findAll(pagingSort);
 				LOGGER.info("Inside - SubCategoryController.getSubCategoryDetails()ss"+findAll+"//"+limit);
 
 			} else {
-//				findAll = subCategoryRepo.Search(keyword.get(), isDeleted, pagingSort);
+				findAll = subCategoryRepo.Search(keyword, isDeleted, pagingSort);
 
 			}
 			
@@ -169,8 +168,6 @@ public class SubCategoryService {
 	}
 	
 	
-
-
 	public GlobalResponse putSubCategoryDeleteService(Integer CatId) {
 		try {
 			Optional<SubCategoryEntity> findById = subCategoryRepo.findById(CatId);
