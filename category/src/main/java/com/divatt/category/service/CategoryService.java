@@ -57,8 +57,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 				filterCatDetails.setIsDeleted(false);				
 			
 				categoryRepo.save(filterCatDetails);				
-				return new GlobalResponse("SUCCESS", "Category Added Succesfully", 200);
-				
+				return new GlobalResponse("SUCCESS", "Category Added Succesfully", 200);				
 			}
 			
 		} catch (Exception e) {
