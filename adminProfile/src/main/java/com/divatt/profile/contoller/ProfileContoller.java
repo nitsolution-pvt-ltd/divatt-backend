@@ -5,12 +5,18 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -25,6 +31,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.profile.entity.LoginEntity;
@@ -44,6 +52,27 @@ public class ProfileContoller {
 	
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
+	
+	
+	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
+	public Map<String, Object> getAll(			
+			@RequestParam(defaultValue = "0") int page, 
+			@RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, 
+			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, 			
+			@RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		
+
+		try {		
+			return this.getAdminProfDetails(page, limit, sort, sortName, isDeleted, keyword,
+					sortBy);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
 
 	@GetMapping("/all")
 	public List<LoginEntity> getAllProf() {
@@ -85,7 +114,7 @@ public class ProfileContoller {
 			loginEntity.setUid((long)sequenceGenerator.getNextSequence(LoginEntity.SEQUENCE_NAME));
 			loginEntity.setRole(loginEntity.getRole());
 			loginEntity.setIs_active(true);
-			loginEntity.setIs_deleted(false);
+			loginEntity.setDeleted(false);
 			loginEntity.setCreated_on(date.toString());
 			loginEntity.setModified_on(date.toString());
 			loginRepository.save(loginEntity);
@@ -115,7 +144,7 @@ public class ProfileContoller {
 			LoginEntity findById = loginRepository.findById(loginEntity.getUid()).get();
 			loginEntity.setUid(findById.getUid());
 			loginEntity.setIs_active(findById.isIs_active());
-			loginEntity.setIs_deleted(findById.isIs_deleted());
+			loginEntity.setDeleted(findById.isDeleted());
 			loginEntity.setCreated_on(findById.toString());
 			loginEntity.setModified_on(date.toString());
 			loginRepository.save(loginEntity);
@@ -153,5 +182,56 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 		
+	}
+	
+	
+	public Map<String, Object> getAdminProfDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
+			String keyword, Optional<String> sortBy) {
+		try {
+			int CountData = (int) loginRepository.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+			
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<LoginEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = loginRepository.findByIsDeleted(isDeleted,pagingSort);
+				
+
+			} else {
+				findAll = loginRepository.Search(keyword, isDeleted, pagingSort);
+
+			}
+			
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Institute Not Found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 }

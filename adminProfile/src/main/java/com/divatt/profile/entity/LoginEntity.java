@@ -13,6 +13,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
@@ -55,7 +56,8 @@ public class LoginEntity {
 	
 	private boolean is_active;
 
-	private boolean is_deleted;
+	@Field(value = "is_deleted")
+	private boolean isDeleted;
 	@NotNull(message = "User's role must not be null")
 	private String role;
 
@@ -152,13 +154,16 @@ public class LoginEntity {
 	}
 
 
-	public boolean isIs_deleted() {
-		return is_deleted;
+	
+
+
+	public boolean isDeleted() {
+		return isDeleted;
 	}
 
 
-	public void setIs_deleted(boolean is_deleted) {
-		this.is_deleted = is_deleted;
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 
 
@@ -237,22 +242,26 @@ public class LoginEntity {
 	}
 
 
+
+
 	@Override
 	public String toString() {
 		return "LoginEntity [uid=" + uid + ", first_name=" + first_name + ", last_name=" + last_name + ", email="
 				+ email + ", password=" + password + ", mobile_no=" + mobile_no + ", dob=" + dob + ", is_active="
-				+ is_active + ", is_deleted=" + is_deleted + ", role=" + role + ", auth_token=" + auth_token
+				+ is_active + ", isDeleted=" + isDeleted + ", role=" + role + ", auth_token=" + auth_token
 				+ ", created_by=" + created_by + ", created_on=" + created_on + ", modified_by=" + modified_by
 				+ ", modified_on=" + modified_on + ", profile_pic=" + profile_pic + "]";
 	}
 
 
-	public LoginEntity(Long uid, @NotNull(message = "User's first name must not be null") String first_name,
+	
+
+	public LoginEntity(@NotNull Long uid, @NotNull(message = "User's first name must not be null") String first_name,
 			@NotNull(message = "User's last name must not be null") String last_name,
 			@NotNull(message = "User's email must not be null") String email,
 			@NotNull(message = "User's password must not be null") String password,
 			@NotNull(message = "User's mobile_no must not be null") String mobile_no,
-			@NotNull(message = "User's dob must not be null") String dob, boolean is_active, boolean is_deleted,
+			@NotNull(message = "User's dob must not be null") String dob, boolean is_active, boolean isDeleted,
 			@NotNull(message = "User's role must not be null") String role, String auth_token, String created_by,
 			String created_on, String modified_by, String modified_on,
 			@NotNull(message = "User's profile_pic must not be null") String profile_pic) {
@@ -265,7 +274,7 @@ public class LoginEntity {
 		this.mobile_no = mobile_no;
 		this.dob = dob;
 		this.is_active = is_active;
-		this.is_deleted = is_deleted;
+		this.isDeleted = isDeleted;
 		this.role = role;
 		this.auth_token = auth_token;
 		this.created_by = created_by;

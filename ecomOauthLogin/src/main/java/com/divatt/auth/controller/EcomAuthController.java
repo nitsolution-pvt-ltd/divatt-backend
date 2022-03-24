@@ -158,6 +158,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 				loginResetEntity.setPrtoken(uuid.toString() + "/" + format);
 				loginResetEntity.setStatus("ACTIVE");
 				loginResetEntity.setId(sequenceGenerator.getNextSequence(PasswordResetEntity.SEQUENCE_NAME));
+				loginResetEntity.setUser_type(findByUserName.get().getRole());
 				Date dateObjForLinkCreateTime = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss")
 						.parse(format);
 				
@@ -213,13 +214,14 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	                        .parse(linkTime);
 					calObjForLinkCreateTime.setTime(dateObjForLinkCreateTime);
 					
-//					if(calObjForCurrentTime.get(Calendar.YEAR)==calObjForLinkCreateTime.get(Calendar.YEAR) && calObjForCurrentTime.get(Calendar.MONTH)==calObjForLinkCreateTime.get(Calendar.MONTH) && calObjForCurrentTime.get(Calendar.DATE)==calObjForLinkCreateTime.get(Calendar.DATE) && calObjForCurrentTime.get(Calendar.HOUR)==calObjForLinkCreateTime.get(Calendar.HOUR)) {
-//						
-//					}else {
-//						throw new CustomException("This Link is Expier");
-//					}
+					if(calObjForCurrentTime.get(Calendar.YEAR)==calObjForLinkCreateTime.get(Calendar.YEAR) && calObjForCurrentTime.get(Calendar.MONTH)==calObjForLinkCreateTime.get(Calendar.MONTH) && calObjForCurrentTime.get(Calendar.DATE)==calObjForLinkCreateTime.get(Calendar.DATE) && calObjForCurrentTime.get(Calendar.HOUR)==calObjForLinkCreateTime.get(Calendar.HOUR)  && calObjForLinkCreateTime.get(Calendar.MINUTE)<=calObjForCurrentTime.get(Calendar.MINUTE)  &&  calObjForCurrentTime.get(Calendar.MINUTE)<=calObjForLinkCreateTime.get(Calendar.MINUTE)+5) {
+						
+					}else {
+						throw new CustomException("This Link is Expier");
+					}
 				//** FIND THE USER CORRESPONDING THE LINK IN LOGIN TABLE **//
 					PasswordResetEntity loginResetEntity = findByPrToken.get();
+					System.out.println("loginResetEntity.getUser_id() "+loginResetEntity.getUser_id());
 					Optional<LoginEntity> findById = loginRepository.findById((loginResetEntity.getUser_id()));
 					if (findById.isPresent()) {
 				//** CREATE NEW PASSWORD AND SAVE **//
