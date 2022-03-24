@@ -8,8 +8,10 @@ import javax.annotation.Generated;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -73,7 +75,19 @@ public class LoginEntity {
 	@NotNull(message = "User's profile_pic must not be null")
 	private String profile_pic;
 	
+	private JSONObject logins;
 	
+	
+	public JSONObject getLogins() {
+		return logins;
+	}
+
+
+	public void setLogins(JSONObject logins) {
+		this.logins = logins;
+	}
+
+
 	public Long getUid() {
 		return uid;
 	}
@@ -244,13 +258,17 @@ public class LoginEntity {
 
 
 
+	
+
+	
+
 	@Override
 	public String toString() {
 		return "LoginEntity [uid=" + uid + ", first_name=" + first_name + ", last_name=" + last_name + ", email="
 				+ email + ", password=" + password + ", mobile_no=" + mobile_no + ", dob=" + dob + ", is_active="
 				+ is_active + ", isDeleted=" + isDeleted + ", role=" + role + ", auth_token=" + auth_token
 				+ ", created_by=" + created_by + ", created_on=" + created_on + ", modified_by=" + modified_by
-				+ ", modified_on=" + modified_on + ", profile_pic=" + profile_pic + "]";
+				+ ", modified_on=" + modified_on + ", profile_pic=" + profile_pic + ", logins=" + logins + "]";
 	}
 
 
@@ -264,7 +282,7 @@ public class LoginEntity {
 			@NotNull(message = "User's dob must not be null") String dob, boolean is_active, boolean isDeleted,
 			@NotNull(message = "User's role must not be null") String role, String auth_token, String created_by,
 			String created_on, String modified_by, String modified_on,
-			@NotNull(message = "User's profile_pic must not be null") String profile_pic) {
+			@NotNull(message = "User's profile_pic must not be null") String profile_pic, JSONObject logins) {
 		super();
 		this.uid = uid;
 		this.first_name = first_name;
@@ -282,6 +300,7 @@ public class LoginEntity {
 		this.modified_by = modified_by;
 		this.modified_on = modified_on;
 		this.profile_pic = profile_pic;
+		this.logins = logins;
 	}
 
 

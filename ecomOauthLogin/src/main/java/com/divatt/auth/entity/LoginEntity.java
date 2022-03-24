@@ -11,6 +11,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import springfox.documentation.spring.web.json.Json;
+
 
 @Document(collection = "tbl_admin")
 public class LoginEntity {
@@ -51,7 +53,7 @@ public class LoginEntity {
 	
 	private String profile_pic;
 	
-	private Object logins;
+	private Json logins;
 	
 	public LoginEntity() {
 		super();
@@ -67,7 +69,7 @@ public class LoginEntity {
 
 	public LoginEntity(Object id, String first_name, String last_name, String email, String password, String mobile_no,
 			String dob, boolean is_active, boolean is_deleted, String role, String auth_token, String created_by,
-			String created_on, String modified_by, String modified_on, String profile_pic, Object logins) {
+			String created_on, String modified_by, String modified_on, String profile_pic, Json logins) {
 		super();
 		this.uid = id;
 		this.first_name = first_name;
@@ -467,7 +469,7 @@ public class LoginEntity {
 
 
 
-	public Object getLogins() {
+	public Json getLogins() {
 		return logins;
 	}
 
@@ -478,7 +480,7 @@ public class LoginEntity {
 
 
 
-	public void setLogins(Object logins) {
+	public void setLogins(Json logins) {
 		this.logins = logins;
 	}
 
