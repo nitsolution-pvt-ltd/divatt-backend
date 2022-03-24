@@ -29,10 +29,9 @@ public interface CategoryService {
 		Class<?> class1 = interfaces[0];
 		int length2 = class1.getMethods().length;
 		
-		if (length == length2) {
+		if (length == length2)
 			return true;
-		} else {
-			return false;
-		}
+		
+		return false;
 	}
 }

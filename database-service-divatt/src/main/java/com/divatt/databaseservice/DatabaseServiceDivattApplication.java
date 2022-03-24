@@ -35,13 +35,13 @@ public class DatabaseServiceDivattApplication implements CommandLineRunner {
 		
 		CategoryController categoryController = new CategoryController();
 		
-//		if(! (categoryController instanceof CategoryService)) {
-//			System.exit(0);
-//		}
-//		
-//		if(! CategoryService.check()) {
-//			System.exit(0);
-//		}
+		if(! (categoryController instanceof CategoryService)) {
+			System.exit(0);
+		}
+		System.out.println(CategoryService.check());
+		if(! CategoryService.check()) {
+			System.exit(0);
+		}
 		
 		LOGGER.info("-------------------------------------");
 		LOGGER.info("name : " + myConfig.getName());
