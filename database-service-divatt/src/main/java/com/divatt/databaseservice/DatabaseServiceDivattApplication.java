@@ -8,10 +8,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
+import com.divatt.databaseservice.category.controller.CategoryController;
+import com.divatt.databaseservice.category.services.CategoryService;
 import com.divatt.databaseservice.config.YMLConfig;
+
+//import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+
 
 @SpringBootApplication
 @EnableEurekaClient
+//@EnableSwagger2
 public class DatabaseServiceDivattApplication implements CommandLineRunner {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServiceDivattApplication.class);
@@ -25,6 +32,16 @@ public class DatabaseServiceDivattApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		
+		CategoryController categoryController = new CategoryController();
+		
+//		if(! (categoryController instanceof CategoryService)) {
+//			System.exit(0);
+//		}
+//		
+//		if(! CategoryService.check()) {
+//			System.exit(0);
+//		}
 		
 		LOGGER.info("-------------------------------------");
 		LOGGER.info("name : " + myConfig.getName());

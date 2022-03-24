@@ -15,9 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.divatt.category.Entity.CategoryEntity;
-import com.divatt.category.Exception.CustomException;
-import com.divatt.category.Repository.CategoryRepo;
+import com.divatt.category.entity.CategoryEntity;
+import com.divatt.category.exception.CustomException;
+import com.divatt.category.repository.CategoryRepo;
 import com.divatt.category.response.GlobalResponse;
 
 
@@ -57,8 +57,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 				filterCatDetails.setIsDeleted(false);				
 			
 				categoryRepo.save(filterCatDetails);				
-				return new GlobalResponse("SUCCESS", "Category Added Succesfully", 200);
-				
+				return new GlobalResponse("SUCCESS", "Category Added Succesfully", 200);				
 			}
 			
 		} catch (Exception e) {
@@ -69,7 +68,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 
 
 	public Map<String, Object> getCategoryDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			Optional<String> keyword, Optional<String> sortBy) {
+			String keyword, Optional<String> sortBy) {
 		try {
 			int CountData = (int) categoryRepo.count();
 			Pageable pagingSort = null;
@@ -85,10 +84,11 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 
 			Page<CategoryEntity> findAll = null;
 
-			if (keyword.get().isEmpty()) {
+			if (keyword.isEmpty()) {
 				findAll = categoryRepo.findByIsDeleted(isDeleted,pagingSort);
 			} else {
-//				findAll = categoryRepo.Search(keyword.get(), isDeleted, pagingSort);
+				LOGGER.info("Inside - CategoryController.getListCategoryDetails()KEY"+isDeleted);
+				findAll = categoryRepo.Search(keyword, isDeleted, pagingSort);
 
 			}
 			

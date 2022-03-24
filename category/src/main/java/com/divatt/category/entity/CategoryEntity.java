@@ -1,4 +1,4 @@
-package com.divatt.databaseservice.category.model;
+package com.divatt.category.entity;
 
 import java.util.Date;
 
@@ -130,5 +130,7 @@ public class CategoryEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+	
+
 	
 }

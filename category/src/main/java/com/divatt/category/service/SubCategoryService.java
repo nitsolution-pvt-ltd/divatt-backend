@@ -15,9 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.divatt.category.Exception.CustomException;
-import com.divatt.category.Entity.SubCategoryEntity;
-import com.divatt.category.Repository.SubCategoryRepo;
+import com.divatt.category.entity.SubCategoryEntity;
+import com.divatt.category.exception.CustomException;
+import com.divatt.category.repository.SubCategoryRepo;
 import com.divatt.category.response.GlobalResponse;
 
 
@@ -72,7 +72,7 @@ public class SubCategoryService {
 
 
 	public Map<String, Object> getSubCategoryDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			Optional<String> keyword, Optional<String> sortBy) {
+			String keyword, Optional<String> sortBy) {
 		try {
 			int CountData = (int) subCategoryRepo.count();
 			Pageable pagingSort = null;
@@ -88,13 +88,12 @@ public class SubCategoryService {
 
 			Page<SubCategoryEntity> findAll = null;
 
-			if (keyword.get().isEmpty()) {
+			if (keyword.isEmpty()) {
 				findAll = subCategoryRepo.findByIsDeleted(isDeleted,pagingSort);
-//				findAll = subCategoryRepo.findAll(pagingSort);
 				LOGGER.info("Inside - SubCategoryController.getSubCategoryDetails()ss"+findAll+"//"+limit);
 
 			} else {
-//				findAll = subCategoryRepo.Search(keyword.get(), isDeleted, pagingSort);
+				findAll = subCategoryRepo.Search(keyword, isDeleted, pagingSort);
 
 			}
 			
@@ -169,8 +168,6 @@ public class SubCategoryService {
 	}
 	
 	
-
-
 	public GlobalResponse putSubCategoryDeleteService(Integer CatId) {
 		try {
 			Optional<SubCategoryEntity> findById = subCategoryRepo.findById(CatId);
