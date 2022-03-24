@@ -1,4 +1,4 @@
-package com.divatt.category.Entity;
+package com.divatt.category.entity;
 
 import java.util.Date;
 

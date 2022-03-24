@@ -1,4 +1,4 @@
-package com.divatt.category.Exception;
+package com.divatt.category.exception;
 
 public class CustomErrorMessage {
 

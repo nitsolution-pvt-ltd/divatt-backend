@@ -1,4 +1,4 @@
-package com.divatt.category.Repository;
+package com.divatt.category.repository;
 
 
 import java.util.Optional;
@@ -7,7 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import com.divatt.category.Entity.CategoryEntity;
+
+import com.divatt.category.entity.CategoryEntity;
 
 @Repository
 public interface CategoryRepo extends MongoRepository<CategoryEntity, Integer>{
