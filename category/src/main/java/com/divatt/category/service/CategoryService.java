@@ -40,7 +40,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 			
 			Optional<CategoryEntity> findByCategoryName = categoryRepo.findByCategoryName(categoryEntity.getCategoryName());
 			if (findByCategoryName.isPresent()) {
-				throw new CustomException("Category Already Exists!");
+				return new GlobalResponse("ERROR", "Category Already Exists!", 200);
 			} else {
 				CategoryEntity filterCatDetails = new CategoryEntity();
 
@@ -138,7 +138,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 			Optional<CategoryEntity> findByCategoryRow = categoryRepo.findById(catId);
 			
 			if (!findByCategoryRow.isPresent()) {
-				throw new CustomException("Sub Category Not Exists!");
+				return new GlobalResponse("ERROR", "Category Not Found!", 200);
 			} else {				
 				CategoryEntity filterCatDetails = findByCategoryRow.get();
 
@@ -168,7 +168,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 			Optional<CategoryEntity> findById = categoryRepo.findById(CatId);
 			CategoryEntity filterCatDetails = findById.get();
 			if (!findById.isPresent()) {
-				throw new CustomException("Sub Category Not Exists!");
+				return new GlobalResponse("ERROR", "Category Not Found!", 200);
 			} else {				
 				filterCatDetails.setIsDeleted(true);
 				filterCatDetails.setCreatedOn(new Date());
@@ -180,6 +180,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
 
 
 	public GlobalResponse putCategoryStatusService(Integer CatId) {
@@ -189,7 +191,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 			CategoryEntity filterCatDetails = findById.get();
 			
 			if (filterCatDetails.getId() == null) {
-				throw new CustomException("Sub Category Not Found!");
+				return new GlobalResponse("ERROR", "Category Not Found!", 200);
+				
 			} else {
 				Boolean isStatus = null;
 				if (filterCatDetails.getIsActive() == false) {
