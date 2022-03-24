@@ -1,4 +1,4 @@
-package com.divatt.category.Controller;
+package com.divatt.category.controller;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -5,14 +5,30 @@ package com.divatt.profile.entity;
 
 
 import javax.annotation.Generated;
-																																																																																																																																																																																																																	
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
+
+import com.mongodb.lang.Nullable;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Document(collection = "tbl_admin")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class LoginEntity {
 	
 	@Transient
@@ -20,39 +36,41 @@ public class LoginEntity {
 
 	@Id
 	private Object uid;
-	
+	@NotNull(message = "User's first name must not be null")
 	private String first_name;
-	
+	@NotNull(message = "User's last name must not be null")
 	private String last_name;
-	
+	@Email
+	@NotNull(message = "User's email must not be null")
 	private String email;
-	
+	@NotNull(message = "User's password must not be null")
 	private String password;
-	
+	@NumberFormat
+	@NotNull(message = "User's mobile_no must not be null")
 	private String mobile_no;
-	
+	@DateTimeFormat()
+	@NotNull(message = "User's dob must not be null")
 	private String dob;
 	
 	private boolean is_active;
-	
+
 	private boolean is_deleted;
-	
+	@NotNull(message = "User's role must not be null")
 	private String role;
-	
+
 	private String auth_token;
-	
+
 	private String created_by;
-	
+
 	private String created_on;
-	
+
 	private String modified_by;
-	
+
 	private String modified_on;
-	
+	@NotNull(message = "User's profile_pic must not be null")
 	private String profile_pic;
-	
+
 	private Object logins;
-	
 	public LoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub

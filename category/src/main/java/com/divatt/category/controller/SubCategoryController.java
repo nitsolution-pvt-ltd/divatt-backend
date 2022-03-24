@@ -1,4 +1,4 @@
-package com.divatt.category.Controller;
+package com.divatt.category.controller;
 
 import java.util.Map;
 import java.util.Optional;
@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.category.response.GlobalResponse;
 import com.divatt.category.service.SubCategoryService;
-import com.divatt.category.Entity.SubCategoryEntity;
-import com.divatt.category.Exception.CustomException;
-import com.divatt.category.Repository.SubCategoryRepo;
+import com.divatt.category.entity.SubCategoryEntity;
+import com.divatt.category.exception.CustomException;
+import com.divatt.category.repository.SubCategoryRepo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

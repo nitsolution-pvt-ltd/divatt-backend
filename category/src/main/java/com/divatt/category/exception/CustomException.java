@@ -1,4 +1,4 @@
-package com.divatt.category.Exception;
+package com.divatt.category.exception;
 
 import java.lang.reflect.Method;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;

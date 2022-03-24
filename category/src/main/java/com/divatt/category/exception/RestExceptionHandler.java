@@ -1,12 +1,12 @@
-package com.divatt.category.Exception;
+package com.divatt.category.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.divatt.category.Exception.CustomErrorMessage;
-import com.divatt.category.Exception.CustomException;
+import com.divatt.category.exception.CustomErrorMessage;
+import com.divatt.category.exception.CustomException;
 
 @ControllerAdvice
 public class RestExceptionHandler {

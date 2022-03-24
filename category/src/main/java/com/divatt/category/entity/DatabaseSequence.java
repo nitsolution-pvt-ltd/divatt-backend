@@ -1,4 +1,4 @@
-package com.divatt.category.Entity;
+package com.divatt.category.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
