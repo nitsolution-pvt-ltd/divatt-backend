@@ -91,4 +91,9 @@ public class CategoryController implements CategoryService {
 		}
 	}
 	
+	@GetMapping("/test")
+	public String test() {
+		return "Application is running";
+	}
+	
 }
