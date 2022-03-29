@@ -1,5 +1,7 @@
 package com.divatt.productservice.Controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -27,7 +29,7 @@ public class ProductController {
 	private static final Logger LOGGER=LoggerFactory.getLogger(ProductController.class);
 	
 	@GetMapping("/allList")
-	public Optional<ProductMasterEntity> allList()
+	public List<ProductMasterEntity> allList()
 	{
 		try
 		{

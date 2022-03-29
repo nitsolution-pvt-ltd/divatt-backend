@@ -1,6 +1,7 @@
 package com.divatt.productservice.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,10 @@ public class ProductService {
 	private ProductRepository productRepo;
 	@Autowired
 	private SequenceGenarator sequenceGenarator;
-	public Optional<ProductMasterEntity> allList() {
+	public List<ProductMasterEntity> allList() {
 		try
 		{
-			return (Optional<ProductMasterEntity>) productRepo.findAll();
+			return productRepo.findAll();
 		}
 		catch(Exception e)
 		{
