@@ -1,4 +1,4 @@
-package com.divatt.productservice.controller;
+package com.divatt.productservice.Controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
