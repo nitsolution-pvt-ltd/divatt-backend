@@ -21,7 +21,7 @@ spring:
 #      password: word_pass
 #      port: 27017
 #      username: dbuser 
- 
+      
 server: 
   port: 8085
   servlet: 
@@ -71,14 +71,14 @@ spring:
 #    url: jdbc:mysql://15.207.103.249:3306/divatt
 #    username: divatt_user
 #    password: P@ssw0rd123
-#  data:
-#    mongodb:
-#      authentication-database: admin
-#      database: divatt
-#      host: 65.1.190.195
-#      password: word_pass
-#      port: 27017
-#      username: dbuser 
+  data:
+    mongodb:
+      authentication-database: admin
+      database: divatt
+      host: 65.1.190.195
+      password: word_pass
+      port: 27017
+      username: dbuser 
  
 server: 
   port: 8085
