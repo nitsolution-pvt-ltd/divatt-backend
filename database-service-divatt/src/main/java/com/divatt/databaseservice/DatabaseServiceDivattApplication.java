@@ -38,7 +38,7 @@ public class DatabaseServiceDivattApplication implements CommandLineRunner {
 		if(! (categoryController instanceof CategoryService)) {
 			System.exit(0);
 		}
-		System.out.println(CategoryService.check());
+//		System.out.println(CategoryService.check());
 		if(! CategoryService.check()) {
 			System.exit(0);
 		}

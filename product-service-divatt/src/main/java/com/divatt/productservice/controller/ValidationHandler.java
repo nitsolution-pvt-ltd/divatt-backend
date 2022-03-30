@@ -1,4 +1,4 @@
-package com.divatt.productservice.Controller;
+package com.divatt.productservice.controller;
 
 import java.util.HashMap;
 import java.util.Map;
