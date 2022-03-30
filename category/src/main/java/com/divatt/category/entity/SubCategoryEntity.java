@@ -11,10 +11,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
-@Document(collection = "tbl_categories")
+@Document(collection="tbl_categories")
 public class SubCategoryEntity {
 
-		@Id		  
+		@Id				
 		private Integer id;
 
 		@Transient

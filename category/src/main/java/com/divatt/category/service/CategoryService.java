@@ -85,10 +85,9 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 			Page<CategoryEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = categoryRepo.findByIsDeleted(isDeleted,pagingSort);
-			} else {
-				LOGGER.info("Inside - CategoryController.getListCategoryDetails()KEY"+isDeleted);
-				findAll = categoryRepo.Search(keyword, isDeleted, pagingSort);
+				findAll = categoryRepo.findByIsDeletedAndParentId(isDeleted,"0",pagingSort);
+			} else {				
+				findAll = categoryRepo.Search(keyword, isDeleted,"0", pagingSort);
 
 			}
 			

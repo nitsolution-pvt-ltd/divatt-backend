@@ -18,6 +18,7 @@ public interface SubCategoryRepo extends MongoRepository<SubCategoryEntity,Integ
 	
 //	@Query(value = "SELECT instObj FROM SubCategoryEntity instObj")
 	Page<SubCategoryEntity> findByIsDeleted(Boolean isDeleted,Pageable pagingSort);
+//	Page<SubCategoryEntity> findByIsDeletedAndParentIdNot(Boolean isDeleted,String parentId,Pageable pagingSort);
 	
 	@Query(value = "{ $or: [ { 'categoryName' : {$regex:?0,$options:'i'} }, { 'categoryDescrition' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'categoryImage' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
     Page<SubCategoryEntity> Search(String sortKey, Boolean isDeleted,Pageable pageable);
