@@ -1,12 +1,12 @@
 package com.divatt.category.entity;
 
 import java.util.Date;
-
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -34,6 +34,13 @@ public class CategoryEntity {
 	private Date createdOn;
 	private String createdBy;
 	
+	
+//	 @DBRef List<CategoryEntity> categoryEntity;
+//	 @Field("id")
+//		@DBRef(lazy = true)
+//		private Set<SubCategoryEntity> subCategoryEntity;
+//		private List<SubCategoryEntity> subCategoryEntity= new ArrayList<SubCategoryEntity>();
+	 
 	@Override
 	public String toString() {
 		return "CategoryEntity [id=" + id + ", categoryName=" + categoryName + ", categoryDescrition="
@@ -130,6 +137,17 @@ public class CategoryEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+//
+//	public List<SubCategoryEntity> getSubCategoryEntity() {
+//		return subCategoryEntity;
+//	}
+//
+//	public void setSubCategoryEntity(List<SubCategoryEntity> subCategoryEntity) {
+//		this.subCategoryEntity = subCategoryEntity;
+//	}
+
+
+	
 	
 
 	

@@ -20,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +47,7 @@ import com.divatt.auth.services.SequenceGenerator;
 @RestController
 @SuppressWarnings("All")
 @RequestMapping("/auth")
-
+@CrossOrigin(origins = "*")
 public class EcomAuthController implements EcomAuthContollerMethod{
 	
 	@Autowired

@@ -88,9 +88,9 @@ public class SubCategoryService {
 
 			Page<SubCategoryEntity> findAll = null;
 
-			if (keyword.isEmpty()) {
+			if (keyword.isEmpty()) {				
 				findAll = subCategoryRepo.findByIsDeleted(isDeleted,pagingSort);
-				LOGGER.info("Inside - SubCategoryController.getSubCategoryDetails()ss"+findAll+"//"+limit);
+//				findAll = subCategoryRepo.findByIsDeletedAndParentIdNot(isDeleted,"0",pagingSort);
 
 			} else {
 				findAll = subCategoryRepo.Search(keyword, isDeleted, pagingSort);
