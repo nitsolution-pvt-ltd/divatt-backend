@@ -78,6 +78,23 @@ public class ProductMasterEntity {
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
 	private String comment;
+	//private Composition Composition;
+	@Override
+	public String toString() {
+		return "ProductMasterEntity [productId=" + productId + ", designerId=" + designerId + ", categoryId="
+				+ categoryId + ", subCategoryId=" + subCategoryId + ", gender=" + gender + ", productName="
+				+ productName + ", productDescription=" + productDescription + ", age=" + age + ", cod=" + cod
+				+ ", customization=" + customization + ", purchaseQuantity=" + purchaseQuantity + ", priceType="
+				+ priceType + ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive + ", giftWrap="
+				+ giftWrap + ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", colour=" + colour
+				+ ", images=" + Arrays.toString(images) + ", standeredSOH=" + Arrays.toString(standeredSOH)
+				+ ", customizationSOH=" + customizationSOH + ", extraSpecifications=" + extraSpecifications
+				+ ", specifications=" + specifications + ", isSubmitted=" + isSubmitted + ", isApprove=" + isApprove
+				+ ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy="
+				+ createdBy + ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy="
+				+ updatedBy + ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
+				+ ", comment=" + comment + "]";
+	}
 	public ProductMasterEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -131,22 +148,6 @@ public class ProductMasterEntity {
 		this.approvedBy = approvedBy;
 		this.approvedOn = approvedOn;
 		this.comment = comment;
-	}
-	@Override
-	public String toString() {
-		return "ProductMasterEntity [productId=" + productId + ", designerId=" + designerId + ", categoryId="
-				+ categoryId + ", subCategoryId=" + subCategoryId + ", gender=" + gender + ", productName="
-				+ productName + ", productDescription=" + productDescription + ", age=" + age + ", cod=" + cod
-				+ ", customization=" + customization + ", purchaseQuantity=" + purchaseQuantity + ", priceType="
-				+ priceType + ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive + ", giftWrap="
-				+ giftWrap + ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", colour=" + colour
-				+ ", images=" + Arrays.toString(images) + ", standeredSOH=" + Arrays.toString(standeredSOH)
-				+ ", customizationSOH=" + customizationSOH + ", extraSpecifications=" + extraSpecifications
-				+ ", specifications=" + specifications + ", isSubmitted=" + isSubmitted + ", isApprove=" + isApprove
-				+ ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy="
-				+ createdBy + ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy="
-				+ updatedBy + ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", comment=" + comment + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -367,6 +368,5 @@ public class ProductMasterEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
 	
 }
