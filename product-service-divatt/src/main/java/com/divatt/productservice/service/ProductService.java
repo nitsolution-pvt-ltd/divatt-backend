@@ -104,7 +104,7 @@ public class ProductService {
 			}
 			else
 			{
-				return new GlobalResponce("Bad Request", "Desgine ID Does Not Exist", 400);
+				return new GlobalResponce("Bad Request", "Product Does Not Exist", 400);
 			}
 		}
 		catch(Exception e)
@@ -129,6 +129,36 @@ public class ProductService {
 		{
 			throw new CustomException(e.getMessage());
 		}
+	}
+	public GlobalResponce deleteProduct(Integer productId) {
+		// TODO Auto-generated method stub
+		
+		try {
+			if(productRepo.existsById(productId))
+			{
+				Boolean isDelete = false;
+				Optional<ProductMasterEntity> productData= productRepo.findById(productId);
+				ProductMasterEntity productEntity= productData.get();
+				if(productEntity.getIsDeleted().equals(false))
+				{
+					isDelete=true;
+				}
+				
+				productEntity.setIsDeleted(isDelete);
+				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
+				productEntity.setUpdatedOn(new Date());
+				productRepo.save(productEntity);
+				return new GlobalResponce("Success", "Delete Successfully", 200);
+			}
+			else
+			{
+				return new GlobalResponce("Bad Request", "Product Does Not Exist", 400);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new CustomException(e.getMessage());
+		}
+		
 	}
 	
 }
