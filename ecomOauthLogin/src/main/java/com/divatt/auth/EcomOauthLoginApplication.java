@@ -69,7 +69,7 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 		mailSender.setHost("smtp.gmail.com");
 		mailSender.setPort(587);
 		mailSender.setUsername("soumendolui077@gmail.com");
-		mailSender.setPassword("Soumen@1234c2");
+		mailSender.setPassword("Soumen@1234c3");
 		 
 		Properties properties = new Properties();
 		properties.setProperty("mail.smtp.auth", "true");

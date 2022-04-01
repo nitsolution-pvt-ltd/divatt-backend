@@ -11,9 +11,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class LoginUserData implements UserDetails{
+public class LoginAdminData implements UserDetails{
 	
-		public LoginUserData() {
+		public LoginAdminData() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -26,8 +26,9 @@ public class LoginUserData implements UserDetails{
 		private List<GrantedAuthority> role;
 		private int status;
 
+
 		
-		public LoginUserData(LoginEntity vendor) {
+		public LoginAdminData(AdminLoginEntity vendor) {
 			this.email = vendor.getEmail();
 			this.password = vendor.getPassword();
 			this.role = Stream.of(vendor.getRole()).map(SimpleGrantedAuthority::new).collect(Collectors.toList())  ;
@@ -77,7 +78,7 @@ public class LoginUserData implements UserDetails{
 		}
 
 
-		public LoginUserData(String token, Object uId, String username, String password, String message, int status) {
+		public LoginAdminData(String token, Object uId, String username, String password, String message, int status,String role) {
 			super();
 			this.token = token;
 			this.UId = uId;
@@ -85,6 +86,7 @@ public class LoginUserData implements UserDetails{
 			this.password = password;
 			this.message = message;
 			this.status = status;
+			this.role = Stream.of(role).map(SimpleGrantedAuthority::new).collect(Collectors.toList())  ;
 		}
 
 

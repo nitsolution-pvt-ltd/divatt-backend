@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.divatt.auth.entity.GlobalEntity;
 import com.divatt.auth.entity.GlobalResponse;
-import com.divatt.auth.entity.LoginEntity;
+import com.divatt.auth.entity.AdminLoginEntity;
 import com.divatt.auth.entity.SendMail;
 
 public interface EcomAuthContollerMethod {
 	
 	
-	public ResponseEntity<?> superAdminLogin(@RequestBody LoginEntity loginEntity);
+	public ResponseEntity<?> superAdminLogin(@RequestBody AdminLoginEntity loginEntity);
 	public ResponseEntity<String> sendMail(@RequestBody() SendMail senderMailId) ;
 	public GlobalResponse mailForgotPasswordLink(@PathVariable("email") String email) ;
 	public GlobalResponse resetPassword(@PathVariable("link") String link, @PathVariable("linkTime") String linkTime, @RequestBody GlobalEntity globalEntity);

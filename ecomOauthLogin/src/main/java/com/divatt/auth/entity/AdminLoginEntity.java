@@ -15,7 +15,7 @@ import springfox.documentation.spring.web.json.Json;
 
 
 @Document(collection = "tbl_admin")
-public class LoginEntity {
+public class AdminLoginEntity {
 	
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_admin";
@@ -55,7 +55,7 @@ public class LoginEntity {
 	
 	private Json logins;
 	
-	public LoginEntity() {
+	public AdminLoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -67,7 +67,7 @@ public class LoginEntity {
 
 	
 
-	public LoginEntity(Object id, String first_name, String last_name, String email, String password, String mobile_no,
+	public AdminLoginEntity(Object id, String first_name, String last_name, String email, String password, String mobile_no,
 			String dob, boolean is_active, boolean is_deleted, String role, String auth_token, String created_by,
 			String created_on, String modified_by, String modified_on, String profile_pic, Json logins) {
 		super();
