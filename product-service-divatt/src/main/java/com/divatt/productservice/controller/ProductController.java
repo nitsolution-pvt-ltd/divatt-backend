@@ -91,4 +91,16 @@ public class ProductController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	@PutMapping("/delete/{productId}")
+	public GlobalResponce productDelete(@PathVariable Integer productId)
+	{
+		try
+		{
+			return this.productService.deleteProduct(productId);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

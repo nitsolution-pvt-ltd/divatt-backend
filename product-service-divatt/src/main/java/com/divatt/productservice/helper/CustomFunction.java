@@ -53,6 +53,7 @@ public class CustomFunction {
 			filterProductEntity.setImages(productData.getImages());
 			filterProductEntity.setIsActive(true);
 			filterProductEntity.setIsApprove(productData.getIsApprove());
+			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setIsSubmitted(true);
 			filterProductEntity.setPrice(productData.getPrice());

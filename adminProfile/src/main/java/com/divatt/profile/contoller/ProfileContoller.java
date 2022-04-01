@@ -236,4 +236,12 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+//	@PostMapping("/test")
+//	public ResponseEntity<?> addProfile(@Valid @RequestBody Json loginEntity,Errors error){
+//		
+//	}
+	
+	
+	
 }
