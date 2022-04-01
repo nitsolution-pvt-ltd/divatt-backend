@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
+import javax.ws.rs.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,8 +21,6 @@ import com.divatt.productservice.entity.ProductMasterEntity;
 import com.divatt.productservice.exception.CustomException;
 import com.divatt.productservice.response.GlobalResponce;
 import com.divatt.productservice.service.ProductService;
-
-
 
 @RestController
 @RequestMapping("/product")
@@ -60,6 +60,43 @@ public class ProductController {
 		try
 		{
 			return productService.productDetails(productId);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@PutMapping("/status/{productId}")
+	public GlobalResponce status(@PathVariable Integer productId)
+	{
+		try
+		{
+			return this.productService.changeStatus(productId);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@PutMapping("/update/{productId}")
+	public GlobalResponce updateProductData(@RequestBody ProductMasterEntity productMasterEntity,
+											@PathVariable Integer productId)
+	{
+		try
+		{
+			return this.productService.updateProduct(productId,productMasterEntity);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@PutMapping("/delete/{productId}")
+	public GlobalResponce productDelete(@PathVariable Integer productId)
+	{
+		try
+		{
+			return this.productService.deleteProduct(productId);
 		}
 		catch(Exception e)
 		{

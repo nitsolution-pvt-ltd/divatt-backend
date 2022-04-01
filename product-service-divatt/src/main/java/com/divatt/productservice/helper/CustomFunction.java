@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.divatt.productservice.entity.ProductMasterEntity;
 import com.divatt.productservice.exception.CustomException;
+import com.divatt.productservice.repo.ProductRepository;
 import com.divatt.productservice.service.SequenceGenarator;
 
 @Service
@@ -16,12 +17,24 @@ public class CustomFunction {
 	@Autowired
 	private SequenceGenarator sequenceGenarator;
 	
+	@Autowired
+	private ProductRepository productRepo;
 	public ProductMasterEntity filterDataEntity(ProductMasterEntity productData)
 	{
 		try
 		{
 			ProductMasterEntity filterProductEntity= new ProductMasterEntity();
-			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
+//			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
+			if(!(productRepo.findByProductName(productData.getProductName()).isPresent()))
+			{
+				
+				filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
+			}
+			else
+			{
+				ProductMasterEntity product=productRepo.findByProductName(productData.getProductName()).get();
+				filterProductEntity.setProductId(product.getProductId());
+			}
 			filterProductEntity.setAge(productData.getAge());
 			filterProductEntity.setApprovedBy(productData.getApprovedBy());
 			filterProductEntity.setCategoryId(productData.getCategoryId());
@@ -40,6 +53,7 @@ public class CustomFunction {
 			filterProductEntity.setImages(productData.getImages());
 			filterProductEntity.setIsActive(true);
 			filterProductEntity.setIsApprove(productData.getIsApprove());
+			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setIsSubmitted(true);
 			filterProductEntity.setPrice(productData.getPrice());

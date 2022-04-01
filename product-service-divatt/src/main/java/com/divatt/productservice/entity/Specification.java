@@ -5,25 +5,26 @@ public class Specification {
 	private String productDetails;
 	private String fittingInformation;
 	private String style;
-	private Composition compose;
+	private Composition composition;
 	private String washingInformation;
 	public Specification() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Specification(String productDetails, String fittingInformation, String style, Composition compose,
+	public Specification(String productDetails, String fittingInformation, String style, Composition composition,
 			String washingInformation) {
 		super();
 		this.productDetails = productDetails;
 		this.fittingInformation = fittingInformation;
 		this.style = style;
-		this.compose = compose;
+		this.composition = composition;
 		this.washingInformation = washingInformation;
 	}
 	@Override
 	public String toString() {
 		return "Specification [productDetails=" + productDetails + ", fittingInformation=" + fittingInformation
-				+ ", style=" + style + ", compose=" + compose + ", washingInformation=" + washingInformation + "]";
+				+ ", style=" + style + ", composition=" + composition + ", washingInformation=" + washingInformation
+				+ "]";
 	}
 	public String getProductDetails() {
 		return productDetails;
@@ -43,11 +44,11 @@ public class Specification {
 	public void setStyle(String style) {
 		this.style = style;
 	}
-	public Composition getCompose() {
-		return compose;
+	public Composition getComposition() {
+		return composition;
 	}
-	public void setCompose(Composition compose) {
-		this.compose = compose;
+	public void setComposition(Composition composition) {
+		this.composition = composition;
 	}
 	public String getWashingInformation() {
 		return washingInformation;
