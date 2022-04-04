@@ -1,12 +1,18 @@
 package com.divatt.productservice.service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -83,6 +89,7 @@ public class ProductService {
 	public GlobalResponce changeStatus(Integer productId) {
 		try
 		{
+			LOGGER.info("Inside - ProductService.changeStatus()");
 			if(productRepo.existsById(productId))
 			{
 				Boolean status;
@@ -115,6 +122,7 @@ public class ProductService {
 	public GlobalResponce updateProduct(Integer productId, ProductMasterEntity productMasterEntity) {
 		try
 		{
+			LOGGER.info("Inside - ProductService.updateProduct()");
 			if(productRepo.existsById(productId))
 			{
 				productRepo.save(customFunction.filterDataEntity(productMasterEntity));
@@ -134,6 +142,7 @@ public class ProductService {
 		// TODO Auto-generated method stub
 		
 		try {
+			LOGGER.info("Inside - ProductService.deleteProduct()");
 			if(productRepo.existsById(productId))
 			{
 				Boolean isDelete = false;
@@ -143,7 +152,10 @@ public class ProductService {
 				{
 					isDelete=true;
 				}
-				
+				else
+				{
+					return new GlobalResponce("Bad Request!!", "Product AllReady deleted", 400);
+				}
 				productEntity.setIsDeleted(isDelete);
 				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 				productEntity.setUpdatedOn(new Date());
@@ -159,6 +171,56 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 		
+	}
+	public Map<String, Object> getProductDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
+			String keyword, Optional<String> sortBy) {
+		try
+		{
+			int CountData = (int) productRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+			
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<ProductMasterEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = productRepo.findByIsDeleted(isDeleted,pagingSort);
+			} else {				
+				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
+
+			}
+			
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Product Not Found!");
+			} else {
+				return response;
+			}
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
 	}
 	
 }
