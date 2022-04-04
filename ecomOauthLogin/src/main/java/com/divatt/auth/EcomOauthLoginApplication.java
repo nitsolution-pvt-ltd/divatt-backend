@@ -14,14 +14,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.divatt.auth.config.YMLConfig;
 import com.divatt.auth.controller.EcomAuthContollerMethod;
 import com.divatt.auth.controller.EcomAuthController;
 import com.divatt.auth.exception.CustomException;
 
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 @SpringBootApplication
 @EnableEurekaClient
+@EnableWebMvc
+@EnableSwagger2
 public class EcomOauthLoginApplication implements CommandLineRunner{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EcomOauthLoginApplication.class);

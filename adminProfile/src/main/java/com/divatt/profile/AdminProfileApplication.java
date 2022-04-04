@@ -6,11 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.divatt.profile.config.YMLConfig;
 
+import io.swagger.annotations.SwaggerDefinition;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 
 @SpringBootApplication
+@EnableWebMvc
+@EnableSwagger2
 public class AdminProfileApplication implements CommandLineRunner{
 
 	
