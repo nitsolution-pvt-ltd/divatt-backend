@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.profile.entity.GlobalResponse;
 import com.divatt.profile.entity.LoginEntity;
 import com.divatt.profile.exception.CustomException;
 import com.divatt.profile.repo.LoginRepository;
@@ -120,7 +121,7 @@ public class ProfileContoller {
 			loginEntity.setCreated_on(date.toString());
 			loginEntity.setModified_on(date.toString());
 			loginRepository.save(loginEntity);
-			return new ResponseEntity<>("Added Successfully", HttpStatus.OK);
+			return new ResponseEntity<>(new GlobalResponse("SUCCESS","Added Successfully",200), HttpStatus.OK);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -150,7 +151,7 @@ public class ProfileContoller {
 			loginEntity.setCreated_on(findById.toString());
 			loginEntity.setModified_on(date.toString());
 			loginRepository.save(loginEntity);
-			return new ResponseEntity<>("Updated Successfully", HttpStatus.OK);
+			return new ResponseEntity<>(new GlobalResponse("SUCCESS","Updated Successfully",200), HttpStatus.OK);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -161,7 +162,7 @@ public class ProfileContoller {
 			if(mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
 				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)), new Update().set("is_deleted", true), LoginEntity.class))
 						.orElseThrow(()-> new RuntimeException("Internal Server Error"));
-				return new ResponseEntity<>("Deleted Successfully", HttpStatus.OK);
+				return new ResponseEntity<>(new GlobalResponse("SUCCESS","Deleted Successfully",200), HttpStatus.OK);
 			}
 			throw new CustomException("Id Not Found");
 			
@@ -176,7 +177,7 @@ public class ProfileContoller {
 			if(mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
 				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)), new Update().set("is_active", false), LoginEntity.class))
 						.orElseThrow(()-> new RuntimeException("Internal Server Error"));
-				return new ResponseEntity<>("Deleted Successfully", HttpStatus.OK);
+				return new ResponseEntity<>(new GlobalResponse("SUCCESS","Status Changed Successfully",200), HttpStatus.OK);
 			}
 			throw new CustomException("Id Not Found");
 			
