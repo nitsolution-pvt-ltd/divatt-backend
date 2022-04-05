@@ -23,10 +23,11 @@ import com.divatt.productservice.entity.ProductMasterEntity;
 import com.divatt.productservice.exception.CustomException;
 import com.divatt.productservice.response.GlobalResponce;
 import com.divatt.productservice.service.ProductService;
+import com.divatt.productservice.service.ProductServiceImp;
 
 @RestController
 @RequestMapping("/product")
-public class ProductController {
+public class ProductController implements ProductServiceImp{
 
 	@Autowired
 	private ProductService productService;
@@ -132,4 +133,16 @@ public class ProductController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+//	@GetMapping("/main")
+//	public String main()
+//	{
+//		try
+//		{
+//			return "hi";
+//		}
+//		catch(Exception e)
+//		{
+//			return e.getMessage();
+//		}
+//	}
 }
