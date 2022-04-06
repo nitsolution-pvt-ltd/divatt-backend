@@ -111,6 +111,7 @@ public class ProfileContoller {
 				if (error.hasErrors()) {
 					throw new CustomException("Check The Fields");
 				}
+				loginRepository.findByRole(loginEntity.getRole().toUpperCase()).ifPresentOrElse((value)->{} , ()->{throw new CustomException("This Role is Already Present");});
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
@@ -141,6 +142,7 @@ public class ProfileContoller {
 			if(!mongoOperations.exists(query(where("uid").is(loginEntity.getUid())), LoginEntity.class)) {
 				throw new CustomException("Id Not Found");
 			}
+			loginRepository.findByRole(loginEntity.getRole()).ifPresentOrElse((value)->{} , ()->{throw new CustomException("This Role is Already Present");});
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);

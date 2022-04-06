@@ -24,10 +24,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.divatt.auth.entity.AdminLoginEntity;
 import com.divatt.auth.entity.DesignerLoginEntity;
+import com.divatt.auth.entity.UserLoginEntity;
 import com.divatt.auth.exception.CustomException;
 import com.divatt.auth.helper.JwtUtil;
 import com.divatt.auth.repo.AdminLoginRepository;
 import com.divatt.auth.repo.DesignerLoginRepo;
+import com.divatt.auth.repo.UserLoginRepo;
 import com.divatt.auth.services.LoginUserDetails;
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -51,6 +53,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	@Autowired
 	private DesignerLoginRepo designerLoginRepo;
+	
+	@Autowired
+	private UserLoginRepo userLoginRepo;
 	
 	UserDetails userDetails;
 	
@@ -81,8 +86,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(username);
 					if(findByEmail.isPresent())
 						this.userDetails = loginUserDetails.loadUserByUsername(username);
-					else
-						throw new CustomException("Token not valid");
+					else {
+						Optional<UserLoginEntity> findByEmail1 = userLoginRepo.findByEmail(username);
+						if(findByEmail1.isPresent()) {
+							this.userDetails = loginUserDetails.loadUserByUsername(username);
+						}else {
+							throw new CustomException("Token not valid");
+						}
+					}
+						
 					
 				}
 				
