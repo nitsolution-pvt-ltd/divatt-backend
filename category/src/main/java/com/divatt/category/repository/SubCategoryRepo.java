@@ -17,11 +17,14 @@ public interface SubCategoryRepo extends MongoRepository<SubCategoryEntity,Integ
 	Optional<SubCategoryEntity> findByCategoryName(String categoryName);
 	
 //	@Query(value = "SELECT instObj FROM SubCategoryEntity instObj")
-	Page<SubCategoryEntity> findByIsDeleted(Boolean isDeleted,Pageable pagingSort);
-//	Page<SubCategoryEntity> findByIsDeletedAndParentIdNot(Boolean isDeleted,String parentId,Pageable pagingSort);
-	
+//	Page<SubCategoryEntity> findByIsDeleted(Boolean isDeleted,Pageable pagingSort);
+	Page<SubCategoryEntity> findByIsDeletedAndParentIdNot(Boolean isDeleted,String parentId,Pageable pagingSort);
+//	
+//	@Query("{'id' : ?0 , 'parentId' : ?1}")
+//	Page<SubCategoryEntity> findEmployeeByNameAndBand(String id, String parentId);
+//	
 	@Query(value = "{ $or: [ { 'categoryName' : {$regex:?0,$options:'i'} }, { 'categoryDescrition' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'categoryImage' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
-    Page<SubCategoryEntity> Search(String sortKey, Boolean isDeleted,Pageable pageable);
+    Page<SubCategoryEntity> SearchAndfindByParentIdNot(String sortKey, Boolean isDeleted, String parentId,Pageable pageable);
 
 	
 

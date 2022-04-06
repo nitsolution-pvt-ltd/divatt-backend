@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
+import springfox.documentation.spring.web.json.Json;
+
 @Document(collection="tbl_categories")
 public class SubCategoryEntity {
 
@@ -35,6 +37,8 @@ public class SubCategoryEntity {
 		private Date createdOn;
 		private String createdBy;
 		
+		private SubCategoryEntity subCategory;
+		
 		
 		public SubCategoryEntity() {
 			super();
@@ -47,7 +51,27 @@ public class SubCategoryEntity {
 			return "SubCategoryEntity [id=" + id + ", categoryName=" + categoryName + ", categoryDescrition="
 					+ categoryDescrition + ", categoryImage=" + categoryImage + ", level=" + level + ", isActive="
 					+ isActive + ", isDeleted=" + isDeleted + ", parentId=" + parentId + ", createdOn=" + createdOn
-					+ ", createdBy=" + createdBy + "]";
+					+ ", createdBy=" + createdBy + ", subCategory=" + subCategory + "]";
+		}
+
+
+		public SubCategoryEntity(Integer id, @NotEmpty(message = "Category Name is Required") String categoryName,
+				@NotEmpty(message = "Category Descrition is Required") String categoryDescrition,
+				@NotEmpty(message = "Category Image is Required") String categoryImage, Integer level, Boolean isActive,
+				Boolean isDeleted, @NotEmpty(message = "Parent Category Name is Required") String parentId,
+				Date createdOn, String createdBy, SubCategoryEntity subCategory) {
+			super();
+			this.id = id;
+			this.categoryName = categoryName;
+			this.categoryDescrition = categoryDescrition;
+			this.categoryImage = categoryImage;
+			this.level = level;
+			this.isActive = isActive;
+			this.isDeleted = isDeleted;
+			this.parentId = parentId;
+			this.createdOn = createdOn;
+			this.createdBy = createdBy;
+			this.subCategory = subCategory;
 		}
 
 
@@ -149,7 +173,22 @@ public class SubCategoryEntity {
 		public void setCreatedBy(String createdBy) {
 			this.createdBy = createdBy;
 		}
+
+
+		public SubCategoryEntity getSubCategory() {
+			return subCategory;
+		}
+
+
+		public void setSubCategory(SubCategoryEntity subCategory) {
+			this.subCategory = subCategory;
+		}
+
+
+		public static String getSequenceName() {
+			return SEQUENCE_NAME;
+		}
 		
 		
-		
+
 }
