@@ -2,16 +2,17 @@ package com.divatt.category.service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
+import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -29,9 +30,6 @@ public class SubCategoryService {
 	@Autowired
 	SubCategoryRepo subCategoryRepo;
 	
-//	@Autowired
-//	private FieldValidation fieldValidation;
-
 	@Autowired
 	SequenceGenerator sequenceGenerator;
 	
@@ -89,13 +87,38 @@ public class SubCategoryService {
 			Page<SubCategoryEntity> findAll = null;
 
 			if (keyword.isEmpty()) {				
-				findAll = subCategoryRepo.findByIsDeleted(isDeleted,pagingSort);
-//				findAll = subCategoryRepo.findByIsDeletedAndParentIdNot(isDeleted,"0",pagingSort);
+//				findAll = subCategoryRepo.findByIsDeleted(isDeleted,pagingSort);
+				findAll = subCategoryRepo.findByIsDeletedAndParentIdNot(isDeleted,"0",pagingSort);
 
 			} else {
-				findAll = subCategoryRepo.Search(keyword, isDeleted, pagingSort);
+				findAll = subCategoryRepo.SearchAndfindByParentIdNot(keyword, isDeleted, "0",pagingSort);
 
 			}
+			
+			/*Soumen*/
+			
+//			return ResponseEntity.ok(subCategoryRepo.findAll().stream()
+//										.filter(e->!e.getParentId().equals("0"))
+//										.map(e->{ e.setParentId(subCategoryRepo.findById(Integer.parseInt(e.getParentId())).get().getCategoryName());return e;}).toList());
+				
+//				List<SubCategoryEntity> lists = findAll.getContent().stream()
+//					.filter(e->!e.getParentId().equals("0"))
+//					.map(e->{
+//						SubCategoryEntity subCategoryEntity = subCategoryRepo.findById(Integer.parseInt(e.getParentId())).get();
+//						subCategoryEntity.setSubCategory(e);
+//						return subCategoryEntity;
+//				}).collect(Collectors.toList());
+//				 Page<SubCategoryEntity> list=new Page<>(page,limit,lists);
+			
+	
+			Page<SubCategoryEntity> map = findAll					
+					.map(e->{
+					SubCategoryEntity subCategoryEntity = subCategoryRepo.findById(Integer.parseInt(e.getParentId())).get();
+					subCategoryEntity.setSubCategory(e);
+					return subCategoryEntity;		
+						});
+					
+			/*End*/
 			
 
 			int totalPage = findAll.getTotalPages() - 1;
@@ -104,15 +127,15 @@ public class SubCategoryService {
 			}
 
 			Map<String, Object> response = new HashMap<>();
-			response.put("data", findAll.getContent());
-			response.put("currentPage", findAll.getNumber());
-			response.put("total", findAll.getTotalElements());
+			response.put("data", map.getContent());
+			response.put("currentPage", map.getNumber());
+			response.put("total", map.getTotalElements());
 			response.put("totalPage", totalPage);
-			response.put("perPage", findAll.getSize());
-			response.put("perPageElement", findAll.getNumberOfElements());
+			response.put("perPage", map.getSize());
+			response.put("perPageElement", map.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Institute Not Found!");
+				throw new CustomException("Subcategory Not Found!");
 			} else {
 				return response;
 			}
@@ -125,6 +148,8 @@ public class SubCategoryService {
 	public Optional<SubCategoryEntity> viewSubCategoryDetails(Integer catId) {
 		try {
 			Optional<SubCategoryEntity> findById = this.subCategoryRepo.findById(catId);
+			
+			
 			if (!(findById.isPresent())) {
 				throw new CustomException("Category Not Found!");
 			} else {
