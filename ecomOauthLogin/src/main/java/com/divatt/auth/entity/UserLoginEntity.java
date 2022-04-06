@@ -1,5 +1,7 @@
 package com.divatt.auth.entity;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,11 +17,17 @@ public class UserLoginEntity {
 	
 	@Id
 	private Long uId;
+	@NotNull
 	@Field("first_name") private String firstName;
+	@NotNull
 	@Field("last_name") private String lastName;
+	@NotNull
 	@Field("email") private String email;
+	@NotNull
 	@Field("password") private String password;
+	@NotNull
 	@Field("mobile_no") private String mobileNo;
+	@NotNull
 	@Field("dob") private String dob;
 	@Field("is_active") private Boolean isActive;
 	@Field("is_deleted") private Boolean isDeleted;

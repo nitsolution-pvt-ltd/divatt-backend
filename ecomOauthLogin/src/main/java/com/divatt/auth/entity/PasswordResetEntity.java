@@ -24,13 +24,15 @@ public class PasswordResetEntity {
 	private String user_type;
 	private Date created_on;
 	private String status;
+	private String email;
 	private String link;
 	public PasswordResetEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 	public PasswordResetEntity(Integer id, Object user_id, String prtoken, String user_type, Date created_on,
-			String status, String link) {
+			String status, String email, String link) {
 		super();
 		this.id = id;
 		this.user_id = user_id;
@@ -38,16 +40,33 @@ public class PasswordResetEntity {
 		this.user_type = user_type;
 		this.created_on = created_on;
 		this.status = status;
+		this.email = email;
 		this.link = link;
 	}
+
+	
 	@Override
 	public String toString() {
 		return "PasswordResetEntity [id=" + id + ", user_id=" + user_id + ", prtoken=" + prtoken + ", user_type="
-				+ user_type + ", created_on=" + created_on + ", status=" + status + ", link=" + link + "]";
+				+ user_type + ", created_on=" + created_on + ", status=" + status + ", email=" + email + ", link="
+				+ link + "]";
 	}
+
 	public Integer getId() {
 		return id;
 	}
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
+	}
+
 	public void setId(Integer id) {
 		this.id = id;
 	}

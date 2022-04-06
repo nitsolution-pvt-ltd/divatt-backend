@@ -38,7 +38,6 @@ public class LoginEntity {
 	public static final String SEQUENCE_NAME = "tbl_admin";
 
 	@Id
-	@NotNull
 	private Long uid;
 	@NotNull(message = "User's first name must not be null")
 	private String first_name;
