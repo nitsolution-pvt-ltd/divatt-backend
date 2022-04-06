@@ -13,9 +13,12 @@ import com.divatt.auth.entity.AdminLoginEntity;
 import com.divatt.auth.entity.DesignerLoginEntity;
 import com.divatt.auth.entity.LoginAdminData;
 import com.divatt.auth.entity.LoginDesignerData;
+import com.divatt.auth.entity.LoginUserData;
+import com.divatt.auth.entity.UserLoginEntity;
 import com.divatt.auth.exception.CustomException;
 import com.divatt.auth.repo.AdminLoginRepository;
 import com.divatt.auth.repo.DesignerLoginRepo;
+import com.divatt.auth.repo.UserLoginRepo;
 
 
 @Service
@@ -27,6 +30,8 @@ public class LoginUserDetails implements UserDetailsService {
 	@Autowired
 	private DesignerLoginRepo designerLoginRepo;
 	
+	@Autowired
+	private UserLoginRepo userLoginRepo;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -39,6 +44,11 @@ public class LoginUserDetails implements UserDetailsService {
 			if (designer.isPresent()) {
 				designer.orElseThrow(() -> new CustomException("Not found "+username));
 				return designer.map(LoginDesignerData :: new).get();
+			}else {
+				Optional<UserLoginEntity> user = userLoginRepo.findByEmail(username);
+				if (user.isPresent()) {
+					user.orElseThrow(() -> new CustomException("Not found "+username));
+					return user.map(LoginUserData :: new).get();
 			}
 			
 				throw new CustomException("Username not found");
@@ -47,4 +57,5 @@ public class LoginUserDetails implements UserDetailsService {
 	
 
 
+}
 }

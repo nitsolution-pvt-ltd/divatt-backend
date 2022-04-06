@@ -38,13 +38,16 @@ import com.divatt.auth.entity.AdminLoginEntity;
 import com.divatt.auth.entity.DesignerLoginEntity;
 import com.divatt.auth.entity.LoginAdminData;
 import com.divatt.auth.entity.LoginDesignerData;
+import com.divatt.auth.entity.LoginUserData;
 import com.divatt.auth.entity.PasswordResetEntity;
 import com.divatt.auth.entity.SendMail;
+import com.divatt.auth.entity.UserLoginEntity;
 import com.divatt.auth.exception.CustomException;
 import com.divatt.auth.helper.JwtUtil;
 import com.divatt.auth.repo.AdminLoginRepository;
 import com.divatt.auth.repo.DesignerLoginRepo;
 import com.divatt.auth.repo.PasswordResetRepo;
+import com.divatt.auth.repo.UserLoginRepo;
 import com.divatt.auth.services.LoginUserDetails;
 import com.divatt.auth.services.MailService;
 import com.divatt.auth.services.SequenceGenerator;
@@ -83,6 +86,9 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	private PasswordResetRepo loginResetRepo;
 	
 	@Autowired
+	private UserLoginRepo userLoginRepo;
+	
+	@Autowired
 	private SequenceGenerator sequenceGenerator;
 
 	Logger LOGGER = LoggerFactory.getLogger(EcomAuthController.class);
@@ -119,14 +125,27 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 				return ResponseEntity.ok(new LoginAdminData(token,findByUserName.get().getId(),findByUserName.get().getEmail() , findByUserName.get().getPassword(), "Login successful", 200,findByUserName.get().getRole()));
 			}else {
 				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo.findByEmail(vendor.getUsername());
-				DesignerLoginEntity designerLoginEntity = findByUserNameDesigner.get();
-				designerLoginEntity.setAuthToken(token);
-				designerLoginRepo.save(designerLoginEntity);
-				LoginDesignerData loginDesignerData = new LoginDesignerData(findByUserNameDesigner.get().getUid(),findByUserNameDesigner.get().getEmail() , findByUserNameDesigner.get().getPassword(), "Login successful",Stream.of("DESIGNER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()) , 200,findByUserNameDesigner.get().getIsApproved(),findByUserNameDesigner.get().getIsProfileCompleated(),findByUserNameDesigner.get().getIsProfileSubmitted(),token);
+				if(findByUserNameDesigner.isPresent()) {
+					DesignerLoginEntity designerLoginEntity = findByUserNameDesigner.get();
+					designerLoginEntity.setAuthToken(token);
+					designerLoginRepo.save(designerLoginEntity);
+					LoginDesignerData loginDesignerData = new LoginDesignerData(findByUserNameDesigner.get().getUid(),findByUserNameDesigner.get().getEmail() , findByUserNameDesigner.get().getPassword(), "Login successful",Stream.of("DESIGNER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()) , 200,findByUserNameDesigner.get().getIsApproved(),findByUserNameDesigner.get().getIsProfileCompleated(),findByUserNameDesigner.get().getIsProfileSubmitted(),token);
+					
+					System.out.println("loginDesignerData   "+loginDesignerData.toString());
+//					Json js = new Json(loginDesignerData.toString());
+					return new ResponseEntity<>(loginDesignerData ,HttpStatus.OK);
+				}else {
+					
+					Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(vendor.getUsername());
+					if(findByEmail.isPresent()) {
+						return ResponseEntity.ok(new LoginUserData(token,findByEmail.get().getuId(),findByEmail.get().getEmail(),findByEmail.get().getPassword(),"Login Successfully",Stream.of("USER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()) , 200));
+					}else {
+						throw new CustomException("Internal Server Error");
+					}
+//											.ifPresentOrElse((value)->{}, ()->{throw new CustomException("Internal Server Error");});
+					
+				}
 				
-				System.out.println("loginDesignerData   "+loginDesignerData.toString());
-//				Json js = new Json(loginDesignerData.toString());
-				return new ResponseEntity<>(loginDesignerData ,HttpStatus.OK);
 			}
 			
 			
@@ -204,10 +223,17 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 
 			}else {
 				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo.findByEmail(email);
-				if(!findByUserNameDesigner.isPresent())
+				Optional<UserLoginEntity> findByUserNameUser = userLoginRepo.findByEmail(email);
+				if(!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent())
 					throw new CustomException("UserName Not Present");
 				PasswordResetEntity loginResetEntity = new PasswordResetEntity();
-				Object id = findByUserNameDesigner.get().getUid();
+				Object id = null;
+				try {
+					 id = findByUserNameDesigner.get().getUid();
+				}catch(Exception e) {
+					 id = findByUserNameUser.get().getuId();
+				}
+				
 				loginResetEntity.setUser_id(id);
 				loginResetEntity.setPrtoken(uuid.toString() + "/" + format);
 				loginResetEntity.setStatus("ACTIVE");
@@ -224,7 +250,12 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 					throw new CustomException("Data Not Save Try Again");
 				}else {
 					//** SEND MAIL IF DETAILS SAVE IN DATABASE **//
-					mailService.sendEmail( findByUserNameDesigner.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameDesigner.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+					try {
+						mailService.sendEmail( findByUserNameDesigner.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameDesigner.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+					}catch(Exception e) {
+						mailService.sendEmail( findByUserNameUser.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameUser.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+					}
+					
 				}
 				
 				return new GlobalResponse("SUCCESS","Mail Send Successfully", 200);
@@ -375,7 +406,6 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
 
 	}
 	 
