@@ -11,6 +11,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -160,7 +163,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	
 	@PostMapping("/sendMail")
 	public ResponseEntity<String> sendMail(@RequestBody() SendMail senderMailId) {
-		LOGGER.info("Inside - LoginContoller.sendMail()");
+		LOGGER.info("Inside - EcomAuthController.sendMail()");
 		
 		try {
 			mailService.sendEmail(senderMailId.getSenderMailId(), senderMailId.getSubject(),senderMailId.getBody(),senderMailId.isEnableHtml());
@@ -178,7 +181,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	@Description("Using This API You Can Send The Recovery Link to Email, and Using That Link User Can Recover The Password")
 	public GlobalResponse mailForgotPasswordLink(@PathVariable("email") String email) {
 
-		LOGGER.info("Inside - LoginContoller.mailForgotPasswordLink()");
+		LOGGER.info("Inside - EcomAuthController.mailForgotPasswordLink()");
 
 		try {
 
@@ -196,49 +199,34 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 			
 			//** CHECKING THE EMAIL IS PREASENT IN DATABASE **//
 			Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(email);
-			
-			if (findByUserName.isPresent()) {
-				PasswordResetEntity loginResetEntity = new PasswordResetEntity();
-				Object id = findByUserName.get().getId();
-				loginResetEntity.setUser_id(id);
-				loginResetEntity.setPrtoken(uuid.toString() + "/" + format);
-				loginResetEntity.setStatus("ACTIVE");
-				loginResetEntity.setId(sequenceGenerator.getNextSequence(PasswordResetEntity.SEQUENCE_NAME));
-				loginResetEntity.setUser_type(findByUserName.get().getRole());
-				Date dateObjForLinkCreateTime = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss")
-						.parse(format);
-				
-				loginResetEntity.setCreated_on(dateObjForLinkCreateTime);
-				//** SAVE THE DETAILS IN DATABASE **//
-				PasswordResetEntity save = loginResetRepo.save(loginResetEntity);
-				
-				if (save.equals(null)) {
-					throw new CustomException("Data Not Save Try Again");
-				}else {
-					//** SEND MAIL IF DETAILS SAVE IN DATABASE **//
-					mailService.sendEmail( findByUserName.get().getEmail(),"Forgot Password Link","Hi " + findByUserName.get().getFirst_name() + " "+ findByUserName.get().getLast_name() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
-				}
-				
-				return new GlobalResponse("SUCCESS","Mail Send Successfully", 200);
-
-			}else {
-				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo.findByEmail(email);
-				Optional<UserLoginEntity> findByUserNameUser = userLoginRepo.findByEmail(email);
-				if(!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent())
-					throw new CustomException("UserName Not Present");
+			Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo.findByEmail(email);
+			Optional<UserLoginEntity> findByUserNameUser = userLoginRepo.findByEmail(email);
+			if(!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent() && !findByUserName.isPresent())
+				throw new CustomException("UserName Not Present");
+//			if (findByUserName.isPresent()) {
 				PasswordResetEntity loginResetEntity = new PasswordResetEntity();
 				Object id = null;
 				try {
-					 id = findByUserNameDesigner.get().getUid();
+					 id = findByUserName.get().getId();	
+					 loginResetEntity.setUser_type(findByUserName.get().getRole());
+					 
 				}catch(Exception e) {
-					 id = findByUserNameUser.get().getuId();
+					try {
+						id = findByUserNameDesigner.get().getUid();
+						loginResetEntity.setUser_type("DESIGNER");
+					}catch(Exception j) {
+						id = findByUserNameUser.get().getuId();
+						loginResetEntity.setUser_type("USER");
+					}
+					 
 				}
-				
+				 
 				loginResetEntity.setUser_id(id);
 				loginResetEntity.setPrtoken(uuid.toString() + "/" + format);
 				loginResetEntity.setStatus("ACTIVE");
 				loginResetEntity.setId(sequenceGenerator.getNextSequence(PasswordResetEntity.SEQUENCE_NAME));
-				loginResetEntity.setUser_type("DESIGNER");
+				
+				loginResetEntity.setEmail(email);
 				Date dateObjForLinkCreateTime = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss")
 						.parse(format);
 				
@@ -251,15 +239,20 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 				}else {
 					//** SEND MAIL IF DETAILS SAVE IN DATABASE **//
 					try {
-						mailService.sendEmail( findByUserNameDesigner.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameDesigner.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+						mailService.sendEmail( findByUserName.get().getEmail(),"Forgot Password Link","Hi " + findByUserName.get().getFirst_name() + " "+ findByUserName.get().getLast_name() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+						
 					}catch(Exception e) {
-						mailService.sendEmail( findByUserNameUser.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameUser.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+						try {
+							mailService.sendEmail( findByUserNameDesigner.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameDesigner.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+						}catch(Exception Z) {
+							mailService.sendEmail( findByUserNameUser.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameUser.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+						}
+						
 					}
 					
 				}
 				
 				return new GlobalResponse("SUCCESS","Mail Send Successfully", 200);
-			}
 			
 
 		} catch (Exception e) {
@@ -273,7 +266,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	@Description("After Got The Link in Mail, Using That link User Can Create New Password")
 	public GlobalResponse resetPassword(@PathVariable("link") String link, @PathVariable("linkTime") String linkTime, @RequestBody GlobalEntity globalEntity) {
 		
-		LOGGER.info("Inside - LoginContoller.resetPassword()");
+		LOGGER.info("Inside - EcomAuthController.resetPassword()");
 		try {
 			
 			//** CHECK THE LINK IS PRESENT IN DB **//
@@ -305,7 +298,8 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 					PasswordResetEntity loginResetEntity = findByPrToken.get();
 					System.out.println("loginResetEntity.getUser_id() "+loginResetEntity.getUser_id());
 					Optional<AdminLoginEntity> findById = loginRepository.findById((loginResetEntity.getUser_id()));
-					if (findById.isPresent()) {
+					Optional<AdminLoginEntity> findByEmail = loginRepository.findByEmail((loginResetEntity.getEmail()));
+					if (findByEmail.isPresent() && findByEmail.get().getId().equals(findById.get().getId())) {
 				//** CREATE NEW PASSWORD AND SAVE **//
 						AdminLoginEntity loginEntity = findById.get();
 						loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
@@ -320,18 +314,37 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 					}else {
 						
 						Optional<DesignerLoginEntity> findByIdDesigner = designerLoginRepo.findById((loginResetEntity.getUser_id()));
-						if(!findByIdDesigner.isPresent())
-							throw new CustomException("UserName is Not Present");
-						DesignerLoginEntity loginEntity = findByIdDesigner.get();
-						loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
-						DesignerLoginEntity save = designerLoginRepo.save(loginEntity);
-						if(save.equals(null)) {
-							throw new CustomException("Data Not Save Try Again");
+						Optional<DesignerLoginEntity> findByEmailDesigner = designerLoginRepo.findByEmail((loginResetEntity.getEmail()));
+						if(findByEmailDesigner.isPresent() && findByEmailDesigner.get().getUid().equals(findByIdDesigner.get().getUid())) {
+							DesignerLoginEntity loginEntity = findByIdDesigner.get();
+							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
+							DesignerLoginEntity save = designerLoginRepo.save(loginEntity);
+							if(save.equals(null)) {
+								throw new CustomException("Data Not Save Try Again");
+							}else {
+								loginResetEntity.setStatus("DEACTIVE");
+								loginResetRepo.save(loginResetEntity);
+								return new GlobalResponse("SUCCESS", "Password Generate Successfully", 200);
+							}
 						}else {
-							loginResetEntity.setStatus("DEACTIVE");
-							loginResetRepo.save(loginResetEntity);
-							return new GlobalResponse("SUCCESS", "Password Generate Successfully", 200);
+							Optional<UserLoginEntity> findByUserId = userLoginRepo.findById((long)loginResetEntity.getUser_id());
+							Optional<UserLoginEntity> findByUserEmail = userLoginRepo.findByEmail(loginResetEntity.getEmail());
+							if(!findByUserEmail.isPresent()) 
+								throw new CustomException("UserName is Not Present");
+							UserLoginEntity loginEntity = findByUserId.get();
+							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
+							UserLoginEntity save = userLoginRepo.save(loginEntity);
+							if(save.equals(null)) {
+								throw new CustomException("Data Not Save Try Again");
+							}else {
+								loginResetEntity.setStatus("DEACTIVE");
+								loginResetRepo.save(loginResetEntity);
+								return new GlobalResponse("SUCCESS", "Password Generate Successfully", 200);
+							}
 						}
+							
+						
+						
 					}
 					
 				}else {
@@ -352,54 +365,46 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	public GlobalResponse changePassword(@RequestBody GlobalEntity globalEntity,
 			@RequestHeader(name = "Authorization") String token) {
 		
-		LOGGER.info("Inside - LoginContoller.changePassword()");
+		LOGGER.info("Inside - EcomAuthController.changePassword()");
 		try {
 			if (!token.equals(null)) {
 				Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(globalEntity.getUserName());
-				if (findByUserName.isPresent()) {
-					if (globalEntity.getUserName().equals(jwtUtil.extractUsername(token.substring(7)))) {
-						if(passwordEncoder.matches(globalEntity.getOldPass(), findByUserName.get().getPassword())) {
-							
+				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo.findByEmail(globalEntity.getUserName());
+				Optional<UserLoginEntity> findByUserEmail = userLoginRepo.findByEmail(globalEntity.getUserName());
+				if (!findByUserName.isPresent() && !findByUserNameDesigner.isPresent() && !findByUserEmail.isPresent()) 
+					throw new CustomException("UserName Not Found");
+				if (globalEntity.getUserName().equals(jwtUtil.extractUsername(token.substring(7)))) {
+					try {
+						if(passwordEncoder.matches(globalEntity.getOldPass(), findByUserName.get().getPassword()) ) {
 							AdminLoginEntity loginEntity = findByUserName.get();
 							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
 							AdminLoginEntity save = loginRepository.save(loginEntity);
-							if(save.equals(null)) {
-								throw new CustomException("Data Not Save Try Again");
-							}else {
-								return new GlobalResponse("SUCCESS", "Password changed", 200);
+						}
+					}catch(Exception e) {
+						try {
+							if(passwordEncoder.matches(globalEntity.getOldPass(), findByUserNameDesigner.get().getPassword()) ) {
+								DesignerLoginEntity loginEntity = findByUserNameDesigner.get();
+								loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
+								DesignerLoginEntity save = designerLoginRepo.save(loginEntity);
 							}
 							
-						}else {
-							throw new CustomException("Password not match");
+						}catch(Exception Z) {
+								if(!passwordEncoder.matches(globalEntity.getOldPass(), findByUserEmail.get().getPassword()) ) 
+									throw new CustomException("Password not match");
+								UserLoginEntity loginEntity = findByUserEmail.get();
+								loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
+								UserLoginEntity save = userLoginRepo.save(loginEntity);
+								
+							
 						}
+						
+					}							
+							return new GlobalResponse("SUCCESS", "Password changed", 200);								
+						
 						
 					} else {
 						throw new CustomException("UserName Not Matched");
 					}
-				} else {
-					Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo.findByEmail(globalEntity.getUserName());
-					if(!findByUserNameDesigner.isPresent())
-						throw new CustomException("User not found");
-					if (globalEntity.getUserName().equals(jwtUtil.extractUsername(token.substring(7)))) {
-						if(passwordEncoder.matches(globalEntity.getOldPass(), findByUserNameDesigner.get().getPassword())) {
-							
-							DesignerLoginEntity loginEntity = findByUserNameDesigner.get();
-							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
-							DesignerLoginEntity save = designerLoginRepo.save(loginEntity);
-							if(save.equals(null)) {
-								throw new CustomException("Data Not Save Try Again");
-							}else {
-								return new GlobalResponse("SUCCESS", "Password changed", 200);
-							}
-							
-						}else {
-							throw new CustomException("Password not match");
-						}
-						
-					} else {
-						throw new CustomException("UserName Not Matched");
-					}
-				}
 			} else {
 				throw new CustomException("Token not valid");
 			}
@@ -410,7 +415,31 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	}
 	 
 	
-	
+	@PostMapping("/user/add")
+	public ResponseEntity<?> addUser(@Valid @RequestBody UserLoginEntity userLoginEntity,Errors error){
+		LOGGER.info("Inside - EcomAuthController.addUser()");
+		try {		
+			if (error.hasErrors()) {
+				throw new CustomException("Check The Fields");
+			}
+			userLoginRepo.findByEmail(userLoginEntity.getEmail()).ifPresentOrElse((data)->new CustomException("Email id is already Present"), null);
+			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+			Date date = new Date();
+			formatter.format(date);
+			userLoginEntity.setUsername(userLoginEntity.getEmail());
+			userLoginEntity.setIsActive(true);
+			userLoginEntity.setIsDeleted(false);
+			userLoginEntity.setCreatedOn(date.toString());
+			userLoginEntity.setProfilePic("Pic.jpg");
+			userLoginEntity.setRegisterType("Self");
+			userLoginRepo.save(userLoginEntity);
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS","Added Successfully",200));
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
+		
+	}
 	
 	
 	@GetMapping("/admin/testapi")

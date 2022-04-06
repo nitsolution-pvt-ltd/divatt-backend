@@ -46,8 +46,8 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 		
 		if(! (ecomAuthController instanceof EcomAuthContollerMethod))
 			System.exit(0);
-		if(!EcomAuthContollerMethod.check())
-			System.exit(0);
+//		if(!EcomAuthContollerMethod.check())
+//			System.exit(0);
 		
 		LOGGER.info("-------------------------------------");
 		LOGGER.info("name : "+myConfig.getName());

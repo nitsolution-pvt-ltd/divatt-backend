@@ -12,6 +12,8 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +43,7 @@ import com.divatt.profile.entity.LoginEntity;
 import com.divatt.profile.exception.CustomException;
 import com.divatt.profile.repo.LoginRepository;
 import com.divatt.profile.services.SequenceGenerator;
+import com.fasterxml.jackson.annotation.JacksonInject.Value;
 
 @RestController
 @RequestMapping("/admin/profile")
@@ -56,6 +59,8 @@ public class ProfileContoller {
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
 	
+	Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
+	
 	
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getAll(			
@@ -66,7 +71,7 @@ public class ProfileContoller {
 			@RequestParam(defaultValue = "false") Boolean isDeleted, 			
 			@RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		
+		LOGGER.info("Inside - ProfileContoller.getAll()");
 
 		try {		
 			return this.getAdminProfDetails(page, limit, sort, sortName, isDeleted, keyword,
@@ -79,6 +84,8 @@ public class ProfileContoller {
 
 	@GetMapping("/all")
 	public List<LoginEntity> getAllProf() {
+		LOGGER.info("Inside - ProfileContoller.getAllProf()");
+
 		try {
 			  List<LoginEntity> orElseThrow = Optional.of(mongoOperations.find(query(where("is_deleted").is(false)), LoginEntity.class))
 					  .orElseThrow(()->new CustomException("Internal Server Error"));
@@ -93,6 +100,7 @@ public class ProfileContoller {
 	
 	@GetMapping("/{id}")
 	public List<LoginEntity> getProfById(@PathVariable("id") Long id) {
+		LOGGER.info("Inside - ProfileContoller.getProfById()");
 		try {
 			List<LoginEntity> orElseThrow = Optional.of(mongoOperations.find(query(where("_id").is(id).andOperator(where("is_deleted").is(false))), LoginEntity.class))
 					.orElseThrow(()-> new RuntimeException("Internal Server Error"));
@@ -106,17 +114,17 @@ public class ProfileContoller {
 	}
 	@PostMapping("/add")
 	public ResponseEntity<?> addProfile(@Valid @RequestBody LoginEntity loginEntity,Errors error){
-		
+		LOGGER.info("Inside - ProfileContoller.addProfile()");
 		try {		
 				if (error.hasErrors()) {
 					throw new CustomException("Check The Fields");
 				}
-				loginRepository.findByRole(loginEntity.getRole().toUpperCase()).ifPresentOrElse((value)->{} , ()->{throw new CustomException("This Role is Already Present");});
+			loginRepository.findByEmail(loginEntity.getEmail()).ifPresentOrElse((value)->{throw new CustomException("This Email is Already Present");} , ()->{});
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
 			loginEntity.setUid((long)sequenceGenerator.getNextSequence(LoginEntity.SEQUENCE_NAME));
-			loginEntity.setRole(loginEntity.getRole());
+			loginEntity.setRole(loginEntity.getRole().toUpperCase());
 			loginEntity.setIs_active(true);
 			loginEntity.setDeleted(false);
 			loginEntity.setCreated_on(date.toString());
@@ -132,17 +140,20 @@ public class ProfileContoller {
 	}
 	@PutMapping("/update")
 	public ResponseEntity<?> updateProfile(@Valid @RequestBody LoginEntity loginEntity,Errors error){
-		
+		LOGGER.info("Inside - ProfileContoller.updateProfile()");
 		try {		
 			
 			if (error.hasErrors()) {
 				throw new CustomException("Check The Fields");
 			}
-			
+			if(loginEntity.getUid()==null ||  loginEntity.getUid().equals(""))
+				throw new CustomException("Id is Null");
+			if(!loginRepository.findByEmail(loginEntity.getEmail()).stream().anyMatch(e->e.getUid()==loginEntity.getUid()))
+				throw new CustomException("This Email is Already Present");
 			if(!mongoOperations.exists(query(where("uid").is(loginEntity.getUid())), LoginEntity.class)) {
 				throw new CustomException("Id Not Found");
 			}
-			loginRepository.findByRole(loginEntity.getRole()).ifPresentOrElse((value)->{} , ()->{throw new CustomException("This Role is Already Present");});
+//			loginRepository.findByRole(loginEntity.getRole()).ifPresentOrElse((value)->{throw new CustomException("This Role is Already Present");} , ()->{});
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
@@ -160,6 +171,7 @@ public class ProfileContoller {
 	}
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteProfById(@PathVariable("id") Long id) {
+		LOGGER.info("Inside - ProfileContoller.deleteProfById()");
 		try {
 			if(mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
 				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)), new Update().set("is_deleted", true), LoginEntity.class))
@@ -175,6 +187,7 @@ public class ProfileContoller {
 	}
 	@PutMapping("/{id}")
 	public ResponseEntity<?> changeStatusById(@PathVariable("id") Long id) {
+		LOGGER.info("Inside - ProfileContoller.changeStatusById()");
 		try {
 			if(mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
 				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)), new Update().set("is_active", false), LoginEntity.class))
