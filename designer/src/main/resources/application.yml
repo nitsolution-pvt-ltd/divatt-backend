@@ -23,7 +23,7 @@ spring:
       username: dbuser 
  
 server: 
-  port: 8080
+  port: 8083
   servlet: 
     contextPath: /default
 name: default-yml
@@ -73,7 +73,7 @@ spring:
       username: dbuser 
  
 server: 
-  port: 8080
+  port: 8083
   servlet: 
     contextPath: /dev
 name: dev-yml
@@ -124,7 +124,7 @@ spring:
       username: dbuser 
  
 server: 
-  port: 8080
+  port: 8083
   servlet: 
     contextPath: /prod
 name: prod-yml
