@@ -81,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.disable()
 				.cors().and()
 				.authorizeRequests()
-				.antMatchers("/**").hasIpAddress("192.168.29.23")
+				.antMatchers("/**").hasIpAddress("192.168.0.109")
 				.antMatchers(HttpMethod.POST,"/auth/login").permitAll()
 				.antMatchers(HttpMethod.GET,"/auth/mailForgotPasswordLink/{email}").permitAll()
 				.antMatchers(HttpMethod.GET,"/swagger-ui/index.html").permitAll()
