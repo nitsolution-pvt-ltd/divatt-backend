@@ -1,7 +1,7 @@
 spring:
   profiles: default
   application: 
-     name: Admin 
+     name: Designer 
 #  jpa:
 #    show-sql: true
 #    generate-ddl: true
@@ -51,7 +51,7 @@ jwt.token.validity: 1296000000
 spring:
   profiles: dev
   application: 
-     name: Admin 
+     name: Designer 
 #  jpa:
 #    show-sql: true
 #    generate-ddl: true
@@ -102,7 +102,7 @@ jwt.token.validity: 1296000000
 spring:
   profiles: prod
   application: 
-     name: Admin 
+     name: Designer 
 #  jpa:
 #    show-sql: true
 #    generate-ddl: true
