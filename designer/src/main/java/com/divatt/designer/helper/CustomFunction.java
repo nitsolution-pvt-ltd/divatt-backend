@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.divatt.designer.productEntity.ProductMasterEntity;
+import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.exception.*;
 import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.services.SequenceGenerator;

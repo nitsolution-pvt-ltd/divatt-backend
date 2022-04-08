@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
-import com.divatt.designer.productEntity.ProductMasterEntity;
+import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
 import com.divatt.designer.repo.ProductRepository;

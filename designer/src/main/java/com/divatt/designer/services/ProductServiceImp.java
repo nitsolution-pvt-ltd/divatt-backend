@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.divatt.designer.response.GlobalResponce;
-import com.divatt.designer.productEntity.ProductMasterEntity;
+import com.divatt.designer.entity.product.ProductMasterEntity;
 
 public interface ProductServiceImp {
 
