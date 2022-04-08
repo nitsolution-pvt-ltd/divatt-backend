@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.category.response.GlobalResponse;
-import com.divatt.user.entity.WishlistEntity;
+import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
-import com.divatt.user.repository.WishlistRepo;
+import com.divatt.user.repository.wishlist.WishlistRepo;
 import com.divatt.user.services.WishlistService;
 
 

@@ -1,4 +1,4 @@
-package com.divatt.user.entity;
+package com.divatt.user.entity.wishlist;
 
 import java.util.Date;
 
