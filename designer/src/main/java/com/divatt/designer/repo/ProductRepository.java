@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.divatt.designer.productEntity.ProductMasterEntity;
+import com.divatt.designer.entity.product.ProductMasterEntity;
 @Repository
 public interface ProductRepository extends MongoRepository<ProductMasterEntity, Integer>{
 

@@ -1,11 +1,11 @@
-package com.divatt.designer.productEntity;
+package com.divatt.designer.entity.product;
 
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
-public class US {
+public class IN {
 
 	private Long mrp;
 	private Long dealPrice;
@@ -15,11 +15,12 @@ public class US {
 	private Date dealStart;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date dealEnd;
-	public US() {
+	public IN() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public US(Long mrp, Long dealPrice, String discountType, Integer discountValue, Date dealStart, Date dealEnd) {
+	public IN(Long mrp, Long dealPrice, String discountType, Integer discountValue, Date dealStart,
+			Date dealEnd) {
 		super();
 		this.mrp = mrp;
 		this.dealPrice = dealPrice;
@@ -30,7 +31,7 @@ public class US {
 	}
 	@Override
 	public String toString() {
-		return "USPrice [mrp=" + mrp + ", dealPrice=" + dealPrice + ", discountType=" + discountType
+		return "IndPrice [mrp=" + mrp + ", dealPrice=" + dealPrice + ", discountType=" + discountType
 				+ ", discountValue=" + discountValue + ", dealStart=" + dealStart + ", dealEnd=" + dealEnd
 				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
 				+ "]";
