@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -133,16 +134,19 @@ public class ProductController implements ProductServiceImp{
 			throw new CustomException(e.getMessage());
 		}
 	}
-//	@GetMapping("/main")
-//	public String main()
-//	{
-//		try
-//		{
-//			return "hi";
-//		}
-//		catch(Exception e)
-//		{
-//			return e.getMessage();
-//		}
-//	}
+	@PostMapping("/getProductList")
+	public  Map<String, Object> productList(@RequestBody List<Integer> productIdList
+											,@RequestParam Optional<String> sortBy)
+	{
+		//Optional<String> sortBy=null;
+		try
+		{
+			
+			return productService.allProductData(productIdList,sortBy);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
