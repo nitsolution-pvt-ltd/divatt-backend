@@ -1,4 +1,4 @@
-package com.divatt.admin.entity;
+package com.divatt.admin.entity.category;
 
 import java.util.Date;
 

@@ -15,8 +15,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.divatt.admin.entity.CategoryEntity;
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.CategoryRepo;
 
