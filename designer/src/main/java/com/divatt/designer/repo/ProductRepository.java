@@ -18,12 +18,12 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	Optional<ProductMasterEntity>findById(Integer productId);
 	
 	@Query(value = "{ $or: [ { 'productId' : {$regex:?0,$options:'i'} } ] }")
-	Optional<ProductMasterEntity>findProductData(Integer productId);
+	List<ProductMasterEntity>findProductData(Integer productId);
 	
 	Page<ProductMasterEntity> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
 
-	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1 }]}")
-	Page<ProductMasterEntity> Search(String keyword, Boolean isDeleted, Pageable pagingSort);
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1 }]}")
+	Page<ProductMasterEntity> Search(String sortkey, Boolean isDeleted, Pageable pagingSort);
 	
 
 }

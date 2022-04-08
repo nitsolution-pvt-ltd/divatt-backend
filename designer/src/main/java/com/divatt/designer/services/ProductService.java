@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -237,8 +239,9 @@ public class ProductService {
 			{
 				int page=0;
 				//int i=0;
-				List<Optional<ProductMasterEntity>> list = productIdList.stream().map(e-> productRepo.findById(e)).toList();
+ List<ProductMasterEntity> list = productIdList.stream().map(e-> productRepo.findById(e).get()).collect(Collectors.toList());
 				//return list;
+				 //System.out.println(list);
 				int CountData = (int) list.size();
 				int limit=CountData;
 				Pageable pagingSort = null;
@@ -253,9 +256,8 @@ public class ProductService {
 					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 				}
 				
-				Page<ProductMasterEntity> findAll = null;
+				Page<ProductMasterEntity> findAll = new PageImpl<ProductMasterEntity>(list, pagingSort, limit);
 				Boolean isDeleted=false;
-					findAll = productRepo.findByIsDeleted(isDeleted,pagingSort);
 				int totalPage = findAll.getTotalPages() - 1;
 				if (totalPage < 0) {
 					totalPage = 0;
