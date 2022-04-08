@@ -11,9 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.divatt.category.response.GlobalResponse;
-import com.divatt.user.entity.WishlistEntity;
+import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
-import com.divatt.user.repository.WishlistRepo;
+import com.divatt.user.repository.wishlist.WishlistRepo;
+
 
 @Service
 public class WishlistService {
