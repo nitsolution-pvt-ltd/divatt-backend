@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.divatt</groupId>
-	<artifactId>designer</artifactId>
+	<artifactId>designer-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>designer-service</name>
 	<description>Designer project of Daivatt.</description>
