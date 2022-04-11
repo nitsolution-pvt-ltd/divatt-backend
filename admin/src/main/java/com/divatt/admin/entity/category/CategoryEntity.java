@@ -22,8 +22,8 @@ public class CategoryEntity {
 	
 	@NotEmpty(message = "Category Name is Required")
 	private String categoryName;
-	@NotEmpty(message = "Category Descrition is Required")
-	private String categoryDescrition;
+	@NotEmpty(message = "Category Description is Required")
+	private String categoryDescription;
 	@NotEmpty(message = "Category Image is Required")
 	private String categoryImage;
 	private Integer level;
@@ -44,7 +44,7 @@ public class CategoryEntity {
 	@Override
 	public String toString() {
 		return "CategoryEntity [id=" + id + ", categoryName=" + categoryName + ", categoryDescrition="
-				+ categoryDescrition + ", categoryImage=" + categoryImage + ", level=" + level + ", isActive="
+				+ categoryDescription + ", categoryImage=" + categoryImage + ", level=" + level + ", isActive="
 				+ isActive + ", isDeleted=" + isDeleted + ", parentId=" + parentId + ", createdOn=" + createdOn
 				+ ", createdBy=" + createdBy + "]";
 	}
@@ -70,12 +70,12 @@ public class CategoryEntity {
 		this.categoryName = categoryName;
 	}
 
-	public String getCategoryDescrition() {
-		return categoryDescrition;
+	public String getCategoryDescription() {
+		return categoryDescription;
 	}
 
-	public void setCategoryDescrition(String categoryDescrition) {
-		this.categoryDescrition = categoryDescrition;
+	public void setCategoryDescription(String categoryDescrition) {
+		this.categoryDescription = categoryDescrition;
 	}
 
 	public String getCategoryImage() {
