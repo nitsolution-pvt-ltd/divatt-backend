@@ -1,15 +1,19 @@
 package com.divatt.designer.services;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -217,6 +221,62 @@ public class ProductService {
 				throw new CustomException("Product Not Found!");
 			} else {
 				return response;
+			}
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	public Map<String, Object> allProductData(List<Integer> productIdList,Optional<String> sortBy) {
+		try
+		{
+			if(productIdList.isEmpty())
+			{
+				return  (Map<String, Object>) new GlobalResponce("Error!!", "Bad Request", 400);
+			}
+			else
+			{
+				int page=0;
+				//int i=0;
+ List<ProductMasterEntity> list = productIdList.stream().map(e-> productRepo.findById(e).get()).collect(Collectors.toList());
+				//return list;
+				 //System.out.println(list);
+				int CountData = (int) list.size();
+				int limit=CountData;
+				Pageable pagingSort = null;
+				if (limit == 0) {
+					limit = CountData;
+				}
+				String sort="ASC";
+				String sortName="productId";
+				if (sort.equals("ASC")) {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+				} else {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+				}
+				
+				Page<ProductMasterEntity> findAll = new PageImpl<ProductMasterEntity>(list, pagingSort, limit);
+				Boolean isDeleted=false;
+				int totalPage = findAll.getTotalPages() - 1;
+				if (totalPage < 0) {
+					totalPage = 0;
+				}
+
+				Map<String, Object> response = new HashMap<>();
+				response.put("data", findAll.getContent());
+				response.put("currentPage", findAll.getNumber());
+				response.put("total", findAll.getTotalElements());
+				response.put("totalPage", totalPage);
+				response.put("perPage", findAll.getSize());
+				response.put("perPageElement", findAll.getNumberOfElements());
+
+				if (findAll.getSize() <= 1) {
+					throw new CustomException("Product Not Found!");
+				} else {
+					return  response;
+				}
+				
 			}
 		}
 		catch(Exception e)

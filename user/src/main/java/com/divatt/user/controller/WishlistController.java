@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.category.response.GlobalResponse;
+
+import com.divatt.user.entity.UserDesignerEntity;
+import com.divatt.user.exception.CustomException;
+import com.divatt.user.repository.UserDesignerRepo;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repository.wishlist.WishlistRepo;
@@ -28,18 +32,21 @@ import com.mashape.unirest.request.body.Body;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/wishlist")
+@RequestMapping("/user")
 public class WishlistController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WishlistController.class);
 
 	@Autowired
-	WishlistRepo wishlistRepo;
+	private WishlistRepo wishlistRepo;
 
 	@Autowired
-	WishlistService wishlistService;
+	private WishlistService wishlistService;
 
-	@PostMapping("/add")
+	@Autowired
+	private UserDesignerRepo userDesignerRepo;
+
+	@PostMapping("/wishlist/add")
 	public GlobalResponse postWishlistDetails(@Valid @RequestBody WishlistEntity wishlistEntity) {
 		LOGGER.info("Inside - WishlistController.postWishlistDetails()");
 
@@ -51,17 +58,17 @@ public class WishlistController {
 
 	}
 
-	@DeleteMapping("/delete")
-	public GlobalResponse deleteWishlistDetails(@RequestBody WishlistEntity wishlistEntity) {
-		LOGGER.info("Inside - WishlistController.deleteWishlistDetails()");
-
-		try {
-			return this.wishlistService.deleteWishlistService(wishlistEntity);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-
-	}
+//	@DeleteMapping("/delete")
+//	public GlobalResponse deleteWishlistDetails(@RequestBody WishlistEntity wishlistEntity) {
+//		LOGGER.info("Inside - WishlistController.deleteWishlistDetails()");
+//
+//		try {
+//			return this.wishlistService.deleteWishlistService(wishlistEntity);
+//		} catch (Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//
+//	}
 
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getWishlistDetails(@RequestParam(defaultValue = "0") int page,
@@ -78,8 +85,19 @@ public class WishlistController {
 		}
 
 	}
-	
-	
+
+	@DeleteMapping("/wishlist/delete")
+	public GlobalResponse deleteWishlistDetails(@RequestBody WishlistEntity wishlistEntity) {
+		LOGGER.info("Inside - WishlistController.deleteWishlistDetails()");
+
+		try {
+			return this.wishlistService.deleteWishlistService(wishlistEntity.getProductId());
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
 	@RequestMapping(value = { "/list-rest" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getWishlistRestDetails(@RequestParam(defaultValue = "") Integer userId) {
 		LOGGER.info("Inside - WishlistController.getWishlistRestDetails()");
@@ -91,7 +109,19 @@ public class WishlistController {
 		}
 
 	}
-	
-	
+
+	@PostMapping("/follow")
+	public ResponseEntity<?> followDesigner(@Valid @RequestBody UserDesignerEntity userDesignerEntity) {
+		try {
+			Optional.of(userDesignerRepo.save(userDesignerEntity)).ifPresentOrElse((value) -> {
+			}, () -> {
+				throw new CustomException("This Role is Already Present");
+			});
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		return null;
+
+	}
 
 }

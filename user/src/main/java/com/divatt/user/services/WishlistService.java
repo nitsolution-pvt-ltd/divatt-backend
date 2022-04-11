@@ -66,13 +66,13 @@ public class WishlistService {
 
 	}
 
-	public GlobalResponse deleteWishlistService(@Valid WishlistEntity wishlistEntity) {
+	public GlobalResponse deleteWishlistService(Integer productId) {
 		try {
-			Optional<WishlistEntity> findByProductRow = wishlistRepo.findById(wishlistEntity.getId());
+			Optional<WishlistEntity> findByProductRow = wishlistRepo.findById(productId);
 			if (!findByProductRow.isPresent()) {
 				return new GlobalResponse("ERROR", "Product Not Exists!", 200);
 			} else {
-				wishlistRepo.deleteById(wishlistEntity.getId());
+				wishlistRepo.deleteById(productId);
 				return new GlobalResponse("SUCCESS", "Wishlist Reomved Succesfully", 200);
 			}
 
@@ -132,17 +132,17 @@ public class WishlistService {
 	public ResponseEntity<?> getWishlistRestDetails(Integer userId) throws UnirestException {
 
 		try {
-			
+
 			List<WishlistEntity> findByUserId = wishlistRepo.findByUserId(userId);
 			List<Integer> productIds = new ArrayList<>();
 //			LOGGER.info("Inside - WishlistController.getWishlistRestDetaildds()"+findByUserId);
-	
-			findByUserId.forEach((e)->{
+
+			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
 //			
 //			productIds.forEach((e)->{System.out.println("E   "+ e);});
-			LOGGER.info("Inside - WishlistController.getWishlistRestDetaildds()"+productIds);
+			LOGGER.info("Inside - WishlistController.getWishlistRestDetaildds()" + productIds);
 
 			HttpHeaders headers = new HttpHeaders();
 //			headers.set("Authorization", token);
@@ -153,15 +153,14 @@ public class WishlistService {
 //			HttpResponse<JsonNode> asJson = null;
 			Unirest.setTimeouts(0, 0);
 			RequestBodyEntity body = Unirest.post("http://192.168.29.42:8083/dev/product/getProductList")
-				  .header("Content-Type", "application/json")
-				  .body(productIds.toString());
+					.header("Content-Type", "application/json").body(productIds.toString());
 			return ResponseEntity.ok(body.getBody());
 //			 LOGGER.info("Inside - WishlistController.getWishlistRestDetaildds(jjjj)"+ok);
 //return null;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
+
 	}
 
 }
