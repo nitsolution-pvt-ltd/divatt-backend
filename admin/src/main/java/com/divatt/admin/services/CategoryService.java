@@ -109,7 +109,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Institute Not Found!");
+				throw new CustomException("Category Not Found!");
 			} else {
 				return response;
 			}
