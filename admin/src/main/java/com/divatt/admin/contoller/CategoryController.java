@@ -34,8 +34,6 @@ public class CategoryController {
 	@Autowired
 	private CategoryService categoryService;
 	
-	@Autowired
-	CategoryRepo categoryRepo;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CategoryController.class);
 	 

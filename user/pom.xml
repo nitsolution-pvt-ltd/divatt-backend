@@ -11,7 +11,7 @@
 	<groupId>com.divatt</groupId>
 	<artifactId>user</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>user</name>
+	<name>user-service</name>
 	<description>User project of Daivatt.</description>
 	<properties>
 		<java.version>1.8</java.version>

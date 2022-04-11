@@ -35,7 +35,7 @@ public class SubCategoryController {
 	private SubCategoryService subCategoryService;
 	
 	@Autowired
-	SubCategoryRepo subCategoryRepo;
+	private SubCategoryRepo subCategoryRepo;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SubCategoryController.class); 
 	

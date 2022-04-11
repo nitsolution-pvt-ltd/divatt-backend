@@ -11,7 +11,7 @@
 	<groupId>com.divatt</groupId>
 	<artifactId>designer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>designer</name>
+	<name>designer-service</name>
 	<description>Designer project of Daivatt.</description>
 	<properties>
 		<java.version>1.8</java.version>
