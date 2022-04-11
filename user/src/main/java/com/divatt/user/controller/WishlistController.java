@@ -105,7 +105,7 @@ public class WishlistController {
 
 	}
 
-	@RequestMapping(value = { "/list-rest" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/wishlist/list-rest" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getWishlistRestDetails(@RequestParam(defaultValue = "") Integer userId) {
 		LOGGER.info("Inside - WishlistController.getWishlistRestDetails()");
 

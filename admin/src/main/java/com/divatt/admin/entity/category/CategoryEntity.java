@@ -34,24 +34,34 @@ public class CategoryEntity {
 	private Date createdOn;
 	private String createdBy;
 	
-	
-//	 @DBRef List<CategoryEntity> categoryEntity;
-//	 @Field("id")
-//		@DBRef(lazy = true)
-//		private Set<SubCategoryEntity> subCategoryEntity;
-//		private List<SubCategoryEntity> subCategoryEntity= new ArrayList<SubCategoryEntity>();
-	 
-	@Override
-	public String toString() {
-		return "CategoryEntity [id=" + id + ", categoryName=" + categoryName + ", categoryDescrition="
-				+ categoryDescription + ", categoryImage=" + categoryImage + ", level=" + level + ", isActive="
-				+ isActive + ", isDeleted=" + isDeleted + ", parentId=" + parentId + ", createdOn=" + createdOn
-				+ ", createdBy=" + createdBy + "]";
-	}
-
 	public CategoryEntity() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public CategoryEntity(Integer id, @NotEmpty(message = "Category Name is Required") String categoryName,
+			@NotEmpty(message = "Category Description is Required") String categoryDescription,
+			@NotEmpty(message = "Category Image is Required") String categoryImage, Integer level, Boolean isActive,
+			Boolean isDeleted, String parentId, Date createdOn, String createdBy) {
+		super();
+		this.id = id;
+		this.categoryName = categoryName;
+		this.categoryDescription = categoryDescription;
+		this.categoryImage = categoryImage;
+		this.level = level;
+		this.isActive = isActive;
+		this.isDeleted = isDeleted;
+		this.parentId = parentId;
+		this.createdOn = createdOn;
+		this.createdBy = createdBy;
+	}
+
+	@Override
+	public String toString() {
+		return "CategoryEntity [id=" + id + ", categoryName=" + categoryName + ", categoryDescription="
+				+ categoryDescription + ", categoryImage=" + categoryImage + ", level=" + level + ", isActive="
+				+ isActive + ", isDeleted=" + isDeleted + ", parentId=" + parentId + ", createdOn=" + createdOn
+				+ ", createdBy=" + createdBy + "]";
 	}
 
 	public Integer getId() {
@@ -74,8 +84,8 @@ public class CategoryEntity {
 		return categoryDescription;
 	}
 
-	public void setCategoryDescription(String categoryDescrition) {
-		this.categoryDescription = categoryDescrition;
+	public void setCategoryDescription(String categoryDescription) {
+		this.categoryDescription = categoryDescription;
 	}
 
 	public String getCategoryImage() {
@@ -137,18 +147,14 @@ public class CategoryEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-//
-//	public List<SubCategoryEntity> getSubCategoryEntity() {
-//		return subCategoryEntity;
-//	}
-//
-//	public void setSubCategoryEntity(List<SubCategoryEntity> subCategoryEntity) {
-//		this.subCategoryEntity = subCategoryEntity;
-//	}
-
-
 	
 	
-
+//	 @DBRef List<CategoryEntity> categoryEntity;
+//	 @Field("id")
+//		@DBRef(lazy = true)
+//		private Set<SubCategoryEntity> subCategoryEntity;
+//		private List<SubCategoryEntity> subCategoryEntity= new ArrayList<SubCategoryEntity>();
+	 
+	
 	
 }

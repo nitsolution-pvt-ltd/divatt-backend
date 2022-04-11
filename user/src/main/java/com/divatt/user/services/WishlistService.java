@@ -138,32 +138,19 @@ public class WishlistService {
 
 			List<WishlistEntity> findByUserId = wishlistRepo.findByUserId(userId);
 			List<Integer> productIds = new ArrayList<>();
-//			LOGGER.info("Inside - WishlistController.getWishlistRestDetaildds()"+findByUserId);
 
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
-//			
-//			productIds.forEach((e)->{System.out.println("E   "+ e);});
-			LOGGER.info("Inside - WishlistController.getWishlistRestDetaildds()" + productIds);
 
 			HttpHeaders headers = new HttpHeaders();
 //			headers.set("Authorization", token);
 //			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity request = new HttpEntity(headers);
-
-//			String encode = UriUtils.encodePath(processedSMSBodyContent, "UTF-8");
-//			HttpResponse<JsonNode> asJson = null;
 			Unirest.setTimeouts(0, 0);
-			
-			System.out.println("productIds****  "+ productIds.toString());
 			HttpResponse<String> response = Unirest.post("http://192.168.29.42:8083/dev/product/getProductList")
-			  .header("Content-Type", "application/json")
-			  .body(productIds.toString())
-			  .asString();
+					.header("Content-Type", "application/json").body(productIds.toString()).asString();
 			return ResponseEntity.ok(new Json(response.getBody().toString()));
-//			 LOGGER.info("Inside - WishlistController.getWishlistRestDetaildds(jjjj)"+ok);
-//return null;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

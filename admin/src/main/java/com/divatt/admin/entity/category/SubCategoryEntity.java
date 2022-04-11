@@ -46,15 +46,6 @@ public class SubCategoryEntity {
 		}
 
 
-		@Override
-		public String toString() {
-			return "SubCategoryEntity [id=" + id + ", categoryName=" + categoryName + ", categoryDescrition="
-					+ categoryDescription + ", categoryImage=" + categoryImage + ", level=" + level + ", isActive="
-					+ isActive + ", isDeleted=" + isDeleted + ", parentId=" + parentId + ", createdOn=" + createdOn
-					+ ", createdBy=" + createdBy + ", subCategory=" + subCategory + "]";
-		}
-
-
 		public SubCategoryEntity(Integer id, @NotEmpty(message = "Category Name is Required") String categoryName,
 				@NotEmpty(message = "Category Description is Required") String categoryDescription,
 				@NotEmpty(message = "Category Image is Required") String categoryImage, Integer level, Boolean isActive,
@@ -72,6 +63,15 @@ public class SubCategoryEntity {
 			this.createdOn = createdOn;
 			this.createdBy = createdBy;
 			this.subCategory = subCategory;
+		}
+
+
+		@Override
+		public String toString() {
+			return "SubCategoryEntity [id=" + id + ", categoryName=" + categoryName + ", categoryDescription="
+					+ categoryDescription + ", categoryImage=" + categoryImage + ", level=" + level + ", isActive="
+					+ isActive + ", isDeleted=" + isDeleted + ", parentId=" + parentId + ", createdOn=" + createdOn
+					+ ", createdBy=" + createdBy + ", subCategory=" + subCategory + "]";
 		}
 
 
@@ -188,7 +188,8 @@ public class SubCategoryEntity {
 		public static String getSequenceName() {
 			return SEQUENCE_NAME;
 		}
-		
-		
 
+
+		
+		
 }
