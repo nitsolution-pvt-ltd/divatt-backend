@@ -50,7 +50,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 				
 				filterCatDetails.setId(sequenceGenerator.getNextSequence(CategoryEntity.SEQUENCE_NAME));
 				filterCatDetails.setCategoryName(categoryEntity.getCategoryName());
-				filterCatDetails.setCategoryDescrition(categoryEntity.getCategoryDescrition());
+				filterCatDetails.setCategoryDescription(categoryEntity.getCategoryDescription());
 				filterCatDetails.setCategoryImage(categoryEntity.getCategoryImage());
 				filterCatDetails.setCreatedBy(categoryEntity.getCreatedBy());
 				filterCatDetails.setCreatedOn(new Date());
@@ -145,7 +145,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.cla
 				CategoryEntity filterCatDetails = findByCategoryRow.get();
 
 				filterCatDetails.setCategoryName(categoryEntity.getCategoryName());
-				filterCatDetails.setCategoryDescrition(categoryEntity.getCategoryDescrition());
+				filterCatDetails.setCategoryDescription(categoryEntity.getCategoryDescription());
 				filterCatDetails.setCategoryImage(categoryEntity.getCategoryImage());
 				filterCatDetails.setCreatedBy(categoryEntity.getCreatedBy());
 				filterCatDetails.setCreatedOn(new Date());
