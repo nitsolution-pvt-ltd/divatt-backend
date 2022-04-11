@@ -11,8 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class UserDesignerEntity {
 	
 	@Transient
-	public static final String SEQUENCE_NAME = "tbl_user_wishlist";
-
+	public static final String SEQUENCE_NAME = "tbl_user_designers";
+	
 	@Id
 	private Integer id;
 	

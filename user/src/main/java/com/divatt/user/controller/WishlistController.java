@@ -1,5 +1,8 @@
 package com.divatt.user.controller;
 
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,6 +30,7 @@ import com.divatt.user.repository.UserDesignerRepo;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repository.wishlist.WishlistRepo;
+import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.WishlistService;
 import com.mashape.unirest.request.body.Body;
 
@@ -43,6 +47,9 @@ public class WishlistController {
 	@Autowired
 	private WishlistService wishlistService;
 
+	@Autowired
+	private SequenceGenerator sequenceGenerator;
+	
 	@Autowired
 	private UserDesignerRepo userDesignerRepo;
 
@@ -113,14 +120,28 @@ public class WishlistController {
 	@PostMapping("/follow")
 	public ResponseEntity<?> followDesigner(@Valid @RequestBody UserDesignerEntity userDesignerEntity) {
 		try {
-			Optional.of(userDesignerRepo.save(userDesignerEntity)).ifPresentOrElse((value) -> {
-			}, () -> {
-				throw new CustomException("This Role is Already Present");
+			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+			Date date = new Date();
+			formatter.format(date);
+			userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e)->{
+				userDesignerEntity.setId(e.getId());
+			}, ()->{
+				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
 			});
-		} catch (Exception e) {
+			
+			userDesignerEntity.setCreatedOn(date.toString());
+			UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
+			if(save!=null)
+				return ResponseEntity.ok(new GlobalResponse("SUCCESS","Data Save Successfully",200));
+			else
+				throw new CustomException("Data Not Save Try Again");
+			
+		}catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		return null;
+
+			
+		
 
 	}
 
