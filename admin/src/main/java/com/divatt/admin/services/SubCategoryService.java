@@ -46,7 +46,7 @@ public class SubCategoryService {
 
 				filterSubCatDetails.setId(sequenceGenerator.getNextSequence(SubCategoryEntity.SEQUENCE_NAME));
 				filterSubCatDetails.setCategoryName(subCategoryEntity.getCategoryName());
-				filterSubCatDetails.setCategoryDescrition(subCategoryEntity.getCategoryDescrition());
+				filterSubCatDetails.setCategoryDescription(subCategoryEntity.getCategoryDescription());
 				filterSubCatDetails.setCategoryImage(subCategoryEntity.getCategoryImage());
 				filterSubCatDetails.setCreatedBy(subCategoryEntity.getCreatedBy());
 				filterSubCatDetails.setCreatedOn(new Date());
@@ -162,7 +162,7 @@ public class SubCategoryService {
 				SubCategoryEntity filterSubCatDetails = findByCategoryRow.get();
 
 				filterSubCatDetails.setCategoryName(subCategoryEntity.getCategoryName());
-				filterSubCatDetails.setCategoryDescrition(subCategoryEntity.getCategoryDescrition());
+				filterSubCatDetails.setCategoryDescription(subCategoryEntity.getCategoryDescription());
 				filterSubCatDetails.setCategoryImage(subCategoryEntity.getCategoryImage());
 				filterSubCatDetails.setCreatedBy(subCategoryEntity.getCreatedBy());
 				filterSubCatDetails.setCreatedOn(new Date());

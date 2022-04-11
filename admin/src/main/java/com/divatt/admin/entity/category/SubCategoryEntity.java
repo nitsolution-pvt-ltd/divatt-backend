@@ -24,8 +24,8 @@ public class SubCategoryEntity {
 		
 		@NotEmpty(message = "Category Name is Required")
 		private String categoryName;
-		@NotEmpty(message = "Category Descrition is Required")
-		private String categoryDescrition;
+		@NotEmpty(message = "Category Description is Required")
+		private String categoryDescription;
 		@NotEmpty(message = "Category Image is Required")
 		private String categoryImage;
 		private Integer level;
@@ -49,21 +49,21 @@ public class SubCategoryEntity {
 		@Override
 		public String toString() {
 			return "SubCategoryEntity [id=" + id + ", categoryName=" + categoryName + ", categoryDescrition="
-					+ categoryDescrition + ", categoryImage=" + categoryImage + ", level=" + level + ", isActive="
+					+ categoryDescription + ", categoryImage=" + categoryImage + ", level=" + level + ", isActive="
 					+ isActive + ", isDeleted=" + isDeleted + ", parentId=" + parentId + ", createdOn=" + createdOn
 					+ ", createdBy=" + createdBy + ", subCategory=" + subCategory + "]";
 		}
 
 
 		public SubCategoryEntity(Integer id, @NotEmpty(message = "Category Name is Required") String categoryName,
-				@NotEmpty(message = "Category Descrition is Required") String categoryDescrition,
+				@NotEmpty(message = "Category Description is Required") String categoryDescription,
 				@NotEmpty(message = "Category Image is Required") String categoryImage, Integer level, Boolean isActive,
 				Boolean isDeleted, @NotEmpty(message = "Parent Category Name is Required") String parentId,
 				Date createdOn, String createdBy, SubCategoryEntity subCategory) {
 			super();
 			this.id = id;
 			this.categoryName = categoryName;
-			this.categoryDescrition = categoryDescrition;
+			this.categoryDescription = categoryDescription;
 			this.categoryImage = categoryImage;
 			this.level = level;
 			this.isActive = isActive;
@@ -95,13 +95,13 @@ public class SubCategoryEntity {
 		}
 
 
-		public String getCategoryDescrition() {
-			return categoryDescrition;
+		public String getCategoryDescription() {
+			return categoryDescription;
 		}
 
 
-		public void setCategoryDescrition(String categoryDescrition) {
-			this.categoryDescrition = categoryDescrition;
+		public void setCategoryDescription(String categoryDescription) {
+			this.categoryDescription = categoryDescription;
 		}
 
 
