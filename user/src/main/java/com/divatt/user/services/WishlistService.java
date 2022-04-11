@@ -27,6 +27,7 @@ import com.divatt.category.response.GlobalResponse;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repository.wishlist.WishlistRepo;
+import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.RequestBodyEntity;
@@ -152,9 +153,13 @@ public class WishlistService {
 //			String encode = UriUtils.encodePath(processedSMSBodyContent, "UTF-8");
 //			HttpResponse<JsonNode> asJson = null;
 			Unirest.setTimeouts(0, 0);
-			RequestBodyEntity body = Unirest.post("http://192.168.29.42:8083/dev/product/getProductList")
-					.header("Content-Type", "application/json").body(productIds.toString());
-			return ResponseEntity.ok(body.getBody());
+			
+			System.out.println("productIds****  "+ productIds.toString());
+			HttpResponse<String> response = Unirest.post("http://192.168.29.42:8083/dev/product/getProductList")
+			  .header("Content-Type", "application/json")
+			  .body(productIds.toString())
+			  .asString();
+			return ResponseEntity.ok(response.getBody());
 //			 LOGGER.info("Inside - WishlistController.getWishlistRestDetaildds(jjjj)"+ok);
 //return null;
 		} catch (Exception e) {
