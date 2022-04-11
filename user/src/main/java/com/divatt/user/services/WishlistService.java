@@ -32,6 +32,8 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.RequestBodyEntity;
 
+import springfox.documentation.spring.web.json.Json;
+
 @Service
 public class WishlistService {
 
@@ -159,7 +161,7 @@ public class WishlistService {
 			  .header("Content-Type", "application/json")
 			  .body(productIds.toString())
 			  .asString();
-			return ResponseEntity.ok(response.getBody());
+			return ResponseEntity.ok(new Json(response.getBody().toString()));
 //			 LOGGER.info("Inside - WishlistController.getWishlistRestDetaildds(jjjj)"+ok);
 //return null;
 		} catch (Exception e) {
