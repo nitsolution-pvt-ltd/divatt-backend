@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.divatt.designer.config.YMLConfig;
@@ -15,6 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableWebMvc
 @EnableSwagger2
+@EnableEurekaClient
 public class DesignerApplication implements CommandLineRunner{
 
 	public static void main(String[] args) {

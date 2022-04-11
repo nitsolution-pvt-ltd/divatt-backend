@@ -1,4 +1,4 @@
-package com.divatt.userwishlist.entity;
+package com.divatt.user.entity.wishlist;
 
 import java.util.Date;
 
@@ -42,19 +42,19 @@ public class WishlistEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public String toString() {
-		return "WishlistEntity [id=" + id + ", userId=" + userId + ", productId=" + productId + ", added_on=" + addedOn
-				+ "]";
-	}
-
-	public WishlistEntity(@NotNull Integer id, @NotNull(message = "User Name is Required!") Integer userId,
+	public WishlistEntity(Integer id, @NotNull(message = "User Name is Required!") Integer userId,
 			@NotNull(message = "Product Name is Required!") Integer productId, Date addedOn) {
 		super();
 		this.id = id;
 		this.userId = userId;
 		this.productId = productId;
 		this.addedOn = addedOn;
+	}
+
+	@Override
+	public String toString() {
+		return "WishlistEntity [id=" + id + ", userId=" + userId + ", productId=" + productId + ", addedOn=" + addedOn
+				+ "]";
 	}
 
 	public Integer getId() {
@@ -81,18 +81,20 @@ public class WishlistEntity {
 		this.productId = productId;
 	}
 
-	public Date getAdded_on() {
+	public Date getAddedOn() {
 		return addedOn;
 	}
 
-	public void setAdded_on(Date added_on) {
-		this.addedOn = added_on;
+	public void setAddedOn(Date addedOn) {
+		this.addedOn = addedOn;
 	}
 
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
+	
+	
 	
 	
 }
