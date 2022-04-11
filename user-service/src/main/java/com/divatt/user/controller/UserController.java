@@ -1,6 +1,5 @@
 package com.divatt.user.controller;
 
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -31,25 +30,25 @@ import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repository.wishlist.WishlistRepo;
 import com.divatt.user.services.SequenceGenerator;
-import com.divatt.user.services.WishlistService;
+import com.divatt.user.services.UserService;
 import com.mashape.unirest.request.body.Body;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/user")
-public class WishlistController {
+public class UserController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WishlistController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
 	private WishlistRepo wishlistRepo;
 
 	@Autowired
-	private WishlistService wishlistService;
+	private UserService userService;
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
-	
+
 	@Autowired
 	private UserDesignerRepo userDesignerRepo;
 
@@ -58,26 +57,14 @@ public class WishlistController {
 		LOGGER.info("Inside - WishlistController.postWishlistDetails()");
 
 		try {
-			return this.wishlistService.postWishlistService(wishlistEntity);
+			return this.userService.postWishlistService(wishlistEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
 
-//	@DeleteMapping("/delete")
-//	public GlobalResponse deleteWishlistDetails(@RequestBody WishlistEntity wishlistEntity) {
-//		LOGGER.info("Inside - WishlistController.deleteWishlistDetails()");
-//
-//		try {
-//			return this.wishlistService.deleteWishlistService(wishlistEntity);
-//		} catch (Exception e) {
-//			throw new CustomException(e.getMessage());
-//		}
-//
-//	}
-
-	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/wishlist/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getWishlistDetails(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
@@ -86,7 +73,7 @@ public class WishlistController {
 		LOGGER.info("Inside - WishlistController.getWishlistDetails()");
 
 		try {
-			return this.wishlistService.getWishlistDetails(page, limit, sort, sortName, keyword, sortBy);
+			return this.userService.getWishlistDetails(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -98,19 +85,19 @@ public class WishlistController {
 		LOGGER.info("Inside - WishlistController.deleteWishlistDetails()");
 
 		try {
-			return this.wishlistService.deleteWishlistService(wishlistEntity.getProductId());
+			return this.userService.deleteWishlistService(wishlistEntity.getProductId());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
 
-	@RequestMapping(value = { "/wishlist/list-rest" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/wishlist/getUserWishist" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getWishlistRestDetails(@RequestParam(defaultValue = "") Integer userId) {
 		LOGGER.info("Inside - WishlistController.getWishlistRestDetails()");
 
 		try {
-			return this.wishlistService.getWishlistRestDetails(userId);
+			return this.userService.getWishlistRestDetails(userId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -123,25 +110,22 @@ public class WishlistController {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
-			userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e)->{
+			userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e) -> {
 				userDesignerEntity.setId(e.getId());
-			}, ()->{
+			}, () -> {
 				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
 			});
-			
+
 			userDesignerEntity.setCreatedOn(date.toString());
 			UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
-			if(save!=null)
-				return ResponseEntity.ok(new GlobalResponse("SUCCESS","Data Save Successfully",200));
+			if (save != null)
+				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Data Save Successfully", 200));
 			else
 				throw new CustomException("Data Not Save Try Again");
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-
-			
-		
 
 	}
 

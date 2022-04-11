@@ -32,9 +32,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import springfox.documentation.spring.web.json.Json;
 
 @Service
-public class WishlistService {
+public class UserService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WishlistService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 	@Autowired
 	private WishlistRepo wishlistRepo;
 
