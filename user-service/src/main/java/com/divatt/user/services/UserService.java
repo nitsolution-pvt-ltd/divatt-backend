@@ -41,7 +41,7 @@ public class UserService {
 	private WishlistRepo wishlistRepo;
 
 	@Autowired
-	SequenceGenerator sequenceGenerator;
+	private SequenceGenerator sequenceGenerator;
 
 	public GlobalResponse postWishlistService(WishlistEntity wishlistEntity) {
 		LOGGER.info("Inside - WishlistService.postWishlistService()");
