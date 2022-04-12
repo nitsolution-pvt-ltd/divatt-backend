@@ -1,12 +1,17 @@
 package com.divatt.designer.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,94 +30,77 @@ import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.ProductService;
 import com.divatt.designer.services.ProductServiceImp;
+import com.google.gson.JsonArray;
 
 @RestController
 @RequestMapping("/product")
-public class ProductController implements ProductServiceImp{
+public class ProductController implements ProductServiceImp {
 
 	@Autowired
 	private ProductService productService;
-	private static final Logger LOGGER=LoggerFactory.getLogger(ProductController.class);
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
+
 	@GetMapping("/allList")
-	public List<ProductMasterEntity> allList()
-	{
+	public List<ProductMasterEntity> allList() {
 		LOGGER.info("Inside- ProductController.allList()");
-		try
-		{
+		try {
 			return this.productService.allList();
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@PostMapping("/add")
-	public GlobalResponce add(@Valid @RequestBody ProductMasterEntity productEntity)
-	{
-		try
-		{
+	public GlobalResponce add(@Valid @RequestBody ProductMasterEntity productEntity) {
+		try {
 			LOGGER.info("Inside- ProductController.add()");
 			return productService.addData(productEntity);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@GetMapping("/view/{productId}")
-	public Optional<?> viewProductDetails(@PathVariable Integer productId)
-	{
-		try
-		{
+	public Optional<?> viewProductDetails(@PathVariable Integer productId) {
+		try {
 			LOGGER.info("Inside- ProductController.viewProductDetails()");
 			return productService.productDetails(productId);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@PutMapping("/status/{productId}")
-	public GlobalResponce changeStatus(@PathVariable Integer productId)
-	{
-		try
-		{
+	public GlobalResponce changeStatus(@PathVariable Integer productId) {
+		try {
 			LOGGER.info("Inside- ProductController.changeStatus()");
 			return this.productService.changeStatus(productId);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@PutMapping("/update/{productId}")
 	public GlobalResponce updateProductData(@RequestBody ProductMasterEntity productMasterEntity,
-											@PathVariable Integer productId)
-	{
-		try
-		{
+			@PathVariable Integer productId) {
+		try {
 			LOGGER.info("Inside- ProductController.updateProductData()");
-			return this.productService.updateProduct(productId,productMasterEntity);
-		}
-		catch(Exception e)
-		{
+			return this.productService.updateProduct(productId, productMasterEntity);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@PutMapping("/delete/{productId}")
-	public GlobalResponce productDelete(@PathVariable Integer productId)
-	{
-		try
-		{
+	public GlobalResponce productDelete(@PathVariable Integer productId) {
+		try {
 			LOGGER.info("Inside- ProductController.productDelete()");
 			return this.productService.deleteProduct(productId);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@GetMapping("/list")
 	public Map<String, Object> getCategoryDetails(			
 			@RequestParam(defaultValue = "0") int page, 
@@ -134,18 +122,54 @@ public class ProductController implements ProductServiceImp{
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@PostMapping("/getProductList")
-	public  Map<String, Object> productList(@RequestBody List<Integer> productIdList
-											,@RequestParam Optional<String> sortBy)
-	{
-		//Optional<String> sortBy=null;
-		try
-		{
-			
-			return productService.allProductData(productIdList,sortBy);
-		}
-		catch(Exception e)
-		{
+	public Map<String, Object> productList(@RequestBody JSONObject productIdList,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		// Optional<String> sortBy=null;
+		try {
+//			LOGGER.info("Inside - CategoryController.getListCategoryDetails()"+limit+"---"+productIdList);
+			System.out.println(productIdList);
+			String s=productIdList.get("productId").toString();
+			int getLimit=(Integer)(productIdList.get("limit"));
+			int getPage =(Integer)(productIdList.get("page"));
+			System.out.println(getLimit);
+			//System.out.println(getPage);
+			//System.out.println(s);
+			JSONParser jsonParser = new JSONParser();
+			Object object = (Object) jsonParser.parse(s);
+			JSONArray jsonArray = (JSONArray) object;
+			int limit=jsonArray.size();
+			int page=0;
+			//System.out.println("JsonArray size:  "+jsonArray.size());
+			List<Integer>list= new ArrayList<Integer>();
+			for(int i=0; i<jsonArray.size(); i++)
+			{
+//				list.add(i, (Integer) jsonArray.get(i));
+				Object object2 = jsonArray.get(i);
+				int a = Integer.parseInt(object2.toString());
+				list.add(a);
+				
+			}
+			System.out.println("after add "+list);
+			//List<String> list= new ArrayList<String>(Arrays.asList(s.split(",")));
+			//List<Integer> list = Arrays.asList(s.split(",")).stream().map(e -> Integer.parseInt(s.trim())).collect(Collectors.toList());
+			//List<Integer> list = Arrays.asList(s.split(",")).stream().map(e -> Integer.parseInt(s.trim())).forEach(System.out::print);
+			if(getLimit!=0)
+			{
+				limit=getLimit;
+				
+			}
+			if(getPage!=0)
+			{
+				page=getPage;
+			}
+			page= (Integer)productIdList.get("page");
+			return productService.allProductData(list, sortBy,page,sort,sortName,keyword,isDeleted,limit);
+			//return null;
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

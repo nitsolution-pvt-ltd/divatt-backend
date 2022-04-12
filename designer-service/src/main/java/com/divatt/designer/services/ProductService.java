@@ -1,5 +1,6 @@
 package com.divatt.designer.services;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -228,7 +229,7 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	public Map<String, Object> allProductData(List<Integer> productIdList,Optional<String> sortBy) {
+	public Map<String, Object> allProductData(List<Integer> productIdList,Optional<String> sortBy, int page, String sort, String sortName, String keyword, Boolean isDeleted,int limit) {
 		try
 		{
 			if(productIdList.isEmpty())
@@ -237,27 +238,25 @@ public class ProductService {
 			}
 			else
 			{
-				int page=0;
-				//int i=0;
- List<ProductMasterEntity> list = productIdList.stream().map(e-> productRepo.findById(e).get()).collect(Collectors.toList());
-				//return list;
-				 //System.out.println(list);
+				List<ProductMasterEntity> list = productIdList.stream()
+						.map(e -> productRepo.findById(e).get()).collect(Collectors.toList());
+				//System.out.println(list);
 				int CountData = (int) list.size();
-				int limit=CountData;
 				Pageable pagingSort = null;
-				if (limit == 0) {
-					limit = CountData;
-				}
-				String sort="ASC";
-				String sortName="productId";
 				if (sort.equals("ASC")) {
 					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 				} else {
 					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 				}
-				
-				Page<ProductMasterEntity> findAll = new PageImpl<ProductMasterEntity>(list, pagingSort, limit);
-				Boolean isDeleted=false;
+				Page<ProductMasterEntity> findAll = new PageImpl<ProductMasterEntity>(list, pagingSort, CountData);
+//				Page<ProductMasterEntity> findAll = null;
+
+//				if (keyword.isEmpty()) {
+//					findAll = productRepo.findByIsDeleted(isDeleted,pagingSort);
+//				} else {				
+//					findAll = productRepo.Search(keyword, isDeleted, pagingSort);
+//
+//				}
 				int totalPage = findAll.getTotalPages() - 1;
 				if (totalPage < 0) {
 					totalPage = 0;
@@ -266,12 +265,12 @@ public class ProductService {
 				Map<String, Object> response = new HashMap<>();
 				response.put("data", findAll.getContent());
 				response.put("currentPage", findAll.getNumber());
-				response.put("total", findAll.getTotalElements());
+				response.put("total", CountData);
 				response.put("totalPage", totalPage);
 				response.put("perPage", findAll.getSize());
 				response.put("perPageElement", findAll.getNumberOfElements());
 
-				if (findAll.getSize() <= 1) {
+				if (findAll.getSize() <= 0) {
 					throw new CustomException("Product Not Found!");
 				} else {
 					return  response;
@@ -284,5 +283,5 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+		
 }
