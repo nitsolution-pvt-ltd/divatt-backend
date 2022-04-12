@@ -9,11 +9,11 @@
 		<version>2.5.6</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>org.ulearn</groupId>
-	<artifactId>uLearnGeteway</artifactId>
+	<groupId>com.daivatt</groupId>
+	<artifactId>gateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>uLearnGeteway</name>
-	<description>Server Configuration For uLearn</description>
+	<name>geteway-server</name>
+	<description>Server Configuration For Daivatt</description>
 	<properties>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>2020.0.4</spring-cloud.version>
