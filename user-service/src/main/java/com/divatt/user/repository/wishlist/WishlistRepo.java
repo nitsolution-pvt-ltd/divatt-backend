@@ -14,7 +14,7 @@ import com.divatt.user.entity.wishlist.WishlistEntity;
 @Repository
 public interface WishlistRepo extends MongoRepository<WishlistEntity, Integer> {
 
-	Optional<WishlistEntity> findByProductId(Integer ProductId);
+	Optional<WishlistEntity> findByProductIdAndUserId(Integer ProductId,Integer UserId);
 	
 	List<WishlistEntity> findByUserId(Integer UserId);
 
