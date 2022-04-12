@@ -31,7 +31,10 @@ import com.divatt.user.exception.CustomException;
 import com.divatt.user.repository.wishlist.WishlistRepo;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
+import com.google.gson.JsonObject;
 import com.mashape.unirest.request.body.Body;
+
+import springfox.documentation.spring.web.json.Json;
 
 @CrossOrigin
 @RestController
@@ -85,7 +88,7 @@ public class UserController {
 		LOGGER.info("Inside - WishlistController.deleteWishlistDetails()");
 
 		try {
-			return this.userService.deleteWishlistService(wishlistEntity.getProductId());
+			return this.userService.deleteWishlistService(wishlistEntity.getId());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -93,11 +96,11 @@ public class UserController {
 	}
 
 	@RequestMapping(value = { "/wishlist/getUserWishist" }, method = RequestMethod.GET)
-	public ResponseEntity<?> getWishlistRestDetails(@RequestParam(defaultValue = "") Integer userId) {
+	public ResponseEntity<?> getWishlistRestDetails(@RequestBody org.json.simple.JSONObject getWishlist, @RequestParam(defaultValue = "") Integer userId) {
 		LOGGER.info("Inside - WishlistController.getWishlistRestDetails()");
 
 		try {
-			return this.userService.getWishlistRestDetails(userId);
+			return this.userService.getUserWishlistDetails(getWishlist,userId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

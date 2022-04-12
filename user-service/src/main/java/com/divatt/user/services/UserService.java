@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +19,21 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.category.response.GlobalResponse;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repository.wishlist.WishlistRepo;
+import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-
 import springfox.documentation.spring.web.json.Json;
+
+
 
 @Service
 public class UserService {
@@ -45,7 +49,7 @@ public class UserService {
 		LOGGER.info("Inside - WishlistService.postWishlistService()");
 
 		try {
-			Optional<WishlistEntity> findByCategoryName = wishlistRepo.findByProductId(wishlistEntity.getProductId());
+			Optional<WishlistEntity> findByCategoryName = wishlistRepo.findByProductIdAndUserId(wishlistEntity.getProductId(),wishlistEntity.getUserId());
 			if (findByCategoryName.isPresent()) {
 				return new GlobalResponse("ERROR", "Product Already Exists!", 200);
 			} else {
@@ -66,13 +70,13 @@ public class UserService {
 
 	}
 
-	public GlobalResponse deleteWishlistService(Integer productId) {
+	public GlobalResponse deleteWishlistService(Integer Id) {
 		try {
-			Optional<WishlistEntity> findByProductRow = wishlistRepo.findById(productId);
+			Optional<WishlistEntity> findByProductRow = wishlistRepo.findById(Id);
 			if (!findByProductRow.isPresent()) {
 				return new GlobalResponse("ERROR", "Product Not Exists!", 200);
 			} else {
-				wishlistRepo.deleteById(productId);
+				wishlistRepo.deleteById(Id);
 				return new GlobalResponse("SUCCESS", "Wishlist Reomved Succesfully", 200);
 			}
 
@@ -129,24 +133,36 @@ public class UserService {
 		}
 	}
 
-	public ResponseEntity<?> getWishlistRestDetails(Integer userId) throws UnirestException {
+	public ResponseEntity<?> getUserWishlistDetails(@RequestBody JSONObject getWishlist, Integer userId) throws UnirestException {
 
 		try {
-
+			
+			
 			List<WishlistEntity> findByUserId = wishlistRepo.findByUserId(userId);
 			List<Integer> productIds = new ArrayList<>();
 
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
-
+			LOGGER.info("Inside - WishlistController.postWishlistDetails(usr)"+userId+"ppp"+productIds.toString());
+			JsonObject j1 = new JsonObject();
+			j1.addProperty("productId", productIds.toString());
+			j1.addProperty("limit", Integer.parseInt(getWishlist.get("limit").toString()));
+			j1.addProperty("page", Integer.parseInt(getWishlist.get("page").toString()));
+			
+			
+//			Map<String, Object> object = new HashMap<>();
+//			object.put("productId", productIds);
+//			object.put("limit", 10);
+//			object.put("page",0);
+			
 			HttpHeaders headers = new HttpHeaders();
 //			headers.set("Authorization", token);
 //			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity request = new HttpEntity(headers);
 			Unirest.setTimeouts(0, 0);
-			HttpResponse<String> response = Unirest.post("http://192.168.29.42:8083/dev/product/getProductList")
-					.header("Content-Type", "application/json").body(productIds.toString()).asString();
+			HttpResponse<JsonNode> response = Unirest.post("http://192.168.29.42:8083/dev/product/getProductList")
+					.header("Content-Type", "application/json").body(j1.toString()).asJson();
 			return ResponseEntity.ok(new Json(response.getBody().toString()));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
