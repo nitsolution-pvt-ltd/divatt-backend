@@ -7,11 +7,13 @@ public class ImagesEntity {
 	private String large;
 	private Boolean isPrimary;
 	private Integer order;
+	private String colour;
 	public ImagesEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public ImagesEntity(String name, String tiny, String medium, String large, Boolean isPrimary, Integer order) {
+	public ImagesEntity(String name, String tiny, String medium, String large, Boolean isPrimary, Integer order,
+			String colour) {
 		super();
 		this.name = name;
 		this.tiny = tiny;
@@ -19,6 +21,12 @@ public class ImagesEntity {
 		this.large = large;
 		this.isPrimary = isPrimary;
 		this.order = order;
+		this.colour = colour;
+	}
+	@Override
+	public String toString() {
+		return "ImagesEntity [name=" + name + ", tiny=" + tiny + ", medium=" + medium + ", large=" + large
+				+ ", isPrimary=" + isPrimary + ", order=" + order + ", colour=" + colour + "]";
 	}
 	public String getName() {
 		return name;
@@ -56,10 +64,10 @@ public class ImagesEntity {
 	public void setOrder(Integer order) {
 		this.order = order;
 	}
-	@Override
-	public String toString() {
-		return "ImagesEntity [name=" + name + ", tiny=" + tiny + ", medium=" + medium + ", large=" + large
-				+ ", isPrimary=" + isPrimary + ", order=" + order + "]";
+	public String getColour() {
+		return colour;
 	}
-	
+	public void setColour(String colour) {
+		this.colour = colour;
+	}
 }

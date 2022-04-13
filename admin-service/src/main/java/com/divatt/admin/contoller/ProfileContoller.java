@@ -47,7 +47,6 @@ import com.fasterxml.jackson.annotation.JacksonInject.Value;
 
 @RestController
 @RequestMapping("/admin/profile")
-@CrossOrigin(origins = "*")
 public class ProfileContoller {
 	
 	@Autowired

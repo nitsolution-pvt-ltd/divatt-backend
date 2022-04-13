@@ -21,7 +21,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
@@ -33,162 +32,131 @@ public class ProductService {
 
 	@Autowired
 	private ProductRepository productRepo;
+
 	@Autowired
-	
 	private SequenceGenerator sequenceGenarator;
-	
+
 	@Autowired
 	private CustomFunction customFunction;
-	
-	
-	private static final Logger LOGGER= LoggerFactory.getLogger(ProductService.class);
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
+
 	public List<ProductMasterEntity> allList() {
-		try
-		{
+		try {
 			LOGGER.info("Inside - ProductService.allList()");
 			return productRepo.findAll();
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	public GlobalResponce addData(ProductMasterEntity productData)
-	{
-		try
-		{
-			Optional<ProductMasterEntity> findByProductName=productRepo.findByProductName(productData.getProductName());
-			if(findByProductName.isPresent())
-			{
+
+	public GlobalResponce addData(ProductMasterEntity productData) {
+		try {
+			Optional<ProductMasterEntity> findByProductName = productRepo
+					.findByProductName(productData.getProductName());
+			if (findByProductName.isPresent()) {
 				return new GlobalResponce("ERROR", "Product Already Exist!", 400);
-			}
-			else
-			{
-				//System.out.println(customFunction.dbWrite(customFunction.filterDataEntity(productData)));
+			} else {
+				// System.out.println(customFunction.dbWrite(customFunction.filterDataEntity(productData)));
 				productRepo.save(customFunction.filterDataEntity(productData));
 				return new GlobalResponce("Success!!", "Added Successfully", 200);
 			}
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	public Optional<?> productDetails(Integer productId) {
-		try
-		{
-			if(productRepo.existsById(productId))
-			{
+		try {
+			if (productRepo.existsById(productId)) {
 				LOGGER.info("Inside - ProductService.productDetails()");
 				Optional<ProductMasterEntity> findById = productRepo.findById(productId);
 				return findById;
-			}
-			else
-			{
+			} else {
 				return Optional.of(new GlobalResponce("Bad Request", "Product Id does not exist", 400));
 			}
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	public GlobalResponce changeStatus(Integer productId) {
-		try
-		{
+		try {
 			LOGGER.info("Inside - ProductService.changeStatus()");
-			if(productRepo.existsById(productId))
-			{
+			if (productRepo.existsById(productId)) {
 				Boolean status;
-				Optional<ProductMasterEntity> productData= productRepo.findById(productId);
-				ProductMasterEntity productEntity= productData.get();
-				if(productEntity.getIsActive().equals(true))
-				{
-					status=false;
-				}
-				else
-				{
-					status=true;
+				Optional<ProductMasterEntity> productData = productRepo.findById(productId);
+				ProductMasterEntity productEntity = productData.get();
+				if (productEntity.getIsActive().equals(true)) {
+					status = false;
+				} else {
+					status = true;
 				}
 				productEntity.setIsActive(status);
 				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 				productEntity.setUpdatedOn(new Date());
 				productRepo.save(productEntity);
 				return new GlobalResponce("Success", "Status Change Successfully", 200);
-			}
-			else
-			{
+			} else {
 				return new GlobalResponce("Bad Request", "Product Does Not Exist", 400);
 			}
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	public GlobalResponce updateProduct(Integer productId, ProductMasterEntity productMasterEntity) {
-		try
-		{
+		try {
 			LOGGER.info("Inside - ProductService.updateProduct()");
-			if(productRepo.existsById(productId))
-			{
+			if (productRepo.existsById(productId)) {
 				productRepo.save(customFunction.filterDataEntity(productMasterEntity));
 				return new GlobalResponce("Success", "Product Updated Successfully", 200);
-			}
-			else
-			{
+			} else {
 				return new GlobalResponce("Bad Request", "Product Id Does Not Exist", 400);
 			}
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	public GlobalResponce deleteProduct(Integer productId) {
 		// TODO Auto-generated method stub
-		
+
 		try {
 			LOGGER.info("Inside - ProductService.deleteProduct()");
-			if(productRepo.existsById(productId))
-			{
+			if (productRepo.existsById(productId)) {
 				Boolean isDelete = false;
-				Optional<ProductMasterEntity> productData= productRepo.findById(productId);
-				ProductMasterEntity productEntity= productData.get();
-				if(productEntity.getIsDeleted().equals(false))
-				{
-					isDelete=true;
-				}
-				else
-				{
+				Optional<ProductMasterEntity> productData = productRepo.findById(productId);
+				ProductMasterEntity productEntity = productData.get();
+				if (productEntity.getIsDeleted().equals(false)) {
+					isDelete = true;
+				} else {
 					return new GlobalResponce("Bad Request!!", "Product AllReady deleted", 400);
 				}
 				productEntity.setIsDeleted(isDelete);
 				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 				productEntity.setUpdatedOn(new Date());
 				productRepo.save(productEntity);
-				return new GlobalResponce("Success", "Delete Successfully", 200);
-			}
-			else
-			{
+				return new GlobalResponce("Success", "Deleted Successfully", 200);
+			} else {
 				return new GlobalResponce("Bad Request", "Product Does Not Exist", 400);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw new CustomException(e.getMessage());
 		}
-		
+
 	}
+
 	public Map<String, Object> getProductDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
-		try
-		{
+		try {
 			int CountData = (int) productRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
 				limit = CountData;
 			}
-			
+
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
@@ -198,12 +166,11 @@ public class ProductService {
 			Page<ProductMasterEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = productRepo.findByIsDeleted(isDeleted,pagingSort);
-			} else {				
+				findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+			} else {
 				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
 
 			}
-			
 
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
@@ -223,35 +190,26 @@ public class ProductService {
 			} else {
 				return response;
 			}
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	public Map<String, Object> allProductData(List<Integer> productIdList,Optional<String> sortBy, int page, String sort, String sortName, String keyword, Boolean isDeleted,int limit) {
-		try
-		{
-			if(productIdList.isEmpty())
-			{
+
+	public Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page,
+			String sort, String sortName, Boolean isDeleted, int limit) {
+		try {
+			if (productIdList.isEmpty()) {
 				throw new CustomException("Product Not Found!");
-			}
-			else
-			{
-				List<ProductMasterEntity> list = productIdList.stream()
-						.map(e -> productRepo.findById(e).get()).collect(Collectors.toList());
+			} else {
+				List<ProductMasterEntity> list = productIdList.stream().map(e -> productRepo.findById(e).get()).collect(Collectors.toList());
 
 				int CountData = (int) list.size();
-				Pageable pagingSort = null;
-				
-				if (sort.equals("ASC")) {
-					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
-				} else {
-					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+				if(limit==0) {
+					limit=CountData;
 				}
-				
-				Page<ProductMasterEntity> findAll = null;
-				findAll = productRepo.findByProductIdIn(productIdList,pagingSort);
+
+				Pageable pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+				Page<ProductMasterEntity> findAll = productRepo.findByProductIdIn(productIdList, pagingSort);
 
 				int totalPage = findAll.getTotalPages() - 1;
 				if (totalPage < 0) {
@@ -269,15 +227,12 @@ public class ProductService {
 				if (findAll.getSize() <= 0) {
 					throw new CustomException("Product Not Found!");
 				} else {
-					return  response;
+					return response;
 				}
-				
 			}
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-		
+
 }

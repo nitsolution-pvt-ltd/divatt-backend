@@ -1,6 +1,7 @@
 package com.divatt.designer.helper;
 
 import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.services.SequenceGenerator;
 
 import io.swagger.models.HttpMethod;
+import net.bytebuddy.utility.RandomString;
 
 @Service
 public class CustomFunction {
@@ -37,6 +39,9 @@ public class CustomFunction {
 			{
 				
 				filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
+				RandomString session = new RandomString();
+				System.out.println(session);
+				filterProductEntity.setSKQCode(session.toString());
 			}
 			else
 			{
@@ -47,7 +52,6 @@ public class CustomFunction {
 			filterProductEntity.setApprovedBy(productData.getApprovedBy());
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
-			filterProductEntity.setColour(productData.getColour());
 			filterProductEntity.setComment(productData.getComment());
 			filterProductEntity.setCreatedBy(productData.getCreatedBy());
 			filterProductEntity.setCreatedOn(new Date());

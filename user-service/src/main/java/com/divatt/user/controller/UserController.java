@@ -39,7 +39,6 @@ import com.mashape.unirest.request.body.Body;
 
 import springfox.documentation.spring.web.json.Json;
 
-
 @RestController
 @RequestMapping("/user")
 public class UserController {

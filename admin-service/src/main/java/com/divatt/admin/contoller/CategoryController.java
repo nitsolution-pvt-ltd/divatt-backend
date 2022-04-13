@@ -26,7 +26,7 @@ import com.divatt.admin.services.CategoryService;
 
 
 
-@CrossOrigin
+
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
