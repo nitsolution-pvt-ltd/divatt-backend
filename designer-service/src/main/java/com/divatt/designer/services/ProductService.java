@@ -57,7 +57,6 @@ public class ProductService {
 			if (findByProductName.isPresent()) {
 				return new GlobalResponce("ERROR", "Product Already Exist!", 400);
 			} else {
-				// System.out.println(customFunction.dbWrite(customFunction.filterDataEntity(productData)));
 				productRepo.save(customFunction.filterDataEntity(productData));
 				return new GlobalResponce("Success!!", "Added Successfully", 200);
 			}
@@ -120,7 +119,6 @@ public class ProductService {
 	}
 
 	public GlobalResponce deleteProduct(Integer productId) {
-		// TODO Auto-generated method stub
 
 		try {
 			LOGGER.info("Inside - ProductService.deleteProduct()");
@@ -142,7 +140,6 @@ public class ProductService {
 				return new GlobalResponce("Bad Request", "Product Does Not Exist", 400);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			throw new CustomException(e.getMessage());
 		}
 
