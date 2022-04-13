@@ -137,7 +137,7 @@ public class ProductService {
 				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 				productEntity.setUpdatedOn(new Date());
 				productRepo.save(productEntity);
-				return new GlobalResponce("Success", "Delete Successfully", 200);
+				return new GlobalResponce("Success", "Deleted Successfully", 200);
 			} else {
 				return new GlobalResponce("Bad Request", "Product Does Not Exist", 400);
 			}
