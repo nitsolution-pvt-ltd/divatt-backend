@@ -102,23 +102,15 @@ public class ProductController implements ProductServiceImp {
 	}
 
 	@GetMapping("/list")
-	public Map<String, Object> getCategoryDetails(			
-			@RequestParam(defaultValue = "0") int page, 
-			@RequestParam(defaultValue = "10") int limit,
-			@RequestParam(defaultValue = "DESC") String sort, 
+	public Map<String, Object> getCategoryDetails(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
-			@RequestParam(defaultValue = "false") Boolean isDeleted, 			
-			@RequestParam(defaultValue = "") String keyword,
-			@RequestParam Optional<String> sortBy)
-	{
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - CategoryController.getListCategoryDetails()");
-		try
-		{
-			return this.productService.getProductDetails(page, limit, sort, sortName, isDeleted, keyword,
-					sortBy);
-		}
-		catch(Exception e)
-		{
+		try {
+			return this.productService.getProductDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -128,47 +120,32 @@ public class ProductController implements ProductServiceImp {
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		// Optional<String> sortBy=null;
 		try {
-//			LOGGER.info("Inside - CategoryController.getListCategoryDetails()"+limit+"---"+productIdList);
 			System.out.println(productIdList);
-			String s=productIdList.get("productId").toString();
-			int getLimit=(Integer)(productIdList.get("limit"));
-			int getPage =(Integer)(productIdList.get("page"));
-			System.out.println(getLimit);
-			//System.out.println(getPage);
-			//System.out.println(s);
+			String s = productIdList.get("productId").toString();
+			int getLimit = (Integer) (productIdList.get("limit"));
+			int getPage = (Integer) (productIdList.get("page"));
+
 			JSONParser jsonParser = new JSONParser();
 			Object object = (Object) jsonParser.parse(s);
 			JSONArray jsonArray = (JSONArray) object;
-			int limit=jsonArray.size();
-			int page=0;
-			//System.out.println("JsonArray size:  "+jsonArray.size());
-			List<Integer>list= new ArrayList<Integer>();
-			for(int i=0; i<jsonArray.size(); i++)
-			{
-//				list.add(i, (Integer) jsonArray.get(i));
+			int limit = jsonArray.size();
+			int page = 0;
+			List<Integer> list = new ArrayList<Integer>();
+			for (int i = 0; i < jsonArray.size(); i++) {
 				Object object2 = jsonArray.get(i);
 				int a = Integer.parseInt(object2.toString());
 				list.add(a);
-				
 			}
-			System.out.println("after add "+list);
-			//List<String> list= new ArrayList<String>(Arrays.asList(s.split(",")));
-			//List<Integer> list = Arrays.asList(s.split(",")).stream().map(e -> Integer.parseInt(s.trim())).collect(Collectors.toList());
-			//List<Integer> list = Arrays.asList(s.split(",")).stream().map(e -> Integer.parseInt(s.trim())).forEach(System.out::print);
-			if(getLimit!=0)
-			{
-				limit=getLimit;
-				
+
+			if (getLimit != 0) {
+				limit = getLimit;
 			}
-			if(getPage!=0)
-			{
-				page=getPage;
+			if (getPage != 0) {
+				page = getPage;
 			}
-			page= (Integer)productIdList.get("page");
-			return productService.allProductData(list, sortBy,page,sort,sortName,keyword,isDeleted,limit);
-			//return null;
+			page = (Integer) productIdList.get("page");
+			return productService.allWishlistProductData(list, sortBy, page, sort, sortName, keyword, isDeleted, limit);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

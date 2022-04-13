@@ -143,16 +143,12 @@ public class UserService {
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
-			LOGGER.info("Inside - WishlistController.postWishlistDetails(usr)" + userId + "ppp" + productIds.toString());
+
 			JsonObject wishlistObj = new JsonObject();
 			wishlistObj.addProperty("productId", productIds.toString());
 			wishlistObj.addProperty("limit", Integer.parseInt(getWishlist.get("limit").toString()));
 			wishlistObj.addProperty("page", Integer.parseInt(getWishlist.get("page").toString()));
 
-			HttpHeaders headers = new HttpHeaders();
-//			headers.set("Authorization", token);
-//			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity request = new HttpEntity(headers);
 			Unirest.setTimeouts(0, 0);
 			HttpResponse<JsonNode> response = Unirest.post("http://192.168.29.72:8083/dev/product/getProductList")
 					.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
