@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.divatt.category.response.GlobalResponse;
 
 import com.divatt.user.entity.UserDesignerEntity;
+import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repository.UserDesignerRepo;
+import com.divatt.user.repository.UserLoginRepo;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repository.wishlist.WishlistRepo;
@@ -54,6 +57,9 @@ public class UserController {
 
 	@Autowired
 	private UserDesignerRepo userDesignerRepo;
+	
+	@Autowired
+	private UserLoginRepo userLoginRepo;
 
 	@PostMapping("/wishlist/add")
 	public GlobalResponse postWishlistDetails(@Valid @RequestBody WishlistEntity wishlistEntity) {
@@ -130,6 +136,32 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+	
+	@PostMapping("/user/add")
+	public ResponseEntity<?> addUser(@Valid @RequestBody UserLoginEntity userLoginEntity,Errors error){
+		LOGGER.info("Inside - EcomAuthController.addUser()");
+		try {		
+			if (error.hasErrors()) {
+				throw new CustomException("Check The Fields");
+			}
+			userLoginRepo.findByEmail(userLoginEntity.getEmail()).ifPresentOrElse((data)->new CustomException("Email id is already Present"), null);
+			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+			Date date = new Date();
+			formatter.format(date);
+			userLoginEntity.setUsername(userLoginEntity.getEmail());
+			userLoginEntity.setIsActive(true);
+			userLoginEntity.setIsDeleted(false);
+			userLoginEntity.setCreatedOn(date.toString());
+			userLoginEntity.setProfilePic("Pic.jpg");
+			userLoginEntity.setRegisterType("Self");
+			userLoginRepo.save(userLoginEntity);
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS","Added Successfully",200));
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
+		
 	}
 
 }
