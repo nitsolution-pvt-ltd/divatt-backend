@@ -137,7 +137,7 @@ public class UserController {
 
 	}
 	
-	@PostMapping("/user/add")
+	@PostMapping("/add")
 	public ResponseEntity<?> addUser(@Valid @RequestBody UserLoginEntity userLoginEntity,Errors error){
 		LOGGER.info("Inside - EcomAuthController.addUser()");
 		try {		
