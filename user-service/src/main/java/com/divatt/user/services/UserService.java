@@ -154,7 +154,7 @@ public class UserService {
 //			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity request = new HttpEntity(headers);
 			Unirest.setTimeouts(0, 0);
-			HttpResponse<JsonNode> response = Unirest.post("http://192.168.29.42:8083/dev/product/getProductList")
+			HttpResponse<JsonNode> response = Unirest.post("http://192.168.29.72:8083/dev/product/getProductList")
 					.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
 			return ResponseEntity.ok(new Json(response.getBody().toString()));
 		} catch (Exception e) {
