@@ -61,7 +61,7 @@ import springfox.documentation.spring.web.json.Json;
 @RestController
 @SuppressWarnings("All")
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*")
+
 public class EcomAuthController implements EcomAuthContollerMethod{
 	
 	@Autowired

@@ -49,8 +49,6 @@ public class ProductMasterEntity {
 	private GiftEntity giftWrapAmount;
 	//@NotEmpty(message = "Price Field Required")
 	private PriceEntity price;
-	@NotEmpty(message = "Product Colour Should Be Mentioned")
-	private String colour;
 	//@NotEmpty(message = "Product Images Required")
 	private ImagesEntity images[];
 	//@NotEmpty(message = "Stock On Hand Required")
@@ -78,23 +76,7 @@ public class ProductMasterEntity {
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
 	private String comment;
-	//private Composition Composition;
-	@Override
-	public String toString() {
-		return "ProductMasterEntity [productId=" + productId + ", designerId=" + designerId + ", categoryId="
-				+ categoryId + ", subCategoryId=" + subCategoryId + ", gender=" + gender + ", productName="
-				+ productName + ", productDescription=" + productDescription + ", age=" + age + ", cod=" + cod
-				+ ", customization=" + customization + ", purchaseQuantity=" + purchaseQuantity + ", priceType="
-				+ priceType + ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive + ", giftWrap="
-				+ giftWrap + ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", colour=" + colour
-				+ ", images=" + Arrays.toString(images) + ", standeredSOH=" + Arrays.toString(standeredSOH)
-				+ ", customizationSOH=" + customizationSOH + ", extraSpecifications=" + extraSpecifications
-				+ ", specifications=" + specifications + ", isSubmitted=" + isSubmitted + ", isApprove=" + isApprove
-				+ ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy="
-				+ createdBy + ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy="
-				+ updatedBy + ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", comment=" + comment + "]";
-	}
+	private String SKQCode;
 	public ProductMasterEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -105,12 +87,12 @@ public class ProductMasterEntity {
 			@NotEmpty(message = "Product Description Required") String productDescription, AgeEntity age, Boolean cod,
 			Boolean customization, PurchaseEntity purchaseQuantity,
 			@NotEmpty(message = "Price Type Required") String priceType, Float taxPercentage, Boolean taxInclusive,
-			Boolean giftWrap, GiftEntity giftWrapAmount, PriceEntity price,
-			@NotEmpty(message = "Product Colour Should Be Mentioned") String colour, ImagesEntity[] images,
+			Boolean giftWrap, GiftEntity giftWrapAmount, PriceEntity price, ImagesEntity[] images,
 			StandardSOH[] standeredSOH, Integer customizationSOH, ExtraSpecifications extraSpecifications,
 			Specification specifications, Boolean isSubmitted, Boolean isApprove, Boolean isActive, Boolean isDeleted,
 			Date createdOn, String createdBy, String submittedBy, Date submittedOn, String updatedBy, Date updatedOn,
-			@NotEmpty(message = "Approval Name Required") String approvedBy, Date approvedOn, String comment) {
+			@NotEmpty(message = "Approval Name Required") String approvedBy, Date approvedOn, String comment,
+			String sKQCode) {
 		super();
 		this.productId = productId;
 		this.designerId = designerId;
@@ -129,7 +111,6 @@ public class ProductMasterEntity {
 		this.giftWrap = giftWrap;
 		this.giftWrapAmount = giftWrapAmount;
 		this.price = price;
-		this.colour = colour;
 		this.images = images;
 		this.standeredSOH = standeredSOH;
 		this.customizationSOH = customizationSOH;
@@ -148,6 +129,23 @@ public class ProductMasterEntity {
 		this.approvedBy = approvedBy;
 		this.approvedOn = approvedOn;
 		this.comment = comment;
+		SKQCode = sKQCode;
+	}
+	@Override
+	public String toString() {
+		return "ProductMasterEntity [productId=" + productId + ", designerId=" + designerId + ", categoryId="
+				+ categoryId + ", subCategoryId=" + subCategoryId + ", gender=" + gender + ", productName="
+				+ productName + ", productDescription=" + productDescription + ", age=" + age + ", cod=" + cod
+				+ ", customization=" + customization + ", purchaseQuantity=" + purchaseQuantity + ", priceType="
+				+ priceType + ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive + ", giftWrap="
+				+ giftWrap + ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images="
+				+ Arrays.toString(images) + ", standeredSOH=" + Arrays.toString(standeredSOH) + ", customizationSOH="
+				+ customizationSOH + ", extraSpecifications=" + extraSpecifications + ", specifications="
+				+ specifications + ", isSubmitted=" + isSubmitted + ", isApprove=" + isApprove + ", isActive="
+				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
+				+ ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy=" + updatedBy
+				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
+				+ ", comment=" + comment + ", SKQCode=" + SKQCode + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -250,12 +248,6 @@ public class ProductMasterEntity {
 	}
 	public void setPrice(PriceEntity price) {
 		this.price = price;
-	}
-	public String getColour() {
-		return colour;
-	}
-	public void setColour(String colour) {
-		this.colour = colour;
 	}
 	public ImagesEntity[] getImages() {
 		return images;
@@ -364,6 +356,12 @@ public class ProductMasterEntity {
 	}
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	public String getSKQCode() {
+		return SKQCode;
+	}
+	public void setSKQCode(String sKQCode) {
+		SKQCode = sKQCode;
 	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
