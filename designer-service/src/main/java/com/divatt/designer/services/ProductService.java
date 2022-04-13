@@ -234,29 +234,25 @@ public class ProductService {
 		{
 			if(productIdList.isEmpty())
 			{
-				return  (Map<String, Object>) new GlobalResponce("Error!!", "Bad Request", 400);
+				throw new CustomException("Product Not Found!");
 			}
 			else
 			{
 				List<ProductMasterEntity> list = productIdList.stream()
 						.map(e -> productRepo.findById(e).get()).collect(Collectors.toList());
-				//System.out.println(list);
+
 				int CountData = (int) list.size();
 				Pageable pagingSort = null;
+				
 				if (sort.equals("ASC")) {
 					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 				} else {
 					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 				}
-				Page<ProductMasterEntity> findAll = new PageImpl<ProductMasterEntity>(list, pagingSort, CountData);
-//				Page<ProductMasterEntity> findAll = null;
+				
+				Page<ProductMasterEntity> findAll = null;
+				findAll = productRepo.findByProductIdIn(productIdList,pagingSort);
 
-//				if (keyword.isEmpty()) {
-//					findAll = productRepo.findByIsDeleted(isDeleted,pagingSort);
-//				} else {				
-//					findAll = productRepo.Search(keyword, isDeleted, pagingSort);
-//
-//				}
 				int totalPage = findAll.getTotalPages() - 1;
 				if (totalPage < 0) {
 					totalPage = 0;
