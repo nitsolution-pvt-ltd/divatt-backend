@@ -196,7 +196,7 @@ public class ProductService {
 	}
 
 	public Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page,
-			String sort, String sortName, String keyword, Boolean isDeleted, int limit) {
+			String sort, String sortName, Boolean isDeleted, int limit) {
 		try {
 			if (productIdList.isEmpty()) {
 				throw new CustomException("Product Not Found!");
@@ -204,6 +204,9 @@ public class ProductService {
 				List<ProductMasterEntity> list = productIdList.stream().map(e -> productRepo.findById(e).get()).collect(Collectors.toList());
 
 				int CountData = (int) list.size();
+				if(limit==0) {
+					limit=CountData;
+				}
 
 				Pageable pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 				Page<ProductMasterEntity> findAll = productRepo.findByProductIdIn(productIdList, pagingSort);

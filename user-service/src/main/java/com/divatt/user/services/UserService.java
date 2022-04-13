@@ -142,7 +142,8 @@ public class UserService {
 
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
-			});
+			});			
+			
 
 			JsonObject wishlistObj = new JsonObject();
 			wishlistObj.addProperty("productId", productIds.toString());
