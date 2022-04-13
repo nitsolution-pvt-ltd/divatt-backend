@@ -15,17 +15,17 @@ spring:
       routes[1]:
         id: Admin
         predicates[0]: Path=/dev/category/**
-        uri: http://localhost:8081/dev/category
+        uri: http://localhost:8084/dev/category
       routes[2]:
         id: Admin
-        uri: http://localhost:8081/dev/admin/profile
+        uri: http://localhost:8084/dev/admin/profile
         predicates[0]: Path=/dev/admin/profile/**
       routes[3]:
         predicates[0]: Path=/dev/admin/**
         id: Admin
-        uri: http://localhost:8081/dev/admin
+        uri: http://localhost:8084/dev/admin
       routes[4]:
-        uri: http://localhost:8081/dev/subcategory
+        uri: http://localhost:8084/dev/subcategory
         id: Admin
         predicates[0]: Path=/dev/subcategory/**
       routes[5]:

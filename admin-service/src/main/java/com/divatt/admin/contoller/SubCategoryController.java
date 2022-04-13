@@ -26,7 +26,6 @@ import com.divatt.admin.services.SubCategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/subcategory")
 public class SubCategoryController {
