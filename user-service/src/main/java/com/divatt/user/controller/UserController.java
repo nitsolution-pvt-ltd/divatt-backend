@@ -39,7 +39,7 @@ import com.mashape.unirest.request.body.Body;
 
 import springfox.documentation.spring.web.json.Json;
 
-@CrossOrigin
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -138,17 +138,18 @@ public class UserController {
 
 	}
 	
-	@PostMapping("/user/add")
+	@PostMapping("/add")
 	public ResponseEntity<?> addUser(@Valid @RequestBody UserLoginEntity userLoginEntity,Errors error){
 		LOGGER.info("Inside - EcomAuthController.addUser()");
 		try {		
 			if (error.hasErrors()) {
 				throw new CustomException("Check The Fields");
 			}
-			userLoginRepo.findByEmail(userLoginEntity.getEmail()).ifPresentOrElse((data)->new CustomException("Email id is already Present"), null);
+//			userLoginRepo.findByEmail(userLoginEntity.getEmail()).ifPresentOrElse((data)->new CustomException("Email id is already Present"), null);
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
+			userLoginEntity.setuId((long)sequenceGenerator.getNextSequence(UserLoginEntity.SEQUENCE_NAME));
 			userLoginEntity.setUsername(userLoginEntity.getEmail());
 			userLoginEntity.setIsActive(true);
 			userLoginEntity.setIsDeleted(false);
