@@ -26,6 +26,9 @@ public class CustomFunction {
 	@Autowired
 	private ProductRepository productRepo;
 	
+	@Autowired
+	private CustomRandomString randomString;
+	
 	
 	private static final String baseURL="http://localhost:8083/dev/dbservice-product/";
 	RestTemplate restTemplate= new  RestTemplate();
@@ -39,9 +42,7 @@ public class CustomFunction {
 			{
 				
 				filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
-				RandomString session = new RandomString();
-				System.out.println(session);
-				filterProductEntity.setSKQCode(session.toString());
+				filterProductEntity.setSKQCode(randomString.getAlphaNumericString(10));
 			}
 			else
 			{

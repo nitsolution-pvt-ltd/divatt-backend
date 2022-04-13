@@ -1,11 +1,9 @@
 package com.divatt.designer.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -15,7 +13,6 @@ import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +27,6 @@ import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.ProductService;
 import com.divatt.designer.services.ProductServiceImp;
-import com.google.gson.JsonArray;
 
 @RestController
 @RequestMapping("/product")
@@ -102,7 +98,7 @@ public class ProductController implements ProductServiceImp {
 	}
 
 	@GetMapping("/list")
-	public Map<String, Object> getCategoryDetails(			
+	public Map<String, Object> getAllProductDetails(			
 			@RequestParam(defaultValue = "0") int page, 
 			@RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, 
@@ -128,35 +124,25 @@ public class ProductController implements ProductServiceImp {
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		// Optional<String> sortBy=null;
 		try {
-//			LOGGER.info("Inside - CategoryController.getListCategoryDetails()"+limit+"---"+productIdList);
 			System.out.println(productIdList);
 			String s=productIdList.get("productId").toString();
 			int getLimit=(Integer)(productIdList.get("limit"));
 			int getPage =(Integer)(productIdList.get("page"));
 			System.out.println(getLimit);
-			//System.out.println(getPage);
-			//System.out.println(s);
 			JSONParser jsonParser = new JSONParser();
 			Object object = (Object) jsonParser.parse(s);
 			JSONArray jsonArray = (JSONArray) object;
 			int limit=jsonArray.size();
 			int page=0;
-			//System.out.println("JsonArray size:  "+jsonArray.size());
 			List<Integer>list= new ArrayList<Integer>();
 			for(int i=0; i<jsonArray.size(); i++)
 			{
-//				list.add(i, (Integer) jsonArray.get(i));
 				Object object2 = jsonArray.get(i);
 				int a = Integer.parseInt(object2.toString());
 				list.add(a);
 				
 			}
-			System.out.println("after add "+list);
-			//List<String> list= new ArrayList<String>(Arrays.asList(s.split(",")));
-			//List<Integer> list = Arrays.asList(s.split(",")).stream().map(e -> Integer.parseInt(s.trim())).collect(Collectors.toList());
-			//List<Integer> list = Arrays.asList(s.split(",")).stream().map(e -> Integer.parseInt(s.trim())).forEach(System.out::print);
 			if(getLimit!=0)
 			{
 				limit=getLimit;

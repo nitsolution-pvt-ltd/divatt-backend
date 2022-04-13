@@ -21,7 +21,7 @@ public interface ProductServiceImp {
 	
 	public GlobalResponce productDelete(Integer productId);
 	
-	public Map<String, Object> getCategoryDetails(			
+	public Map<String, Object> getAllProductDetails(			
 			@RequestParam(defaultValue = "0") int page, 
 			@RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, 
