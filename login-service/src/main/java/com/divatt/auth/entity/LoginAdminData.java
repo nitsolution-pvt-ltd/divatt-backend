@@ -24,6 +24,7 @@ public class LoginAdminData implements UserDetails{
 		private String password;
 		private String message;
 		private List<GrantedAuthority> role;
+		private String authority;
 		private int status;
 
 
@@ -78,6 +79,16 @@ public class LoginAdminData implements UserDetails{
 		}
 
 
+		public String getAuthority() {
+			return authority;
+		}
+
+
+		public void setAuthority(String authority) {
+			this.authority = authority;
+		}
+
+
 		public LoginAdminData(String token, Object uId, String username, String password, String message, int status,String role) {
 			super();
 			this.token = token;
@@ -87,6 +98,21 @@ public class LoginAdminData implements UserDetails{
 			this.message = message;
 			this.status = status;
 			this.role = Stream.of(role).map(SimpleGrantedAuthority::new).collect(Collectors.toList())  ;
+			this.authority = this.role.get(0).getAuthority();
+		}
+
+
+		public LoginAdminData(String token, Object uId, String email, String password, String message,
+				List<GrantedAuthority> role, String authority, int status) {
+			super();
+			this.token = token;
+			UId = uId;
+			this.email = email;
+			this.password = password;
+			this.message = message;
+			this.role = role;
+			this.authority = authority;
+			this.status = status;
 		}
 
 
