@@ -2,6 +2,7 @@ package com.divatt.designer.entity.product;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Map;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -54,7 +55,7 @@ public class ProductMasterEntity {
 	//@NotEmpty(message = "Stock On Hand Required")
 	private StandardSOH standeredSOH[];
 	private Integer customizationSOH;
-	private ExtraSpecifications extraSpecifications;
+	private Object extraSpecifications;
 	//@NotEmpty(message = "Product Specification Required")
 	private Specification specifications;
 	private Boolean isSubmitted;
@@ -88,7 +89,7 @@ public class ProductMasterEntity {
 			Boolean customization, PurchaseEntity purchaseQuantity,
 			@NotEmpty(message = "Price Type Required") String priceType, Float taxPercentage, Boolean taxInclusive,
 			Boolean giftWrap, GiftEntity giftWrapAmount, PriceEntity price, ImagesEntity[] images,
-			StandardSOH[] standeredSOH, Integer customizationSOH, ExtraSpecifications extraSpecifications,
+			StandardSOH[] standeredSOH, Integer customizationSOH, Object extraSpecifications,
 			Specification specifications, Boolean isSubmitted, Boolean isApprove, Boolean isActive, Boolean isDeleted,
 			Date createdOn, String createdBy, String submittedBy, Date submittedOn, String updatedBy, Date updatedOn,
 			@NotEmpty(message = "Approval Name Required") String approvedBy, Date approvedOn, String comment,
@@ -267,10 +268,10 @@ public class ProductMasterEntity {
 	public void setCustomizationSOH(Integer customizationSOH) {
 		this.customizationSOH = customizationSOH;
 	}
-	public ExtraSpecifications getExtraSpecifications() {
+	public Object getExtraSpecifications() {
 		return extraSpecifications;
 	}
-	public void setExtraSpecifications(ExtraSpecifications extraSpecifications) {
+	public void setExtraSpecifications(Object extraSpecifications) {
 		this.extraSpecifications = extraSpecifications;
 	}
 	public Specification getSpecifications() {
