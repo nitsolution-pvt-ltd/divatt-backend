@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				try {
 					username = this.jwtUtil.extractUsername(jwtToken);
 				} catch (Exception e) {
-					throw new CustomException("token is not validated");
+					throw new CustomException("The Token Has Been Expired");
 				}
 				
 				
@@ -91,7 +91,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 						if(findByEmail1.isPresent()) {
 							this.userDetails = loginUserDetails.loadUserByUsername(username);
 						}else {
-							throw new CustomException("Token not valid");
+							throw new CustomException("The Token Has Been Expired");
 						}
 					}
 						
@@ -105,7 +105,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 				}
 				else {
-					throw new CustomException("token is not validated");
+					throw new CustomException("The Token Has Been Expired");
 				}
 				
 			}
