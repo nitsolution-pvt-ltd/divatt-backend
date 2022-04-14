@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.divatt.user.config.YMLConfig;
@@ -29,7 +31,11 @@ public class UserApplication implements CommandLineRunner{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserApplication.class);
 	
-	
+	@Bean
+	public BCryptPasswordEncoder bcryptPassword() {
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		return passwordEncoder;
+	}
 	
 	@Override
 	public void run(String... args) throws Exception {
