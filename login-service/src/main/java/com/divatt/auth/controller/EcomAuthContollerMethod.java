@@ -22,7 +22,7 @@ public interface EcomAuthContollerMethod {
 	public GlobalResponse mailForgotPasswordLink(@PathVariable("email") String email) ;
 	public GlobalResponse resetPassword(@PathVariable("link") String link, @PathVariable("linkTime") String linkTime, @RequestBody GlobalEntity globalEntity);
 	public GlobalResponse changePassword(@RequestBody GlobalEntity globalEntity,@RequestHeader(name = "Authorization") String token);
-	public ResponseEntity<?> addUser(@Valid @RequestBody UserLoginEntity userLoginEntity,Errors error);
+	
 	public static boolean check() throws ClassNotFoundException {
 		Class<?> forName = Class.forName("com.divatt.auth.controller.EcomAuthController");
 		int MCount = forName.getDeclaredMethods().length;
