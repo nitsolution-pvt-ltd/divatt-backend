@@ -21,6 +21,7 @@ public class LoginUserData implements UserDetails{
 	private String message;
 	private List<GrantedAuthority> role;
 	private int status;
+	private String authority;
 
 	public LoginUserData() {
 		super();
@@ -45,6 +46,7 @@ public class LoginUserData implements UserDetails{
 		this.message = message;
 		this.role = role;
 		this.status = status;
+		this.authority = this.role.get(0).getAuthority();
 	}
 	
 	

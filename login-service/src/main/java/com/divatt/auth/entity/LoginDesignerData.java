@@ -27,6 +27,7 @@ public class LoginDesignerData implements UserDetails{
 	private Boolean isProfileCompleated;
 	private Boolean isProfileSubmitted;
 	private String authToken;
+	private String authority;
 	
 	
 	
@@ -54,6 +55,7 @@ public class LoginDesignerData implements UserDetails{
 		this.isProfileCompleated = isProfileCompleated;
 		this.isProfileSubmitted = isProfileSubmitted;
 		this.authToken = authToken;
+		this.authority = this.role.get(0).getAuthority();
 	}
 
 
