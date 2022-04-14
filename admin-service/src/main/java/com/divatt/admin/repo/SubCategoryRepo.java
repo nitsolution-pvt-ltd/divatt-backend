@@ -25,7 +25,7 @@ public interface SubCategoryRepo extends MongoRepository<SubCategoryEntity,Integ
 //	Page<SubCategoryEntity> findEmployeeByNameAndBand(String id, String parentId);
 //	
 	@Query(value = "{ $or: [ { 'categoryName' : {$regex:?0,$options:'i'} }, { 'categoryDescrition' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'categoryImage' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
-    Page<SubCategoryEntity> SearchAndfindByParentIdNot(String sortKey, Boolean isDeleted, String parentId,Pageable pageable);
+    Page<SubCategoryEntity> SearchAndfindByIsDeletedAndParentIdNot(String sortKey, Boolean isDeleted, String parentId,Pageable pageable);
 
 	
 

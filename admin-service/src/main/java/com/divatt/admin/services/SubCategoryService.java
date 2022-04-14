@@ -84,7 +84,7 @@ public class SubCategoryService {
 				findAll = subCategoryRepo.findByIsDeletedAndParentIdNot(isDeleted, "0", pagingSort);
 
 			} else {
-				findAll = subCategoryRepo.SearchAndfindByParentIdNot(keyword, isDeleted, "0", pagingSort);
+				findAll = subCategoryRepo.SearchAndfindByIsDeletedAndParentIdNot(keyword, isDeleted, "0", pagingSort);
 
 			}
 
@@ -100,11 +100,18 @@ public class SubCategoryService {
 //						return subCategoryEntity;
 //				}).collect(Collectors.toList());
 //				 Page<SubCategoryEntity> list=new Page<>(page,limit,lists);
-
-			Page<SubCategoryEntity> map = findAll.map(e -> {
-				SubCategoryEntity subCategoryEntity = subCategoryRepo.findById(Integer.parseInt(e.getParentId())).get();
-				subCategoryEntity.setSubCategory(e);
-				return subCategoryEntity;
+			System.out.println("findAll**************----------------- "+findAll);
+			
+			Page<SubCategoryEntity> map = findAll
+					.map(e -> {
+				try {
+					SubCategoryEntity subCategoryEntity = subCategoryRepo.findById(Integer.parseInt(e.getParentId())).get();
+					subCategoryEntity.setSubCategory(e);
+					return subCategoryEntity;
+				}catch(Exception z) {
+					return e;
+				}
+				
 			});
 
 
