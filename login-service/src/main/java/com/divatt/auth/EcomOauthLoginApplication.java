@@ -16,21 +16,20 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import com.divatt.auth.config.YMLConfig;
-import com.divatt.auth.controller.EcomAuthContollerMethod;
-import com.divatt.auth.controller.EcomAuthController;
-import com.divatt.auth.exception.CustomException;
+
+
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
-@EnableEurekaClient
 @EnableWebMvc
 @EnableSwagger2
 public class EcomOauthLoginApplication implements CommandLineRunner{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EcomOauthLoginApplication.class);
 	
+	@Autowired
+//	private YMLConfig myConfig;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(EcomOauthLoginApplication.class, args);
@@ -40,27 +39,23 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		
-		EcomAuthController ecomAuthController = new EcomAuthController();
-		
-		
-		
-		if(! (ecomAuthController instanceof EcomAuthContollerMethod))
-			System.exit(0);
-//		if(!EcomAuthContollerMethod.check())
+//		EcomAuthController ecomAuthController = new EcomAuthController();
+//		
+//		
+//		
+//		if(! (ecomAuthController instanceof EcomAuthContollerMethod))
 //			System.exit(0);
-		
-		LOGGER.info("-------------------------------------");
-		LOGGER.info("name : "+myConfig.getName());
-		LOGGER.info("environment : "+myConfig.getEnvironment());
-		LOGGER.info("contextpath : "+myConfig.getContextpath());
-		LOGGER.info("servers: "+myConfig.getServers());
-		LOGGER.info("-------------------------------------");
+////		if(!EcomAuthContollerMethod.check())
+////			System.exit(0);
+//		
+//		LOGGER.info("-------------------------------------");
+//		LOGGER.info("name : "+myConfig.getName());
+//		LOGGER.info("environment : "+myConfig.getEnvironment());
+//		LOGGER.info("contextpath : "+myConfig.getContextpath());
+//		LOGGER.info("servers: "+myConfig.getServers());
+//		LOGGER.info("-------------------------------------");
 	}
 	
-	
-	
-	@Autowired
-	private YMLConfig myConfig;
 	
 	@Bean
 	public BCryptPasswordEncoder bcryptPassword() {

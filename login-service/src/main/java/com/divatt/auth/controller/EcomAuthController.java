@@ -415,31 +415,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	}
 	 
 	
-	@PostMapping("/user/add")
-	public ResponseEntity<?> addUser(@Valid @RequestBody UserLoginEntity userLoginEntity,Errors error){
-		LOGGER.info("Inside - EcomAuthController.addUser()");
-		try {		
-			if (error.hasErrors()) {
-				throw new CustomException("Check The Fields");
-			}
-			userLoginRepo.findByEmail(userLoginEntity.getEmail()).ifPresentOrElse((data)->new CustomException("Email id is already Present"), null);
-			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
-			Date date = new Date();
-			formatter.format(date);
-			userLoginEntity.setUsername(userLoginEntity.getEmail());
-			userLoginEntity.setIsActive(true);
-			userLoginEntity.setIsDeleted(false);
-			userLoginEntity.setCreatedOn(date.toString());
-			userLoginEntity.setProfilePic("Pic.jpg");
-			userLoginEntity.setRegisterType("Self");
-			userLoginRepo.save(userLoginEntity);
-			return ResponseEntity.ok(new GlobalResponse("SUCCESS","Added Successfully",200));
-		}catch(Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-		
-		
-	}
+	
 	
 	
 	@GetMapping("/admin/testapi")
@@ -452,6 +428,9 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 //		return theFirstAndOnlyInterface.getMethods().length;
 		  return theFirstAndOnlyInterface.getMethods().length + " " + MCount;
 	}
+
+
+	
 	
 	
 }
