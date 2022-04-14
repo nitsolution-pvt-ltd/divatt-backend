@@ -2,6 +2,7 @@ package com.divatt.admin.services;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.SubCategoryRepo;
@@ -100,7 +102,7 @@ public class SubCategoryService {
 //						return subCategoryEntity;
 //				}).collect(Collectors.toList());
 //				 Page<SubCategoryEntity> list=new Page<>(page,limit,lists);
-			System.out.println("findAll**************----------------- "+findAll);
+//			System.out.println("findAll**************----------------- "+findAll);
 			
 			Page<SubCategoryEntity> map = findAll
 					.map(e -> {
@@ -224,6 +226,26 @@ public class SubCategoryService {
 
 				return new GlobalResponse("SUCCESS", "Status Changed Successfully", 200);
 			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public GlobalResponse putSubCategoryMulDeleteService(List<Integer> cateID) {
+		try {
+			for (Integer CateIdRowId : cateID) {
+
+				Optional<SubCategoryEntity> findById = subCategoryRepo.findById(CateIdRowId);
+				SubCategoryEntity filterCatDetails = findById.get();
+
+				if (filterCatDetails.getId() != null) {
+					filterCatDetails.setIsDeleted(true);
+					filterCatDetails.setCreatedOn(new Date());
+					subCategoryRepo.save(filterCatDetails);
+				}
+			}
+			return new GlobalResponse("SUCCESS", "Subcategory Deleted Successfully", 200);
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
