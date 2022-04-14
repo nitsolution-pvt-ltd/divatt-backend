@@ -161,7 +161,6 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 		
-		
 	}
 
 }
