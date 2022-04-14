@@ -1,5 +1,6 @@
 package com.divatt.admin.contoller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -113,6 +114,20 @@ public class SubCategoryController {
 				return this.subCategoryService.putSubCategoryStatusService(subCategoryEntity.getId());
 			}else {
 				throw new CustomException("SubCategory Not Found!");
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}	
+	}
+	
+	@PutMapping("/muldelete")
+	public GlobalResponse putSubCategoryMulDelete(@RequestBody() List<Integer> CateID) {
+		LOGGER.info("Inside - SubCategoryController.putSubCategoryMulDelete()");
+		try {
+			if (!CateID.equals(null)){
+				return this.subCategoryService.putSubCategoryMulDeleteService(CateID);
+			}else {
+				throw new CustomException("Subcategory Id Not Found!");
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

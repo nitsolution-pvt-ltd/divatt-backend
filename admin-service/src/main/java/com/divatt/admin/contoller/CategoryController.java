@@ -1,5 +1,6 @@
 package com.divatt.admin.contoller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -113,6 +114,20 @@ public class CategoryController {
 				return this.categoryService.putCategoryStatusService(categoryEntity.getId());
 			}else {
 				throw new CustomException("Category Not Found!");
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}	
+	}
+	
+	@PutMapping("/muldelete")
+	public GlobalResponse putCategoryMulDelete(@RequestBody() List<Integer> CateID) {
+		LOGGER.info("Inside - CategoryController.putCategoryMulDelete()");
+		try {
+			if (!CateID.equals(null)){
+				return this.categoryService.putCategoryMulDeleteService(CateID);
+			}else {
+				throw new CustomException("Category Id Not Found!");
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
