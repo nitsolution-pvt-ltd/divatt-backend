@@ -26,7 +26,7 @@ public class LoginDesignerData implements UserDetails{
 	private Boolean isApproved;
 	private Boolean isProfileCompleated;
 	private Boolean isProfileSubmitted;
-	private String authToken;
+	private String token;
 	private String authority;
 	
 	
@@ -43,7 +43,7 @@ public class LoginDesignerData implements UserDetails{
 
 	
 	public LoginDesignerData(Object uId, String email, String password, String message, List<GrantedAuthority> role,
-			int status, Boolean isApproved, Boolean isProfileCompleated, Boolean isProfileSubmitted, String authToken) {
+			int status, Boolean isApproved, Boolean isProfileCompleated, Boolean isProfileSubmitted, String token) {
 		super();
 		UId = uId;
 		this.email = email;
@@ -54,7 +54,7 @@ public class LoginDesignerData implements UserDetails{
 		this.isApproved = isApproved;
 		this.isProfileCompleated = isProfileCompleated;
 		this.isProfileSubmitted = isProfileSubmitted;
-		this.authToken = authToken;
+		this.token = token;
 		this.authority = this.role.get(0).getAuthority();
 	}
 
@@ -199,15 +199,34 @@ public class LoginDesignerData implements UserDetails{
 
 
 
-	public String getAuthToken() {
-		return authToken;
+	
+
+
+
+
+	public String getToken() {
+		return token;
 	}
 
 
 
 
-	public void setAuthToken(String authToken) {
-		this.authToken = authToken;
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+
+
+
+	public String getAuthority() {
+		return authority;
+	}
+
+
+
+
+	public void setAuthority(String authority) {
+		this.authority = authority;
 	}
 
 
@@ -220,11 +239,16 @@ public class LoginDesignerData implements UserDetails{
 
 
 
+
+
+
+
 	@Override
 	public String toString() {
 		return "LoginDesignerData [UId=" + UId + ", email=" + email + ", password=" + password + ", message=" + message
 				+ ", role=" + role + ", status=" + status + ", isApproved=" + isApproved + ", isProfileCompleated="
-				+ isProfileCompleated + ", isProfileSubmitted=" + isProfileSubmitted + ", authToken=" + authToken + "]";
+				+ isProfileCompleated + ", isProfileSubmitted=" + isProfileSubmitted + ", token=" + token
+				+ ", authority=" + authority + "]";
 	}
 
 

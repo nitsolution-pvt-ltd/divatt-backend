@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,6 +49,9 @@ public class UserController {
 	@Autowired
 	private WishlistRepo wishlistRepo;
 
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
 	@Autowired
 	private UserService userService;
 
@@ -151,6 +155,7 @@ public class UserController {
 			formatter.format(date);
 			userLoginEntity.setuId((long)sequenceGenerator.getNextSequence(UserLoginEntity.SEQUENCE_NAME));
 			userLoginEntity.setUsername(userLoginEntity.getEmail());
+			userLoginEntity.setPassword(passwordEncoder.encode(userLoginEntity.getPassword()));
 			userLoginEntity.setIsActive(true);
 			userLoginEntity.setIsDeleted(false);
 			userLoginEntity.setCreatedOn(date.toString());
