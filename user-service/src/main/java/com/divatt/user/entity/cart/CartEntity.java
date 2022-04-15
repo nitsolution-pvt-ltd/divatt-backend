@@ -2,6 +2,8 @@ package com.divatt.user.entity.cart;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -11,16 +13,19 @@ public class CartEntity {
 	
 	@Field(value = "_id")
 	private Integer cartId;
-	
+	@NotNull(message = "User Id required")
 	@Field(value = "user_id")
 	private Integer userId;
 	
+	@NotNull(message = "Product Id must not be null")
 	@Field(value = "product_Id") 
 	private Integer productId;
 	
+	@NotNull(message = "Product Quantity should be mention")
 	@Field(value = "qty")
 	private Integer productQty;
 	
+	//@NotNull(message = "")
 	@Field(value = "added_on")
 	private Date addedDate;
 	public CartEntity() {

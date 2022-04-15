@@ -61,6 +61,20 @@ public class LoginDesignerData implements UserDetails{
 
 
 
+	public String getAuthority() {
+		return authority;
+	}
+
+
+
+
+	public void setAuthority(String authority) {
+		this.authority = authority;
+	}
+
+
+
+
 	public LoginDesignerData(DesignerLoginEntity vendor) {
 		this.email = vendor.getEmail();
 		this.password = vendor.getPassword();

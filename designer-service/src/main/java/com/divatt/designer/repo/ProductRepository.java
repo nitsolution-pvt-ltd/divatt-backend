@@ -22,7 +22,7 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	Page<ProductMasterEntity> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
 
-	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1 }]}")
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'gender' : {$regex:?0,$options:'i'} },{ 'productDescription' : {$regex:?0,$options:'i'} },{ 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1 }]}")
 	Page<ProductMasterEntity> Search(String sortkey, Boolean isDeleted, Pageable pagingSort);
 
 //	@Query("{'productId' : { '$in' : productIdList} }")
