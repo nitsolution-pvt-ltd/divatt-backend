@@ -96,8 +96,9 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@GetMapping("/list")
-	public Map<String, Object> getAllProductDetails( @RequestParam(defaultValue = "0") int page,
+	public Map<String, Object> getAllProductDetails(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
@@ -109,12 +110,12 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@PostMapping("/getProductList")
 	public Map<String, Object> productList(@RequestBody JSONObject productIdList,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
-			@RequestParam Optional<String> sortBy)
-			{
+			@RequestParam Optional<String> sortBy) {
 		try {
 
 			String productId = productIdList.get("productId").toString();
@@ -123,25 +124,22 @@ public class ProductController implements ProductServiceImp {
 			JSONParser jsonParser = new JSONParser();
 			Object object = (Object) jsonParser.parse(productId);
 			JSONArray jsonArray = (JSONArray) object;
-			int limit=jsonArray.size();
-			int page=0;
-//			int limit = jsonArray.size();
-//			int page = 0;
+			int limit = jsonArray.size();
+			int page = 0;
+
 			List<Integer> list = new ArrayList<Integer>();
 			for (int i = 0; i < jsonArray.size(); i++) {
 				Object object2 = jsonArray.get(i);
 				int a = Integer.parseInt(object2.toString());
 				list.add(a);
 			}
-			if(getLimit!=0)
-			{
-				limit=getLimit;
+			if (getLimit != 0) {
+				limit = getLimit;
 			}
 			if (getPage != 0) {
 				page = getPage;
 			}
-			LOGGER.info("Inside- ProductController.productDelete()"+getLimit+"---"+limit);
-//			page = (Integer) productIdList.get("page");
+
 			return productService.allWishlistProductData(list, sortBy, page, sort, sortName, isDeleted, limit);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

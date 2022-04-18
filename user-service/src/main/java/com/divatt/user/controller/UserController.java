@@ -188,5 +188,18 @@ public class UserController {
 		}
 
 	}
+	
+	@RequestMapping(value = { "/cart/getUserCart" }, method = RequestMethod.GET)
+	public ResponseEntity<?> getUserCartRestDetails(@RequestBody org.json.simple.JSONObject getWishlist,
+			@RequestParam(defaultValue = "") Integer userId) {
+		LOGGER.info("Inside - UserController.getUserCartRestDetails()");
+
+		try {
+			return this.userService.getUserCartDetailsService(getWishlist, userId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
 
 }

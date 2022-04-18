@@ -42,7 +42,6 @@ public class ProductService {
 	@Autowired
 	private CustomFunction customFunction;
 
-	
 	@Autowired
 	private MongoOperations mongoOperations;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
@@ -57,47 +56,35 @@ public class ProductService {
 	}
 
 	public GlobalResponce addData(ProductMasterEntity productData) {
-		try
-		{
-			Query query= new Query();
+		try {
+			Query query = new Query();
 			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
-			List<DesignerProfileEntity> designerProfileInfo= mongoOperations.find(query, DesignerProfileEntity.class);
-			if(!designerProfileInfo.isEmpty())
-			{
-				Query query1= new Query();
+			List<DesignerProfileEntity> designerProfileInfo = mongoOperations.find(query, DesignerProfileEntity.class);
+			if (!designerProfileInfo.isEmpty()) {
+				Query query1 = new Query();
 				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()));
-				List<ProductMasterEntity> productInfo= mongoOperations.find(query1, ProductMasterEntity.class);
-				//System.out.println(productInfo);
-				if(productInfo.isEmpty())
-				{
+				List<ProductMasterEntity> productInfo = mongoOperations.find(query1, ProductMasterEntity.class);
+				// System.out.println(productInfo);
+				if (productInfo.isEmpty()) {
 					productRepo.save(customFunction.filterDataEntity(productData));
 					return new GlobalResponce("Success", "Product Added Successfully", 200);
-				}
-				else
-				{
-					
-					try
-					{
-						if(!productInfo.get(productInfo.size()-1).getProductName().equals(productData.getProductName()))
-					{
-						productRepo.save(customFunction.filterDataEntity(productData));
-						return new GlobalResponce("Success", "Product Added Successfully", 200);
-					}
+				} else {
+
+					try {
+						if (!productInfo.get(productInfo.size() - 1).getProductName()
+								.equals(productData.getProductName())) {
+							productRepo.save(customFunction.filterDataEntity(productData));
+							return new GlobalResponce("Success", "Product Added Successfully", 200);
+						}
 						return new GlobalResponce("ERROR!!", "Product Already Exist", 400);
-					}
-					catch(Exception e)
-					{
+					} catch (Exception e) {
 						throw new CustomException("Product Already Exist");
 					}
 				}
-			}
-			else
-			{
+			} else {
 				return new GlobalResponce("ERROR", "Designer Id Does not Exist!!", 400);
 			}
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -233,13 +220,13 @@ public class ProductService {
 			String sort, String sortName, Boolean isDeleted, int limit) {
 		try {
 			if (productIdList.isEmpty()) {
-				throw new CustomException("Product Not Found!");
+				throw new CustomException("Product not found!");
 			} else {
-				List<ProductMasterEntity> list = productIdList.stream().map(e -> productRepo.findById(e).get()).collect(Collectors.toList());
+				List<ProductMasterEntity> list = productRepo.findByProductIdIn(productIdList);
 
 				int CountData = (int) list.size();
-				if(limit==0) {
-					limit=CountData;
+				if (limit == 0) {
+					limit = CountData;
 				}
 
 				Pageable pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
@@ -259,7 +246,7 @@ public class ProductService {
 				response.put("perPageElement", findAll.getNumberOfElements());
 
 				if (findAll.getSize() <= 0) {
-					throw new CustomException("Product Not Found!");
+					throw new CustomException("Product not found!");
 				} else {
 					return response;
 				}

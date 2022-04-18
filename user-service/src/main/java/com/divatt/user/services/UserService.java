@@ -150,15 +150,17 @@ public class UserService {
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
-
 			JsonObject wishlistObj = new JsonObject();
+
 			wishlistObj.addProperty("productId", productIds.toString());
 			wishlistObj.addProperty("limit", Integer.parseInt(getWishlist.get("limit").toString()));
 			wishlistObj.addProperty("page", Integer.parseInt(getWishlist.get("page").toString()));
-
-			Unirest.setTimeouts(0, 0);
-			HttpResponse<JsonNode> response = Unirest.post("http://192.168.29.72:8083/dev/product/getProductList")
-					.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
+			HttpResponse<JsonNode> response = null;
+			if (productIds != null) {
+				Unirest.setTimeouts(0, 0);
+				response = Unirest.post("http://localhost:8083/dev/product/getProductList")
+						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
+			}
 			return ResponseEntity.ok(new Json(response.getBody().toString()));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -166,7 +168,6 @@ public class UserService {
 
 	}
 
-	
 	public GlobalResponse postCartDetailsService(UserCartEntity userCartEntity) {
 		LOGGER.info("Inside - UserService.postCartDetailsService()");
 
@@ -204,6 +205,36 @@ public class UserService {
 				return new GlobalResponse("SUCCESS", "Cart removed succesfully", 200);
 			}
 
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	
+	public ResponseEntity<?> getUserCartDetailsService(@RequestBody JSONObject getCart, Integer userId)
+			throws UnirestException {
+
+		try {
+
+			List<UserCartEntity> findByUserId = userCartRepo.findByUserId(userId);
+			List<Integer> productIds = new ArrayList<>();
+
+			findByUserId.forEach((e) -> {
+				productIds.add(e.getProductId());
+			});
+			JsonObject cartObj = new JsonObject();
+
+			cartObj.addProperty("productId", productIds.toString());
+			cartObj.addProperty("limit", Integer.parseInt(getCart.get("limit").toString()));
+			cartObj.addProperty("page", Integer.parseInt(getCart.get("page").toString()));
+			HttpResponse<JsonNode> response = null;
+			if (productIds != null) {
+				Unirest.setTimeouts(0, 0);
+				response = Unirest.post("http://localhost:8083/dev/product/getProductList")
+						.header("Content-Type", "application/json").body(cartObj.toString()).asJson();
+			}
+			return ResponseEntity.ok(new Json(response.getBody().toString()));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
