@@ -37,18 +37,7 @@ public class CustomFunction {
 		try
 		{
 			ProductMasterEntity filterProductEntity= new ProductMasterEntity();
-//			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
-			if(!(productRepo.findByProductName(productData.getProductName()).isPresent()))
-			{
-				
-				filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
-				//filterProductEntity.setSKQCode(randomString.getAlphaNumericString(10));
-			}
-			else
-			{
-				ProductMasterEntity product=productRepo.findByProductName(productData.getProductName()).get();
-				filterProductEntity.setProductId(product.getProductId());
-			}
+			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
 			filterProductEntity.setSKQCode(randomString.getAlphaNumericString(10));
 			filterProductEntity.setAge(productData.getAge());
 			filterProductEntity.setApprovedBy(productData.getApprovedBy());

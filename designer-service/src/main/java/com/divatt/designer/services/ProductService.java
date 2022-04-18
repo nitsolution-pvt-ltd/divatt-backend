@@ -59,30 +59,24 @@ public class ProductService {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
-			List<DesignerProfileEntity> designerProfileInfo = mongoOperations.find(query, DesignerProfileEntity.class);
-			if (!designerProfileInfo.isEmpty()) {
-				Query query1 = new Query();
-				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()));
-				List<ProductMasterEntity> productInfo = mongoOperations.find(query1, ProductMasterEntity.class);
-				// System.out.println(productInfo);
-				if (productInfo.isEmpty()) {
+			List<DesignerProfileEntity> designerProfileInfo= mongoOperations.find(query, DesignerProfileEntity.class);
+			if(!designerProfileInfo.isEmpty())
+			{
+				Query query1= new Query();
+				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName").is(productData.getProductName()));
+				List<ProductMasterEntity> productInfo= mongoOperations.find(query1, ProductMasterEntity.class);
+				//System.out.println(productInfo.size());
+				if(productInfo.isEmpty())
+				{
 					productRepo.save(customFunction.filterDataEntity(productData));
-					return new GlobalResponce("Success", "Product Added Successfully", 200);
-				} else {
-
-					try {
-						if (!productInfo.get(productInfo.size() - 1).getProductName()
-								.equals(productData.getProductName())) {
-							productRepo.save(customFunction.filterDataEntity(productData));
-							return new GlobalResponce("Success", "Product Added Successfully", 200);
-						}
-						return new GlobalResponce("ERROR!!", "Product Already Exist", 400);
-					} catch (Exception e) {
-						throw new CustomException("Product Already Exist");
-					}
+					return new  GlobalResponce("Success!!", "Product added successfully", 200);
+				}
+				else
+				{
+					return new GlobalResponce("Error", "Product does exist", 400);
 				}
 			} else {
-				return new GlobalResponce("ERROR", "Designer Id Does not Exist!!", 400);
+				return new GlobalResponce("ERROR", "Designerid does not exist!!", 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
