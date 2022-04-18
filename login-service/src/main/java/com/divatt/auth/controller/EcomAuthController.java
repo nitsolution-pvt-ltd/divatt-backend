@@ -111,7 +111,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 				if(e.getMessage().equals("Bad credentials"))
 					throw new CustomException("Please Check The Username And Password");
 				else
-					throw new CustomException("Internal Server Error");
+					throw new CustomException(e.getMessage());
 					
 				
 			}
@@ -148,7 +148,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 					if(findByEmail.isPresent()) {
 						return ResponseEntity.ok(new LoginUserData(token,findByEmail.get().getuId(),findByEmail.get().getEmail(),findByEmail.get().getPassword(),"Login Successfully",Stream.of("USER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()) , 200));
 					}else {
-						throw new CustomException("Internal Server Error");
+						throw new CustomException("Email Not Found");
 					}
 //											.ifPresentOrElse((value)->{}, ()->{throw new CustomException("Internal Server Error");});
 					
@@ -200,7 +200,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 			String encodedString = Base64.getEncoder().encodeToString(format.getBytes());
 			byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
 			String decodedString = new String(decodedBytes);
-			String forgotPasswordLink = "https://dapp.nichetechnosolution.com/resetpassword/" + uuid.toString() + "/"+ format;
+			String forgotPasswordLink =  uuid.toString() + "/"+ format;
 			
 			//** CHECKING THE EMAIL IS PREASENT IN DATABASE **//
 			Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(email);
@@ -244,13 +244,13 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 				}else {
 					//** SEND MAIL IF DETAILS SAVE IN DATABASE **//
 					try {
-						mailService.sendEmail( findByUserName.get().getEmail(),"Forgot Password Link","Hi " + findByUserName.get().getFirst_name() + " "+ findByUserName.get().getLast_name() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+						mailService.sendEmail( findByUserName.get().getEmail(),"Forgot Password Link","Hi " + findByUserName.get().getFirst_name() + " "+ findByUserName.get().getLast_name() +" This is Your Code For Reset Password " + forgotPasswordLink,false);
 						
 					}catch(Exception e) {
 						try {
-							mailService.sendEmail( findByUserNameDesigner.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameDesigner.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+							mailService.sendEmail( findByUserNameDesigner.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameDesigner.get().getEmail() +" This is Your Code For Reset Password " + forgotPasswordLink,false);
 						}catch(Exception Z) {
-							mailService.sendEmail( findByUserNameUser.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameUser.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+							mailService.sendEmail( findByUserNameUser.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameUser.get().getEmail() +" This is Your Code For Reset Password " + forgotPasswordLink,false);
 						}
 						
 					}

@@ -27,6 +27,7 @@ import com.divatt.category.response.GlobalResponse;
 
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
+import com.divatt.user.entity.cart.CartEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repository.UserDesignerRepo;
 import com.divatt.user.repository.UserLoginRepo;
@@ -115,7 +116,19 @@ public class UserController {
 		}
 
 	}
-
+	
+//	@PostMapping("/cart/add")
+//	public GlobalResponse add(@Valid @RequestBody CartEntity cartData)
+//	{
+//		try
+//		{
+//			
+//		}
+//		catch(Exception e)
+//		{
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
 	@PostMapping("/follow")
 	public ResponseEntity<?> followDesigner(@Valid @RequestBody UserDesignerEntity userDesignerEntity) {
 		try {

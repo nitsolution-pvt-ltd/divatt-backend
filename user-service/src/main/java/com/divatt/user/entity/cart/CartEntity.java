@@ -4,13 +4,20 @@ import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import nonapi.io.github.classgraph.json.Id;
 
 @Document(collection = "tbl_user_cart")
 public class CartEntity {
 	
+
+	@Transient
+	public static final String SEQUENCE_NAME = "tbl_user_cart";
 	
+	@Id
 	@Field(value = "_id")
 	private Integer cartId;
 	@NotNull(message = "User Id required")

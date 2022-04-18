@@ -22,7 +22,6 @@ public class ProductMasterEntity {
 	public static final String SEQUENCE_NAME = "tbl_products";
 	
 	
-	//@NotEmpty(message = "Desginer ID Required")
 	private Integer designerId;
 	//@NotEmpty(message = "Category ID Required")
 	private Integer categoryId;
@@ -130,7 +129,7 @@ public class ProductMasterEntity {
 		this.approvedBy = approvedBy;
 		this.approvedOn = approvedOn;
 		this.comment = comment;
-		SKQCode = sKQCode;
+		this.SKQCode = sKQCode;
 	}
 	@Override
 	public String toString() {
