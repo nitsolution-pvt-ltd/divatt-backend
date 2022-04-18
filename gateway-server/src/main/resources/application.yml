@@ -33,6 +33,10 @@ spring:
         id: Designer
         predicates[0]: Path=/dev/product/**
       routes[6]:
+        uri: http://localhost:8083/dev/designer
+        id: Designer
+        predicates[0]: Path=/dev/designer/**
+      routes[7]:
         uri: http://localhost:8082/dev/user
         id: User
         predicates[0]: Path=/dev/user/**

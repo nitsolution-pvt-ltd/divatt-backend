@@ -435,8 +435,8 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 		}else if (role.equals("DESIGNER")) {
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(id);
 			if(findByEmail.isPresent()) {
-				
-				return ResponseEntity.ok(designerProfileRepo.findByDesignerId((long)findByEmail.get().getUid()));
+				//designerProfileRepo.findByDesignerId(Long.parseLong(findByEmail.get().getUid().toString()));
+				return ResponseEntity.ok(designerProfileRepo.findByDesignerId(Long.parseLong(findByEmail.get().getUid().toString())));
 			}else {
 				throw new CustomException("Email Not Present");
 			}
