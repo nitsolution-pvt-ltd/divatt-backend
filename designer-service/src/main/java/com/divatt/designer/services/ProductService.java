@@ -18,10 +18,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.divatt.designer.entity.product.ProductMasterEntity;
+import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
 import com.divatt.designer.repo.ProductRepository;
@@ -39,6 +42,9 @@ public class ProductService {
 	@Autowired
 	private CustomFunction customFunction;
 
+	
+	@Autowired
+	private MongoOperations mongoOperations;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
 	public List<ProductMasterEntity> allList() {
@@ -51,16 +57,47 @@ public class ProductService {
 	}
 
 	public GlobalResponce addData(ProductMasterEntity productData) {
-		try {
-			Optional<ProductMasterEntity> findByProductName = productRepo
-					.findByProductName(productData.getProductName());
-			if (findByProductName.isPresent()) {
-				return new GlobalResponce("ERROR", "Product Already Exist!", 400);
-			} else {
-				productRepo.save(customFunction.filterDataEntity(productData));
-				return new GlobalResponce("Success!!", "Added Successfully", 200);
+		try
+		{
+			Query query= new Query();
+			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
+			List<DesignerProfileEntity> designerProfileInfo= mongoOperations.find(query, DesignerProfileEntity.class);
+			if(!designerProfileInfo.isEmpty())
+			{
+				Query query1= new Query();
+				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()));
+				List<ProductMasterEntity> productInfo= mongoOperations.find(query1, ProductMasterEntity.class);
+				//System.out.println(productInfo);
+				if(productInfo.isEmpty())
+				{
+					productRepo.save(customFunction.filterDataEntity(productData));
+					return new GlobalResponce("Success", "Product Added Successfully", 200);
+				}
+				else
+				{
+					
+					try
+					{
+						if(!productInfo.get(productInfo.size()-1).getProductName().equals(productData.getProductName()))
+					{
+						productRepo.save(customFunction.filterDataEntity(productData));
+						return new GlobalResponce("Success", "Product Added Successfully", 200);
+					}
+						return new GlobalResponce("ERROR!!", "Product Already Exist", 400);
+					}
+					catch(Exception e)
+					{
+						throw new CustomException("Product Already Exist");
+					}
+				}
 			}
-		} catch (Exception e) {
+			else
+			{
+				return new GlobalResponce("ERROR", "Designer Id Does not Exist!!", 400);
+			}
+		}
+		catch(Exception e)
+		{
 			throw new CustomException(e.getMessage());
 		}
 	}

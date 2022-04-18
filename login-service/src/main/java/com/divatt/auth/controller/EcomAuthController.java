@@ -49,6 +49,7 @@ import com.divatt.auth.exception.CustomException;
 import com.divatt.auth.helper.JwtUtil;
 import com.divatt.auth.repo.AdminLoginRepository;
 import com.divatt.auth.repo.DesignerLoginRepo;
+import com.divatt.auth.repo.DesignerProfileRepo;
 import com.divatt.auth.repo.PasswordResetRepo;
 import com.divatt.auth.repo.UserLoginRepo;
 import com.divatt.auth.services.LoginUserDetails;
@@ -93,6 +94,9 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+	private DesignerProfileRepo designerProfileRepo;
 
 	Logger LOGGER = LoggerFactory.getLogger(EcomAuthController.class);
 	
@@ -111,7 +115,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 				if(e.getMessage().equals("Bad credentials"))
 					throw new CustomException("Please Check The Username And Password");
 				else
-					throw new CustomException("Internal Server Error");
+					throw new CustomException(e.getMessage());
 					
 				
 			}
@@ -148,7 +152,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 					if(findByEmail.isPresent()) {
 						return ResponseEntity.ok(new LoginUserData(token,findByEmail.get().getuId(),findByEmail.get().getEmail(),findByEmail.get().getPassword(),"Login Successfully",Stream.of("USER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()) , 200));
 					}else {
-						throw new CustomException("Internal Server Error");
+						throw new CustomException("Email Not Found");
 					}
 //											.ifPresentOrElse((value)->{}, ()->{throw new CustomException("Internal Server Error");});
 					
@@ -200,7 +204,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 			String encodedString = Base64.getEncoder().encodeToString(format.getBytes());
 			byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
 			String decodedString = new String(decodedBytes);
-			String forgotPasswordLink = "https://dapp.nichetechnosolution.com/resetpassword/" + uuid.toString() + "/"+ format;
+			String forgotPasswordLink =  uuid.toString() + "/"+ format;
 			
 			//** CHECKING THE EMAIL IS PREASENT IN DATABASE **//
 			Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(email);
@@ -244,13 +248,13 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 				}else {
 					//** SEND MAIL IF DETAILS SAVE IN DATABASE **//
 					try {
-						mailService.sendEmail( findByUserName.get().getEmail(),"Forgot Password Link","Hi " + findByUserName.get().getFirst_name() + " "+ findByUserName.get().getLast_name() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+						mailService.sendEmail( findByUserName.get().getEmail(),"Forgot Password Link","Hi " + findByUserName.get().getFirst_name() + " "+ findByUserName.get().getLast_name() +" This is Your Code For Reset Password " + forgotPasswordLink,false);
 						
 					}catch(Exception e) {
 						try {
-							mailService.sendEmail( findByUserNameDesigner.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameDesigner.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+							mailService.sendEmail( findByUserNameDesigner.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameDesigner.get().getEmail() +" This is Your Code For Reset Password " + forgotPasswordLink,false);
 						}catch(Exception Z) {
-							mailService.sendEmail( findByUserNameUser.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameUser.get().getEmail() +"<br>       This is Your Link For Reset Password " + forgotPasswordLink,false);
+							mailService.sendEmail( findByUserNameUser.get().getEmail(),"Forgot Password Link","Hi " +findByUserNameUser.get().getEmail() +" This is Your Code For Reset Password " + forgotPasswordLink,false);
 						}
 						
 					}
@@ -431,7 +435,8 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 		}else if (role.equals("DESIGNER")) {
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(id);
 			if(findByEmail.isPresent()) {
-				return ResponseEntity.ok(findByEmail);
+				//designerProfileRepo.findByDesignerId(Long.parseLong(findByEmail.get().getUid().toString()));
+				return ResponseEntity.ok(designerProfileRepo.findByDesignerId(Long.parseLong(findByEmail.get().getUid().toString())));
 			}else {
 				throw new CustomException("Email Not Present");
 			}

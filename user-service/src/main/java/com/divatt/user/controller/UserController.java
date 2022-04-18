@@ -109,7 +109,19 @@ public class UserController {
 		}
 
 	}
-
+	
+//	@PostMapping("/cart/add")
+//	public GlobalResponse add(@Valid @RequestBody CartEntity cartData)
+//	{
+//		try
+//		{
+//			
+//		}
+//		catch(Exception e)
+//		{
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
 	@PostMapping("/follow")
 	public ResponseEntity<?> followDesigner(@Valid @RequestBody UserDesignerEntity userDesignerEntity) {
 		try {
