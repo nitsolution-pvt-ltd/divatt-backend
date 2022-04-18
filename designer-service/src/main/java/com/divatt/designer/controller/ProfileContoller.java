@@ -58,13 +58,14 @@ public class ProfileContoller {
 			designerLoginEntity.setIsProfileCompleated(false);
 			designerLoginEntity.setIsProfileSubmitted(false);
 			if(designerLoginRepo.save(designerLoginEntity)!=null) {
+				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getUid().toString()));
 				designerProfileEntity.setdId((long)sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
 				DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
 				designerProfile.setPassword(bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 				designerProfileEntity.setDesignerProfile(designerProfile);
 				designerProfileRepo.save(designerProfileEntity);	
 			}
-			return ResponseEntity.ok(new GlobalResponce("SUCCESS","Data Added Successfully",200));
+			return ResponseEntity.ok(new GlobalResponce("SUCCESS","Register Successfully",200));
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}

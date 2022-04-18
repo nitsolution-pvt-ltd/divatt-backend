@@ -3,7 +3,8 @@ package com.divatt.auth.repo;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.divatt.auth.entity.DesignerProfile;
+import com.divatt.auth.entity.DesignerProfileEntity;
 
-public interface DesignerProfileRepo extends MongoRepository<DesignerProfile, Long>{
-	DesignerProfile findByDesignerId(Long designerId);
+public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEntity, Long>{
+	DesignerProfileEntity findByDesignerId(Long designerId);
 }

@@ -39,6 +39,7 @@ import com.divatt.auth.entity.GlobalEntity;
 import com.divatt.auth.entity.GlobalResponse;
 import com.divatt.auth.entity.AdminLoginEntity;
 import com.divatt.auth.entity.DesignerLoginEntity;
+import com.divatt.auth.entity.DesignerProfile;
 import com.divatt.auth.entity.LoginAdminData;
 import com.divatt.auth.entity.LoginDesignerData;
 import com.divatt.auth.entity.LoginUserData;
@@ -435,7 +436,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 		}else if (role.equals("DESIGNER")) {
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(id);
 			if(findByEmail.isPresent()) {
-				//designerProfileRepo.findByDesignerId(Long.parseLong(findByEmail.get().getUid().toString()));
+				System.out.println(Long.parseLong(findByEmail.get().getUid().toString()));
 				return ResponseEntity.ok(designerProfileRepo.findByDesignerId(Long.parseLong(findByEmail.get().getUid().toString())));
 			}else {
 				throw new CustomException("Email Not Present");
