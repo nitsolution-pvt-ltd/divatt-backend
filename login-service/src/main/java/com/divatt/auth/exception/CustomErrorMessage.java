@@ -5,20 +5,10 @@ public class CustomErrorMessage {
 	private int status;
 	private String message;
 	private long timeStamp;
-	public CustomErrorMessage() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public CustomErrorMessage(int status, String message, long timeStamp) {
-		super();
-		this.status = status;
-		this.message = message;
-		this.timeStamp = timeStamp;
-	}
 	public int getStatus() {
 		return status;
 	}
-	public void setStatus(int status) {
+	public void setStatuss(int status) {
 		this.status = status;
 	}
 	public String getMessage() {
@@ -35,8 +25,18 @@ public class CustomErrorMessage {
 	}
 	@Override
 	public String toString() {
-		return "CustomErrorMessage [status=" + status + ", message=" + message + ", timeStamp=" + timeStamp + "]";
+		return "CustomeErrorMessage [status=" + status + ", message=" + message + ", timeStamp=" + timeStamp
+				+ "]";
 	}
-	
+	public CustomErrorMessage(int status, String message, long timeStamp) {
+		super();
+		this.status = status;
+		this.message = message;
+		this.timeStamp = timeStamp;
+	}
+	public CustomErrorMessage() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	
 }

@@ -1,4 +1,4 @@
-package com.divatt.category.response;
+package com.divatt.user.response;
 
 public class GlobalResponse {
 
