@@ -51,13 +51,13 @@ public class UserService {
 	private UserCartRepo userCartRepo;
 
 	public GlobalResponse postWishlistService(WishlistEntity wishlistEntity) {
-		LOGGER.info("Inside - WishlistService.postWishlistService()");
+		LOGGER.info("Inside - UserService.postWishlistService()");
 
 		try {
 			Optional<WishlistEntity> findByCategoryName = wishlistRepo
 					.findByProductIdAndUserId(wishlistEntity.getProductId(), wishlistEntity.getUserId());
 			if (findByCategoryName.isPresent()) {
-				return new GlobalResponse("ERROR", "Product Already Exists!", 200);
+				return new GlobalResponse("ERROR", "Product already exist!", 200);
 			} else {
 				WishlistEntity filterCatDetails = new WishlistEntity();
 
@@ -67,7 +67,7 @@ public class UserService {
 				filterCatDetails.setAddedOn(new Date());
 
 				wishlistRepo.save(filterCatDetails);
-				return new GlobalResponse("SUCCESS", "Wishlist Added Succesfully", 200);
+				return new GlobalResponse("SUCCESS", "Wishlist added succesfully", 200);
 			}
 
 		} catch (Exception e) {
@@ -80,10 +80,10 @@ public class UserService {
 		try {
 			Optional<WishlistEntity> findByProductRow = wishlistRepo.findById(Id);
 			if (!findByProductRow.isPresent()) {
-				return new GlobalResponse("ERROR", "Product Not Exists!", 200);
+				return new GlobalResponse("ERROR", "Product not exist!", 200);
 			} else {
 				wishlistRepo.deleteById(Id);
-				return new GlobalResponse("SUCCESS", "Wishlist Reomved Succesfully", 200);
+				return new GlobalResponse("SUCCESS", "Wishlist removed succesfully", 200);
 			}
 
 		} catch (Exception e) {
@@ -130,7 +130,7 @@ public class UserService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Wishlist Not Found!");
+				throw new CustomException("Wishlist not found!");
 			} else {
 				return response;
 			}
@@ -166,6 +166,7 @@ public class UserService {
 
 	}
 
+	
 	public GlobalResponse postCartDetailsService(UserCartEntity userCartEntity) {
 		LOGGER.info("Inside - UserService.postCartDetailsService()");
 
@@ -184,6 +185,23 @@ public class UserService {
 
 				userCartRepo.save(filterCatDetails);
 				return new GlobalResponse("SUCCESS", "Cart added succesfully", 200);
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	public GlobalResponse deleteCartService(Integer Id) {
+		LOGGER.info("Inside - UserService.deleteCartService()");
+		try {
+			Optional<UserCartEntity> findByProductRow = userCartRepo.findById(Id);
+			if (!findByProductRow.isPresent()) {
+				return new GlobalResponse("ERROR", "Cart not exist!", 200);
+			} else {
+				userCartRepo.deleteById(Id);
+				return new GlobalResponse("SUCCESS", "Cart removed succesfully", 200);
 			}
 
 		} catch (Exception e) {
