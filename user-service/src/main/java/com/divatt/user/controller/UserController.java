@@ -7,14 +7,12 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,19 +23,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
+import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.exception.CustomException;
-import com.divatt.user.repository.UserDesignerRepo;
-import com.divatt.user.repository.UserLoginRepo;
+import com.divatt.user.repo.UserDesignerRepo;
+import com.divatt.user.repo.UserLoginRepo;
+import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.entity.wishlist.WishlistEntity;
-import com.divatt.user.exception.CustomException;
-import com.divatt.user.repository.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
-import com.google.gson.JsonObject;
-import com.mashape.unirest.request.body.Body;
 
-import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("/user")
@@ -65,7 +60,7 @@ public class UserController {
 
 	@PostMapping("/wishlist/add")
 	public GlobalResponse postWishlistDetails(@Valid @RequestBody WishlistEntity wishlistEntity) {
-		LOGGER.info("Inside - WishlistController.postWishlistDetails()");
+		LOGGER.info("Inside - UserController.postWishlistDetails()");
 
 		try {
 			return this.userService.postWishlistService(wishlistEntity);
@@ -81,7 +76,7 @@ public class UserController {
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		LOGGER.info("Inside - WishlistController.getWishlistDetails()");
+		LOGGER.info("Inside - UserController.getWishlistDetails()");
 
 		try {
 			return this.userService.getWishlistDetails(page, limit, sort, sortName, keyword, sortBy);
@@ -93,7 +88,7 @@ public class UserController {
 
 	@DeleteMapping("/wishlist/delete")
 	public GlobalResponse deleteWishlistDetails(@RequestBody WishlistEntity wishlistEntity) {
-		LOGGER.info("Inside - WishlistController.deleteWishlistDetails()");
+		LOGGER.info("Inside - UserController.deleteWishlistDetails()");
 
 		try {
 			return this.userService.deleteWishlistService(wishlistEntity.getId());
@@ -105,7 +100,7 @@ public class UserController {
 
 	@RequestMapping(value = { "/wishlist/getUserWishist" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getWishlistRestDetails(@RequestBody org.json.simple.JSONObject getWishlist, @RequestParam(defaultValue = "") Integer userId) {
-		LOGGER.info("Inside - WishlistController.getWishlistRestDetails()");
+		LOGGER.info("Inside - UserController.getWishlistRestDetails()");
 
 		try {
 			return this.userService.getUserWishlistDetails(getWishlist,userId);
@@ -142,7 +137,7 @@ public class UserController {
 	
 	@PostMapping("/add")
 	public ResponseEntity<?> addUser(@Valid @RequestBody UserLoginEntity userLoginEntity,Errors error){
-		LOGGER.info("Inside - EcomAuthController.addUser()");
+		LOGGER.info("Inside - UserController.addUser()");
 		try {		
 			if (error.hasErrors()) {
 				throw new CustomException("Check The Fields");
@@ -166,6 +161,20 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 		
+	}
+
+
+
+	@PostMapping("/cart/add")
+	public GlobalResponse postCartDetails(@Valid @RequestBody UserCartEntity userCartEntity) {
+		LOGGER.info("Inside - UserController.postCartDetails()");
+
+		try {
+			return this.userService.postCartDetailsService(userCartEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 
 }

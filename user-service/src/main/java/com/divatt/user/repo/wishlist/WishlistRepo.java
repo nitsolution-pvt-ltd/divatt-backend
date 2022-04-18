@@ -1,4 +1,4 @@
-package com.divatt.user.repository.wishlist;
+package com.divatt.user.repo.wishlist;
 
 import java.util.List;
 import java.util.Optional;

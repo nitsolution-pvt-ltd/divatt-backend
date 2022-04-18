@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +23,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
-import com.divatt.user.repository.wishlist.WishlistRepo;
+import com.divatt.user.repo.cart.UserCartRepo;
+import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
@@ -42,6 +46,9 @@ public class UserService {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
+
+	@Autowired
+	private UserCartRepo userCartRepo;
 
 	public GlobalResponse postWishlistService(WishlistEntity wishlistEntity) {
 		LOGGER.info("Inside - WishlistService.postWishlistService()");
@@ -142,8 +149,7 @@ public class UserService {
 
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
-			});			
-			
+			});
 
 			JsonObject wishlistObj = new JsonObject();
 			wishlistObj.addProperty("productId", productIds.toString());
@@ -154,6 +160,32 @@ public class UserService {
 			HttpResponse<JsonNode> response = Unirest.post("http://192.168.29.72:8083/dev/product/getProductList")
 					.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
 			return ResponseEntity.ok(new Json(response.getBody().toString()));
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	public GlobalResponse postCartDetailsService(UserCartEntity userCartEntity) {
+		LOGGER.info("Inside - UserService.postCartDetailsService()");
+
+		try {
+			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(userCartEntity.getProductId(),
+					userCartEntity.getUserId());
+			if (findByCat.isPresent()) {
+				return new GlobalResponse("ERROR", "Product already added to the cart.", 200);
+			} else {
+				UserCartEntity filterCatDetails = new UserCartEntity();
+
+				filterCatDetails.setId(sequenceGenerator.getNextSequence(userCartEntity.SEQUENCE_NAME));
+				filterCatDetails.setUserId(userCartEntity.getUserId());
+				filterCatDetails.setProductId(userCartEntity.getProductId());
+				filterCatDetails.setAddedOn(new Date());
+
+				userCartRepo.save(filterCatDetails);
+				return new GlobalResponse("SUCCESS", "Cart added succesfully", 200);
+			}
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

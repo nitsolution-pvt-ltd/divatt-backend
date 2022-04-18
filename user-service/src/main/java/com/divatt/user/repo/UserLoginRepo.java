@@ -1,4 +1,4 @@
-package com.divatt.user.repository;
+package com.divatt.user.repo;
 
 import java.util.Optional;
 
