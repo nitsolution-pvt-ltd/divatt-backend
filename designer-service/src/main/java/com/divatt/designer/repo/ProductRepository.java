@@ -28,5 +28,7 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 //	@Query("{'productId' : { '$in' : productIdList} }")
 	Page<ProductMasterEntity> findByProductIdIn(List<Integer> productIdList, Pageable pagingSort);
 	
+	List<ProductMasterEntity> findByProductIdIn(List<Integer> productIdList);
+	
 
 }

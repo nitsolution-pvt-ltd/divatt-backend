@@ -51,13 +51,13 @@ public class UserService {
 	private UserCartRepo userCartRepo;
 
 	public GlobalResponse postWishlistService(WishlistEntity wishlistEntity) {
-		LOGGER.info("Inside - WishlistService.postWishlistService()");
+		LOGGER.info("Inside - UserService.postWishlistService()");
 
 		try {
 			Optional<WishlistEntity> findByCategoryName = wishlistRepo
 					.findByProductIdAndUserId(wishlistEntity.getProductId(), wishlistEntity.getUserId());
 			if (findByCategoryName.isPresent()) {
-				return new GlobalResponse("ERROR", "Product Already Exists!", 200);
+				return new GlobalResponse("ERROR", "Product already exist!", 200);
 			} else {
 				WishlistEntity filterCatDetails = new WishlistEntity();
 
@@ -67,7 +67,7 @@ public class UserService {
 				filterCatDetails.setAddedOn(new Date());
 
 				wishlistRepo.save(filterCatDetails);
-				return new GlobalResponse("SUCCESS", "Wishlist Added Succesfully", 200);
+				return new GlobalResponse("SUCCESS", "Wishlist added succesfully", 200);
 			}
 
 		} catch (Exception e) {
@@ -80,10 +80,10 @@ public class UserService {
 		try {
 			Optional<WishlistEntity> findByProductRow = wishlistRepo.findById(Id);
 			if (!findByProductRow.isPresent()) {
-				return new GlobalResponse("ERROR", "Product Not Exists!", 200);
+				return new GlobalResponse("ERROR", "Product not exist!", 200);
 			} else {
 				wishlistRepo.deleteById(Id);
-				return new GlobalResponse("SUCCESS", "Wishlist Reomved Succesfully", 200);
+				return new GlobalResponse("SUCCESS", "Wishlist removed succesfully", 200);
 			}
 
 		} catch (Exception e) {
@@ -130,7 +130,7 @@ public class UserService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Wishlist Not Found!");
+				throw new CustomException("Wishlist not found!");
 			} else {
 				return response;
 			}
@@ -150,15 +150,17 @@ public class UserService {
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
-
 			JsonObject wishlistObj = new JsonObject();
+
 			wishlistObj.addProperty("productId", productIds.toString());
 			wishlistObj.addProperty("limit", Integer.parseInt(getWishlist.get("limit").toString()));
 			wishlistObj.addProperty("page", Integer.parseInt(getWishlist.get("page").toString()));
-
-			Unirest.setTimeouts(0, 0);
-			HttpResponse<JsonNode> response = Unirest.post("http://192.168.29.72:8083/dev/product/getProductList")
-					.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
+			HttpResponse<JsonNode> response = null;
+			if (productIds != null) {
+				Unirest.setTimeouts(0, 0);
+				response = Unirest.post("http://localhost:8083/dev/product/getProductList")
+						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
+			}
 			return ResponseEntity.ok(new Json(response.getBody().toString()));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -186,6 +188,53 @@ public class UserService {
 				return new GlobalResponse("SUCCESS", "Cart added succesfully", 200);
 			}
 
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	public GlobalResponse deleteCartService(Integer Id) {
+		LOGGER.info("Inside - UserService.deleteCartService()");
+		try {
+			Optional<UserCartEntity> findByProductRow = userCartRepo.findById(Id);
+			if (!findByProductRow.isPresent()) {
+				return new GlobalResponse("ERROR", "Cart not exist!", 200);
+			} else {
+				userCartRepo.deleteById(Id);
+				return new GlobalResponse("SUCCESS", "Cart removed succesfully", 200);
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	
+	public ResponseEntity<?> getUserCartDetailsService(@RequestBody JSONObject getCart, Integer userId)
+			throws UnirestException {
+
+		try {
+
+			List<UserCartEntity> findByUserId = userCartRepo.findByUserId(userId);
+			List<Integer> productIds = new ArrayList<>();
+
+			findByUserId.forEach((e) -> {
+				productIds.add(e.getProductId());
+			});
+			JsonObject cartObj = new JsonObject();
+
+			cartObj.addProperty("productId", productIds.toString());
+			cartObj.addProperty("limit", Integer.parseInt(getCart.get("limit").toString()));
+			cartObj.addProperty("page", Integer.parseInt(getCart.get("page").toString()));
+			HttpResponse<JsonNode> response = null;
+			if (productIds != null) {
+				Unirest.setTimeouts(0, 0);
+				response = Unirest.post("http://localhost:8083/dev/product/getProductList")
+						.header("Content-Type", "application/json").body(cartObj.toString()).asJson();
+			}
+			return ResponseEntity.ok(new Json(response.getBody().toString()));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
