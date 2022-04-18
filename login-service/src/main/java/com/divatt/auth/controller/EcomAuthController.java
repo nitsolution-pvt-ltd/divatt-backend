@@ -49,6 +49,7 @@ import com.divatt.auth.exception.CustomException;
 import com.divatt.auth.helper.JwtUtil;
 import com.divatt.auth.repo.AdminLoginRepository;
 import com.divatt.auth.repo.DesignerLoginRepo;
+import com.divatt.auth.repo.DesignerProfileRepo;
 import com.divatt.auth.repo.PasswordResetRepo;
 import com.divatt.auth.repo.UserLoginRepo;
 import com.divatt.auth.services.LoginUserDetails;
@@ -93,6 +94,9 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 	
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+	private DesignerProfileRepo designerProfileRepo;
 
 	Logger LOGGER = LoggerFactory.getLogger(EcomAuthController.class);
 	
@@ -431,7 +435,8 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 		}else if (role.equals("DESIGNER")) {
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(id);
 			if(findByEmail.isPresent()) {
-				return ResponseEntity.ok(findByEmail);
+				
+				return ResponseEntity.ok(designerProfileRepo.findByDesignerId((long)findByEmail.get().getUid()));
 			}else {
 				throw new CustomException("Email Not Present");
 			}
