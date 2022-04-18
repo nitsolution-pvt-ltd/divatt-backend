@@ -65,30 +65,17 @@ public class ProductService {
 			if(!designerProfileInfo.isEmpty())
 			{
 				Query query1= new Query();
-				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()));
+				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName").is(productData.getProductName()));
 				List<ProductMasterEntity> productInfo= mongoOperations.find(query1, ProductMasterEntity.class);
-				//System.out.println(productInfo);
+				//System.out.println(productInfo.size());
 				if(productInfo.isEmpty())
 				{
 					productRepo.save(customFunction.filterDataEntity(productData));
-					return new GlobalResponce("Success", "Product Added Successfully", 200);
+					return new  GlobalResponce("Success!!", "Product added successfully", 200);
 				}
 				else
 				{
-					
-					try
-					{
-						if(!productInfo.get(productInfo.size()-1).getProductName().equals(productData.getProductName()))
-					{
-						productRepo.save(customFunction.filterDataEntity(productData));
-						return new GlobalResponce("Success", "Product Added Successfully", 200);
-					}
-						return new GlobalResponce("ERROR!!", "Product Already Exist", 400);
-					}
-					catch(Exception e)
-					{
-						throw new CustomException("Product Already Exist");
-					}
+					return new GlobalResponce("ERROR!!", "Product allready exists", 400);
 				}
 			}
 			else
