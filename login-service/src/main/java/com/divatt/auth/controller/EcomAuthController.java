@@ -135,7 +135,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 					throw new CustomException("Data Not Save! Try Again");
 				}
 				
-				return ResponseEntity.ok(new LoginAdminData(token,findByUserName.get().getId(),findByUserName.get().getEmail() , findByUserName.get().getPassword(), "Login successful", 200,findByUserName.get().getRole()));
+				return ResponseEntity.ok(new LoginAdminData(token,findByUserName.get().getUid(),findByUserName.get().getEmail() , findByUserName.get().getPassword(), "Login successful", 200,findByUserName.get().getRole()));
 			}else {
 				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo.findByEmail(vendor.getUsername());
 				if(findByUserNameDesigner.isPresent()) {
@@ -217,7 +217,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 				PasswordResetEntity loginResetEntity = new PasswordResetEntity();
 				Object id = null;
 				try {
-					 id = findByUserName.get().getId();	
+					 id = findByUserName.get().getUid();	
 					 loginResetEntity.setUser_type(findByUserName.get().getRole());
 					 
 				}catch(Exception e) {
@@ -249,7 +249,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 				}else {
 					//** SEND MAIL IF DETAILS SAVE IN DATABASE **//
 					try {
-						mailService.sendEmail( findByUserName.get().getEmail(),"Forgot Password Link","Hi " + findByUserName.get().getFirst_name() + " "+ findByUserName.get().getLast_name() +" This is Your Code For Reset Password " + forgotPasswordLink,false);
+						mailService.sendEmail( findByUserName.get().getEmail(),"Forgot Password Link","Hi " + findByUserName.get().getFirstName() + " "+ findByUserName.get().getLastName() +" This is Your Code For Reset Password " + forgotPasswordLink,false);
 						
 					}catch(Exception e) {
 						try {
@@ -309,7 +309,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 					System.out.println("loginResetEntity.getUser_id() "+loginResetEntity.getUser_id());
 					Optional<AdminLoginEntity> findById = loginRepository.findById((loginResetEntity.getUser_id()));
 					Optional<AdminLoginEntity> findByEmail = loginRepository.findByEmail((loginResetEntity.getEmail()));
-					if (findByEmail.isPresent() && findByEmail.get().getId().equals(findById.get().getId())) {
+					if (findByEmail.isPresent() && findByEmail.get().getUid().equals(findById.get().getUid())) {
 				//** CREATE NEW PASSWORD AND SAVE **//
 						AdminLoginEntity loginEntity = findById.get();
 						loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));

@@ -10,6 +10,7 @@ import javax.annotation.Generated;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import springfox.documentation.spring.web.json.Json;
 
@@ -21,36 +22,49 @@ public class AdminLoginEntity {
 	public static final String SEQUENCE_NAME = "tbl_admin";
 
 	@Id
+	@Field(name = "_id")
 	private Object uid;
 	
-	private String first_name;
+	@Field(name = "first_name")
+	private String firstName;
 	
-	private String last_name;
+	@Field(name = "last_name")
+	private String lastName;
 	
 	private String email;
 	
 	private String password;
 	
-	private String mobile_no;
+	@Field(name = "mobile_no")
+	private String mobileNo;
 	
 	private String dob;
 	
+	@Field(name = "isActive")
 	private boolean is_active;
 	
+	@Field(name = "isDeleted")
 	private boolean is_deleted;
 	
 	private String role;
 	
+	@Field(name = "authToken")
 	private String auth_token;
 	
+	@Field(name = "createdBy")
 	private String created_by;
 	
+	@Field(name = "createdOn")
 	private String created_on;
 	
+	@Field(name = "modifiedBy")
 	private String modified_by;
 	
+	
+	@Field(name = "modifiedOn")
 	private String modified_on;
 	
+	@Field(name = "profilePic")
 	private String profile_pic;
 	
 	private Json logins;
@@ -67,16 +81,30 @@ public class AdminLoginEntity {
 
 	
 
-	public AdminLoginEntity(Object id, String first_name, String last_name, String email, String password, String mobile_no,
-			String dob, boolean is_active, boolean is_deleted, String role, String auth_token, String created_by,
-			String created_on, String modified_by, String modified_on, String profile_pic, Json logins) {
+	
+
+
+
+
+
+
+
+
+	
+
+
+
+	public AdminLoginEntity(Object uid, String firstName, String lastName, String email, String password,
+			String mobileNo, String dob, boolean is_active, boolean is_deleted, String role, String auth_token,
+			String created_by, String created_on, String modified_by, String modified_on, String profile_pic,
+			Json logins) {
 		super();
-		this.uid = id;
-		this.first_name = first_name;
-		this.last_name = last_name;
+		this.uid = uid;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
-		this.mobile_no = mobile_no;
+		this.mobileNo = mobileNo;
 		this.dob = dob;
 		this.is_active = is_active;
 		this.is_deleted = is_deleted;
@@ -97,17 +125,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
+
+
+
+
+
 
 
 
 	@Override
 	public String toString() {
-		return "LoginEntity [id=" + uid + ", first_name=" + first_name + ", last_name=" + last_name + ", email=" + email
-				+ ", password=" + password + ", mobile_no=" + mobile_no + ", dob=" + dob + ", is_active=" + is_active
-				+ ", is_deleted=" + is_deleted + ", role=" + role + ", auth_token=" + auth_token + ", created_by="
-				+ created_by + ", created_on=" + created_on + ", modified_by=" + modified_by + ", modified_on="
-				+ modified_on + ", profile_pic=" + profile_pic + ", logins=" + logins + "]";
+		return "AdminLoginEntity [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
+				+ email + ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", is_active="
+				+ is_active + ", is_deleted=" + is_deleted + ", role=" + role + ", auth_token=" + auth_token
+				+ ", created_by=" + created_by + ", created_on=" + created_on + ", modified_by=" + modified_by
+				+ ", modified_on=" + modified_on + ", profile_pic=" + profile_pic + ", logins=" + logins + "]";
 	}
 
 
@@ -117,7 +163,20 @@ public class AdminLoginEntity {
 
 
 
-	public Object getId() {
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public Object getUid() {
 		return uid;
 	}
 
@@ -128,8 +187,21 @@ public class AdminLoginEntity {
 
 
 
-	public void setId(Object id) {
-		this.uid = id;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setUid(Object uid) {
+		this.uid = uid;
 	}
 
 
@@ -139,8 +211,21 @@ public class AdminLoginEntity {
 
 
 
-	public String getFirst_name() {
-		return first_name;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public String getFirstName() {
+		return firstName;
 	}
 
 
@@ -150,8 +235,21 @@ public class AdminLoginEntity {
 
 
 
-	public void setFirst_name(String first_name) {
-		this.first_name = first_name;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
 
@@ -161,8 +259,21 @@ public class AdminLoginEntity {
 
 
 
-	public String getLast_name() {
-		return last_name;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public String getLastName() {
+		return lastName;
 	}
 
 
@@ -172,9 +283,35 @@ public class AdminLoginEntity {
 
 
 
-	public void setLast_name(String last_name) {
-		this.last_name = last_name;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -194,9 +331,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -216,6 +379,19 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -227,8 +403,21 @@ public class AdminLoginEntity {
 
 
 
-	public String getMobile_no() {
-		return mobile_no;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public String getMobileNo() {
+		return mobileNo;
 	}
 
 
@@ -238,9 +427,35 @@ public class AdminLoginEntity {
 
 
 
-	public void setMobile_no(String mobile_no) {
-		this.mobile_no = mobile_no;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setMobileNo(String mobileNo) {
+		this.mobileNo = mobileNo;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -260,9 +475,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setDob(String dob) {
 		this.dob = dob;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -282,9 +523,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setIs_active(boolean is_active) {
 		this.is_active = is_active;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -304,9 +571,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setIs_deleted(boolean is_deleted) {
 		this.is_deleted = is_deleted;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -326,9 +619,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setRole(String role) {
 		this.role = role;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -348,9 +667,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setAuth_token(String auth_token) {
 		this.auth_token = auth_token;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -370,9 +715,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setCreated_by(String created_by) {
 		this.created_by = created_by;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -392,9 +763,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setCreated_on(String created_on) {
 		this.created_on = created_on;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -414,9 +811,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setModified_by(String modified_by) {
 		this.modified_by = modified_by;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -436,9 +859,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setModified_on(String modified_on) {
 		this.modified_on = modified_on;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -458,9 +907,35 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setProfile_pic(String profile_pic) {
 		this.profile_pic = profile_pic;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -480,6 +955,19 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void setLogins(Json logins) {
 		this.logins = logins;
 	}
@@ -487,6 +975,48 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
 
 
 
