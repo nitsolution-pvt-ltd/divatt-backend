@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
+import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.UserDesignerRepo;
@@ -196,6 +198,53 @@ public class UserController {
 
 		try {
 			return this.userService.getUserCartDetailsService(getWishlist, userId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@PostMapping("/productComment/add")
+	public GlobalResponse postProductCommentDetails(@Valid @RequestBody ProductCommentEntity productCommentEntity) {
+		LOGGER.info("Inside - UserController.postProductCommentDetails()");
+
+		try {
+			return this.userService.postProductCommentService(productCommentEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@PutMapping("/productComment/update")
+	public GlobalResponse putProductCommentDetails(@Valid @RequestBody ProductCommentEntity productCommentEntity) {
+		LOGGER.info("Inside - UserController.putProductCommentDetails()");
+
+		try {
+			return this.userService.putProductCommentService(productCommentEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@PutMapping("/productComment/status")
+	public GlobalResponse putProductCommentStatusDetails(@RequestBody ProductCommentEntity productCommentEntity) {
+		LOGGER.info("Inside - UserController.putProductCommentStatusDetails()");
+
+		try {
+			return this.userService.putProductCommentStatusService(productCommentEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@DeleteMapping("/productComment/delete")
+	public GlobalResponse deleteProductCommentDetails(@RequestBody ProductCommentEntity productCommentEntity) {
+		LOGGER.info("Inside - UserController.deleteProductCommentDetails()");
+
+		try {
+			return this.userService.deleteProductCommentService(productCommentEntity.getId());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

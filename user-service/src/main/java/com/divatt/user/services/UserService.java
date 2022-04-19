@@ -23,10 +23,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.cart.UserCartRepo;
+import com.divatt.user.repo.pCommentRepo.ProductCommentRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.google.gson.JsonObject;
@@ -49,6 +51,9 @@ public class UserService {
 
 	@Autowired
 	private UserCartRepo userCartRepo;
+
+	@Autowired
+	private ProductCommentRepo productCommentRepo;
 
 	public GlobalResponse postWishlistService(WishlistEntity wishlistEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
@@ -94,6 +99,7 @@ public class UserService {
 
 	public Map<String, Object> getWishlistDetails(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy) {
+		LOGGER.info("Inside - UserService.getWishlistDetails()");
 		try {
 			int CountData = (int) wishlistRepo.count();
 			Pageable pagingSort = null;
@@ -141,7 +147,7 @@ public class UserService {
 
 	public ResponseEntity<?> getUserWishlistDetails(@RequestBody JSONObject getWishlist, Integer userId)
 			throws UnirestException {
-
+		LOGGER.info("Inside - UserService.getUserWishlistDetails()");
 		try {
 
 			List<WishlistEntity> findByUserId = wishlistRepo.findByUserId(userId);
@@ -213,7 +219,7 @@ public class UserService {
 
 	public ResponseEntity<?> getUserCartDetailsService(@RequestBody JSONObject getCart, Integer userId)
 			throws UnirestException {
-
+		LOGGER.info("Inside - UserService.getUserCartDetailsService()");
 		try {
 
 			List<UserCartEntity> findByUserId = userCartRepo.findByUserId(userId);
@@ -227,6 +233,11 @@ public class UserService {
 			cartObj.addProperty("productId", productIds.toString());
 			cartObj.addProperty("limit", Integer.parseInt(getCart.get("limit").toString()));
 			cartObj.addProperty("page", Integer.parseInt(getCart.get("page").toString()));
+
+			if (productIds.isEmpty()) {
+				return ResponseEntity
+						.ok(new Json("{\"reason\": \"ERROR\", \"message\": \"Product not found!\",\"status\": 200}"));
+			}
 
 			try {
 				Unirest.setTimeouts(0, 0);
@@ -243,5 +254,113 @@ public class UserService {
 		}
 
 	}
+
+	public GlobalResponse postProductCommentService(ProductCommentEntity<?> productCommentEntity) {
+		LOGGER.info("Inside - UserService.postWishlistService()");
+
+		try {
+			Optional<ProductCommentEntity> findByTitle = productCommentRepo
+					.findByProductIdAndUserId(productCommentEntity.getProductId(), productCommentEntity.getUserId());
+			if (findByTitle.isPresent()) {
+				return new GlobalResponse("ERROR", "Reviewed already exist!", 200);
+			} else {
+				ProductCommentEntity<?> RowsDetails = new ProductCommentEntity<Object>();
+
+				RowsDetails.setId(sequenceGenerator.getNextSequence(productCommentEntity.SEQUENCE_NAME));
+				RowsDetails.setUserId(productCommentEntity.getUserId());
+				RowsDetails.setProductId(productCommentEntity.getProductId());
+				RowsDetails.setRating(productCommentEntity.getRating());
+				RowsDetails.setComment(productCommentEntity.getComment());
+				RowsDetails.setIsVisible(false);
+				RowsDetails.setUploads(productCommentEntity.getUploads());
+				RowsDetails.setCreatedOn(new Date());
+
+				productCommentRepo.save(RowsDetails);
+				return new GlobalResponse("SUCCESS", "Reviewed added succesfully", 200);
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	public GlobalResponse putProductCommentService(ProductCommentEntity<?> productCommentEntity) {
+		LOGGER.info("Inside - UserService.putProductCommentService()");
+
+		try {
+
+			Optional<ProductCommentEntity> findByRow = productCommentRepo.findById(productCommentEntity.getId());
+
+			if (!findByRow.isPresent()) {
+				return new GlobalResponse("ERROR", "Reviewed not exist!", 200);
+			} else {
+				ProductCommentEntity<?> RowsDetails = findByRow.get();
+
+				RowsDetails.setUserId(productCommentEntity.getUserId());
+				RowsDetails.setProductId(productCommentEntity.getProductId());
+				RowsDetails.setRating(productCommentEntity.getRating());
+				RowsDetails.setComment(productCommentEntity.getComment());
+				RowsDetails.setIsVisible(false);
+				RowsDetails.setUploads(productCommentEntity.getUploads());
+				RowsDetails.setCreatedOn(new Date());
+
+				productCommentRepo.save(RowsDetails);
+				return new GlobalResponse("SUCCESS", "Reviewed updated succesfully", 200);
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public GlobalResponse putProductCommentStatusService(ProductCommentEntity<?> productCommentEntity) {
+		LOGGER.info("Inside - UserService.putProductCommentStatusService()");
+
+		try {
+
+			Optional<ProductCommentEntity> findByRow = productCommentRepo.findById(productCommentEntity.getId());
+
+			if (!findByRow.isPresent()) {
+				return new GlobalResponse("ERROR", "Reviewed not exist!", 200);
+			} else {
+				ProductCommentEntity<?> RowsDetails = findByRow.get();
+				Boolean Status = false;
+				if (findByRow.get().getIsVisible() == true) {
+					Status = false;
+				} else {
+					Status = true;
+				}
+				RowsDetails.setIsVisible(Status);
+				RowsDetails.setCreatedOn(new Date());
+
+				productCommentRepo.save(RowsDetails);
+				return new GlobalResponse("SUCCESS", "Reviewed status updated succesfully", 200);
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	
+	@SuppressWarnings("rawtypes")
+	public GlobalResponse deleteProductCommentService(Integer Id) {
+		try {
+			Optional<ProductCommentEntity> findByProductRow = productCommentRepo.findById(Id);
+			if (!findByProductRow.isPresent()) {
+				return new GlobalResponse("ERROR", "Reviewed not exist!", 200);
+			} else {
+				productCommentRepo.deleteById(Id);
+				return new GlobalResponse("SUCCESS", "Reviewed removed succesfully", 200);
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
 
 }
