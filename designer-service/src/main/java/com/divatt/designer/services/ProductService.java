@@ -124,12 +124,22 @@ public class ProductService {
 
 	public GlobalResponce updateProduct(Integer productId, ProductMasterEntity productMasterEntity) {
 		try {
-			LOGGER.info("Inside - ProductService.updateProduct()");
-			if (productRepo.existsById(productId)) {
-				productRepo.save(customFunction.filterDataEntity(productMasterEntity));
-				return new GlobalResponce("Success", "Product Updated Successfully", 200);
-			} else {
-				return new GlobalResponce("Bad Request", "Product Id Does Not Exist", 400);
+			
+			if(productRepo.existsById(productId))
+			{
+				Query query= new Query();
+				query.addCriteria(Criteria.where("designerId").is(productMasterEntity.getDesignerId()));
+				List<ProductMasterEntity>productInfo= mongoOperations.find(query, ProductMasterEntity.class);
+				if(productInfo.isEmpty())
+				{
+					throw new CustomException("Designer Id can to be change");
+				}
+				productRepo.save(customFunction.updateFunction(productMasterEntity, productId));
+				return new GlobalResponce("Success", "Product updated successfully", 200);
+			}
+			else
+			{
+				throw new CustomException("Product not found");
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
