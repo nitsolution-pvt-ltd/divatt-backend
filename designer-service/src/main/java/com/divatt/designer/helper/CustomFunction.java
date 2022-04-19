@@ -79,18 +79,49 @@ public class CustomFunction {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	public Boolean dbWrite(ProductMasterEntity productMasterEntity)
+	public ProductMasterEntity updateFunction(ProductMasterEntity productData,Integer productId)
 	{
 		try
 		{
-			ResponseEntity<Boolean> response= restTemplate.postForEntity(baseURL+"add", productMasterEntity, Boolean.class);
-			return response.getBody();
+			ProductMasterEntity filterProductEntity= new ProductMasterEntity();
+			filterProductEntity.setProductId(productId);
+			filterProductEntity.setSKQCode(productRepo.findById(productId).get().getSKQCode());
+			filterProductEntity.setAge(productData.getAge());
+			filterProductEntity.setApprovedBy(productData.getApprovedBy());
+			filterProductEntity.setCategoryId(productData.getCategoryId());
+			filterProductEntity.setCod(productData.getCod());
+			filterProductEntity.setComment(productData.getComment());
+			filterProductEntity.setCreatedBy(productData.getCreatedBy());
+			filterProductEntity.setCreatedOn(new Date());
+			filterProductEntity.setCustomization(productData.getCustomization());
+			filterProductEntity.setCustomizationSOH(productData.getCustomizationSOH());
+			filterProductEntity.setDesignerId(productData.getDesignerId());
+			filterProductEntity.setExtraSpecifications(productData.getExtraSpecifications());
+			filterProductEntity.setGender(productData.getGender());
+			filterProductEntity.setGiftWrapAmount(productData.getGiftWrapAmount());
+			filterProductEntity.setGiftWrap(productData.getGiftWrap());
+			filterProductEntity.setImages(productData.getImages());
+			filterProductEntity.setIsActive(true);
+			filterProductEntity.setIsApprove(productData.getIsApprove());
+			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
+			filterProductEntity.setIsDeleted(false);
+			filterProductEntity.setIsSubmitted(true);
+			filterProductEntity.setPrice(productData.getPrice());
+			filterProductEntity.setPriceType(productData.getPriceType());
+			filterProductEntity.setProductDescription(productData.getProductDescription());
+			filterProductEntity.setProductName(productData.getProductName());
+			filterProductEntity.setPurchaseQuantity(productData.getPurchaseQuantity());
+			filterProductEntity.setSpecifications(productData.getSpecifications());
+			filterProductEntity.setStanderedSOH(productData.getStanderedSOH());
+			filterProductEntity.setSubCategoryId(productData.getSubCategoryId());
+			filterProductEntity.setSubmittedBy(productData.getSubmittedBy());
+			filterProductEntity.setSubmittedOn(new Date());
+			filterProductEntity.setTaxInclusive(productData.getTaxInclusive());
+			return filterProductEntity;
 		}
 		catch(Exception e)
 		{
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
 }

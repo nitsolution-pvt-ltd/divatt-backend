@@ -210,8 +210,7 @@ public class UserService {
 		}
 
 	}
-	
-	
+
 	public ResponseEntity<?> getUserCartDetailsService(@RequestBody JSONObject getCart, Integer userId)
 			throws UnirestException {
 
@@ -228,13 +227,17 @@ public class UserService {
 			cartObj.addProperty("productId", productIds.toString());
 			cartObj.addProperty("limit", Integer.parseInt(getCart.get("limit").toString()));
 			cartObj.addProperty("page", Integer.parseInt(getCart.get("page").toString()));
-			HttpResponse<JsonNode> response = null;
-			if (productIds != null) {
+
+			try {
 				Unirest.setTimeouts(0, 0);
-				response = Unirest.post("http://localhost:8083/dev/product/getProductList")
+				HttpResponse<JsonNode> response = Unirest.post("http://localhost:8083/dev/product/getProductList")
 						.header("Content-Type", "application/json").body(cartObj.toString()).asJson();
+				return ResponseEntity.ok(new Json(response.getBody().toString()));
+			} catch (Exception e2) {
+				return ResponseEntity.ok(new Json(
+						"{\"reason\": \"ERROR\", \"message\": \"Designer Service is not running!\",\"status\": 200}"));
 			}
-			return ResponseEntity.ok(new Json(response.getBody().toString()));
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
