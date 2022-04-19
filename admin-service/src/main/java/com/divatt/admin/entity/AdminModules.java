@@ -3,6 +3,7 @@ package com.divatt.admin.entity;
 import java.util.ArrayList;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -11,7 +12,10 @@ import springfox.documentation.spring.web.json.Json;
 @Document(collection = "tbl_admin_mdata")
 public class AdminModules {
 	
+	
+	
 	@Id
+	@Field(name = "_id")
 	private Object mId;
 	
 	@Field(name = "meta_key")
@@ -24,8 +28,9 @@ public class AdminModules {
 	private String roleName;
 	
 	@Field(name = "modules")
-	private ArrayList<Object> modules;
-
+	private ArrayList<AdminModule> modules;
+	
+	
 	public AdminModules() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -34,42 +39,12 @@ public class AdminModules {
 	
 
 	public AdminModules(Object mId, String metaKey, ArrayList<Object> adminModules, String roleName,
-			ArrayList<Object> modules) {
+			ArrayList<AdminModule> modules) {
 		super();
 		this.mId = mId;
 		this.metaKey = metaKey;
 		this.adminModules = adminModules;
 		this.roleName = roleName;
-		this.modules = modules;
-	}
-
-
-
-	
-
-	public Object getmId() {
-		return mId;
-	}
-
-	public String getRoleName() {
-		return roleName;
-	}
-
-
-
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
-
-
-
-	public ArrayList<Object> getModules() {
-		return modules;
-	}
-
-
-
-	public void setModules(ArrayList<Object> modules) {
 		this.modules = modules;
 	}
 
@@ -83,26 +58,66 @@ public class AdminModules {
 
 
 
+	public Object getmId() {
+		return mId;
+	}
+
+
+
 	public void setmId(Object mId) {
 		this.mId = mId;
 	}
+
+
 
 	public String getMetaKey() {
 		return metaKey;
 	}
 
+
+
 	public void setMetaKey(String metaKey) {
 		this.metaKey = metaKey;
 	}
+
+
 
 	public ArrayList<Object> getAdminModules() {
 		return adminModules;
 	}
 
+
+
 	public void setAdminModules(ArrayList<Object> adminModules) {
 		this.adminModules = adminModules;
 	}
-	
-	
+
+
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+
+
+
+	public ArrayList<AdminModule> getModules() {
+		return modules;
+	}
+
+
+
+	public void setModules(ArrayList<AdminModule> modules) {
+		this.modules = modules;
+	}
+
+
+
+
 
 }
