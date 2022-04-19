@@ -83,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 //				.antMatchers("/**").hasIpAddress("192.168.29.23")
 				.antMatchers(HttpMethod.GET,"/auth/admin/testapi").permitAll()
+				.antMatchers(HttpMethod.GET,"/auth/info/{role}/{id}").permitAll()
 				.antMatchers(HttpMethod.POST,"/auth/login").permitAll()
 				.antMatchers(HttpMethod.GET,"/auth/mailForgotPasswordLink/{email}").permitAll()
 				.antMatchers(HttpMethod.GET,"/swagger-ui/**").permitAll()
