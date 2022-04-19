@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.divatt.admin.entity.AdminModule;
 import com.divatt.admin.entity.AdminModules;
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminModulesRepo;
+import com.divatt.admin.services.SequenceGenerator;
 
 
 
@@ -32,6 +34,9 @@ public class RoleAndPermission {
 	
 	@Autowired
 	private AdminModulesRepo adminModulesRepo;
+	
+	@Autowired
+	private SequenceGenerator sequenceGenerator;
 	
 	Logger LOGGER = LoggerFactory.getLogger(RoleAndPermission.class);
 	
@@ -83,8 +88,8 @@ public class RoleAndPermission {
 	
 	@PostMapping("/role")
 	public ResponseEntity<?> addRole(@RequestBody AdminModules adminModules){
-		System.out.println(adminModules);
-		adminModules.setmId(1);
+		adminModules.setmId(sequenceGenerator.getNextSequence(AdminModules.SEQUENCE_NAME));
+		adminModules.setMetaKey("ROLE");
 		adminModulesRepo.save(adminModules);
 		//adminModulesRepo.findByRoleName(adminModules.getRoleName()).ifPresentOrElse((value)->{throw new CustomException("This Role is Already Present");} , ()->{adminModulesRepo.save(adminModules);});
 		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Role Added Successfully",200));

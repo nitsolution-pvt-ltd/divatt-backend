@@ -1,11 +1,17 @@
 package com.divatt.designer.controller;
 
+import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,7 +45,12 @@ public class ProfileContoller {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id){
-		return ResponseEntity.ok(designerProfileRepo.findById(id));
+		try {
+			return ResponseEntity.ok(designerProfileRepo.findById(id));
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
 	}
 	
 	@PostMapping("/add")
@@ -69,6 +80,48 @@ public class ProfileContoller {
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+		
+	}
+	
+	@PutMapping()
+	public ResponseEntity<?> updateDesigner(@Valid @RequestBody DesignerLoginEntity designerLoginEntity){
+		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerLoginEntity.getUid());
+		if(!findById.isPresent())
+			throw new CustomException("Designer Details Not Found");
+		else {
+			DesignerLoginEntity designerLoginEntityDB = findById.get();
+			designerLoginEntityDB.setIsActive(designerLoginEntity.getIsActive());
+			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
+			designerLoginEntityDB.setIsApproved(designerLoginEntity.getIsApproved());
+			designerLoginEntityDB.setIsProfileCompleated(designerLoginEntity.getIsProfileCompleated());
+			designerLoginEntityDB.setIsProfileSubmitted(designerLoginEntity.getIsProfileSubmitted());
+			designerLoginRepo.save(designerLoginEntityDB);
+		}
+		return ResponseEntity.ok(new GlobalResponce("SUCCESS","Data Updated Successfully",200));
+	}
+	
+	@GetMapping("/all/{field}/{value}")
+	public ResponseEntity<?> getDesigner(@PathVariable("field") String field,@PathVariable("value") Boolean value){
+		
+		try {
+			if(field.equals("approve")) {
+				List<DesignerLoginEntity> findByIsApproved = designerLoginRepo.findByIsApproved(value);
+				if(findByIsApproved.size()<1)
+					throw new CustomException("All Designers Are Approved");
+				return ResponseEntity.ok(findByIsApproved);
+			}else if(field.equals("submit")) {
+				List<DesignerLoginEntity> findByIsProfileSubmitted = designerLoginRepo.findByIsProfileSubmitted(value);
+				if(findByIsProfileSubmitted.size()<1)
+					throw new CustomException("All Designers Profiles Are Submitted");
+				return ResponseEntity.ok(findByIsProfileSubmitted);
+			}else {
+				throw new CustomException("Path Not Found");
+			}
+			
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
 		
 	}
 

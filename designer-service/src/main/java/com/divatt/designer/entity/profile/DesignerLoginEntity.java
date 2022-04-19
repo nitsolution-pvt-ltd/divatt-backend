@@ -1,5 +1,7 @@
 package com.divatt.designer.entity.profile;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,15 +16,22 @@ public class DesignerLoginEntity {
 	public static final String SEQUENCE_NAME = "tbl_designer_login";
 
 	@Id
+	@NotNull
 	private Object uid;
 	
+	@NotNull
 	@Field(name = "email") private String email;
 	@Field(name = "password") private String password;
 	@Field(name = "auth_token") private String authToken;
+	@NotNull
 	@Field(name = "is_active") private Boolean isActive;
+	@NotNull
 	@Field(name = "is_deleted") private Boolean isDeleted;
+	@NotNull
 	@Field(name = "is_approved") private Boolean isApproved;
+	@NotNull
 	@Field(name = "is_profile_completed") private Boolean isProfileCompleated;
+	@NotNull
 	@Field(name = "is_profile_submitted") private Boolean isProfileSubmitted;
 	@Field(name = "admin_comment") private String adminComment;
 	
