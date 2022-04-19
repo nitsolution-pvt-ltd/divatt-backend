@@ -1,5 +1,7 @@
 package com.divatt.admin.contoller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.admin.entity.AdminModule;
 import com.divatt.admin.entity.AdminModules;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.exception.CustomException;
@@ -66,6 +69,21 @@ public class RoleAndPermission {
 		List<AdminModules> orElseThrow = Optional.of(adminModulesRepo.findAll()
 				.stream()
 				.filter(e -> e.getMetaKey()!=null && e.getMetaKey().equals("ROLE") && e.getRoleName().equals(name))
+				.map(e->{
+					for(int i=0 ; i<e.getModules().size() ; i++) {
+						HashMap<String, Boolean> modPrivsDB = new HashMap<>();
+						ArrayList<String> modPrivs = e.getModules().get(i).getModPrivs();
+						modPrivsDB.put("list", modPrivs.contains("list"));
+						modPrivsDB.put("create", modPrivs.contains("create"));
+						modPrivsDB.put("update", modPrivs.contains("update"));
+						modPrivsDB.put("delete", modPrivs.contains("delete"));
+						ArrayList<AdminModule> modules = e.getModules();
+						modules.get(i).setModPrivsDB(modPrivsDB);
+						e.setModules(modules);
+					}
+					
+					return e;
+				})
 				.toList())
 				.orElseThrow(()->new CustomException("No Data Found"));
 		if(orElseThrow.size()<1) 
@@ -79,7 +97,7 @@ public class RoleAndPermission {
 	
 	@PostMapping("/role")
 	public ResponseEntity<?> addRole(@RequestBody AdminModules adminModules){
-		System.out.println(adminModules.toString());
+		System.out.println(adminModules);
 		adminModules.setmId(1);
 		adminModulesRepo.save(adminModules);
 		//adminModulesRepo.findByRoleName(adminModules.getRoleName()).ifPresentOrElse((value)->{throw new CustomException("This Role is Already Present");} , ()->{adminModulesRepo.save(adminModules);});

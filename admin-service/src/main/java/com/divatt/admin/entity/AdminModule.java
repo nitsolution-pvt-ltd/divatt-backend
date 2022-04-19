@@ -1,6 +1,7 @@
 package com.divatt.admin.entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -10,11 +11,15 @@ public class AdminModule {
 	@Field(name = "mod_privs")
 	private ArrayList<String> modPrivs;
 	
+	private HashMap<String,Boolean> modPrivsDB;
+
 	
 
-	@Override
-	public String toString() {
-		return "AdminModule [modName=" + modName + ", modPrivs=" + modPrivs + "]";
+	public AdminModule(String modName, ArrayList<String> modPrivs, HashMap<String, Boolean> modPrivsDB) {
+		super();
+		this.modName = modName;
+		this.modPrivs = modPrivs;
+		this.modPrivsDB = modPrivsDB;
 	}
 
 	public AdminModule() {
@@ -22,10 +27,11 @@ public class AdminModule {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public AdminModule(String modName, ArrayList<String> modPrivs) {
-		super();
-		this.modName = modName;
-		this.modPrivs = modPrivs;
+	
+
+	@Override
+	public String toString() {
+		return "AdminModule [modName=" + modName + ", modPrivs=" + modPrivs + ", modPrivsDB=" + modPrivsDB + "]";
 	}
 
 	public String getModName() {
@@ -43,6 +49,16 @@ public class AdminModule {
 	public void setModPrivs(ArrayList<String> modPrivs) {
 		this.modPrivs = modPrivs;
 	}
+
+	public HashMap<String, Boolean> getModPrivsDB() {
+		return modPrivsDB;
+	}
+
+	public void setModPrivsDB(HashMap<String, Boolean> modPrivsDB) {
+		this.modPrivsDB = modPrivsDB;
+	}
+
+
 	
 	
 	
