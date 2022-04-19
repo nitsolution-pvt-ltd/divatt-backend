@@ -23,10 +23,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.cart.UserCartRepo;
+import com.divatt.user.repo.pCommentRepo.ProductCommentRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.google.gson.JsonObject;
@@ -49,6 +51,9 @@ public class UserService {
 
 	@Autowired
 	private UserCartRepo userCartRepo;
+	
+	@Autowired
+	private ProductCommentRepo productCommentRepo;
 
 	public GlobalResponse postWishlistService(WishlistEntity wishlistEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
@@ -94,6 +99,7 @@ public class UserService {
 
 	public Map<String, Object> getWishlistDetails(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy) {
+		LOGGER.info("Inside - UserService.getWishlistDetails()");
 		try {
 			int CountData = (int) wishlistRepo.count();
 			Pageable pagingSort = null;
@@ -141,7 +147,7 @@ public class UserService {
 
 	public ResponseEntity<?> getUserWishlistDetails(@RequestBody JSONObject getWishlist, Integer userId)
 			throws UnirestException {
-
+		LOGGER.info("Inside - UserService.getUserWishlistDetails()");
 		try {
 
 			List<WishlistEntity> findByUserId = wishlistRepo.findByUserId(userId);
@@ -213,7 +219,7 @@ public class UserService {
 
 	public ResponseEntity<?> getUserCartDetailsService(@RequestBody JSONObject getCart, Integer userId)
 			throws UnirestException {
-
+		LOGGER.info("Inside - UserService.getUserCartDetailsService()");
 		try {
 
 			List<UserCartEntity> findByUserId = userCartRepo.findByUserId(userId);
@@ -228,6 +234,11 @@ public class UserService {
 			cartObj.addProperty("limit", Integer.parseInt(getCart.get("limit").toString()));
 			cartObj.addProperty("page", Integer.parseInt(getCart.get("page").toString()));
 
+			if (productIds.isEmpty()) {
+				return ResponseEntity
+						.ok(new Json("{\"reason\": \"ERROR\", \"message\": \"Product not found!\",\"status\": 200}"));
+			}
+
 			try {
 				Unirest.setTimeouts(0, 0);
 				HttpResponse<JsonNode> response = Unirest.post("http://localhost:8083/dev/product/getProductList")
@@ -236,6 +247,35 @@ public class UserService {
 			} catch (Exception e2) {
 				return ResponseEntity.ok(new Json(
 						"{\"reason\": \"ERROR\", \"message\": \"Designer Service is not running!\",\"status\": 200}"));
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	public GlobalResponse postProductCommentService(ProductCommentEntity<?> productCommentEntity) {
+		LOGGER.info("Inside - UserService.postWishlistService()");
+
+		try {
+			Optional<ProductCommentEntity> findByTitle = productCommentRepo.findByProductIdAndUserId(productCommentEntity.getProductId(), productCommentEntity.getUserId());
+			if (findByTitle.isPresent()) {
+				return new GlobalResponse("ERROR", "Reviewed already exist!", 200);
+			} else {
+				ProductCommentEntity<?> RowsDetails = new ProductCommentEntity<Object>();
+
+				RowsDetails.setId(sequenceGenerator.getNextSequence(productCommentEntity.SEQUENCE_NAME));
+				RowsDetails.setUserId(productCommentEntity.getUserId());
+				RowsDetails.setProductId(productCommentEntity.getProductId());
+				RowsDetails.setRating(productCommentEntity.getRating());
+				RowsDetails.setComment(productCommentEntity.getComment());
+				RowsDetails.setIsVisible(false);
+				RowsDetails.setUploads(productCommentEntity.getUploads());
+				RowsDetails.setCreatedOn(new Date());
+
+				productCommentRepo.save(RowsDetails);
+				return new GlobalResponse("SUCCESS", "Reviewed added succesfully", 200);
 			}
 
 		} catch (Exception e) {

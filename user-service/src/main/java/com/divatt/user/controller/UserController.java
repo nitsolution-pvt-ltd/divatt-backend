@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
+import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.UserDesignerRepo;
@@ -196,6 +197,18 @@ public class UserController {
 
 		try {
 			return this.userService.getUserCartDetailsService(getWishlist, userId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@PostMapping("/productComment/add")
+	public GlobalResponse postProductCommentDetails(@Valid @RequestBody ProductCommentEntity productCommentEntity) {
+		LOGGER.info("Inside - UserController.postProductCommentDetails()");
+
+		try {
+			return this.userService.postProductCommentService(productCommentEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
