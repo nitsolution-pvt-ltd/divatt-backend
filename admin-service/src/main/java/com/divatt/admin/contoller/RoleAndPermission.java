@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +24,7 @@ import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminModulesRepo;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
 
 @RestController
 @RequestMapping("/admin")
@@ -69,21 +70,6 @@ public class RoleAndPermission {
 		List<AdminModules> orElseThrow = Optional.of(adminModulesRepo.findAll()
 				.stream()
 				.filter(e -> e.getMetaKey()!=null && e.getMetaKey().equals("ROLE") && e.getRoleName().equals(name))
-				.map(e->{
-					for(int i=0 ; i<e.getModules().size() ; i++) {
-						HashMap<String, Boolean> modPrivsDB = new HashMap<>();
-						ArrayList<String> modPrivs = e.getModules().get(i).getModPrivs();
-						modPrivsDB.put("list", modPrivs.contains("list"));
-						modPrivsDB.put("create", modPrivs.contains("create"));
-						modPrivsDB.put("update", modPrivs.contains("update"));
-						modPrivsDB.put("delete", modPrivs.contains("delete"));
-						ArrayList<AdminModule> modules = e.getModules();
-						modules.get(i).setModPrivsDB(modPrivsDB);
-						e.setModules(modules);
-					}
-					
-					return e;
-				})
 				.toList())
 				.orElseThrow(()->new CustomException("No Data Found"));
 		if(orElseThrow.size()<1) 

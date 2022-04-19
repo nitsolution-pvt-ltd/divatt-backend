@@ -12,8 +12,7 @@ import springfox.documentation.spring.web.json.Json;
 @Document(collection = "tbl_admin_mdata")
 public class AdminModules {
 	
-	@Transient
-	public static final String SEQUENCE_NAME = "tbl_admin_mdata";
+	
 	
 	@Id
 	@Field(name = "_id")
@@ -119,9 +118,6 @@ public class AdminModules {
 
 
 
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
 
 
 }

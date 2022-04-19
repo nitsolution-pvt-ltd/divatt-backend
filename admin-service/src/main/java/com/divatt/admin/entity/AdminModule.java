@@ -9,18 +9,19 @@ public class AdminModule {
 	@Field(name = "mod_name")
 	private String modName;
 	@Field(name = "mod_privs")
-	private ArrayList<String> modPrivs;
-	
-	private HashMap<String,Boolean> modPrivsDB;
+	private HashMap<String,Boolean> modPrivs;
 
 	
 
-	public AdminModule(String modName, ArrayList<String> modPrivs, HashMap<String, Boolean> modPrivsDB) {
+	
+
+	public AdminModule(String modName, HashMap<String, Boolean> modPrivs) {
 		super();
 		this.modName = modName;
 		this.modPrivs = modPrivs;
-		this.modPrivsDB = modPrivsDB;
 	}
+
+
 
 	public AdminModule() {
 		super();
@@ -29,34 +30,40 @@ public class AdminModule {
 	
 	
 
+	
+
 	@Override
 	public String toString() {
-		return "AdminModule [modName=" + modName + ", modPrivs=" + modPrivs + ", modPrivsDB=" + modPrivsDB + "]";
+		return "AdminModule [modName=" + modName + ", modPrivs=" + modPrivs + "]";
 	}
+
+
 
 	public String getModName() {
 		return modName;
 	}
 
+
+
 	public void setModName(String modName) {
 		this.modName = modName;
 	}
 
-	public ArrayList<String> getModPrivs() {
+
+
+	public HashMap<String, Boolean> getModPrivs() {
 		return modPrivs;
 	}
 
-	public void setModPrivs(ArrayList<String> modPrivs) {
+
+
+	public void setModPrivs(HashMap<String, Boolean> modPrivs) {
 		this.modPrivs = modPrivs;
 	}
 
-	public HashMap<String, Boolean> getModPrivsDB() {
-		return modPrivsDB;
-	}
 
-	public void setModPrivsDB(HashMap<String, Boolean> modPrivsDB) {
-		this.modPrivsDB = modPrivsDB;
-	}
+
+	
 
 
 	
