@@ -51,7 +51,7 @@ public class UserService {
 
 	@Autowired
 	private UserCartRepo userCartRepo;
-	
+
 	@Autowired
 	private ProductCommentRepo productCommentRepo;
 
@@ -259,7 +259,8 @@ public class UserService {
 		LOGGER.info("Inside - UserService.postWishlistService()");
 
 		try {
-			Optional<ProductCommentEntity> findByTitle = productCommentRepo.findByProductIdAndUserId(productCommentEntity.getProductId(), productCommentEntity.getUserId());
+			Optional<ProductCommentEntity> findByTitle = productCommentRepo
+					.findByProductIdAndUserId(productCommentEntity.getProductId(), productCommentEntity.getUserId());
 			if (findByTitle.isPresent()) {
 				return new GlobalResponse("ERROR", "Reviewed already exist!", 200);
 			} else {
@@ -283,5 +284,83 @@ public class UserService {
 		}
 
 	}
+
+	public GlobalResponse putProductCommentService(ProductCommentEntity<?> productCommentEntity) {
+		LOGGER.info("Inside - UserService.putProductCommentService()");
+
+		try {
+
+			Optional<ProductCommentEntity> findByRow = productCommentRepo.findById(productCommentEntity.getId());
+
+			if (!findByRow.isPresent()) {
+				return new GlobalResponse("ERROR", "Reviewed not exist!", 200);
+			} else {
+				ProductCommentEntity<?> RowsDetails = findByRow.get();
+
+				RowsDetails.setUserId(productCommentEntity.getUserId());
+				RowsDetails.setProductId(productCommentEntity.getProductId());
+				RowsDetails.setRating(productCommentEntity.getRating());
+				RowsDetails.setComment(productCommentEntity.getComment());
+				RowsDetails.setIsVisible(false);
+				RowsDetails.setUploads(productCommentEntity.getUploads());
+				RowsDetails.setCreatedOn(new Date());
+
+				productCommentRepo.save(RowsDetails);
+				return new GlobalResponse("SUCCESS", "Reviewed updated succesfully", 200);
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public GlobalResponse putProductCommentStatusService(ProductCommentEntity<?> productCommentEntity) {
+		LOGGER.info("Inside - UserService.putProductCommentStatusService()");
+
+		try {
+
+			Optional<ProductCommentEntity> findByRow = productCommentRepo.findById(productCommentEntity.getId());
+
+			if (!findByRow.isPresent()) {
+				return new GlobalResponse("ERROR", "Reviewed not exist!", 200);
+			} else {
+				ProductCommentEntity<?> RowsDetails = findByRow.get();
+				Boolean Status = false;
+				if (findByRow.get().getIsVisible() == true) {
+					Status = false;
+				} else {
+					Status = true;
+				}
+				RowsDetails.setIsVisible(Status);
+				RowsDetails.setCreatedOn(new Date());
+
+				productCommentRepo.save(RowsDetails);
+				return new GlobalResponse("SUCCESS", "Reviewed status updated succesfully", 200);
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	
+	@SuppressWarnings("rawtypes")
+	public GlobalResponse deleteProductCommentService(Integer Id) {
+		try {
+			Optional<ProductCommentEntity> findByProductRow = productCommentRepo.findById(Id);
+			if (!findByProductRow.isPresent()) {
+				return new GlobalResponse("ERROR", "Reviewed not exist!", 200);
+			} else {
+				productCommentRepo.deleteById(Id);
+				return new GlobalResponse("SUCCESS", "Reviewed removed succesfully", 200);
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
 
 }
