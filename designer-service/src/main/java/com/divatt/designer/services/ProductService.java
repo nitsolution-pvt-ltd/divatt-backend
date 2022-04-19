@@ -1,5 +1,6 @@
 package com.divatt.designer.services;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -19,14 +20,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Collation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
+import com.divatt.designer.repo.DesignerLoginRepo;
+import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 
@@ -43,13 +48,29 @@ public class ProductService {
 	private CustomFunction customFunction;
 
 	@Autowired
+	private DesignerLoginRepo designerLoginRepo;
+	
+	
+	@Autowired
+	private DesignerProfileRepo designerProfileRepo;
+	@Autowired
 	private MongoOperations mongoOperations;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
-	public List<ProductMasterEntity> allList() {
+	public List<DesignerProfileEntity> allList() {
 		try {
 			LOGGER.info("Inside - ProductService.allList()");
-			return productRepo.findAll();
+			List<ProductMasterEntity> productdata= productRepo.findAll();
+			List<Integer>productId=productdata.stream().map(e->e.getDesignerId()).collect(Collectors.toList());
+			System.out.println(productId);
+			List<DesignerProfileEntity> profileData=new ArrayList<DesignerProfileEntity>();
+			for(int i=0;i<productId.size();i++)
+			{
+				profileData.add(designerProfileRepo.findBydesignerId(Long.valueOf(productId.get(i))));
+			}
+			//return ResponseEntity.ok(productRepo.findAll().stream().filter(e->e.getDesignerId().equals(profileData.forEach(i->i.getDesignerId()));
+			//System.out.println(profileData);
+			return profileData;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -259,5 +280,7 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	
 
 }

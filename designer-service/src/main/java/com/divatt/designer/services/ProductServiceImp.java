@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.entity.product.ProductMasterEntity;
+import com.divatt.designer.entity.profile.DesignerProfileEntity;
 
 public interface ProductServiceImp {
 
-	public List<ProductMasterEntity> allList();
+	public List<DesignerProfileEntity> allProductList();
 	
 	GlobalResponce add(ProductMasterEntity productEntity);
 	
