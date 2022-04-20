@@ -58,7 +58,7 @@ public class UserService {
 			Optional<WishlistEntity> findByCategoryName = wishlistRepo
 					.findByProductIdAndUserId(wishlistEntity.getProductId(), wishlistEntity.getUserId());
 			if (findByCategoryName.isPresent()) {
-				return new GlobalResponse("ERROR", "Product already exist!", 200);
+				throw new CustomException("Product already exist!");
 			} else {
 				WishlistEntity filterCatDetails = new WishlistEntity();
 
@@ -81,7 +81,7 @@ public class UserService {
 		try {
 			Optional<WishlistEntity> findByProductRow = wishlistRepo.findById(Id);
 			if (!findByProductRow.isPresent()) {
-				return new GlobalResponse("ERROR", "Product not exist!", 200);
+				throw new CustomException("Product not exist!");
 			} else {
 				wishlistRepo.deleteById(Id);
 				return new GlobalResponse("SUCCESS", "Wishlist removed succesfully", 200);
@@ -177,7 +177,7 @@ public class UserService {
 			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(userCartEntity.getProductId(),
 					userCartEntity.getUserId());
 			if (findByCat.isPresent()) {
-				return new GlobalResponse("ERROR", "Product already added to the cart.", 200);
+				throw new CustomException("Product already added to the cart.");
 			} else {
 				UserCartEntity filterCatDetails = new UserCartEntity();
 
@@ -201,7 +201,7 @@ public class UserService {
 		try {
 			Optional<UserCartEntity> findByProductRow = userCartRepo.findById(Id);
 			if (!findByProductRow.isPresent()) {
-				return new GlobalResponse("ERROR", "Cart not exist!", 200);
+				throw new CustomException("Cart not exist!");
 			} else {
 				userCartRepo.deleteById(Id);
 				return new GlobalResponse("SUCCESS", "Cart removed succesfully", 200);
@@ -232,7 +232,7 @@ public class UserService {
 
 			if (productIds.isEmpty()) {
 				return ResponseEntity
-						.ok(new Json("{\"reason\": \"ERROR\", \"message\": \"Product not found!\",\"status\": 200}"));
+						.ok(new Json("{\"reason\": \"ERROR\", \"message\": \"Product not found!\",\"status\": 400}"));
 			}
 
 			try {
@@ -242,7 +242,7 @@ public class UserService {
 				return ResponseEntity.ok(new Json(response.getBody().toString()));
 			} catch (Exception e2) {
 				return ResponseEntity.ok(new Json(
-						"{\"reason\": \"ERROR\", \"message\": \"Designer Service is not running!\",\"status\": 200}"));
+						"{\"reason\": \"ERROR\", \"message\": \"Designer Service is not running!\",\"status\": 400}"));
 			}
 
 		} catch (Exception e) {
@@ -259,7 +259,7 @@ public class UserService {
 			Optional<ProductCommentEntity> findByTitle = productCommentRepo
 					.findByProductIdAndUserId(productCommentEntity.getProductId(), productCommentEntity.getUserId());
 			if (findByTitle.isPresent()) {
-				return new GlobalResponse("ERROR", "Reviewed already exist!", 200);
+				throw new CustomException("Reviewed already exist!");
 			} else {
 				ProductCommentEntity<?> RowsDetails = new ProductCommentEntity<Object>();
 
@@ -282,6 +282,7 @@ public class UserService {
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	public GlobalResponse putProductCommentService(ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserService.putProductCommentService()");
 
@@ -290,7 +291,7 @@ public class UserService {
 			Optional<ProductCommentEntity> findByRow = productCommentRepo.findById(productCommentEntity.getId());
 
 			if (!findByRow.isPresent()) {
-				return new GlobalResponse("ERROR", "Reviewed not exist!", 200);
+				throw new CustomException("Reviewed not exist!");
 			} else {
 				ProductCommentEntity<?> RowsDetails = findByRow.get();
 
@@ -320,7 +321,7 @@ public class UserService {
 			Optional<ProductCommentEntity> findByRow = productCommentRepo.findById(productCommentEntity.getId());
 
 			if (!findByRow.isPresent()) {
-				return new GlobalResponse("ERROR", "Reviewed not exist!", 200);
+				throw new CustomException("Reviewed not exist!");
 			} else {
 				ProductCommentEntity<?> RowsDetails = findByRow.get();
 				Boolean Status = false;
@@ -351,7 +352,7 @@ public class UserService {
 		try {
 			Optional<ProductCommentEntity> findByProductRow = productCommentRepo.findById(Id);
 			if (!findByProductRow.isPresent()) {
-				return new GlobalResponse("ERROR", "Reviewed not exist!", 200);
+				throw new CustomException("Reviewed not exist!");
 			} else {
 				productCommentRepo.deleteById(Id);
 				return new GlobalResponse("SUCCESS", "Reviewed removed succesfully", 200);

@@ -37,7 +37,7 @@ public class SubCategoryService {
 			Optional<SubCategoryEntity> findBySubCategoryName = subCategoryRepo
 					.findByCategoryName(subCategoryEntity.getCategoryName());
 			if (findBySubCategoryName.isPresent()) {
-				return new GlobalResponse("ERROR", "Subcategory already exist!", 200);
+				throw new CustomException("Subcategory already exist!");
 			} else {
 				SubCategoryEntity filterSubCatDetails = new SubCategoryEntity();
 
@@ -160,7 +160,7 @@ public class SubCategoryService {
 			Optional<SubCategoryEntity> findByCategoryRow = subCategoryRepo.findById(catId);
 
 			if (!findByCategoryRow.isPresent()) {
-				return new GlobalResponse("ERROR", "Subcategory not exist!", 200);
+				throw new CustomException("Subcategory not exist!");
 			} else {
 				SubCategoryEntity filterSubCatDetails = findByCategoryRow.get();
 
@@ -189,7 +189,7 @@ public class SubCategoryService {
 			Optional<SubCategoryEntity> findById = subCategoryRepo.findById(CatId);
 			SubCategoryEntity filterSubCatDetails = findById.get();
 			if (!findById.isPresent()) {
-				return new GlobalResponse("ERROR", "Subcategory not exist!", 200);
+				throw new CustomException("Subcategory not exist!");
 			} else {
 				filterSubCatDetails.setIsDeleted(true);
 				filterSubCatDetails.setCreatedOn(new Date());
@@ -209,7 +209,7 @@ public class SubCategoryService {
 			SubCategoryEntity filterSubCatDetails = findById.get();
 
 			if (filterSubCatDetails.getId() == null) {
-				return new GlobalResponse("ERROR", "Subcategory not exist!", 200);
+				throw new CustomException("Subcategory not exist!");
 			} else {
 				Boolean isStatus = null;
 				String message=null;

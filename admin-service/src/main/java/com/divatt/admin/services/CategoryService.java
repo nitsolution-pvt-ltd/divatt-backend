@@ -40,7 +40,7 @@ public class CategoryService {
 			Optional<CategoryEntity> findByCategoryName = categoryRepo
 					.findByCategoryName(categoryEntity.getCategoryName());
 			if (findByCategoryName.isPresent()) {
-				return new GlobalResponse("ERROR", "Category already exist!", 200);
+				throw new CustomException("Category already exist!");
 			} else {
 				CategoryEntity filterCatDetails = new CategoryEntity();
 
@@ -132,7 +132,7 @@ public class CategoryService {
 			Optional<CategoryEntity> findByCategoryRow = categoryRepo.findById(catId);
 
 			if (!findByCategoryRow.isPresent()) {
-				return new GlobalResponse("ERROR", "Category not found!", 200);
+				throw new CustomException("Category not found!");
 			} else {
 				CategoryEntity filterCatDetails = findByCategoryRow.get();
 
@@ -161,7 +161,7 @@ public class CategoryService {
 			Optional<CategoryEntity> findById = categoryRepo.findById(CatId);
 			CategoryEntity filterCatDetails = findById.get();
 			if (!findById.isPresent()) {
-				return new GlobalResponse("ERROR", "Category not found!", 200);
+				throw new CustomException("Category not found!");
 			} else {
 				filterCatDetails.setIsDeleted(true);
 				filterCatDetails.setCreatedOn(new Date());
@@ -181,7 +181,7 @@ public class CategoryService {
 			CategoryEntity filterCatDetails = findById.get();
 
 			if (filterCatDetails.getId() == null) {
-				return new GlobalResponse("ERROR", "Category not found!", 200);
+				throw new CustomException("Category not found!");
 
 			} else {
 				Boolean isStatus = null;
