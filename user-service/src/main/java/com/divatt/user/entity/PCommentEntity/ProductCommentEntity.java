@@ -23,19 +23,19 @@ public class ProductCommentEntity<E> {
 	@Id
 	private Integer id;
 	
-	@NotNull(message = "Username is Required!")
+	@NotNull(message = "Username is required!")
 	@Field(value = "user_id")
 	private Integer userId;
 		
-	@NotNull(message = "Product Name is Required!")
+	@NotNull(message = "Product name is required!")
 	@Field(value = "product_id")
 	private Integer productId;
 	
-	@NotNull(message = "Rating is Required!")
+	@NotNull(message = "Rating is required!")
 	@Field(value = "rating")
 	private Float rating;
 	
-	@NotNull(message = "Comment is Required!")
+	@NotNull(message = "Comment is required!")
 	@Field(value = "comment")
 	private String comment;
 		
@@ -56,10 +56,10 @@ public class ProductCommentEntity<E> {
 	}
 
 
-	public ProductCommentEntity(Integer id, @NotNull(message = "Username is Required!") Integer userId,
-			@NotNull(message = "Product Name is Required!") Integer productId,
-			@NotNull(message = "Rating is Required!") Float rating,
-			@NotNull(message = "Comment is Required!") String comment, List<Object> uploads, Boolean isVisible,
+	public ProductCommentEntity(Integer id, @NotNull(message = "Username is required!") Integer userId,
+			@NotNull(message = "Product name is required!") Integer productId,
+			@NotNull(message = "Rating is required!") Float rating,
+			@NotNull(message = "Comment is required!") String comment, List<Object> uploads, Boolean isVisible,
 			Date createdOn) {
 		super();
 		this.id = id;
@@ -75,7 +75,7 @@ public class ProductCommentEntity<E> {
 
 	@Override
 	public String toString() {
-		return "productCommentEntity [id=" + id + ", userId=" + userId + ", productId=" + productId + ", rating="
+		return "ProductCommentEntity [id=" + id + ", userId=" + userId + ", productId=" + productId + ", rating="
 				+ rating + ", comment=" + comment + ", uploads=" + uploads + ", isVisible=" + isVisible + ", createdOn="
 				+ createdOn + "]";
 	}
@@ -164,6 +164,8 @@ public class ProductCommentEntity<E> {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+
+
 	
 	
 

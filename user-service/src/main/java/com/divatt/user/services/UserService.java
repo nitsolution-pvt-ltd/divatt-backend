@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.validation.Valid;
-
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -255,6 +251,7 @@ public class UserService {
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	public GlobalResponse postProductCommentService(ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
 
@@ -314,6 +311,7 @@ public class UserService {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	public GlobalResponse putProductCommentStatusService(ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserService.putProductCommentStatusService()");
 
