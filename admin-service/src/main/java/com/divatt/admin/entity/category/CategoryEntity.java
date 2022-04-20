@@ -20,11 +20,11 @@ public class CategoryEntity {
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_categories";
 	
-	@NotEmpty(message = "Category Name is Required")
+	@NotEmpty(message = "Category name is required")
 	private String categoryName;
-	@NotEmpty(message = "Category Description is Required")
+	@NotEmpty(message = "Category description is required")
 	private String categoryDescription;
-	@NotEmpty(message = "Category Image is Required")
+	@NotEmpty(message = "Category image is required")
 	private String categoryImage;
 	private Integer level;
 	private Boolean isActive;
@@ -39,9 +39,9 @@ public class CategoryEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public CategoryEntity(Integer id, @NotEmpty(message = "Category Name is Required") String categoryName,
-			@NotEmpty(message = "Category Description is Required") String categoryDescription,
-			@NotEmpty(message = "Category Image is Required") String categoryImage, Integer level, Boolean isActive,
+	public CategoryEntity(Integer id, @NotEmpty(message = "Category name is required") String categoryName,
+			@NotEmpty(message = "Category description is required") String categoryDescription,
+			@NotEmpty(message = "Category image is required") String categoryImage, Integer level, Boolean isActive,
 			Boolean isDeleted, String parentId, Date createdOn, String createdBy) {
 		super();
 		this.id = id;
@@ -147,7 +147,7 @@ public class CategoryEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
+
 	
 //	 @DBRef List<CategoryEntity> categoryEntity;
 //	 @Field("id")

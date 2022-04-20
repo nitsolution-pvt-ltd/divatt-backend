@@ -54,7 +54,7 @@ public class SubCategoryService {
 				filterSubCatDetails.setIsDeleted(false);
 
 				subCategoryRepo.save(filterSubCatDetails);
-				return new GlobalResponse("SUCCESS", "Sub Category Added Succesfully", 200);
+				return new GlobalResponse("SUCCESS", "Subcategory added succesfully", 200);
 
 			}
 
@@ -102,7 +102,6 @@ public class SubCategoryService {
 //						return subCategoryEntity;
 //				}).collect(Collectors.toList());
 //				 Page<SubCategoryEntity> list=new Page<>(page,limit,lists);
-//			System.out.println("findAll**************----------------- "+findAll);
 			
 			Page<SubCategoryEntity> map = findAll
 					.map(e -> {
@@ -132,7 +131,7 @@ public class SubCategoryService {
 			response.put("perPageElement", map.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Subcategory Not Found!");
+				throw new CustomException("Subcategory not found!");
 			} else {
 				return response;
 			}
@@ -177,7 +176,7 @@ public class SubCategoryService {
 				filterSubCatDetails.setIsDeleted(false);
 				subCategoryRepo.save(filterSubCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Subcategory Updated Succesfully", 200);
+				return new GlobalResponse("SUCCESS", "Subcategory updated succesfully", 200);
 			}
 
 		} catch (Exception e) {
@@ -197,7 +196,7 @@ public class SubCategoryService {
 				filterSubCatDetails.setCreatedOn(new Date());
 				subCategoryRepo.save(filterSubCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Subcategory Deleted Successfully", 200);
+				return new GlobalResponse("SUCCESS", "Subcategory deleted successfully", 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -211,7 +210,7 @@ public class SubCategoryService {
 			SubCategoryEntity filterSubCatDetails = findById.get();
 
 			if (filterSubCatDetails.getId() == null) {
-				return new GlobalResponse("ERROR", "Subcategory Not Exists!", 200);
+				return new GlobalResponse("ERROR", "Subcategory not exist!", 200);
 			} else {
 				Boolean isStatus = null;
 				if (filterSubCatDetails.getIsActive() == false) {
@@ -224,7 +223,7 @@ public class SubCategoryService {
 				filterSubCatDetails.setCreatedOn(new Date());
 				subCategoryRepo.save(filterSubCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Status Changed Successfully", 200);
+				return new GlobalResponse("SUCCESS", "Status changed successfully", 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -244,7 +243,7 @@ public class SubCategoryService {
 					subCategoryRepo.save(filterCatDetails);
 				}
 			}
-			return new GlobalResponse("SUCCESS", "Subcategory Deleted Successfully", 200);
+			return new GlobalResponse("SUCCESS", "Subcategory deleted successfully", 200);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

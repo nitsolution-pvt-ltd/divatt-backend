@@ -205,7 +205,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/productComment/add")
-	public GlobalResponse postProductCommentDetails(@Valid @RequestBody ProductCommentEntity productCommentEntity) {
+	public GlobalResponse postProductCommentDetails(@Valid @RequestBody ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserController.postProductCommentDetails()");
 
 		try {
@@ -217,7 +217,7 @@ public class UserController {
 	}
 	
 	@PutMapping("/productComment/update")
-	public GlobalResponse putProductCommentDetails(@Valid @RequestBody ProductCommentEntity productCommentEntity) {
+	public GlobalResponse putProductCommentDetails(@Valid @RequestBody ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserController.putProductCommentDetails()");
 
 		try {
@@ -228,7 +228,7 @@ public class UserController {
 	}
 	
 	@PutMapping("/productComment/status")
-	public GlobalResponse putProductCommentStatusDetails(@RequestBody ProductCommentEntity productCommentEntity) {
+	public GlobalResponse putProductCommentStatusDetails(@RequestBody ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserController.putProductCommentStatusDetails()");
 
 		try {
@@ -240,7 +240,7 @@ public class UserController {
 	}
 	
 	@DeleteMapping("/productComment/delete")
-	public GlobalResponse deleteProductCommentDetails(@RequestBody ProductCommentEntity productCommentEntity) {
+	public GlobalResponse deleteProductCommentDetails(@RequestBody ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserController.deleteProductCommentDetails()");
 
 		try {

@@ -21,16 +21,16 @@ public class UserCartEntity {
 	@Id
 	private Integer id;
 	
-	@NotNull(message = "Username is Required!")
+	@NotNull(message = "Username is required!")
 	@Field(value = "user_id")
 	private Integer userId;
 	
 	
-	@NotNull(message = "Product Name is Required!")
+	@NotNull(message = "Product name is required!")
 	@Field(value = "product_id")
 	private Integer productId;
 	
-	@NotNull(message = "Quantity is Required!")
+	@NotNull(message = "Quantity is required!")
 	@Field(value = "qty")
 	private Integer qty;
 	
@@ -43,9 +43,9 @@ public class UserCartEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public UserCartEntity(Integer id, @NotNull(message = "Username is Required!") Integer userId,
-			@NotNull(message = "Product Name is Required!") Integer productId,
-			@NotNull(message = "Quantity is Required!") Integer qty, Date addedOn) {
+	public UserCartEntity(Integer id, @NotNull(message = "Username is required!") Integer userId,
+			@NotNull(message = "Product name is required!") Integer productId,
+			@NotNull(message = "Quantity is required!") Integer qty, Date addedOn) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -104,6 +104,6 @@ public class UserCartEntity {
 		return SEQUENCE_NAME;
 	}
 
-	
 
+	
 }
