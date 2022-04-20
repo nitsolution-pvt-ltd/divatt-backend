@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
@@ -38,7 +39,7 @@ public class ProductController implements ProductServiceImp {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
 
 	@GetMapping("/allList")
-	public List<DesignerProfileEntity> allProductList() {
+	public List<ListProduct> allProductList() {
 		
 		try {
 			LOGGER.info("Inside- ProductController.allList()");

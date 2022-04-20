@@ -7,12 +7,13 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.divatt.designer.response.GlobalResponce;
+import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 
 public interface ProductServiceImp {
 
-	public List<DesignerProfileEntity> allProductList();
+	public List<ListProduct> allProductList();
 	
 	GlobalResponce add(ProductMasterEntity productEntity);
 	

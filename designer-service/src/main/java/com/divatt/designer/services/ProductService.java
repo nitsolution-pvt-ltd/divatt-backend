@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +26,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
@@ -53,22 +54,34 @@ public class ProductService {
 	
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
+	
+	
 	@Autowired
 	private MongoOperations mongoOperations;
+	
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
-	public List<DesignerProfileEntity> allList() {
+	public List<ListProduct> allList() {
 		try {
 			LOGGER.info("Inside - ProductService.allList()");
 			List<ProductMasterEntity> productdata= productRepo.findAll();
 			List<Integer>productId=productdata.stream().map(e->e.getDesignerId()).collect(Collectors.toList());
-			System.out.println(productId);
+			//System.out.println(productId);
 			List<DesignerProfileEntity> profileData=new ArrayList<DesignerProfileEntity>();
 			for(int i=0;i<productId.size();i++)
 			{
 				profileData.add(designerProfileRepo.findBydesignerId(Long.valueOf(productId.get(i))));
 			}
-			return profileData;
+			LinkedList<ListProduct> allData=new LinkedList<ListProduct>();
+			ListProduct listProduct= new ListProduct();
+			for(int i=0;i<productId.size();i++)
+			{
+				listProduct.setDesignerProfileEntity(profileData.get(i));
+				listProduct.setProductMasterEntity(productdata.get(i));
+				allData.add(listProduct);
+			}
+			return allData;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

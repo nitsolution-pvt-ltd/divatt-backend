@@ -27,27 +27,57 @@ public class DesignerProfileEntity {
 	
 	@Field(name = "social_profile")
 	private SocialProfile socialProfile;
+	
+	private String designerName;
 
 	public DesignerProfileEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
+	
+
 	public DesignerProfileEntity(Long dId, Long designerId, DesignerProfile designerProfile,
-			BoutiqueProfile boutiqueProfile, SocialProfile socialProfile) {
+			BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName) {
 		super();
 		this.dId = dId;
 		this.designerId = designerId;
 		this.designerProfile = designerProfile;
 		this.boutiqueProfile = boutiqueProfile;
 		this.socialProfile = socialProfile;
+		this.designerName = designerName;
 	}
+
+
+
+	
+
+	public String getDesignerName() {
+		return designerName;
+	}
+
+
+
+	public void setDesignerName(String designerName) {
+		this.designerName = designerName;
+	}
+
+
+
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
+	}
+
+
 
 	@Override
 	public String toString() {
 		return "DesignerProfileEntity [dId=" + dId + ", designerId=" + designerId + ", designerProfile="
-				+ designerProfile + ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile + "]";
+				+ designerProfile + ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile
+				+ ", designerName=" + designerName + "]";
 	}
+
+
 
 	public Long getdId() {
 		return dId;

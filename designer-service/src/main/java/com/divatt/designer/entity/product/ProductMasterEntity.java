@@ -21,7 +21,7 @@ public class ProductMasterEntity {
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_products";
 	
-	
+	private String designerName;
 	private Integer designerId;
 	//@NotEmpty(message = "Category ID Required")
 	private Integer categoryId;
@@ -81,8 +81,8 @@ public class ProductMasterEntity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public ProductMasterEntity(Integer productId, Integer designerId, Integer categoryId, Integer subCategoryId,
-			@NotEmpty(message = "Gender Category Required") String gender,
+	public ProductMasterEntity(Integer productId, String designerName, Integer designerId, Integer categoryId,
+			Integer subCategoryId, @NotEmpty(message = "Gender Category Required") String gender,
 			@NotEmpty(message = "Product Name Required") String productName,
 			@NotEmpty(message = "Product Description Required") String productDescription, AgeEntity age, Boolean cod,
 			Boolean customization, PurchaseEntity purchaseQuantity,
@@ -95,6 +95,7 @@ public class ProductMasterEntity {
 			String sKQCode) {
 		super();
 		this.productId = productId;
+		this.designerName = designerName;
 		this.designerId = designerId;
 		this.categoryId = categoryId;
 		this.subCategoryId = subCategoryId;
@@ -133,12 +134,12 @@ public class ProductMasterEntity {
 	}
 	@Override
 	public String toString() {
-		return "ProductMasterEntity [productId=" + productId + ", designerId=" + designerId + ", categoryId="
-				+ categoryId + ", subCategoryId=" + subCategoryId + ", gender=" + gender + ", productName="
-				+ productName + ", productDescription=" + productDescription + ", age=" + age + ", cod=" + cod
-				+ ", customization=" + customization + ", purchaseQuantity=" + purchaseQuantity + ", priceType="
-				+ priceType + ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive + ", giftWrap="
-				+ giftWrap + ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images="
+		return "ProductMasterEntity [productId=" + productId + ", designerName=" + designerName + ", designerId="
+				+ designerId + ", categoryId=" + categoryId + ", subCategoryId=" + subCategoryId + ", gender=" + gender
+				+ ", productName=" + productName + ", productDescription=" + productDescription + ", age=" + age
+				+ ", cod=" + cod + ", customization=" + customization + ", purchaseQuantity=" + purchaseQuantity
+				+ ", priceType=" + priceType + ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive
+				+ ", giftWrap=" + giftWrap + ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images="
 				+ Arrays.toString(images) + ", standeredSOH=" + Arrays.toString(standeredSOH) + ", customizationSOH="
 				+ customizationSOH + ", extraSpecifications=" + extraSpecifications + ", specifications="
 				+ specifications + ", isSubmitted=" + isSubmitted + ", isApprove=" + isApprove + ", isActive="
@@ -152,6 +153,12 @@ public class ProductMasterEntity {
 	}
 	public void setProductId(Integer productId) {
 		this.productId = productId;
+	}
+	public String getDesignerName() {
+		return designerName;
+	}
+	public void setDesignerName(String designerName) {
+		this.designerName = designerName;
 	}
 	public Integer getDesignerId() {
 		return designerId;
@@ -366,5 +373,6 @@ public class ProductMasterEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+	
 	
 }
