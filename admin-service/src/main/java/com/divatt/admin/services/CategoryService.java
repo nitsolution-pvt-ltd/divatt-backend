@@ -40,7 +40,7 @@ public class CategoryService {
 			Optional<CategoryEntity> findByCategoryName = categoryRepo
 					.findByCategoryName(categoryEntity.getCategoryName());
 			if (findByCategoryName.isPresent()) {
-				return new GlobalResponse("ERROR", "Category Already Exists!", 200);
+				return new GlobalResponse("ERROR", "Category already exist!", 200);
 			} else {
 				CategoryEntity filterCatDetails = new CategoryEntity();
 
@@ -147,7 +147,7 @@ public class CategoryService {
 				filterCatDetails.setIsDeleted(false);
 				categoryRepo.save(filterCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Category updated succesfully", 200);
+				return new GlobalResponse("SUCCESS", "Category updated successfully", 200);
 			}
 
 		} catch (Exception e) {
@@ -161,7 +161,7 @@ public class CategoryService {
 			Optional<CategoryEntity> findById = categoryRepo.findById(CatId);
 			CategoryEntity filterCatDetails = findById.get();
 			if (!findById.isPresent()) {
-				return new GlobalResponse("ERROR", "Category Not Found!", 200);
+				return new GlobalResponse("ERROR", "Category not found!", 200);
 			} else {
 				filterCatDetails.setIsDeleted(true);
 				filterCatDetails.setCreatedOn(new Date());
@@ -185,17 +185,20 @@ public class CategoryService {
 
 			} else {
 				Boolean isStatus = null;
+				String message=null;
 				if (filterCatDetails.getIsActive() == false) {
 					isStatus = true;
+					message= "actived";
 				} else {
 					isStatus = false;
+					message= "inactive";
 				}
 
 				filterCatDetails.setIsActive(isStatus);
 				filterCatDetails.setCreatedOn(new Date());
 				categoryRepo.save(filterCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Status changed successfully", 200);
+				return new GlobalResponse("SUCCESS", "Status "+message+" successfully", 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
