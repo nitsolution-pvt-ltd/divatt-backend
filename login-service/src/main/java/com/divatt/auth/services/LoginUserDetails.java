@@ -37,21 +37,21 @@ public class LoginUserDetails implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Optional<AdminLoginEntity> admin = adminLoginRepository.findByEmail(username);
 		if (admin.isPresent()) {
-			admin.orElseThrow(() -> new CustomException("Please Check The Username And Password"));
+			admin.orElseThrow(() -> new CustomException("Please Check The Username"));
 			return admin.map(LoginAdminData :: new).get();
 		} else {
 			Optional<DesignerLoginEntity> designer = designerLoginRepo.findByEmail(username);
 			if (designer.isPresent()) {
-				designer.orElseThrow(() -> new CustomException("Please Check The Username And Password"));
+				designer.orElseThrow(() -> new CustomException("Please Check The Username"));
 				return designer.map(LoginDesignerData :: new).get();
 			}else {
 				Optional<UserLoginEntity> user = userLoginRepo.findByEmail(username);
 				if (user.isPresent()) {
-					user.orElseThrow(() -> new CustomException("Please Check The Username And Password"));
+					user.orElseThrow(() -> new CustomException("Please Check The Username"));
 					return user.map(LoginUserData :: new).get();
 			}
 			
-				throw new CustomException("Please Check The Username And Password");
+				throw new CustomException("Please Check The Username");
 		}
 	}
 	

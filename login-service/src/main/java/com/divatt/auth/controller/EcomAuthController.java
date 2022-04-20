@@ -114,7 +114,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 						new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
 			} catch (Exception e) {
 				if(e.getMessage().equals("Bad credentials"))
-					throw new CustomException("Please Check The Username And Password");
+					throw new CustomException("Please Check Your Password");
 				else
 					throw new CustomException(e.getMessage());
 					

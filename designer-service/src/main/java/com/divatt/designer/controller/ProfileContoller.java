@@ -24,6 +24,11 @@ import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
+import com.google.gson.JsonObject;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+
+import springfox.documentation.spring.web.json.Json;
 
 
 @RestController
@@ -76,6 +81,23 @@ public class ProfileContoller {
 				designerProfileEntity.setDesignerProfile(designerProfile);
 				designerProfileRepo.save(designerProfileEntity);	
 			}
+			JsonObject jo = new JsonObject();
+			jo.addProperty("senderMailId", designerProfileEntity.getDesignerProfile().getEmail());
+			jo.addProperty("subject", "Successfully Registration");
+			jo.addProperty("body", "Welcome " + designerProfileEntity.getDesignerProfile().getEmail() + ""
+					+ ",\n"
+					+ " you have been register successfully. We will verify your details and come back to you soon." );
+			jo.addProperty("enableHtml", true);
+			try {
+				Unirest.setTimeouts(0, 0);
+				HttpResponse<String> response = Unirest.post("http://192.168.29.23:8080/dev/auth/sendMail")
+				  .header("Content-Type", "application/json")
+				  .body(jo.toString())
+				  .asString();
+			}catch(Exception e) {
+				
+			}
+			
 			return ResponseEntity.ok(new GlobalResponce("SUCCESS","Register Successfully",200));
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
