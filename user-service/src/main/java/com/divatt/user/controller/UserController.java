@@ -29,7 +29,6 @@ import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
-import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.SequenceGenerator;
@@ -40,9 +39,6 @@ import com.divatt.user.services.UserService;
 public class UserController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-
-	@Autowired
-	private WishlistRepo wishlistRepo;
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
