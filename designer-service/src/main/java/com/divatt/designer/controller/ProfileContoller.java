@@ -1,8 +1,11 @@
 package com.divatt.designer.controller;
 
+import java.net.URI;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
@@ -59,7 +63,7 @@ public class ProfileContoller {
 	}
 	
 	@PostMapping("/add")
-	public ResponseEntity<?> addDesigner(@RequestBody DesignerProfileEntity designerProfileEntity){
+	public ResponseEntity<?> addDesigner(@Valid @RequestBody DesignerProfileEntity designerProfileEntity){
 		try {
 			designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
 			if(designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail()).isPresent())
@@ -68,7 +72,7 @@ public class ProfileContoller {
 			designerLoginEntity.setUid(sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
 			designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
 			designerLoginEntity.setPassword(bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
-			designerLoginEntity.setIsActive(true);
+			designerLoginEntity.setIsActive(false);
 			designerLoginEntity.setIsDeleted(false);
 			designerLoginEntity.setIsApproved(false);
 			designerLoginEntity.setIsProfileCompleated(false);
@@ -85,9 +89,9 @@ public class ProfileContoller {
 			jo.addProperty("senderMailId", designerProfileEntity.getDesignerProfile().getEmail());
 			jo.addProperty("subject", "Successfully Registration");
 			jo.addProperty("body", "Welcome " + designerProfileEntity.getDesignerProfile().getEmail() + ""
-					+ ",\n"
-					+ " you have been register successfully. We will verify your details and come back to you soon." );
-			jo.addProperty("enableHtml", true);
+					+ ",\n                           "
+					+ " you have been register successfully.Please active your account by clicking the bellow link "+ URI.create("http://localhost:8083/dev/designer/redirect/"+Base64.getEncoder().encodeToString(designerLoginEntity.getEmail().toString().getBytes())) +" . We will verify your details and come back to you soon." );
+			jo.addProperty("enableHtml", false);
 			try {
 				Unirest.setTimeouts(0, 0);
 				HttpResponse<String> response = Unirest.post("http://192.168.29.23:8080/dev/auth/sendMail")
@@ -95,7 +99,7 @@ public class ProfileContoller {
 				  .body(jo.toString())
 				  .asString();
 			}catch(Exception e) {
-				
+				System.out.println(e.getMessage());
 			}
 			
 			return ResponseEntity.ok(new GlobalResponce("SUCCESS","Register Successfully",200));
@@ -105,7 +109,7 @@ public class ProfileContoller {
 		
 	}
 	
-	@PutMapping()
+	@PutMapping("/update")
 	public ResponseEntity<?> updateDesigner(@Valid @RequestBody DesignerLoginEntity designerLoginEntity){
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerLoginEntity.getUid());
 		if(!findById.isPresent())
@@ -145,6 +149,19 @@ public class ProfileContoller {
 		}
 		
 		
+	}
+	
+	@RequestMapping(value = "/redirect/{email}", method = RequestMethod.GET)
+	public void method(HttpServletResponse httpServletResponse,@PathVariable("email") String email) {
+		Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(new String(Base64.getDecoder().decode(email)));
+		if(findByEmail.isPresent()) {
+			DesignerLoginEntity designerLoginEntity = findByEmail.get();
+			designerLoginEntity.setIsActive(true);
+			designerLoginRepo.save(designerLoginEntity);
+		}
+			
+	    httpServletResponse.setHeader("Location", "http://localhost:8083/dev/swagger-ui/index.html");
+	    httpServletResponse.setStatus(302);
 	}
 
 }

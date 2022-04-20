@@ -139,6 +139,8 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 			}else {
 				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo.findByEmail(vendor.getUsername());
 				if(findByUserNameDesigner.isPresent()) {
+					if(findByUserNameDesigner.get().getIsActive() == false)
+						throw new CustomException("Please active your account");
 					DesignerLoginEntity designerLoginEntity = findByUserNameDesigner.get();
 					designerLoginEntity.setAuthToken(token);
 					designerLoginRepo.save(designerLoginEntity);
@@ -151,6 +153,8 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 					
 					Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(vendor.getUsername());
 					if(findByEmail.isPresent()) {
+						if(findByEmail.get().getIsActive() == false)
+							throw new CustomException("Please active your account");
 						return ResponseEntity.ok(new LoginUserData(token,findByEmail.get().getuId(),findByEmail.get().getEmail(),findByEmail.get().getPassword(),"Login Successfully",Stream.of("USER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()) , 200));
 					}else {
 						throw new CustomException("Email Not Found");
@@ -385,31 +389,38 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 					throw new CustomException("Username Not Found");
 				if (globalEntity.getUserName().equals(jwtUtil.extractUsername(token.substring(7)))) {
 					try {
-						if(passwordEncoder.matches(globalEntity.getOldPass(), findByUserName.get().getPassword()) ) {
-							AdminLoginEntity loginEntity = findByUserName.get();
-							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
-							AdminLoginEntity save = loginRepository.save(loginEntity);
-						}
+						if(!passwordEncoder.matches(globalEntity.getOldPass(), findByUserName.get().getPassword()) ) 
+							throw new CustomException("Old Password is Not Valid");
+						AdminLoginEntity loginEntity = findByUserName.get();
+						loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
+						AdminLoginEntity save = loginRepository.save(loginEntity);
+						return new GlobalResponse("SUCCESS", "Password Changed Successfully", 200);								
 					}catch(Exception e) {
 						try {
-							if(passwordEncoder.matches(globalEntity.getOldPass(), findByUserNameDesigner.get().getPassword()) ) {
-								DesignerLoginEntity loginEntity = findByUserNameDesigner.get();
-								loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
-								DesignerLoginEntity save = designerLoginRepo.save(loginEntity);
-							}
+							if(!passwordEncoder.matches(globalEntity.getOldPass(), findByUserNameDesigner.get().getPassword()) ) 
+								throw new CustomException("Old Password is Not Valid");
+							DesignerLoginEntity loginEntity = findByUserNameDesigner.get();
+							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
+							DesignerLoginEntity save = designerLoginRepo.save(loginEntity);
+							return new GlobalResponse("SUCCESS", "Password Changed Successfully", 200);								
 							
 						}catch(Exception Z) {
+							try {
 								if(!passwordEncoder.matches(globalEntity.getOldPass(), findByUserEmail.get().getPassword()) ) 
 									throw new CustomException("Old Password is Not Valid");
 								UserLoginEntity loginEntity = findByUserEmail.get();
 								loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
 								UserLoginEntity save = userLoginRepo.save(loginEntity);
+								return new GlobalResponse("SUCCESS", "Password Changed Successfully", 200);								
+							}catch(Exception o) {
+								throw new CustomException("Old Password is Not Valid");
+							}
 								
 							
 						}
 						
 					}							
-							return new GlobalResponse("SUCCESS", "Password Changed Successfully", 200);								
+					
 						
 						
 					} else {

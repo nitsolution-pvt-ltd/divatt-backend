@@ -1,10 +1,13 @@
 package com.divatt.user.controller;
 
+import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -14,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
@@ -33,6 +38,9 @@ import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
+import com.google.gson.JsonObject;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
 
 @RestController
 @RequestMapping("/user")
@@ -149,12 +157,28 @@ public class UserController {
 			userLoginEntity.setuId((long) sequenceGenerator.getNextSequence(UserLoginEntity.SEQUENCE_NAME));
 			userLoginEntity.setUsername(userLoginEntity.getEmail());
 			userLoginEntity.setPassword(passwordEncoder.encode(userLoginEntity.getPassword()));
-			userLoginEntity.setIsActive(true);
+			userLoginEntity.setIsActive(false);
 			userLoginEntity.setIsDeleted(false);
 			userLoginEntity.setCreatedOn(date.toString());
 			userLoginEntity.setProfilePic("Pic.jpg");
 			userLoginEntity.setRegisterType("Self");
 			userLoginRepo.save(userLoginEntity);
+			JsonObject jo = new JsonObject();
+			jo.addProperty("senderMailId", userLoginEntity.getEmail());
+			jo.addProperty("subject", "Successfully Registration");
+			jo.addProperty("body", "Welcome " + userLoginEntity.getEmail() + ""
+					+ ",\n &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp"
+					+ " you have been register successfully."+"Please active your account by clicking the bellow link "+ URI.create("http://localhost:8083/dev/designer/redirect/"+ Base64.getEncoder().encodeToString(userLoginEntity.getuId().toString().getBytes()))  + " . We will verify your details and come back to you soon." );
+			jo.addProperty("enableHtml", false);
+			try {
+				Unirest.setTimeouts(0, 0);
+				HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
+				  .header("Content-Type", "application/json")
+				  .body(jo.toString())
+				  .asString();
+			}catch(Exception e) {
+				
+			}
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Added Successfully", 200));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -245,6 +269,18 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+	
+	@RequestMapping(value = "/redirect/{email}", method = RequestMethod.GET)
+	public void method(HttpServletResponse httpServletResponse,@PathVariable("email") String email) {
+		Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(new String(Base64.getDecoder().decode(email)));
+		if(findByEmail.isPresent()) {
+			UserLoginEntity designerLoginEntity = findByEmail.get();
+			designerLoginEntity.setIsActive(true);
+			userLoginRepo.save(designerLoginEntity);
+		}
+	    httpServletResponse.setHeader("Location", "http://localhost:8083/dev/swagger-ui/index.html");
+	    httpServletResponse.setStatus(302);
 	}
 
 }

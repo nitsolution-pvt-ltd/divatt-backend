@@ -1,28 +1,39 @@
 package com.divatt.designer.entity.profile;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class DesignerProfile {
 	
+	@NotNull
 	@Field(name = "email")
 	private String email;
+	@NotNull
 	@Field(name = "password")
 	private String password;
+	@NotNull
 	@Field(name = "first_name")
 	private String firstName;
+	@NotNull
 	@Field(name = "last_name")
 	private String lastName;
+	@NotNull
 	@Field(name = "display_name")
 	private String displayName;
+	@NotNull
 	@Field(name = "mobile_no")
 	private String mobileNo;
 	
 	@Field(name = "alt_mobile_no")
 	private String altMobileNo;
+	@NotNull
 	@Field(name = "dob")
 	private String dob;
+	@NotNull
 	@Field(name = "gender")
 	private String gender;
+	@NotNull
 	@Field(name = "marital_status")
 	private String maritalStatus;
 	@Field(name = "qualification")
