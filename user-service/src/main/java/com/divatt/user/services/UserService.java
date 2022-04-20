@@ -324,16 +324,19 @@ public class UserService {
 			} else {
 				ProductCommentEntity<?> RowsDetails = findByRow.get();
 				Boolean Status = false;
+				String message=null;
 				if (findByRow.get().getIsVisible() == true) {
 					Status = false;
+					message= "actived";
 				} else {
 					Status = true;
+					message= "inactive";
 				}
 				RowsDetails.setIsVisible(Status);
 				RowsDetails.setCreatedOn(new Date());
 
 				productCommentRepo.save(RowsDetails);
-				return new GlobalResponse("SUCCESS", "Reviewed status updated succesfully", 200);
+				return new GlobalResponse("SUCCESS", "Reviewed status "+message+" successfully", 200);
 			}
 
 		} catch (Exception e) {

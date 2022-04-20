@@ -94,7 +94,7 @@ public class ProfileContoller {
 			jo.addProperty("enableHtml", false);
 			try {
 				Unirest.setTimeouts(0, 0);
-				HttpResponse<String> response = Unirest.post("http://192.168.29.23:8080/dev/auth/sendMail")
+				HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
 				  .header("Content-Type", "application/json")
 				  .body(jo.toString())
 				  .asString();
