@@ -68,8 +68,6 @@ public class ProductService {
 			{
 				profileData.add(designerProfileRepo.findBydesignerId(Long.valueOf(productId.get(i))));
 			}
-			//return ResponseEntity.ok(productRepo.findAll().stream().filter(e->e.getDesignerId().equals(profileData.forEach(i->i.getDesignerId()));
-			//System.out.println(profileData);
 			return profileData;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -78,6 +76,7 @@ public class ProductService {
 
 	public GlobalResponce addData(ProductMasterEntity productData) {
 		try {
+			LOGGER.info("Inside-ProductService.addData()");
 			Query query = new Query();
 			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
 			List<DesignerProfileEntity> designerProfileInfo= mongoOperations.find(query, DesignerProfileEntity.class);
@@ -94,10 +93,10 @@ public class ProductService {
 				}
 				else
 				{
-					return new GlobalResponce("Error", "Product does exist", 400);
+					return new GlobalResponce("Error!!", "Product already added", 400);
 				}
 			} else {
-				return new GlobalResponce("ERROR", "Designerid does not exist!!", 400);
+				return new GlobalResponce("Error!!", "Designerid does not exist!!", 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -106,12 +105,13 @@ public class ProductService {
 
 	public Optional<?> productDetails(Integer productId) {
 		try {
+			LOGGER.info("Inside-ProductService.productDetails()");
 			if (productRepo.existsById(productId)) {
 				LOGGER.info("Inside - ProductService.productDetails()");
 				Optional<ProductMasterEntity> findById = productRepo.findById(productId);
 				return findById;
 			} else {
-				return Optional.of(new GlobalResponce("Bad Request", "Product Id does not exist", 400));
+				return Optional.of(new GlobalResponce("Bad request", "Product id does not exist", 400));
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -134,9 +134,9 @@ public class ProductService {
 				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 				productEntity.setUpdatedOn(new Date());
 				productRepo.save(productEntity);
-				return new GlobalResponce("Success", "Status Change Successfully", 200);
+				return new GlobalResponce("Success", "Status change successfully", 200);
 			} else {
-				return new GlobalResponce("Bad Request", "Product Does Not Exist", 400);
+				return new GlobalResponce("Bad request", "Product does not exist", 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -145,7 +145,7 @@ public class ProductService {
 
 	public GlobalResponce updateProduct(Integer productId, ProductMasterEntity productMasterEntity) {
 		try {
-			
+			LOGGER.info("Inside-ProductService.updateProduct()");
 			if(productRepo.existsById(productId))
 			{
 				Query query= new Query();
@@ -153,7 +153,7 @@ public class ProductService {
 				List<ProductMasterEntity>productInfo= mongoOperations.find(query, ProductMasterEntity.class);
 				if(productInfo.isEmpty())
 				{
-					throw new CustomException("Designer Id can to be change");
+					throw new CustomException("Designer id can to be change");
 				}
 				productRepo.save(customFunction.updateFunction(productMasterEntity, productId));
 				return new GlobalResponce("Success", "Product updated successfully", 200);
@@ -178,15 +178,15 @@ public class ProductService {
 				if (productEntity.getIsDeleted().equals(false)) {
 					isDelete = true;
 				} else {
-					return new GlobalResponce("Bad Request!!", "Product AllReady deleted", 400);
+					return new GlobalResponce("Bad request!!", "Product allReady deleted", 400);
 				}
 				productEntity.setIsDeleted(isDelete);
 				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 				productEntity.setUpdatedOn(new Date());
 				productRepo.save(productEntity);
-				return new GlobalResponce("Success", "Deleted Successfully", 200);
+				return new GlobalResponce("Success", "Deleted successfully", 200);
 			} else {
-				return new GlobalResponce("Bad Request", "Product Does Not Exist", 400);
+				return new GlobalResponce("Bad request", "Product does not exist", 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -232,7 +232,7 @@ public class ProductService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product Not Found!");
+				throw new CustomException("Product not found!");
 			} else {
 				return response;
 			}
@@ -244,6 +244,7 @@ public class ProductService {
 	public Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page,
 			String sort, String sortName, Boolean isDeleted, int limit) {
 		try {
+			LOGGER.info("Inside-ProductService.allWishlistProductData()");
 			if (productIdList.isEmpty()) {
 				throw new CustomException("Product not found!");
 			} else {
@@ -271,7 +272,7 @@ public class ProductService {
 				response.put("perPageElement", findAll.getNumberOfElements());
 
 				if (findAll.getSize() <= 0) {
-					throw new CustomException("Product not found!");
+					return (Map<String, Object>) new GlobalResponce("Error", "No product found", totalPage);
 				} else {
 					return response;
 				}

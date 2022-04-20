@@ -56,7 +56,7 @@ public class CategoryService {
 				filterCatDetails.setIsDeleted(false);
 
 				categoryRepo.save(filterCatDetails);
-				return new GlobalResponse("SUCCESS", "Category Added Succesfully", 200);
+				return new GlobalResponse("SUCCESS", "Category added succesfully", 200);
 			}
 
 		} catch (Exception e) {
@@ -116,7 +116,7 @@ public class CategoryService {
 		try {
 			Optional<CategoryEntity> findById = this.categoryRepo.findById(catId);
 			if (!(findById.isPresent())) {
-				throw new CustomException("Category Not Found!");
+				throw new CustomException("Category not found!");
 			} else {
 				return findById;
 			}
@@ -132,7 +132,7 @@ public class CategoryService {
 			Optional<CategoryEntity> findByCategoryRow = categoryRepo.findById(catId);
 
 			if (!findByCategoryRow.isPresent()) {
-				return new GlobalResponse("ERROR", "Category Not Found!", 200);
+				return new GlobalResponse("ERROR", "Category not found!", 200);
 			} else {
 				CategoryEntity filterCatDetails = findByCategoryRow.get();
 
@@ -147,7 +147,7 @@ public class CategoryService {
 				filterCatDetails.setIsDeleted(false);
 				categoryRepo.save(filterCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Category Updated Succesfully", 200);
+				return new GlobalResponse("SUCCESS", "Category updated succesfully", 200);
 			}
 
 		} catch (Exception e) {
@@ -167,7 +167,7 @@ public class CategoryService {
 				filterCatDetails.setCreatedOn(new Date());
 				categoryRepo.save(filterCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Category Deleted Successfully", 200);
+				return new GlobalResponse("SUCCESS", "Category deleted successfully", 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -181,7 +181,7 @@ public class CategoryService {
 			CategoryEntity filterCatDetails = findById.get();
 
 			if (filterCatDetails.getId() == null) {
-				return new GlobalResponse("ERROR", "Category Not Found!", 200);
+				return new GlobalResponse("ERROR", "Category not found!", 200);
 
 			} else {
 				Boolean isStatus = null;
@@ -195,7 +195,7 @@ public class CategoryService {
 				filterCatDetails.setCreatedOn(new Date());
 				categoryRepo.save(filterCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Status Changed Successfully", 200);
+				return new GlobalResponse("SUCCESS", "Status changed successfully", 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -215,7 +215,7 @@ public class CategoryService {
 					categoryRepo.save(filterCatDetails);
 				}
 			}
-			return new GlobalResponse("SUCCESS", "Category Deleted Successfully", 200);
+			return new GlobalResponse("SUCCESS", "Category deleted successfully", 200);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

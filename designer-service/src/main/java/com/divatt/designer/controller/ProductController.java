@@ -39,8 +39,9 @@ public class ProductController implements ProductServiceImp {
 
 	@GetMapping("/allList")
 	public List<DesignerProfileEntity> allProductList() {
-		LOGGER.info("Inside- ProductController.allList()");
+		
 		try {
+			LOGGER.info("Inside- ProductController.allList()");
 			return this.productService.allList();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -105,8 +106,9 @@ public class ProductController implements ProductServiceImp {
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		LOGGER.info("Inside - CategoryController.getListCategoryDetails()");
+		
 		try {
+			LOGGER.info("Inside - ProductController.getAllProductDetails()");
 			return this.productService.getProductDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -119,7 +121,7 @@ public class ProductController implements ProductServiceImp {
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		try {
-
+			LOGGER.info("Inside-ProductController.productList()");
 			String productId = productIdList.get("productId").toString();
 			int getLimit = (Integer) (productIdList.get("limit"));
 			int getPage = (Integer) (productIdList.get("page"));

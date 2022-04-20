@@ -24,12 +24,12 @@ public class WishlistEntity {
 	private Integer id;
 	
 	
-	@NotNull(message = "User Name is Required!")
+	@NotNull(message = "Username is required!")
 	@Field(value = "user_id")
 	private Integer userId;
 	
 	
-	@NotNull(message = "Product Name is Required!")
+	@NotNull(message = "Product name is required!")
 	@Field(value = "product_id")
 	private Integer productId;
 	
@@ -42,8 +42,8 @@ public class WishlistEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public WishlistEntity(Integer id, @NotNull(message = "User Name is Required!") Integer userId,
-			@NotNull(message = "Product Name is Required!") Integer productId, Date addedOn) {
+	public WishlistEntity(Integer id, @NotNull(message = "Username is required!") Integer userId,
+			@NotNull(message = "Product name is required!") Integer productId, Date addedOn) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -93,6 +93,7 @@ public class WishlistEntity {
 		return SEQUENCE_NAME;
 	}
 
+	
 	
 	
 	
