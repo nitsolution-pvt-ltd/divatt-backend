@@ -272,10 +272,72 @@ public class ProductService {
 				response.put("perPageElement", findAll.getNumberOfElements());
 
 				if (findAll.getSize() <= 0) {
-					return (Map<String, Object>) new GlobalResponce("Error", "No product found", totalPage);
+					throw new CustomException("Product not found!");
 				} else {
 					return response;
 				}
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public List<ProductMasterEntity> designerIdList(Integer designerId1) {
+		try
+		{
+			Query query= new Query();
+			query.addCriteria(Criteria.where("designerId").is(designerId1));
+			List<ProductMasterEntity> productList=mongoOperations.find(query, ProductMasterEntity.class);
+			System.out.println(productList);
+			return productList;
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public Map<String, Object> designerIdListPage(Integer designerId, Optional<String> sortBy, int page,
+			String sort, String sortName, Boolean isDeleted, int limit,String keyword) {
+		try {
+			int CountData = (int) productRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<ProductMasterEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = productRepo.listDesignerProduct(isDeleted, pagingSort,designerId);
+			} else {
+				findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, pagingSort,designerId);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <=1) {
+				throw new CustomException("Product not found!");
+			} else {
+				return response;
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
