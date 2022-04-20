@@ -31,12 +31,12 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	List<ProductMasterEntity> findByProductIdIn(List<Integer> productIdList);
 
 	
-	@Query(value = "{ $or: [ { 'designerId' : {$regex:?0,$options:'i'} } ] }")
-	Page<ProductMasterEntity> listDesignerProduct(Boolean isDeleted, Pageable pagingSort, Integer designerId);
+//	@Query(value = "{ $or: [ { 'designerId' : {$regex:?0,$options:'i'} } ] }")
+	
+	Page<ProductMasterEntity> findByIsDeletedAndDesignerId(Boolean isDeleted, Integer designerId,Pageable pagingSort);
 
-	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'gender' : {$regex:?0,$options:'i'} },{ 'productDescription' : {$regex:?0,$options:'i'} },{ 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1 }]}")
-	Page<ProductMasterEntity> listDesignerProductsearch(String keyword, Boolean isDeleted, Pageable pagingSort,
-			Integer designerId);
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'gender' : {$regex:?0,$options:'i'} },{ 'productDescription' : {$regex:?0,$options:'i'} },{ 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2 }]}")
+	Page<ProductMasterEntity> listDesignerProductsearch(String keyword, Boolean isDeleted, Integer designerId,Pageable pagingSort);
 	
 	
 	

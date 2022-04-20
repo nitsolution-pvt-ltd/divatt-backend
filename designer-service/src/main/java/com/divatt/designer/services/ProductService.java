@@ -315,9 +315,9 @@ public class ProductService {
 			Page<ProductMasterEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = productRepo.listDesignerProduct(isDeleted, pagingSort,designerId);
+				findAll = productRepo.findByIsDeletedAndDesignerId(isDeleted, designerId,pagingSort);
 			} else {
-				findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, pagingSort,designerId);
+				findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId,pagingSort);
 
 			}
 
