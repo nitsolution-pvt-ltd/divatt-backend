@@ -36,6 +36,7 @@ public class DesignerLoginEntity {
 	@Field(name = "admin_comment") private String adminComment;
 	
 	@Field(name = "logins") private Json logins;
+	private DesignerProfileEntity designerProfileEntity;
 
 	public DesignerLoginEntity() {
 		super();
@@ -44,9 +45,14 @@ public class DesignerLoginEntity {
 
 	
 
-	public DesignerLoginEntity(Object uid, String email, String password, String authToken, Boolean isActive,
-			Boolean isDeleted, Boolean isApproved, Boolean isProfileCompleated, Boolean isProfileSubmitted,
-			String adminComment, Json logins) {
+	
+
+
+
+	public DesignerLoginEntity(@NotNull Object uid, @NotNull String email, String password, String authToken,
+			@NotNull Boolean isActive, @NotNull Boolean isDeleted, @NotNull Boolean isApproved,
+			@NotNull Boolean isProfileCompleated, @NotNull Boolean isProfileSubmitted, String adminComment, Json logins,
+			DesignerProfileEntity designerProfileEntity) {
 		super();
 		this.uid = uid;
 		this.email = email;
@@ -59,17 +65,51 @@ public class DesignerLoginEntity {
 		this.isProfileSubmitted = isProfileSubmitted;
 		this.adminComment = adminComment;
 		this.logins = logins;
+		this.designerProfileEntity = designerProfileEntity;
 	}
 
 
+
+
+
+
+
+	
 
 	@Override
 	public String toString() {
 		return "DesignerLoginEntity [uid=" + uid + ", email=" + email + ", password=" + password + ", authToken="
 				+ authToken + ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", isApproved=" + isApproved
 				+ ", isProfileCompleated=" + isProfileCompleated + ", isProfileSubmitted=" + isProfileSubmitted
-				+ ", adminComment=" + adminComment + ", logins=" + logins + "]";
+				+ ", adminComment=" + adminComment + ", logins=" + logins + ", designerProfileEntity="
+				+ designerProfileEntity + "]";
 	}
+
+
+
+
+
+
+
+	public DesignerProfileEntity getDesignerProfileEntity() {
+		return designerProfileEntity;
+	}
+
+
+
+
+
+
+
+	public void setDesignerProfileEntity(DesignerProfileEntity designerProfileEntity) {
+		this.designerProfileEntity = designerProfileEntity;
+	}
+
+
+
+
+
+
 
 	public Object getUid() {
 		return uid;

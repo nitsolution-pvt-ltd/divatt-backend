@@ -123,7 +123,8 @@ public class ProfileContoller {
 			Date date = new Date();
 			formatter.format(date);
 			loginEntity.setUid((long)sequenceGenerator.getNextSequence(LoginEntity.SEQUENCE_NAME));
-			loginEntity.setRole(loginEntity.getRole().toUpperCase());
+			loginEntity.setRole(loginEntity.getRole());
+			loginEntity.setRoleName(loginEntity.getRoleName().toUpperCase());
 			loginEntity.setIs_active(true);
 			loginEntity.setDeleted(false);
 			loginEntity.setCreated_on(date.toString());
