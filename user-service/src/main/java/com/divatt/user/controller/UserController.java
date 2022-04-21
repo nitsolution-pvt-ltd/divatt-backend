@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
@@ -51,7 +50,7 @@ public class UserController {
 
 	@Autowired
 	private Environment env;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
@@ -120,7 +119,6 @@ public class UserController {
 
 	}
 
-	
 	@PostMapping("/follow")
 	public ResponseEntity<?> followDesigner(@Valid @RequestBody UserDesignerEntity userDesignerEntity) {
 		try {
@@ -151,7 +149,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.addUser()");
 		try {
 			if (error.hasErrors()) {
-				throw new CustomException("Check The Fields");
+				throw new CustomException("Please check input fields");
 			}
 			if (userLoginRepo.findByEmail(userLoginEntity.getEmail()).isPresent())
 				throw new CustomException("Email id is already Present");
@@ -164,33 +162,33 @@ public class UserController {
 			userLoginEntity.setIsActive(false);
 			userLoginEntity.setIsDeleted(false);
 			userLoginEntity.setCreatedOn(date.toString());
-			userLoginEntity.setProfilePic("Pic.jpg");
+			userLoginEntity.setProfilePic("");
 			userLoginEntity.setRegisterType("Self");
 			userLoginRepo.save(userLoginEntity);
 			JsonObject jo = new JsonObject();
 			jo.addProperty("senderMailId", userLoginEntity.getEmail());
 			jo.addProperty("subject", "Successfully Registration");
-			jo.addProperty("body", "Welcome " + userLoginEntity.getEmail() + ""
-					+ ",\n &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp"
-					+ " you have been register successfully."+"Please active your account by clicking the bellow link "+ URI.create(env.getProperty("redirectapi")+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()))  + " . We will verify your details and come back to you soon." );
+			jo.addProperty("body", "Welcome " + userLoginEntity.getEmail() + "" + ",\n   "
+					+ " you have been register successfully."
+					+ "Please active your account by clicking the bellow link "
+					+ URI.create(env.getProperty("redirectapi")
+							+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()))
+					+ " . We will verify your details and come back to you soon.");
 			jo.addProperty("enableHtml", false);
 			try {
 				Unirest.setTimeouts(0, 0);
 				HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
-				  .header("Content-Type", "application/json")
-				  .body(jo.toString())
-				  .asString();
-			}catch(Exception e) {
-				
+						.header("Content-Type", "application/json").body(jo.toString()).asString();
+			} catch (Exception e) {
+
 			}
-			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Added Successfully", 200));
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Registered successfully", 200));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
 
-	
 	@PostMapping("/cart/add")
 	public GlobalResponse postCartDetails(@Valid @RequestBody UserCartEntity userCartEntity) {
 		LOGGER.info("Inside - UserController.postCartDetails()");
@@ -214,7 +212,7 @@ public class UserController {
 		}
 
 	}
-	
+
 	@RequestMapping(value = { "/cart/getUserCart" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getUserCartRestDetails(@RequestBody org.json.simple.JSONObject getWishlist,
 			@RequestParam(defaultValue = "") Integer userId) {
@@ -227,7 +225,7 @@ public class UserController {
 		}
 
 	}
-	
+
 	@PostMapping("/productComment/add")
 	public GlobalResponse postProductCommentDetails(@Valid @RequestBody ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserController.postProductCommentDetails()");
@@ -239,7 +237,7 @@ public class UserController {
 		}
 
 	}
-	
+
 	@PutMapping("/productComment/update")
 	public GlobalResponse putProductCommentDetails(@Valid @RequestBody ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserController.putProductCommentDetails()");
@@ -250,7 +248,7 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@PutMapping("/productComment/status")
 	public GlobalResponse putProductCommentStatusDetails(@RequestBody ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserController.putProductCommentStatusDetails()");
@@ -262,7 +260,7 @@ public class UserController {
 		}
 
 	}
-	
+
 	@DeleteMapping("/productComment/delete")
 	public GlobalResponse deleteProductCommentDetails(@RequestBody ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserController.deleteProductCommentDetails()");
@@ -274,20 +272,21 @@ public class UserController {
 		}
 
 	}
-	
+
 	@RequestMapping(value = "/redirect/{email}", method = RequestMethod.GET)
-	public void method(HttpServletResponse httpServletResponse,@PathVariable("email") String email) {
-		System.out.println("sgfdrg "+new String(Base64.getDecoder().decode(email)));
-		Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(new String(Base64.getDecoder().decode(email)));
-		if(findByEmail.isPresent()) {
+	public void method(HttpServletResponse httpServletResponse, @PathVariable("email") String email) {
+		System.out.println("sgfdrg " + new String(Base64.getDecoder().decode(email)));
+		Optional<UserLoginEntity> findByEmail = userLoginRepo
+				.findByEmail(new String(Base64.getDecoder().decode(email)));
+		if (findByEmail.isPresent()) {
 			UserLoginEntity designerLoginEntity = findByEmail.get();
 			designerLoginEntity.setIsActive(true);
 			userLoginRepo.save(designerLoginEntity);
 		}
-	    httpServletResponse.setHeader("Location", env.getProperty("redirecturl"));
-	    httpServletResponse.setStatus(302);
+		httpServletResponse.setHeader("Location", env.getProperty("redirecturl"));
+		httpServletResponse.setStatus(302);
 	}
-	
+
 	@PostMapping("/update")
 	public ResponseEntity<?> updateUser(@Valid @RequestBody UserLoginEntity userLoginEntityParam, Errors error) {
 		LOGGER.info("Inside - UserController.addUser()");
@@ -311,17 +310,18 @@ public class UserController {
 			jo.addProperty("senderMailId", userLoginEntity.getEmail());
 			jo.addProperty("subject", "Successfully Registration");
 			jo.addProperty("body", "Welcome " + userLoginEntity.getEmail() + ""
-					+ ",\n &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp"
-					+ " you have been register successfully."+"Please active your account by clicking the bellow link "+ URI.create(env.getProperty("redirectapi")+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()))  + " . We will verify your details and come back to you soon." );
+					+ ",\n &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp" + " you have been register successfully."
+					+ "Please active your account by clicking the bellow link "
+					+ URI.create(env.getProperty("redirectapi")
+							+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()))
+					+ " . We will verify your details and come back to you soon.");
 			jo.addProperty("enableHtml", false);
 			try {
 				Unirest.setTimeouts(0, 0);
 				HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
-				  .header("Content-Type", "application/json")
-				  .body(jo.toString())
-				  .asString();
-			}catch(Exception e) {
-				
+						.header("Content-Type", "application/json").body(jo.toString()).asString();
+			} catch (Exception e) {
+
 			}
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Updated Successfully", 200));
 		} catch (Exception e) {
