@@ -4,6 +4,9 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+
 public class DesignerProfile {
 	
 	@NotNull
@@ -28,9 +31,10 @@ public class DesignerProfile {
 	@Field(name = "alt_mobile_no")
 	private String altMobileNo;
 	@NotNull
+	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	@Field(name = "dob")
 	private String dob;
-	@NotNull
+	@NotNull 
 	@Field(name = "gender")
 	private String gender;
 	@NotNull

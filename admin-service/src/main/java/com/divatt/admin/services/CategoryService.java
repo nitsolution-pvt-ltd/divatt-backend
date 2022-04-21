@@ -158,14 +158,14 @@ public class CategoryService {
 
 	public GlobalResponse putCategoryDeleteService(Integer CatId) {
 		try {
-
-			Optional<CategoryEntity> findByVerify = categoryRepo.findByIsDeletedAndParentId(false, CatId.toString());
+			List<CategoryEntity> findByVerify = categoryRepo.VerifyCategory(false, CatId.toString());
 			Optional<CategoryEntity> findById = categoryRepo.findById(CatId);
 
 			CategoryEntity filterCatDetails = findById.get();
 
-			if (findByVerify.isPresent()) {
-				throw new CustomException("This category has been assigned a subcategory. Please delete the subcategory then you can delete category.");
+			if (!findByVerify.isEmpty()) {
+				throw new CustomException(
+						"This category has been assigned a subcategory. Please delete the subcategory then you can delete this category.");
 			} else {
 				if (!findById.isPresent()) {
 					throw new CustomException("Category not found!");
@@ -215,18 +215,28 @@ public class CategoryService {
 
 	public GlobalResponse putCategoryMulDeleteService(List<Integer> CateID) {
 		try {
+			String message=null;
+			Integer status=400;
 			for (Integer CateIdRowId : CateID) {
 
 				Optional<CategoryEntity> findById = categoryRepo.findById(CateIdRowId);
-				CategoryEntity filterCatDetails = findById.get();
+				List<CategoryEntity> findByVerify = categoryRepo.VerifyCategory(false, CateIdRowId.toString());
 
+				CategoryEntity filterCatDetails = findById.get();
+				
 				if (filterCatDetails.getId() != null) {
 					filterCatDetails.setIsDeleted(true);
 					filterCatDetails.setCreatedOn(new Date());
-					categoryRepo.save(filterCatDetails);
+					if (findByVerify.isEmpty()) {
+						message="Category deleted successfully";
+						status=200;
+						categoryRepo.save(filterCatDetails);
+					}else {						
+						message="All category not deleted successfully! It has subcategory";
+					}
 				}
 			}
-			return new GlobalResponse("SUCCESS", "Category deleted successfully", 200);
+			return new GlobalResponse("SUCCESS", message, status);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

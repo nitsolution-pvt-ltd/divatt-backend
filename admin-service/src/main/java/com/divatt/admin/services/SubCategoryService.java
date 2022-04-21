@@ -101,11 +101,11 @@ public class SubCategoryService {
 //						return subCategoryEntity;
 //				}).collect(Collectors.toList());
 //				 Page<SubCategoryEntity> list=new Page<>(page,limit,lists);
-			LOGGER.info("Inside - SubCategoryController.findAll()"+findAll);
+			LOGGER.info("Inside - SubCategoryController.findAll()"+isDeleted);
 			Page<SubCategoryEntity> map = findAll
 					.map(e -> {
 				try {
-					SubCategoryEntity subCategoryEntity = subCategoryRepo.findByIdAndIsDeleted(Integer.parseInt(e.getParentId()),isDeleted).get(CountData);
+					SubCategoryEntity subCategoryEntity = subCategoryRepo.findById(Integer.parseInt(e.getParentId())).get();
 					subCategoryEntity.setSubCategory(e);
 					LOGGER.info("Inside - SubCategoryController.postSubCategoryDetails()"+subCategoryEntity);
 					return subCategoryEntity;
