@@ -101,19 +101,20 @@ public class SubCategoryService {
 //						return subCategoryEntity;
 //				}).collect(Collectors.toList());
 //				 Page<SubCategoryEntity> list=new Page<>(page,limit,lists);
-			
+			LOGGER.info("Inside - SubCategoryController.findAll()"+findAll);
 			Page<SubCategoryEntity> map = findAll
 					.map(e -> {
 				try {
-					SubCategoryEntity subCategoryEntity = subCategoryRepo.findById(Integer.parseInt(e.getParentId())).get();
+					SubCategoryEntity subCategoryEntity = subCategoryRepo.findByIdAndIsDeleted(Integer.parseInt(e.getParentId()),isDeleted).get(CountData);
 					subCategoryEntity.setSubCategory(e);
+					LOGGER.info("Inside - SubCategoryController.postSubCategoryDetails()"+subCategoryEntity);
 					return subCategoryEntity;
 				}catch(Exception z) {
 					return e;
 				}
 				
 			});
-
+			
 
 
 			int totalPage = findAll.getTotalPages() - 1;
