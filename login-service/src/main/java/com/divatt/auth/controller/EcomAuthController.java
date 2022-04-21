@@ -1,5 +1,6 @@
 package com.divatt.auth.controller;
 
+import java.net.URI;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
@@ -56,6 +57,8 @@ import com.divatt.auth.repo.UserLoginRepo;
 import com.divatt.auth.services.LoginUserDetails;
 import com.divatt.auth.services.MailService;
 import com.divatt.auth.services.SequenceGenerator;
+import com.google.gson.JsonObject;
+
 
 import springfox.documentation.spring.web.json.Json;
 
@@ -313,6 +316,7 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 					System.out.println("loginResetEntity.getUser_id() "+loginResetEntity.getUser_id());
 					Optional<AdminLoginEntity> findById = loginRepository.findById((loginResetEntity.getUser_id()));
 					Optional<AdminLoginEntity> findByEmail = loginRepository.findByEmail((loginResetEntity.getEmail()));
+					JsonObject jo = new JsonObject();
 					if (findByEmail.isPresent() && findByEmail.get().getUid().equals(findById.get().getUid())) {
 				//** CREATE NEW PASSWORD AND SAVE **//
 						AdminLoginEntity loginEntity = findById.get();
@@ -322,7 +326,8 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 							throw new CustomException("Data Not Save! Try Again");
 						}else {
 							loginResetEntity.setStatus("DEACTIVE");
-							loginResetRepo.save(loginResetEntity);
+							PasswordResetEntity save2 = loginResetRepo.save(loginResetEntity);
+							jo.addProperty("senderMailId", save2.getEmail());
 							return new GlobalResponse("SUCCESS", "Password Changed Successfully", 200);
 						}
 					}else {
@@ -337,7 +342,8 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 								throw new CustomException("Data Not Save! Try Again");
 							}else {
 								loginResetEntity.setStatus("DEACTIVE");
-								loginResetRepo.save(loginResetEntity);
+								PasswordResetEntity save2 = loginResetRepo.save(loginResetEntity);
+								jo.addProperty("senderMailId", save2.getEmail());
 								return new GlobalResponse("SUCCESS", "Password Generate Successfully", 200);
 							}
 						}else {
@@ -352,11 +358,27 @@ public class EcomAuthController implements EcomAuthContollerMethod{
 								throw new CustomException("Data Not Save! Try Again");
 							}else {
 								loginResetEntity.setStatus("DEACTIVE");
-								loginResetRepo.save(loginResetEntity);
+								PasswordResetEntity save2 = loginResetRepo.save(loginResetEntity);
+								jo.addProperty("senderMailId", save2.getEmail());
 								return new GlobalResponse("SUCCESS", "Password Changed Successfully", 200);
 							}
 						}
 							
+						
+//						jo.addProperty("subject", "Password change successfully");
+//						jo.addProperty("body", "Hello " + jo.get("senderMailId") + ""
+//								+ ",\n                           "
+//								+ " your password have been changed." );
+//						jo.addProperty("enableHtml", false);
+//						try {
+//							Unirest.setTimeouts(0, 0);
+//							HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
+//							  .header("Content-Type", "application/json")
+//							  .body(jo.toString())
+//							  .asString();
+//						}catch(Exception e) {
+//							System.out.println(e.getMessage());
+//						}
 						
 						
 					}
