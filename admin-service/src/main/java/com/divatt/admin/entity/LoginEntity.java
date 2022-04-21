@@ -52,7 +52,11 @@ public class LoginEntity {
 	@Field(value = "is_deleted")
 	private boolean isDeleted;
 	@NotNull(message = "User's role must not be null")
-	private String role;
+	private Long role;
+	
+	@Field(name = "roel_name")
+	@NotNull(message = "User's role must not be null")
+	private String roleName;
 
 	private String auth_token;
 
@@ -172,12 +176,12 @@ public class LoginEntity {
 	}
 
 
-	public String getRole() {
+	public Long getRole() {
 		return role;
 	}
 
 
-	public void setRole(String role) {
+	public void setRole(Long role) {
 		this.role = role;
 	}
 
@@ -242,6 +246,19 @@ public class LoginEntity {
 	}
 
 
+	
+
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
@@ -253,25 +270,38 @@ public class LoginEntity {
 
 	
 
+	
+
+
+	
+
+	
+
+
+	
+
 	@Override
 	public String toString() {
 		return "LoginEntity [uid=" + uid + ", first_name=" + first_name + ", last_name=" + last_name + ", email="
 				+ email + ", password=" + password + ", mobile_no=" + mobile_no + ", dob=" + dob + ", is_active="
-				+ is_active + ", isDeleted=" + isDeleted + ", role=" + role + ", auth_token=" + auth_token
-				+ ", created_by=" + created_by + ", created_on=" + created_on + ", modified_by=" + modified_by
-				+ ", modified_on=" + modified_on + ", profile_pic=" + profile_pic + ", logins=" + logins + "]";
+				+ is_active + ", isDeleted=" + isDeleted + ", role=" + role + ", roleName=" + roleName + ", auth_token="
+				+ auth_token + ", created_by=" + created_by + ", created_on=" + created_on + ", modified_by="
+				+ modified_by + ", modified_on=" + modified_on + ", profile_pic=" + profile_pic + ", logins=" + logins
+				+ "]";
 	}
 
 
 	
 
-	public LoginEntity(@NotNull Long uid, @NotNull(message = "User's first name must not be null") String first_name,
+
+	public LoginEntity(Long uid, @NotNull(message = "User's first name must not be null") String first_name,
 			@NotNull(message = "User's last name must not be null") String last_name,
 			@NotNull(message = "User's email must not be null") String email,
 			@NotNull(message = "User's password must not be null") String password,
 			@NotNull(message = "User's mobile_no must not be null") String mobile_no,
 			@NotNull(message = "User's dob must not be null") String dob, boolean is_active, boolean isDeleted,
-			@NotNull(message = "User's role must not be null") String role, String auth_token, String created_by,
+			@NotNull(message = "User's role must not be null") Long role,
+			@NotNull(message = "User's role must not be null") String roleName, String auth_token, String created_by,
 			String created_on, String modified_by, String modified_on,
 			@NotNull(message = "User's profile_pic must not be null") String profile_pic, JSONObject logins) {
 		super();
@@ -285,6 +315,7 @@ public class LoginEntity {
 		this.is_active = is_active;
 		this.isDeleted = isDeleted;
 		this.role = role;
+		this.roleName = roleName;
 		this.auth_token = auth_token;
 		this.created_by = created_by;
 		this.created_on = created_on;

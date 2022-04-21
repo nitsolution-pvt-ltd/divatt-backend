@@ -88,15 +88,20 @@ public class RoleAndPermission {
 	public ResponseEntity<?> addRole(@RequestBody AdminModules adminModules){
 		adminModules.setmId((long)sequenceGenerator.getNextSequence(AdminModules.SEQUENCE_NAME));
 		adminModules.setMetaKey("ROLE");
-		adminModules.getModules().stream().map(e->{
+		ArrayList<AdminModule> modules = adminModules.getModules();
+		for(AdminModule e : modules) {
 			HashMap<String, Boolean> modPrivs = e.getModPrivs();
-			modPrivs.forEach((k,v)->{
-				if(v!=true)
-					v=false;
-			});
+			if(modPrivs.get("create") == null)
+				modPrivs.put("create", false);
+			if(modPrivs.get("update") == null)
+				modPrivs.put("update", false);
+			if(modPrivs.get("list") == null)
+				modPrivs.put("list", false);
+			if(modPrivs.get("delete") == null)
+				modPrivs.put("delete", false);
 			e.setModPrivs(modPrivs);
-			return e;
-		});
+		}
+		 adminModules.setModules(modules);
 		adminModulesRepo.save(adminModules);
 		//adminModulesRepo.findByRoleName(adminModules.getRoleName()).ifPresentOrElse((value)->{throw new CustomException("This Role is Already Present");} , ()->{adminModulesRepo.save(adminModules);});
 		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Role Added Successfully",200));

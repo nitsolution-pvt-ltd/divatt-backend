@@ -143,12 +143,13 @@ public class ProfileContoller {
 			@RequestParam(defaultValue = "false") Boolean isApproved, 
 			@RequestParam(defaultValue = "false") Boolean isProfileCompleated, 
 			@RequestParam(defaultValue = "false") Boolean isProfileSubmitted,
+			@RequestParam(defaultValue = "isDeleted") String fieldName,
 			@RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 
 		try {		
-			return this.getDesignerProfDetails(page, limit, sort, sortName, isDeleted, keyword,
-					sortBy);
+			return this.getDesignerProfDetails(page, limit, sort, sortName, isDeleted,isApproved,isProfileCompleated,
+					isProfileSubmitted,keyword,sortBy,fieldName);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -171,7 +172,7 @@ public class ProfileContoller {
 	
 	
 	public Map<String, Object> getDesignerProfDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			String keyword, Optional<String> sortBy) {
+			Boolean isApproved,Boolean isProfileCompleated, Boolean isProfileSubmitted, String keyword, Optional<String> sortBy,String fieldName) {
 		try {
 			int CountData = (int) designerLoginRepo.count();
 			Pageable pagingSort = null;
@@ -188,15 +189,50 @@ public class ProfileContoller {
 			Page<DesignerLoginEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = designerLoginRepo.findByIsDeleted(isDeleted,pagingSort);
+				
+				
+				if(fieldName.equals("isDeleted"))
+					findAll = designerLoginRepo.findByIsDeleted(isDeleted,pagingSort);
+				else if(fieldName.equals("isApproved"))
+					findAll = designerLoginRepo.findByIsApproved(isApproved, pagingSort);
+				else if(fieldName.equals("isProfileCompleated"))
+					findAll = designerLoginRepo.findByIsProfileCompleated(isProfileCompleated, pagingSort);
+				else if(fieldName.equals("isProfileSubmitted"))
+					findAll = designerLoginRepo.findByIsProfileSubmitted(isProfileSubmitted, pagingSort);
+				else {
+					findAll = designerLoginRepo.findByIsDeleted(isDeleted,pagingSort);
+				}
 				
 
 			} else {
-				findAll = designerLoginRepo.Search(keyword, isDeleted, pagingSort);
-
+				if(fieldName.equals("isDeleted"))
+					findAll = designerLoginRepo.SearchByDelete(keyword, isDeleted, pagingSort);
+				else if(fieldName.equals("isApproved"))
+					findAll = designerLoginRepo.SearchByApproved(keyword, isApproved, pagingSort);
+				else if(fieldName.equals("isProfileCompleated"))
+					findAll = designerLoginRepo.SearchByProfileCompleated(keyword, isProfileCompleated, pagingSort);
+				else if(fieldName.equals("isProfileSubmitted"))
+					findAll = designerLoginRepo.SearchByProfileSubmitted(keyword, isProfileSubmitted, pagingSort);
+				else {
+					findAll = designerLoginRepo.SearchByDelete(keyword, isDeleted, pagingSort);
+				}
 			}
 			
-
+			if (findAll.getSize() <= 1) 
+				throw new CustomException("Institute Not Found!");
+			
+			
+			findAll.map(e->{
+				try {
+					e.setDesignerProfileEntity(designerProfileRepo.findBydesignerId(Long.parseLong(e.getUid().toString())));
+				}catch(Exception o) {
+					
+				}
+				
+				return e;
+			});
+			
+			
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
@@ -210,11 +246,7 @@ public class ProfileContoller {
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
 
-			if (findAll.getSize() <= 1) {
-				throw new CustomException("Institute Not Found!");
-			} else {
 				return response;
-			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

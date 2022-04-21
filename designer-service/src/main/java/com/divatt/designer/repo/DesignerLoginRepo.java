@@ -17,9 +17,16 @@ import com.divatt.designer.entity.profile.DesignerLoginEntity;
 public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, Object>{
 	
 	Optional<DesignerLoginEntity> findByEmail(String email);
-	List<DesignerLoginEntity> findByIsApproved(Boolean isApproved);
-	List<DesignerLoginEntity> findByIsProfileSubmitted(Boolean isProfileSubmitted);
+	Page<DesignerLoginEntity> findByIsApproved(Boolean isApproved  ,Pageable pagingSort);
+	Page<DesignerLoginEntity> findByIsProfileSubmitted(Boolean isProfileSubmitted  ,Pageable pagingSort);
+	Page<DesignerLoginEntity> findByIsProfileCompleated(Boolean isProfileCompleated  ,Pageable pagingSort);
 	public Page<DesignerLoginEntity> findByIsDeleted(Boolean isDeleted,Pageable pagingSort);
 	@Query(value = "{ $or: [ { 'email' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
-	public Page<DesignerLoginEntity> Search(String sortKey, Boolean isDeleted,Pageable pageable);
+	public Page<DesignerLoginEntity> SearchByDelete(String sortKey, Boolean isDeleted,Pageable pageable);
+	@Query(value = "{ $or: [ { 'email' : {$regex:?0,$options:'i'} } ],$and: [ { 'isApproved' : ?1 }]}")
+	public Page<DesignerLoginEntity> SearchByApproved(String sortKey, Boolean isApproved,Pageable pageable);
+	@Query(value = "{ $or: [ { 'email' : {$regex:?0,$options:'i'} } ],$and: [ { 'isProfileCompleated' : ?1 }]}")
+	public Page<DesignerLoginEntity> SearchByProfileCompleated(String sortKey, Boolean isProfileCompleated,Pageable pageable);
+	@Query(value = "{ $or: [ { 'email' : {$regex:?0,$options:'i'} } ],$and: [ { 'isProfileSubmitted' : ?1 }]}")
+	public Page<DesignerLoginEntity> SearchByProfileSubmitted(String sortKey, Boolean isProfileSubmitted,Pageable pageable);
 }
