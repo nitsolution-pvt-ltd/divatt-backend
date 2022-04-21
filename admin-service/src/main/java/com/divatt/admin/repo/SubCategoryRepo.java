@@ -1,5 +1,6 @@
 package com.divatt.admin.repo;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ public interface SubCategoryRepo extends MongoRepository<SubCategoryEntity,Integ
 	@Query(value = "{ $or: [ { 'categoryName' : {$regex:?0,$options:'i'} }, { 'categoryDescription' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'categoryImage' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
     Page<SubCategoryEntity> SearchAndfindByIsDeletedAndParentIdNot(String sortKey, Boolean isDeleted, String parentId,Pageable pageable);
 
+	List<SubCategoryEntity> findByIdAndIsDeleted(Integer Id,Boolean isDeleted);
 	
 
 }

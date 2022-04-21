@@ -158,16 +158,24 @@ public class CategoryService {
 
 	public GlobalResponse putCategoryDeleteService(Integer CatId) {
 		try {
-			Optional<CategoryEntity> findById = categoryRepo.findById(CatId);
-			CategoryEntity filterCatDetails = findById.get();
-			if (!findById.isPresent()) {
-				throw new CustomException("Category not found!");
-			} else {
-				filterCatDetails.setIsDeleted(true);
-				filterCatDetails.setCreatedOn(new Date());
-				categoryRepo.save(filterCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Category deleted successfully", 200);
+			Optional<CategoryEntity> findByVerify = categoryRepo.findByIsDeletedAndParentId(false, CatId.toString());
+			Optional<CategoryEntity> findById = categoryRepo.findById(CatId);
+
+			CategoryEntity filterCatDetails = findById.get();
+
+			if (findByVerify.isPresent()) {
+				throw new CustomException("This category has been assigned a subcategory. Please delete the subcategory then you can delete category.");
+			} else {
+				if (!findById.isPresent()) {
+					throw new CustomException("Category not found!");
+				} else {
+					filterCatDetails.setIsDeleted(true);
+					filterCatDetails.setCreatedOn(new Date());
+					categoryRepo.save(filterCatDetails);
+
+					return new GlobalResponse("SUCCESS", "Category deleted successfully", 200);
+				}
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -185,20 +193,20 @@ public class CategoryService {
 
 			} else {
 				Boolean isStatus = null;
-				String message=null;
+				String message = null;
 				if (filterCatDetails.getIsActive() == false) {
 					isStatus = true;
-					message= "actived";
+					message = "actived";
 				} else {
 					isStatus = false;
-					message= "inactive";
+					message = "inactive";
 				}
 
 				filterCatDetails.setIsActive(isStatus);
 				filterCatDetails.setCreatedOn(new Date());
 				categoryRepo.save(filterCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Status "+message+" successfully", 200);
+				return new GlobalResponse("SUCCESS", "Status " + message + " successfully", 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
