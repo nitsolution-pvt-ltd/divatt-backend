@@ -68,19 +68,17 @@ public class RoleAndPermission {
 		}
 	}
 	
-	@GetMapping("/role/{name}")
-	public ResponseEntity<?> getRole(@PathVariable("name") String name){
+	@GetMapping("/role/{id}")
+	public ResponseEntity<?> getRole(@PathVariable("id") Long id){
 		LOGGER.info("Inside - RoleAndPermission.getRole()");
 		try {
-		List<AdminModules> orElseThrow = Optional.of(adminModulesRepo.findAll()
-				.stream()
-				.filter(e -> e.getMetaKey()!=null && e.getMetaKey().equals("ROLE") && e.getRoleName().equals(name))
-				.toList())
-				.orElseThrow(()->new CustomException("No Data Found"));
-		if(orElseThrow.size()<1) 
-			throw new CustomException("No Data Found");
+			
+			Optional<AdminModules> findById = adminModulesRepo.findById(id);
+		if(findById.isPresent()) 
+			return ResponseEntity.ok(findById.get());
+			
 		else
-			return ResponseEntity.ok(orElseThrow.get(0));	
+			throw new CustomException("No Data Found");
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -88,8 +86,17 @@ public class RoleAndPermission {
 	
 	@PostMapping("/role")
 	public ResponseEntity<?> addRole(@RequestBody AdminModules adminModules){
-		adminModules.setmId(sequenceGenerator.getNextSequence(AdminModules.SEQUENCE_NAME));
+		adminModules.setmId((long)sequenceGenerator.getNextSequence(AdminModules.SEQUENCE_NAME));
 		adminModules.setMetaKey("ROLE");
+		adminModules.getModules().stream().map(e->{
+			HashMap<String, Boolean> modPrivs = e.getModPrivs();
+			modPrivs.forEach((k,v)->{
+				if(v!=true)
+					v=false;
+			});
+			e.setModPrivs(modPrivs);
+			return e;
+		});
 		adminModulesRepo.save(adminModules);
 		//adminModulesRepo.findByRoleName(adminModules.getRoleName()).ifPresentOrElse((value)->{throw new CustomException("This Role is Already Present");} , ()->{adminModulesRepo.save(adminModules);});
 		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Role Added Successfully",200));

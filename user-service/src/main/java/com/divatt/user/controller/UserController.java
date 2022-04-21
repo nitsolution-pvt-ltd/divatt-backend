@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
@@ -48,6 +49,9 @@ public class UserController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+	@Autowired
+	private Environment env;
+	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
@@ -168,7 +172,7 @@ public class UserController {
 			jo.addProperty("subject", "Successfully Registration");
 			jo.addProperty("body", "Welcome " + userLoginEntity.getEmail() + ""
 					+ ",\n &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp"
-					+ " you have been register successfully."+"Please active your account by clicking the bellow link "+ URI.create("http://localhost:8083/dev/designer/redirect/"+ Base64.getEncoder().encodeToString(userLoginEntity.getuId().toString().getBytes()))  + " . We will verify your details and come back to you soon." );
+					+ " you have been register successfully."+"Please active your account by clicking the bellow link "+ URI.create(env.getProperty("redirectapi")+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()))  + " . We will verify your details and come back to you soon." );
 			jo.addProperty("enableHtml", false);
 			try {
 				Unirest.setTimeouts(0, 0);
@@ -273,13 +277,14 @@ public class UserController {
 	
 	@RequestMapping(value = "/redirect/{email}", method = RequestMethod.GET)
 	public void method(HttpServletResponse httpServletResponse,@PathVariable("email") String email) {
+		System.out.println("sgfdrg "+new String(Base64.getDecoder().decode(email)));
 		Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(new String(Base64.getDecoder().decode(email)));
 		if(findByEmail.isPresent()) {
 			UserLoginEntity designerLoginEntity = findByEmail.get();
 			designerLoginEntity.setIsActive(true);
 			userLoginRepo.save(designerLoginEntity);
 		}
-	    httpServletResponse.setHeader("Location", "http://localhost:8083/dev/swagger-ui/index.html");
+	    httpServletResponse.setHeader("Location", env.getProperty("redirecturl"));
 	    httpServletResponse.setStatus(302);
 	}
 

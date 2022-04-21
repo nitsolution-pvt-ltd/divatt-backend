@@ -17,7 +17,7 @@ public class AdminModules {
 	
 	@Id
 	@Field(name = "_id")
-	private Object mId;
+	private Long mId;
 	
 	@Field(name = "meta_key")
 	private String metaKey;
@@ -39,7 +39,7 @@ public class AdminModules {
 
 	
 
-	public AdminModules(Object mId, String metaKey, ArrayList<Object> adminModules, String roleName,
+	public AdminModules(Long mId, String metaKey, ArrayList<Object> adminModules, String roleName,
 			ArrayList<AdminModule> modules) {
 		super();
 		this.mId = mId;
@@ -59,13 +59,13 @@ public class AdminModules {
 
 
 
-	public Object getmId() {
+	public Long getmId() {
 		return mId;
 	}
 
 
 
-	public void setmId(Object mId) {
+	public void setmId(Long mId) {
 		this.mId = mId;
 	}
 

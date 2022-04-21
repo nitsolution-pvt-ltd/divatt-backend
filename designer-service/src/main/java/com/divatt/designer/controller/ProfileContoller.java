@@ -2,13 +2,19 @@ package com.divatt.designer.controller;
 
 import java.net.URI;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
@@ -126,29 +133,26 @@ public class ProfileContoller {
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS","Data Updated Successfully",200));
 	}
 	
-	@GetMapping("/all/{field}/{value}")
-	public ResponseEntity<?> getDesigner(@PathVariable("field") String field,@PathVariable("value") Boolean value){
-		
-		try {
-			if(field.equals("approve")) {
-				List<DesignerLoginEntity> findByIsApproved = designerLoginRepo.findByIsApproved(value);
-				if(findByIsApproved.size()<1)
-					throw new CustomException("All Designers Are Approved");
-				return ResponseEntity.ok(findByIsApproved);
-			}else if(field.equals("submit")) {
-				List<DesignerLoginEntity> findByIsProfileSubmitted = designerLoginRepo.findByIsProfileSubmitted(value);
-				if(findByIsProfileSubmitted.size()<1)
-					throw new CustomException("All Designers Profiles Are Submitted");
-				return ResponseEntity.ok(findByIsProfileSubmitted);
-			}else {
-				throw new CustomException("Path Not Found");
-			}
-			
-		}catch(Exception e) {
+	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
+	public Map<String, Object> getAll(			
+			@RequestParam(defaultValue = "0") int page, 
+			@RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, 
+			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, 
+			@RequestParam(defaultValue = "false") Boolean isApproved, 
+			@RequestParam(defaultValue = "false") Boolean isProfileCompleated, 
+			@RequestParam(defaultValue = "false") Boolean isProfileSubmitted,
+			@RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+
+		try {		
+			return this.getDesignerProfDetails(page, limit, sort, sortName, isDeleted, keyword,
+					sortBy);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
-		
+
 	}
 	
 	@RequestMapping(value = "/redirect/{email}", method = RequestMethod.GET)
@@ -162,6 +166,58 @@ public class ProfileContoller {
 			
 	    httpServletResponse.setHeader("Location", "http://localhost:8083/dev/swagger-ui/index.html");
 	    httpServletResponse.setStatus(302);
+	}
+	
+	
+	
+	public Map<String, Object> getDesignerProfDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
+			String keyword, Optional<String> sortBy) {
+		try {
+			int CountData = (int) designerLoginRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+			
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<DesignerLoginEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = designerLoginRepo.findByIsDeleted(isDeleted,pagingSort);
+				
+
+			} else {
+				findAll = designerLoginRepo.Search(keyword, isDeleted, pagingSort);
+
+			}
+			
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Institute Not Found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 
 }
