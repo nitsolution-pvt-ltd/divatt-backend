@@ -1,7 +1,9 @@
 package com.divatt.designer.controller;
 
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +78,10 @@ public class ProfileContoller {
 			if(designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail()).isPresent())
 				throw new CustomException("Email Already Present");
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
+//			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+//			Date date = new Date(designerProfileEntity.getDesignerProfile().getDob());
+//			String format = formatter.format(date);
+//			System.out.println("format "+format);
 			designerLoginEntity.setUid(sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
 			designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
 			designerLoginEntity.setPassword(bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
