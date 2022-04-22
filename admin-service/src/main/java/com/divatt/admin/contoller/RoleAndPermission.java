@@ -31,6 +31,8 @@ import com.divatt.admin.services.SequenceGenerator;
 @RequestMapping("/admin")
 public class RoleAndPermission {
 
+	AdminModules adminModules = new AdminModules();
+
 	@Autowired
 	private AdminModulesRepo adminModulesRepo;
 
@@ -43,10 +45,16 @@ public class RoleAndPermission {
 	public ResponseEntity<?> getModules() {
 		LOGGER.info("Inside - RoleAndPermission.getModules()");
 		try {
-			return ResponseEntity.ok(Optional
+
+			Stream<AdminModules> orElseThrow = Optional
 					.of(adminModulesRepo.findAll().stream()
 							.filter(e -> e.getMetaKey() != null && e.getMetaKey().equals("admin_modules")))
-					.orElseThrow(() -> new CustomException("No Data Found")));
+					.orElseThrow(() -> new CustomException("No Data Found"));
+
+			orElseThrow.forEach(e -> {
+				adminModules = e;
+			});
+			return ResponseEntity.ok(adminModules);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
