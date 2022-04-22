@@ -1,21 +1,30 @@
 package com.divatt.designer.entity.profile;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class BoutiqueProfile {
 	
+	@NotNull
 	@Field(name = "firm_name")
 	private String firmName;
+	@NotNull
 	@Field(name = "boutique_name")
 	private String boutiqueName;
+	@NotNull
 	@Field(name = "operating_city")
 	private String operatingCity;
+	@NotNull
 	@Field(name = "professional_category")
 	private String professionalCategory;
+	@NotNull
 	@Field(name = "year_of_operation")
 	private String yearOfOperation;
+	@NotNull
 	@Field(name = "experience")
 	private String experience;
+	@NotNull
 	@Field(name = "GSTIN")
 	private String GSTIN;
 	public BoutiqueProfile() {
