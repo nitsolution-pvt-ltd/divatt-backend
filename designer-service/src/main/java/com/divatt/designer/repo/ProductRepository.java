@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 @Repository
 public interface ProductRepository extends MongoRepository<ProductMasterEntity, Integer>{
@@ -29,6 +30,9 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	List<ProductMasterEntity> findByProductIdIn(List<Integer> productIdList);
 
+    Page<ListProduct> findByDesignerIdIn(List<ListProduct> allList, Pageable pagingSort);
+	
+	//List<ProductMasterEntity> findByProductIdIn1(List<Integer> productIdList);
 	
 	Page<ProductMasterEntity> findByIsDeletedAndDesignerId(Boolean isDeleted, Integer designerId,Pageable pagingSort);
 

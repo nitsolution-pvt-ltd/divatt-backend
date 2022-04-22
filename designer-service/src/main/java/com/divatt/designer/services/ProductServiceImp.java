@@ -13,7 +13,11 @@ import com.divatt.designer.entity.profile.DesignerProfileEntity;
 
 public interface ProductServiceImp {
 
-	public List<ListProduct> allProductList();
+	public Map<String, Object> allProductList(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy);
 	
 	GlobalResponce add(ProductMasterEntity productEntity);
 	

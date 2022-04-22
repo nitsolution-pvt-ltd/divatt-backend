@@ -62,10 +62,12 @@ public class ProductService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
-	public List<ListProduct> allList() {
+	public  Map<String, Object> allList(int page, int limit, String sort, String sortName, Boolean isDeleted,
+			String keyword, Optional<String> sortBy) {
 		try {
 			LOGGER.info("Inside - ProductService.allList()");
 			List<ProductMasterEntity> productdata= productRepo.findAll();
+			//List<Integer> 
 			List<Integer>productId=productdata.stream().map(e->e.getDesignerId()).collect(Collectors.toList());
 			//System.out.println(productId);
 			List<DesignerProfileEntity> profileData=new ArrayList<DesignerProfileEntity>();
@@ -81,7 +83,40 @@ public class ProductService {
 				listProduct.setProductMasterEntity(productdata.get(i));
 				allData.add(listProduct);
 			}
-			return allData;
+			
+			if (allData.isEmpty()) {
+				throw new CustomException("Product not found!");
+			} else {
+				//List<ProductMasterEntity> list = productRepo.findByProductIdIn(allData);
+
+				int CountData = (int) allData.size();
+				if (limit == 0) {
+					limit = CountData;
+				}
+
+				Pageable pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+				Page<ListProduct> findAll = productRepo.findByDesignerIdIn(allData, pagingSort);
+
+				int totalPage = findAll.getTotalPages() - 1;
+				if (totalPage < 0) {
+					totalPage = 0;
+				}
+
+				Map<String, Object> response = new HashMap<>();
+				response.put("data", findAll.getContent());
+				response.put("currentPage", findAll.getNumber());
+				response.put("total", CountData);
+				response.put("totalPage", totalPage);
+				response.put("perPage", findAll.getSize());
+				response.put("perPageElement", findAll.getNumberOfElements());
+
+				if (findAll.getSize() <= 0) {
+					throw new CustomException("Product not found!");
+				} else {
+					return response;
+				}
+			}
+			//return allData;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -354,6 +389,29 @@ public class ProductService {
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public List<ProductMasterEntity> getApproval() {
+		try
+		{
+			return this.productRepo.findAll();
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public List<ProductMasterEntity> getListProduct() {
+		try
+		{
+			return null;
+			
+		}
+		catch(Exception e)
+		{
+			throw new  CustomException(e.getMessage());
 		}
 	}
 

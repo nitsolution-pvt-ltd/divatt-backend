@@ -29,8 +29,6 @@ public class CustomFunction {
 	@Autowired
 	private CustomRandomString randomString;
 	
-	
-	private static final String baseURL="http://localhost:8083/dev/dbservice-product/";
 	RestTemplate restTemplate= new  RestTemplate();
 	public ProductMasterEntity filterDataEntity(ProductMasterEntity productData)
 	{
