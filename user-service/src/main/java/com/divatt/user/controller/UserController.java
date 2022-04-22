@@ -156,7 +156,7 @@ public class UserController {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
-			userLoginEntity.setuId((long) sequenceGenerator.getNextSequence(UserLoginEntity.SEQUENCE_NAME));
+			userLoginEntity.setId((long) sequenceGenerator.getNextSequence(UserLoginEntity.SEQUENCE_NAME));
 			userLoginEntity.setUsername(userLoginEntity.getEmail());
 			userLoginEntity.setPassword(passwordEncoder.encode(userLoginEntity.getPassword()));
 			userLoginEntity.setIsActive(false);
@@ -287,14 +287,16 @@ public class UserController {
 		httpServletResponse.setStatus(302);
 	}
 
-	@PostMapping("/update")
+	@PutMapping("/update")
 	public ResponseEntity<?> updateUser(@Valid @RequestBody UserLoginEntity userLoginEntityParam, Errors error) {
 		LOGGER.info("Inside - UserController.addUser()");
 		try {
 			if (error.hasErrors()) {
 				throw new CustomException("Check The Fields");
 			}
-			Optional<UserLoginEntity> findById = userLoginRepo.findById(userLoginEntityParam.getuId());
+
+			Optional<UserLoginEntity> findById = userLoginRepo.findById(userLoginEntityParam.getId());
+
 			if (!findById.isPresent())
 				throw new CustomException("User not found");
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");

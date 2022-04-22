@@ -16,7 +16,7 @@ public class UserLoginEntity {
 	public static final String SEQUENCE_NAME = "tbl_users";
 	
 	@Id
-	private Long uId;
+	private Long id;
 	@NotNull
 	@Field("first_name") private String firstName;
 	@NotNull
@@ -40,11 +40,12 @@ public class UserLoginEntity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public UserLoginEntity(Long uId, String firstName, String lastName, String email, String password, String mobileNo,
-			String dob, Boolean isActive, Boolean isDeleted, String createdOn, String profilePic, String registerType,
-			String username, Json logins) {
+	
+	public UserLoginEntity(Long id, @NotNull String firstName, @NotNull String lastName, @NotNull String email,
+			@NotNull String password, @NotNull String mobileNo, @NotNull String dob, Boolean isActive,
+			Boolean isDeleted, String createdOn, String profilePic, String registerType, String username, Json logins) {
 		super();
-		this.uId = uId;
+		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
@@ -59,19 +60,26 @@ public class UserLoginEntity {
 		this.username = username;
 		this.logins = logins;
 	}
-	@Override
+	
+	
+
+		@Override
 	public String toString() {
-		return "UserLoginEntity [uId=" + uId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
-				+ email + ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", isActive="
-				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", profilePic=" + profilePic
+		return "UserLoginEntity [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+				+ ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", isActive=" + isActive
+				+ ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", profilePic=" + profilePic
 				+ ", registerType=" + registerType + ", username=" + username + ", logins=" + logins + "]";
 	}
-	public Long getuId() {
-		return uId;
-	}
-	public void setuId(Long uId) {
-		this.uId = uId;
-	}
+
+		
+	public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
+
 	public String getFirstName() {
 		return firstName;
 	}
