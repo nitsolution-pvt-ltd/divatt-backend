@@ -40,7 +40,7 @@ public class ProductController implements ProductServiceImp {
 
 	@GetMapping("/allList")
 	public List<ListProduct> allProductList() {
-		
+
 		try {
 			LOGGER.info("Inside- ProductController.allList()");
 			return this.productService.allList();
@@ -100,14 +100,13 @@ public class ProductController implements ProductServiceImp {
 		}
 	}
 
-	
 	@GetMapping("/list")
 	public Map<String, Object> getAllProductDetails(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		
+
 		try {
 			LOGGER.info("Inside - ProductController.getAllProductDetails()");
 			return this.productService.getProductDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);
@@ -150,21 +149,18 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@GetMapping("/designerProductList/{designerId}")
 	public Map<String, Object> designerProductList(@PathVariable Integer designerId,
-			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
-			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
-			@RequestParam Optional<String> sortBy)
-	{
-		try
-		{
-			//List<ProductMasterEntity>list= productService.designerIdList(designerId);
-			return this.productService.designerIdListPage(designerId,sortBy, page, sort, sortName, isDeleted, limit,keyword);
-		}
-		catch(Exception e)
-		{
+			@RequestParam Optional<String> sortBy) {
+		try {
+			// List<ProductMasterEntity>list= productService.designerIdList(designerId);
+			return this.productService.designerIdListPage(designerId, sortBy, page, sort, sortName, isDeleted, limit,
+					keyword);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

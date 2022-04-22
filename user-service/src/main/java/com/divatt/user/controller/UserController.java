@@ -295,7 +295,7 @@ public class UserController {
 				throw new CustomException("Check The Fields");
 			}
 			Optional<UserLoginEntity> findById = userLoginRepo.findById(userLoginEntityParam.getuId());
-			if (findById.isPresent())
+			if (!findById.isPresent())
 				throw new CustomException("User not found");
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
