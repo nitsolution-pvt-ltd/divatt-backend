@@ -92,7 +92,7 @@ public class ProfileContoller {
 			designerLoginEntity.setIsProfileSubmitted(false);
 			if(designerLoginRepo.save(designerLoginEntity)!=null) {
 				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
-				designerProfileEntity.setdId((long)sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
+				designerProfileEntity.setId((long)sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
 				DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
 				designerProfile.setPassword(bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 				designerProfileEntity.setDesignerProfile(designerProfile);
@@ -155,6 +155,7 @@ public class ProfileContoller {
 			designerProfile.setPassword(findById.get().getPassword());
 			
 			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
+			System.out.println("designerProfileEntityDB "+designerProfileEntityDB.toString());
 			designerProfileEntityDB.setBoutiqueProfile(designerProfileEntity.getBoutiqueProfile());
 			designerProfileEntityDB.setDesignerProfile(designerProfile);
 			designerProfileEntityDB.setSocialProfile(designerProfileEntity.getSocialProfile());

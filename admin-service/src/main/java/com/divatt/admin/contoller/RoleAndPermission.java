@@ -3,6 +3,7 @@ package com.divatt.admin.contoller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,10 +60,29 @@ public class RoleAndPermission {
 	public ResponseEntity<?> getRoles(){
 		LOGGER.info("Inside - RoleAndPermission.getRole()");
 		try {
+			
 		return ResponseEntity.ok(Optional.of(adminModulesRepo.findAll()
 				.stream()
-				.filter(e -> e.getMetaKey()!=null && e.getMetaKey().equals("ROLE"))
-				.toList().get(0)).orElseThrow(()->new CustomException("No Data Found")));
+				.filter(e -> {
+					try {
+						if(e.getMetaKey().equals("ROLE"))
+							return true;
+					}catch(Exception o) {
+						
+					}
+					return false;
+					})
+				.map(e->{
+					Map<String, String> roles = new HashMap<>();
+					roles.put("roleKey", e.getmId()+"");
+					roles.put("roleName", e.getRoleName());
+					return roles;
+				})
+				.toList()
+				).orElseThrow(()->new CustomException("No Data Found")));
+		
+		
+		
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}

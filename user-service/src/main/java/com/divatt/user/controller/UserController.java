@@ -306,23 +306,6 @@ public class UserController {
 			userLoginEntity.setMobileNo(userLoginEntityParam.getMobileNo());
 			userLoginEntity.setDob(userLoginEntityParam.getDob());
 			userLoginRepo.save(userLoginEntity);
-			JsonObject jo = new JsonObject();
-			jo.addProperty("senderMailId", userLoginEntity.getEmail());
-			jo.addProperty("subject", "Successfully Registration");
-			jo.addProperty("body", "Welcome " + userLoginEntity.getEmail() + ""
-					+ ",\n &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp" + " you have been register successfully."
-					+ "Please active your account by clicking the bellow link "
-					+ URI.create(env.getProperty("redirectapi")
-							+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()))
-					+ " . We will verify your details and come back to you soon.");
-			jo.addProperty("enableHtml", false);
-			try {
-				Unirest.setTimeouts(0, 0);
-				HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
-						.header("Content-Type", "application/json").body(jo.toString()).asString();
-			} catch (Exception e) {
-
-			}
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Updated Successfully", 200));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
