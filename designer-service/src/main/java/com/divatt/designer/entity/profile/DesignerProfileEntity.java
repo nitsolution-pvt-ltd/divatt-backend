@@ -1,5 +1,7 @@
 package com.divatt.designer.entity.profile;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -19,9 +21,11 @@ public class DesignerProfileEntity {
 	@Field(name = "designer_id")
 	private Long designerId;
 	
+	@NotNull
 	@Field(name = "designer_profile")
 	private DesignerProfile designerProfile;
 	
+	@NotNull
 	@Field(name = "boutique_profile")
 	private BoutiqueProfile boutiqueProfile;
 	

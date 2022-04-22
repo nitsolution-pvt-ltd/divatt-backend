@@ -17,7 +17,8 @@ public class DesignerLoginEntity {
 
 	@Id
 	@NotNull
-	private Object uid;
+	@Field(name = "_id")
+	private Long dId;
 	
 	@NotNull
 	@Field(name = "email") private String email;
@@ -49,12 +50,22 @@ public class DesignerLoginEntity {
 
 
 
-	public DesignerLoginEntity(@NotNull Object uid, @NotNull String email, String password, String authToken,
+	
+
+
+
+
+
+
+
+	
+
+	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String password, String authToken,
 			@NotNull Boolean isActive, @NotNull Boolean isDeleted, @NotNull Boolean isApproved,
 			@NotNull Boolean isProfileCompleated, @NotNull Boolean isProfileSubmitted, String adminComment, Json logins,
 			DesignerProfileEntity designerProfileEntity) {
 		super();
-		this.uid = uid;
+		this.dId = dId;
 		this.email = email;
 		this.password = password;
 		this.authToken = authToken;
@@ -74,16 +85,42 @@ public class DesignerLoginEntity {
 
 
 
+
+
+
+
+
+
+
+
+
+
 	
+
+
+
+
+
+
 
 	@Override
 	public String toString() {
-		return "DesignerLoginEntity [uid=" + uid + ", email=" + email + ", password=" + password + ", authToken="
+		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", password=" + password + ", authToken="
 				+ authToken + ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", isApproved=" + isApproved
 				+ ", isProfileCompleated=" + isProfileCompleated + ", isProfileSubmitted=" + isProfileSubmitted
 				+ ", adminComment=" + adminComment + ", logins=" + logins + ", designerProfileEntity="
 				+ designerProfileEntity + "]";
 	}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -111,13 +148,47 @@ public class DesignerLoginEntity {
 
 
 
-	public Object getUid() {
-		return uid;
+	
+
+	public Long getdId() {
+		return dId;
 	}
 
-	public void setUid(Object uid) {
-		this.uid = uid;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setdId(Long dId) {
+		this.dId = dId;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	public String getEmail() {
 		return email;

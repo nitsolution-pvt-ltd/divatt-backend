@@ -71,7 +71,7 @@ public class ProductService {
 			List<DesignerProfileEntity> profileData=new ArrayList<DesignerProfileEntity>();
 			for(int i=0;i<productId.size();i++)
 			{
-				profileData.add(designerProfileRepo.findBydesignerId(Long.valueOf(productId.get(i))));
+				profileData.add(designerProfileRepo.findBydesignerId(Long.valueOf(productId.get(i))).get());
 			}
 			LinkedList<ListProduct> allData=new LinkedList<ListProduct>();
 			ListProduct listProduct= new ListProduct();
