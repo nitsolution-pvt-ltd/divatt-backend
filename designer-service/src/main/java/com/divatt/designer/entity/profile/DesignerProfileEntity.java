@@ -1,5 +1,7 @@
 package com.divatt.designer.entity.profile;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -13,15 +15,16 @@ public class DesignerProfileEntity {
 	public static final String SEQUENCE_NAME = "tbl_designer_profile";
 	
 	@Id
-	@Field(name = "_id")
-	private Long dId;
+	private Long id;
 	
 	@Field(name = "designer_id")
 	private Long designerId;
 	
+	@NotNull
 	@Field(name = "designer_profile")
 	private DesignerProfile designerProfile;
 	
+	@NotNull
 	@Field(name = "boutique_profile")
 	private BoutiqueProfile boutiqueProfile;
 	
@@ -37,10 +40,16 @@ public class DesignerProfileEntity {
 
 	
 
-	public DesignerProfileEntity(Long dId, Long designerId, DesignerProfile designerProfile,
-			BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName) {
+	
+
+
+
+	
+
+	public DesignerProfileEntity(Long id, Long designerId, @NotNull DesignerProfile designerProfile,
+			@NotNull BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName) {
 		super();
-		this.dId = dId;
+		this.id = id;
 		this.designerId = designerId;
 		this.designerProfile = designerProfile;
 		this.boutiqueProfile = boutiqueProfile;
@@ -50,7 +59,11 @@ public class DesignerProfileEntity {
 
 
 
-	
+
+
+
+
+
 
 	public String getDesignerName() {
 		return designerName;
@@ -70,22 +83,50 @@ public class DesignerProfileEntity {
 
 
 
+	
+
+
+
 	@Override
 	public String toString() {
-		return "DesignerProfileEntity [dId=" + dId + ", designerId=" + designerId + ", designerProfile="
-				+ designerProfile + ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile
-				+ ", designerName=" + designerName + "]";
+		return "DesignerProfileEntity [id=" + id + ", designerId=" + designerId + ", designerProfile=" + designerProfile
+				+ ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile + ", designerName="
+				+ designerName + "]";
 	}
 
 
 
-	public Long getdId() {
-		return dId;
+
+
+
+
+
+
+	
+
+	public Long getId() {
+		return id;
 	}
 
-	public void setdId(Long dId) {
-		this.dId = dId;
+
+
+
+
+
+
+
+
+	public void setId(Long id) {
+		this.id = id;
 	}
+
+
+
+
+
+
+
+
 
 	public Long getDesignerId() {
 		return designerId;

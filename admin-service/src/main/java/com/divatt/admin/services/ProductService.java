@@ -24,9 +24,6 @@ import com.divatt.admin.exception.CustomException;
 
 @Service
 public class ProductService {
-
-	
-	public String productBaseUrl="localhost:8085/dev/product";
 	public GlobalResponse productApproval(Integer productId, Integer designerId, String comment) {
 		try
 		{

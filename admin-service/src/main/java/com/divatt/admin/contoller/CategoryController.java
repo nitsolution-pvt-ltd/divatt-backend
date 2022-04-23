@@ -134,4 +134,16 @@ public class CategoryController {
 		}	
 	}
 	
+	@PostMapping("/categoryVerification")
+	public List<Integer> categoryVerification(@RequestBody List<Integer> categoryId)
+	{
+		try
+		{
+			return this.categoryService.categoryVerification(categoryId);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

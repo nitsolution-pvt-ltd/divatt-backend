@@ -1,5 +1,6 @@
 package com.divatt.admin.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.entity.GlobalResponse;
@@ -101,13 +103,12 @@ public class SubCategoryService {
 //						return subCategoryEntity;
 //				}).collect(Collectors.toList());
 //				 Page<SubCategoryEntity> list=new Page<>(page,limit,lists);
-			LOGGER.info("Inside - SubCategoryController.findAll()"+isDeleted);
+			
 			Page<SubCategoryEntity> map = findAll
 					.map(e -> {
 				try {
 					SubCategoryEntity subCategoryEntity = subCategoryRepo.findById(Integer.parseInt(e.getParentId())).get();
 					subCategoryEntity.setSubCategory(e);
-					LOGGER.info("Inside - SubCategoryController.postSubCategoryDetails()"+subCategoryEntity);
 					return subCategoryEntity;
 				}catch(Exception z) {
 					return e;
@@ -253,4 +254,28 @@ public class SubCategoryService {
 		}
 	}
 
+	public List<Integer> subcategoryVerification(List<Integer> subCategoryId) {
+		try
+		{
+			List<Integer> subCategoryList= new ArrayList<Integer>();
+			for(int i=0;i<subCategoryId.size();i++)
+			{
+				if(subCategoryRepo.existsById(subCategoryId.get(i)))
+				{
+					SubCategoryEntity subCategoryData= viewSubCategoryDetails(subCategoryId.get(i)).get();
+					if(subCategoryData.getIsActive().equals(true))
+					{
+						subCategoryList.add(subCategoryId.get(i));
+						
+					}
+				}
+			}
+			System.out.println(subCategoryList);
+			return subCategoryList;
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

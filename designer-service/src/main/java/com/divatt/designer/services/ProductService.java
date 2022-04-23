@@ -26,6 +26,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
@@ -73,7 +75,7 @@ public class ProductService {
 			List<DesignerProfileEntity> profileData=new ArrayList<DesignerProfileEntity>();
 			for(int i=0;i<productId.size();i++)
 			{
-				profileData.add(designerProfileRepo.findBydesignerId(Long.valueOf(productId.get(i))));
+				profileData.add(designerProfileRepo.findBydesignerId(Long.valueOf(productId.get(i))).get());
 			}
 			LinkedList<ListProduct> allData=new LinkedList<ListProduct>();
 			ListProduct listProduct= new ListProduct();
@@ -133,9 +135,12 @@ public class ProductService {
 				Query query1= new Query();
 				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName").is(productData.getProductName()));
 				List<ProductMasterEntity> productInfo= mongoOperations.find(query1, ProductMasterEntity.class);
-				//System.out.println(productInfo.size());
 				if(productInfo.isEmpty())
 				{
+					RestTemplate restTemplate= new RestTemplate();
+					ResponseEntity<String> categoryResponse=restTemplate.getForEntity("http://localhost:8084/dev/category/view/"+productData.getCategoryId(), String.class);
+					System.out.println(categoryResponse);
+					ResponseEntity<String> subcategoryResponse=restTemplate.getForEntity("http://localhost:8084/dev/subcategory/view/"+productData.getSubCategoryId(), String.class);
 					productRepo.save(customFunction.filterDataEntity(productData));
 					return new  GlobalResponce("Success!!", "Product added successfully", 200);
 				}
@@ -249,14 +254,14 @@ public class ProductService {
 			Pageable pagingSort = null;
 			if (limit == 0) {
 				limit = CountData;
-			}
+			} 
 
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
-
+ 
 			Page<ProductMasterEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
@@ -403,11 +408,31 @@ public class ProductService {
 		}
 	}
 
-	public List<ProductMasterEntity> getListProduct() {
+	public List<ProductMasterEntity> getListProduct(Integer limit) {
 		try
 		{
-			return null;
-			
+			List<ProductMasterEntity>productList=productRepo.findAll();
+			List<ProductMasterEntity>filterProductList=new ArrayList<>();
+			List<Integer> categoryList=productList.stream().map(e->e.getCategoryId()).collect(Collectors.toList());
+			System.out.println(categoryList);
+			List<Integer> subCategoryList=productList.stream().map(e->e.getSubCategoryId()).collect(Collectors.toList());
+			System.out.println(subCategoryList);
+			Query query= new Query();
+			query.addCriteria(Criteria.where("isApprove").is(true));
+			List<ProductMasterEntity> userProductList=mongoOperations.find(query, ProductMasterEntity.class);
+			List<ProductMasterEntity> fiterProduct= new ArrayList<ProductMasterEntity>();
+			if(userProductList.size()<=limit)
+			{
+				return userProductList;
+			}
+			else
+			{
+				for(int i=0;i<limit;i++)
+				{
+					filterProductList.add(userProductList.get(i));
+				}
+				return filterProductList;
+			}
 		}
 		catch(Exception e)
 		{

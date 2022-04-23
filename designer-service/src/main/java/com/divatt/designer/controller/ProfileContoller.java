@@ -82,7 +82,7 @@ public class ProfileContoller {
 //			Date date = new Date(designerProfileEntity.getDesignerProfile().getDob());
 //			String format = formatter.format(date);
 //			System.out.println("format "+format);
-			designerLoginEntity.setUid(sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
+			designerLoginEntity.setdId((long)sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
 			designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
 			designerLoginEntity.setPassword(bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 			designerLoginEntity.setIsActive(false);
@@ -91,8 +91,8 @@ public class ProfileContoller {
 			designerLoginEntity.setIsProfileCompleated(false);
 			designerLoginEntity.setIsProfileSubmitted(false);
 			if(designerLoginRepo.save(designerLoginEntity)!=null) {
-				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getUid().toString()));
-				designerProfileEntity.setdId((long)sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
+				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
+				designerProfileEntity.setId((long)sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
 				DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
 				designerProfile.setPassword(bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 				designerProfileEntity.setDesignerProfile(designerProfile);
@@ -124,7 +124,7 @@ public class ProfileContoller {
 	
 	@PutMapping("/update")
 	public ResponseEntity<?> updateDesigner(@Valid @RequestBody DesignerLoginEntity designerLoginEntity){
-		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerLoginEntity.getUid());
+		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerLoginEntity.getdId());
 		if(!findById.isPresent())
 			throw new CustomException("Designer Details Not Found");
 		else {
@@ -136,6 +136,38 @@ public class ProfileContoller {
 			designerLoginEntityDB.setIsProfileSubmitted(designerLoginEntity.getIsProfileSubmitted());
 			designerLoginRepo.save(designerLoginEntityDB);
 		}
+		return ResponseEntity.ok(new GlobalResponce("SUCCESS","Data Updated Successfully",200));
+	}
+	
+	@PutMapping("/profile/update")
+	public ResponseEntity<?> updateDesignerProfile(@Valid @RequestBody DesignerProfileEntity designerProfileEntity){
+		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerProfileEntity.getDesignerId());
+		if(!findById.isPresent())
+			throw new CustomException("Designer details not found");
+		else {
+			
+			Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo.findBydesignerId(findById.get().getdId());
+			if(!findBydesignerId.isPresent())
+				throw new CustomException("Designer profile not found");
+			
+			DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
+			designerProfile.setEmail(findById.get().getEmail());
+			designerProfile.setPassword(findById.get().getPassword());
+			
+			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
+			System.out.println("designerProfileEntityDB "+designerProfileEntityDB.toString());
+			designerProfileEntityDB.setBoutiqueProfile(designerProfileEntity.getBoutiqueProfile());
+			designerProfileEntityDB.setDesignerProfile(designerProfile);
+			designerProfileEntityDB.setSocialProfile(designerProfileEntity.getSocialProfile());
+			
+//			if(designerProfileRepo.save(designerProfileEntity)!=null) {
+				designerProfileRepo.save(designerProfileEntityDB);
+				DesignerLoginEntity designerLoginEntityDB = findById.get();
+				designerLoginEntityDB.setIsProfileSubmitted(true);
+				designerLoginRepo.save(designerLoginEntityDB);
+//			}
+		}
+		
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS","Data Updated Successfully",200));
 	}
 	
@@ -230,7 +262,7 @@ public class ProfileContoller {
 			
 			findAll.map(e->{
 				try {
-					e.setDesignerProfileEntity(designerProfileRepo.findBydesignerId(Long.parseLong(e.getUid().toString())));
+					e.setDesignerProfileEntity(designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
 				}catch(Exception o) {
 					
 				}
