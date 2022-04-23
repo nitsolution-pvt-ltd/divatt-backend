@@ -29,8 +29,6 @@ public class CustomFunction {
 	@Autowired
 	private CustomRandomString randomString;
 	
-	
-	private static final String baseURL="http://localhost:8083/dev/dbservice-product/";
 	RestTemplate restTemplate= new  RestTemplate();
 	public ProductMasterEntity filterDataEntity(ProductMasterEntity productData)
 	{
@@ -40,7 +38,7 @@ public class CustomFunction {
 			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
 			filterProductEntity.setSKQCode(randomString.getAlphaNumericString(10));
 			filterProductEntity.setAge(productData.getAge());
-			filterProductEntity.setApprovedBy(productData.getApprovedBy());
+			filterProductEntity.setApprovedBy(null);
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
 			filterProductEntity.setComment(productData.getComment());
@@ -55,7 +53,7 @@ public class CustomFunction {
 			filterProductEntity.setGiftWrap(productData.getGiftWrap());
 			filterProductEntity.setImages(productData.getImages());
 			filterProductEntity.setIsActive(true);
-			filterProductEntity.setIsApprove(productData.getIsApprove());
+			filterProductEntity.setIsApprove(false);
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setIsSubmitted(true);
@@ -87,7 +85,7 @@ public class CustomFunction {
 			filterProductEntity.setProductId(productId);
 			filterProductEntity.setSKQCode(productRepo.findById(productId).get().getSKQCode());
 			filterProductEntity.setAge(productData.getAge());
-			filterProductEntity.setApprovedBy(productData.getApprovedBy());
+			//filterProductEntity.setApprovedBy(productData.getApprovedBy());
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
 			filterProductEntity.setComment(productData.getComment());
@@ -102,7 +100,7 @@ public class CustomFunction {
 			filterProductEntity.setGiftWrap(productData.getGiftWrap());
 			filterProductEntity.setImages(productData.getImages());
 			filterProductEntity.setIsActive(true);
-			filterProductEntity.setIsApprove(productData.getIsApprove());
+			//filterProductEntity.setIsApprove(productData.getIsApprove());
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setIsSubmitted(true);

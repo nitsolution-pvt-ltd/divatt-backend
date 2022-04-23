@@ -1,5 +1,6 @@
 package com.divatt.admin.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
+import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.CategoryRepo;
+import com.divatt.admin.repo.SubCategoryRepo;
 
 @Service
 public class CategoryService {
@@ -244,4 +247,27 @@ public class CategoryService {
 		}
 	}
 
+	public List<Integer> categoryVerification(List<Integer> categoryId) {
+		try
+		{
+			List<Integer> verificationList= new ArrayList<Integer>();
+			for(int i=0;i<categoryId.size();i++)
+			{
+				if(categoryRepo.existsById(categoryId.get(i)))
+				{
+					CategoryEntity viewCategoryDetails = viewCategoryDetails(categoryId.get(i)).get();
+					if(viewCategoryDetails.getIsActive().equals(true))
+					{
+						verificationList.add(categoryId.get(i));
+					}
+				}
+			}
+			System.out.println(verificationList);
+			return verificationList;
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

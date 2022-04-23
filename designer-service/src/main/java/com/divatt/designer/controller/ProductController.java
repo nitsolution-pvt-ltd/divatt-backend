@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,11 +40,16 @@ public class ProductController implements ProductServiceImp {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
 
 	@GetMapping("/allList")
-	public List<ListProduct> allProductList() {
+	public Map<String, Object> allProductList(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		
 
 		try {
 			LOGGER.info("Inside- ProductController.allList()");
-			return this.productService.allList();
+			return this.productService.allList(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -161,6 +167,31 @@ public class ProductController implements ProductServiceImp {
 			return this.productService.designerIdListPage(designerId, sortBy, page, sort, sortName, isDeleted, limit,
 					keyword);
 		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/getApproval")
+	public List<ProductMasterEntity> getApproval()
+	{
+		try
+		{
+			return this.productService.getApproval();
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@GetMapping("/userProductList/{limit}")
+	public List<ProductMasterEntity> userProductList(@PathVariable Integer limit)
+	{
+		try
+		{
+			return this.productService.getListProduct(limit);
+		}
+		catch(Exception e)
+		{
 			throw new CustomException(e.getMessage());
 		}
 	}
