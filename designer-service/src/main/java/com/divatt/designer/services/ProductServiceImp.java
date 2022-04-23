@@ -21,7 +21,7 @@ public interface ProductServiceImp {
 	
 	GlobalResponce add(ProductMasterEntity productEntity);
 	
-	Optional<?> viewProductDetails(Integer productId);
+	ProductMasterEntity viewProductDetails(Integer productId);
 	
 	public GlobalResponce changeStatus(Integer productId);
 	

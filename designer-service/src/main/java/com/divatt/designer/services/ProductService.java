@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -156,15 +157,14 @@ public class ProductService {
 		}
 	}
 
-	public Optional<?> productDetails(Integer productId) {
+	public ProductMasterEntity productDetails(Integer productId) {
 		try {
 			LOGGER.info("Inside-ProductService.productDetails()");
 			if (productRepo.existsById(productId)) {
 				LOGGER.info("Inside - ProductService.productDetails()");
-				Optional<ProductMasterEntity> findById = productRepo.findById(productId);
-				return findById;
+				return productRepo.findById(productId).get();
 			} else {
-				return Optional.of(new GlobalResponce("Bad request", "Product id does not exist", 400));
+				throw new CustomException("Product not found");
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -414,22 +414,44 @@ public class ProductService {
 			List<ProductMasterEntity>productList=productRepo.findAll();
 			List<ProductMasterEntity>filterProductList=new ArrayList<>();
 			List<Integer> categoryList=productList.stream().map(e->e.getCategoryId()).collect(Collectors.toList());
-			System.out.println(categoryList);
+			//System.out.println(categoryList);
 			List<Integer> subCategoryList=productList.stream().map(e->e.getSubCategoryId()).collect(Collectors.toList());
-			System.out.println(subCategoryList);
+			//System.out.println(subCategoryList);
 			Query query= new Query();
 			query.addCriteria(Criteria.where("isApprove").is(true));
 			List<ProductMasterEntity> userProductList=mongoOperations.find(query, ProductMasterEntity.class);
 			List<ProductMasterEntity> fiterProduct= new ArrayList<ProductMasterEntity>();
-			if(userProductList.size()<=limit)
+			List<Integer> productIdList=userProductList.stream().map(e->e.getProductId()).collect(Collectors.toList());
+			System.out.println(productIdList);
+			List<Integer> randomIntegers=new ArrayList<Integer>();
+//			new Random().ints(productIdList.get(0), productIdList.lastIndexOf()).limit(productIdList.size()).forEach(p->randomIntegers.add(p));
+			//Integer integer = randomIntegers.get(4);
+			Random random= new Random();
+			for (int i = 0; i < limit; i++) {
+				 
+	            // take a random index between 0 to size
+	            // of given List
+	            int randomIndex = random.nextInt(productIdList.size());
+	 
+	            // add element in temporary list
+	            randomIntegers.add(productIdList.get(randomIndex));
+	        }
+			System.out.println(randomIntegers);
+			if(randomIntegers.size()<=limit)
 			{
-				return userProductList;
+				for(int i=0;i<randomIntegers.size();i++)
+				{
+					ProductMasterEntity entity= productDetails(randomIntegers.get(i));
+					filterProductList.add(entity);
+				}
+				return filterProductList;
 			}
 			else
 			{
 				for(int i=0;i<limit;i++)
 				{
-					filterProductList.add(userProductList.get(i));
+					ProductMasterEntity entity= (ProductMasterEntity) productDetails(randomIntegers.get(i));
+					filterProductList.add(entity);
 				}
 				return filterProductList;
 			}

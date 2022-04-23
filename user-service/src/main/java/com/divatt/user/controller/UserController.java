@@ -320,11 +320,11 @@ public class UserController {
 
 	
 	@GetMapping("/product/list/{limit}")
-	public List<ProductEntity> productListing ()
+	public List<ProductEntity> productListing (@PathVariable Integer limit)
 	{
 		try
 		{
-			return null;
+			return this.userService.getProductUser(limit);
 		}
 		catch(Exception e)
 		{

@@ -66,7 +66,7 @@ public class ProductController implements ProductServiceImp {
 	}
 
 	@GetMapping("/view/{productId}")
-	public Optional<?> viewProductDetails(@PathVariable Integer productId) {
+	public ProductMasterEntity viewProductDetails(@PathVariable Integer productId) {
 		try {
 			LOGGER.info("Inside- ProductController.viewProductDetails()");
 			return productService.productDetails(productId);

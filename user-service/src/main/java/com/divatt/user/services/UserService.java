@@ -18,7 +18,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.client.RestTemplate;
 
+import com.divatt.user.entity.ProductEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
@@ -363,6 +365,22 @@ public class UserService {
 		}
 
 	}
+
+	public List<ProductEntity> getProductUser(Integer limit) {
+		try
+		{
+			RestTemplate restTemplate= new RestTemplate();
+			ResponseEntity<?> categoryResponse=restTemplate.getForEntity("http://localhost:8083/dev/product/userProductList/"+limit, List.class);
+			//System.out.println(categoryResponse.getBody());
+			return (List<ProductEntity>) categoryResponse.getBody();
+
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 	
 
 }
