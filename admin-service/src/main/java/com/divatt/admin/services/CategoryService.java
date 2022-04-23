@@ -27,10 +27,11 @@ public class CategoryService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.class);
 
 	@Autowired
-	CategoryRepo categoryRepo;
+	private CategoryRepo categoryRepo;
 
 	@Autowired
-	SequenceGenerator sequenceGenerator;
+	private SequenceGenerator sequenceGenerator;
+
 
 	public GlobalResponse postCategoryDetails(@RequestBody CategoryEntity categoryEntity) {
 		LOGGER.info("Inside - CategoryService.postCategoryDetails()");
