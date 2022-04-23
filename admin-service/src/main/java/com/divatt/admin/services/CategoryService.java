@@ -18,12 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.entity.GlobalResponse;
-import com.divatt.admin.entity.ProductEntity;
 import com.divatt.admin.entity.category.CategoryEntity;
-import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.CategoryRepo;
-import com.divatt.admin.repo.SubCategoryRepo;
 
 @Service
 public class CategoryService {
@@ -34,7 +31,8 @@ public class CategoryService {
 	private CategoryRepo categoryRepo;
 
 	@Autowired
-	SequenceGenerator sequenceGenerator;
+	private SequenceGenerator sequenceGenerator;
+
 
 	public GlobalResponse postCategoryDetails(@RequestBody CategoryEntity categoryEntity) {
 		LOGGER.info("Inside - CategoryService.postCategoryDetails()");
