@@ -84,6 +84,18 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@PutMapping("/{productId}/{aprove}")
+	public GlobalResponce approveProduct(@PathVariable("productId") Integer productId,@PathVariable("aprove") Boolean aprove,@PathVariable("comment") String comment) {
+		try {
+			LOGGER.info("Inside- ProductController.approveProduct()");
+			return this.productService.approveProduct(productId,aprove,comment);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
 
 	@PutMapping("/update/{productId}")
 	public GlobalResponce updateProductData(@RequestBody ProductMasterEntity productMasterEntity,

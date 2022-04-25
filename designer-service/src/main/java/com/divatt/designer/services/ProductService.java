@@ -195,6 +195,34 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
+	public GlobalResponce approveProduct(Integer productId,Boolean aprove, String comment) {
+		try {
+			LOGGER.info("Inside - ProductService.approveProduct()");
+			if (productRepo.existsById(productId)) {
+				Boolean status;
+				Optional<ProductMasterEntity> productData = productRepo.findById(productId);
+				ProductMasterEntity productEntity = productData.get();
+//				if (productEntity.getIsActive().equals(true)) {
+//					status = false;
+//				} else {
+//					status = true;
+//				}
+//				productEntity.setIsActive(status);
+				productEntity.setIsApprove(aprove);
+				productEntity.setComment(comment);
+				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
+				productEntity.setUpdatedOn(new Date());
+				productRepo.save(productEntity);
+				return new GlobalResponce("Success", "Product approve successfully", 200);
+			} else {
+				return new GlobalResponce("Bad request", "Product does not exist", 400);
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
 	public GlobalResponce updateProduct(Integer productId, ProductMasterEntity productMasterEntity) {
 		try {
