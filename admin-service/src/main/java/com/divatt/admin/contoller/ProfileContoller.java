@@ -199,12 +199,12 @@ public class ProfileContoller {
 		}
 		
 	}
-	@PutMapping("/{id}")
-	public ResponseEntity<?> changeStatusById(@PathVariable("id") Long id) {
+	@PutMapping("/{id}/{status}")
+	public ResponseEntity<?> changeStatusById(@PathVariable("id") Long id,@PathVariable("status") Boolean status) {
 		LOGGER.info("Inside - ProfileContoller.changeStatusById()");
 		try {
 			if(mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
-				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)), new Update().set("is_active", false), LoginEntity.class))
+				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)), new Update().set("is_active", status), LoginEntity.class))
 						.orElseThrow(()-> new RuntimeException("Internal Server Error"));
 				return new ResponseEntity<>(new GlobalResponse("SUCCESS","Status Changed Successfully",200), HttpStatus.OK);
 			}
