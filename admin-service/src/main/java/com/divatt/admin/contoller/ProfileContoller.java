@@ -126,7 +126,11 @@ public class ProfileContoller {
 				if (error.hasErrors()) {
 					throw new CustomException("Check The Fields");
 				}
-			loginRepository.findByEmail(loginEntity.getEmail()).ifPresentOrElse((value)->{throw new CustomException("This Email is Already Present");} , ()->{});
+			Optional<LoginEntity> findByEmail = loginRepository.findByEmail(loginEntity.getEmail());
+			if(findByEmail.isPresent()) {
+				throw new CustomException("This Email is Already Present");
+			}
+			
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
