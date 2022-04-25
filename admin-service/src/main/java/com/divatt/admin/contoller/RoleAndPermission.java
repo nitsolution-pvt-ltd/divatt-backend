@@ -49,7 +49,7 @@ public class RoleAndPermission {
 			Stream<AdminModules> orElseThrow = Optional
 					.of(adminModulesRepo.findAll().stream()
 							.filter(e -> e.getMetaKey() != null && e.getMetaKey().equals("admin_modules")))
-					.orElseThrow(() -> new CustomException("No Data Found"));
+					.orElseThrow(() -> new CustomException("Data not found"));
 
 			orElseThrow.forEach(e -> {
 				adminModules = e;
@@ -75,11 +75,11 @@ public class RoleAndPermission {
 				}
 				return false;
 			}).map(e -> {
-				Map<String, String> roles = new HashMap<>();
-				roles.put("roleKey", e.getmId() + "");
+				Map<String, Object> roles = new HashMap<>();
+				roles.put("roleKey", e.getmId());
 				roles.put("roleName", e.getRoleName());
 				return roles;
-			})).orElseThrow(() -> new CustomException("No Data Found")));
+			})).orElseThrow(() -> new CustomException("Data not found")));
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -96,7 +96,7 @@ public class RoleAndPermission {
 				return ResponseEntity.ok(findById.get());
 
 			else
-				throw new CustomException("No Data Found");
+				throw new CustomException("Data not found");
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -121,10 +121,7 @@ public class RoleAndPermission {
 		}
 		adminModules.setModules(modules);
 		adminModulesRepo.save(adminModules);
-		// adminModulesRepo.findByRoleName(adminModules.getRoleName()).ifPresentOrElse((value)->{throw
-		// new CustomException("This Role is Already Present");} ,
-		// ()->{adminModulesRepo.save(adminModules);});
-		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Role Added Successfully", 200));
+		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Role added successfully", 200));
 	}
 
 }

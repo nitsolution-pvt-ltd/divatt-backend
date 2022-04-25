@@ -20,14 +20,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,44 +42,38 @@ import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminModulesRepo;
 import com.divatt.admin.repo.LoginRepository;
 import com.divatt.admin.services.SequenceGenerator;
-import com.fasterxml.jackson.annotation.JacksonInject.Value;
 
 @RestController
 @RequestMapping("/admin/profile")
 public class ProfileContoller {
-	
+
 	@Autowired
 	private LoginRepository loginRepository;
-	
+
 	@Autowired
 	private MongoOperations mongoOperations;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
-	
+
 	@Autowired
 	private AdminModulesRepo adminModulesRepo;
-	
+
 	Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
-	
-	
+
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
-	public Map<String, Object> getAll(			
-			@RequestParam(defaultValue = "0") int page, 
-			@RequestParam(defaultValue = "10") int limit,
-			@RequestParam(defaultValue = "DESC") String sort, 
+	public Map<String, Object> getAll(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
-			@RequestParam(defaultValue = "false") Boolean isDeleted, 			
-			@RequestParam(defaultValue = "") String keyword,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - ProfileContoller.getAll()");
 
-		try {		
-			return this.getAdminProfDetails(page, limit, sort, sortName, isDeleted, keyword,
-					sortBy);
+		try {
+			return this.getAdminProfDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -94,48 +85,51 @@ public class ProfileContoller {
 		LOGGER.info("Inside - ProfileContoller.getAllProf()");
 
 		try {
-			  List<LoginEntity> orElseThrow = Optional.of(mongoOperations.find(query(where("is_deleted").is(false)), LoginEntity.class))
-					  .orElseThrow(()->new CustomException("Internal Server Error"));
-			  if(orElseThrow.size()<1)
-				  throw new CustomException("Data Not Found");
-			  return orElseThrow;
-		}catch(Exception e) {
-			throw new CustomException(e.getMessage());
-		}									
-											
-	}
-	
-	@GetMapping("/{id}")
-	public List<LoginEntity> getProfById(@PathVariable("id") Long id) {
-		LOGGER.info("Inside - ProfileContoller.getProfById()");
-		try {
-			List<LoginEntity> orElseThrow = Optional.of(mongoOperations.find(query(where("_id").is(id).andOperator(where("is_deleted").is(false))), LoginEntity.class))
-					.orElseThrow(()-> new RuntimeException("Internal Server Error"));
-			 if(orElseThrow.size()<1)
-				  throw new CustomException("Data Not Found");
-			  return orElseThrow;
-		}catch(Exception e) {
+			List<LoginEntity> orElseThrow = Optional
+					.of(mongoOperations.find(query(where("is_deleted").is(false)), LoginEntity.class))
+					.orElseThrow(() -> new CustomException("Internal Server Error"));
+			if (orElseThrow.size() < 1)
+				throw new CustomException("Data not found");
+			return orElseThrow;
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
+
 	}
+
+	@GetMapping("/{id}")
+	public LoginEntity getProfById(@PathVariable("id") Long id) {
+		LOGGER.info("Inside - ProfileContoller.getProfById()");
+		try {
+			List<LoginEntity> orElseThrow = Optional.of(mongoOperations
+					.find(query(where("_id").is(id).andOperator(where("is_deleted").is(false))), LoginEntity.class))
+					.orElseThrow(() -> new RuntimeException("Internal Server Error"));
+			if (orElseThrow.size() < 1)
+				throw new CustomException("Data not found");
+			return orElseThrow.get(0);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
 	@PostMapping("/add")
-	public ResponseEntity<?> addProfile(@Valid @RequestBody LoginEntity loginEntity,Errors error){
+	public ResponseEntity<?> addProfile(@Valid @RequestBody LoginEntity loginEntity, Errors error) {
 		LOGGER.info("Inside - ProfileContoller.addProfile()");
-		try {		
-				if (error.hasErrors()) {
-					throw new CustomException("Check The Fields");
-				}
-			Optional<LoginEntity> findByEmail = loginRepository.findByEmail(loginEntity.getEmail());
-			if(findByEmail.isPresent()) {
-				throw new CustomException("This Email is Already Present");
+		try {
+			if (error.hasErrors()) {
+				throw new CustomException("Please check all input fields");
 			}
-			
+			Optional<LoginEntity> findByEmail = loginRepository.findByEmail(loginEntity.getEmail());
+			if (findByEmail.isPresent()) {
+				throw new CustomException("This email already present");
+			}
+
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
 			loginEntity.setPassword(passwordEncoder.encode(loginEntity.getPassword()));
-			loginEntity.setUid((long)sequenceGenerator.getNextSequence(LoginEntity.SEQUENCE_NAME));
+			loginEntity.setUid((long) sequenceGenerator.getNextSequence(LoginEntity.SEQUENCE_NAME));
 			loginEntity.setRole(loginEntity.getRole());
 			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName());
 			loginEntity.setRoleName(loginEntity.getRoleName().toUpperCase());
@@ -144,27 +138,29 @@ public class ProfileContoller {
 			loginEntity.setCreatedOn(date.toString());
 			loginEntity.setModifiedOn(date.toString());
 			loginRepository.save(loginEntity);
-			return new ResponseEntity<>(new GlobalResponse("SUCCESS","Added Successfully",200), HttpStatus.OK);
-		}catch(Exception e) {
+			return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Sub admin added successfully", 200),
+					HttpStatus.OK);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
-		
-		
+
 	}
+
+	@SuppressWarnings("unlikely-arg-type")
 	@PutMapping("/update")
-	public ResponseEntity<?> updateProfile(@Valid @RequestBody LoginEntity loginEntity,Errors error){
+	public ResponseEntity<?> updateProfile(@Valid @RequestBody LoginEntity loginEntity, Errors error) {
 		LOGGER.info("Inside - ProfileContoller.updateProfile()");
-		try {		
-			
+		try {
+
 			if (error.hasErrors()) {
 				throw new CustomException("Check The Fields");
 			}
-			if(loginEntity.getUid()==null ||  loginEntity.getUid().equals(""))
+			if (loginEntity.getUid() == null || loginEntity.getUid().equals(""))
 				throw new CustomException("Id is Null");
-			if(!loginRepository.findByEmail(loginEntity.getEmail()).stream().anyMatch(e->e.getUid()==loginEntity.getUid()))
+			if (!loginRepository.findByEmail(loginEntity.getEmail()).stream()
+					.anyMatch(e -> e.getUid() == loginEntity.getUid()))
 				throw new CustomException("This Email is Already Present");
-			if(!mongoOperations.exists(query(where("uid").is(loginEntity.getUid())), LoginEntity.class)) {
+			if (!mongoOperations.exists(query(where("uid").is(loginEntity.getUid())), LoginEntity.class)) {
 				throw new CustomException("Id Not Found");
 			}
 //			loginRepository.findByRole(loginEntity.getRole()).ifPresentOrElse((value)->{throw new CustomException("This Role is Already Present");} , ()->{});
@@ -178,45 +174,49 @@ public class ProfileContoller {
 			loginEntity.setCreatedOn(findById.toString());
 			loginEntity.setModifiedOn(date.toString());
 			loginRepository.save(loginEntity);
-			return new ResponseEntity<>(new GlobalResponse("SUCCESS","Updated Successfully",200), HttpStatus.OK);
-		}catch(Exception e) {
+			return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Updated successfully", 200), HttpStatus.OK);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteProfById(@PathVariable("id") Long id) {
 		LOGGER.info("Inside - ProfileContoller.deleteProfById()");
 		try {
-			if(mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
-				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)), new Update().set("is_deleted", true), LoginEntity.class))
-						.orElseThrow(()-> new RuntimeException("Internal Server Error"));
-				return new ResponseEntity<>(new GlobalResponse("SUCCESS","Deleted Successfully",200), HttpStatus.OK);
+			if (mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
+				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)),
+						new Update().set("is_deleted", true), LoginEntity.class))
+						.orElseThrow(() -> new RuntimeException("Internal Server Error"));
+				return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Deleted successfully", 200), HttpStatus.OK);
 			}
 			throw new CustomException("Id Not Found");
-			
-		}catch(Exception e) {
+
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
+
 	}
+
 	@PutMapping("/{id}/{status}")
-	public ResponseEntity<?> changeStatusById(@PathVariable("id") Long id,@PathVariable("status") Boolean status) {
+	public ResponseEntity<?> changeStatusById(@PathVariable("id") Long id, @PathVariable("status") Boolean status) {
 		LOGGER.info("Inside - ProfileContoller.changeStatusById()");
 		try {
-			if(mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
-				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)), new Update().set("is_active", status), LoginEntity.class))
-						.orElseThrow(()-> new RuntimeException("Internal Server Error"));
-				return new ResponseEntity<>(new GlobalResponse("SUCCESS","Status Changed Successfully",200), HttpStatus.OK);
+			if (mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
+				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)),
+						new Update().set("is_active", status), LoginEntity.class))
+						.orElseThrow(() -> new RuntimeException("Internal Server Error"));
+				return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Status changed successfully", 200),
+						HttpStatus.OK);
 			}
 			throw new CustomException("Id Not Found");
-			
-		}catch(Exception e) {
+
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
+
 	}
-	
-	
+
 	public Map<String, Object> getAdminProfDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
@@ -225,7 +225,7 @@ public class ProfileContoller {
 			if (limit == 0) {
 				limit = CountData;
 			}
-			
+
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
@@ -235,14 +235,12 @@ public class ProfileContoller {
 			Page<LoginEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = loginRepository.findByIsDeleted(isDeleted,pagingSort);
-				
+				findAll = loginRepository.findByIsDeleted(isDeleted, pagingSort);
 
 			} else {
 				findAll = loginRepository.Search(keyword, isDeleted, pagingSort);
 
 			}
-			
 
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
@@ -258,7 +256,7 @@ public class ProfileContoller {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Institute Not Found!");
+				throw new CustomException("Profile not found!");
 			} else {
 				return response;
 			}
@@ -266,12 +264,5 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-//	@PostMapping("/test")
-//	public ResponseEntity<?> addProfile(@Valid @RequestBody Json loginEntity,Errors error){
-//		
-//	}
-	
-	
-	
+
 }

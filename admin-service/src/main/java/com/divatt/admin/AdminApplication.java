@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.divatt.admin.config.YMLConfig;
@@ -39,6 +41,12 @@ public class AdminApplication implements CommandLineRunner{
 		LOGGER.info("contextpath : "+myConfig.getContextpath());
 		LOGGER.info("servers: "+myConfig.getServers());
 		LOGGER.info("-------------------------------------");
+	}
+	
+	@Bean
+	public BCryptPasswordEncoder bcryptPassword() {
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		return passwordEncoder;
 	}
 
 }
