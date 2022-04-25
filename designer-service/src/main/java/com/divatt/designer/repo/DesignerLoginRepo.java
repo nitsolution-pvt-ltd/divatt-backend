@@ -14,7 +14,7 @@ import com.divatt.designer.entity.profile.DesignerLoginEntity;
 
 
 
-public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, Object>{
+public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, Long>{
 	
 	Optional<DesignerLoginEntity> findByEmail(String email);
 	Page<DesignerLoginEntity> findByIsApproved(Boolean isApproved  ,Pageable pagingSort);
