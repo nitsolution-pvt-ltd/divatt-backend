@@ -135,10 +135,10 @@ public class ProfileContoller {
 			loginEntity.setRole(loginEntity.getRole());
 			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName());
 			loginEntity.setRoleName(loginEntity.getRoleName().toUpperCase());
-			loginEntity.setIs_active(true);
+			loginEntity.setActive(true);
 			loginEntity.setDeleted(false);
-			loginEntity.setCreated_on(date.toString());
-			loginEntity.setModified_on(date.toString());
+			loginEntity.setCreatedOn(date.toString());
+			loginEntity.setModifiedOn(date.toString());
 			loginRepository.save(loginEntity);
 			return new ResponseEntity<>(new GlobalResponse("SUCCESS","Added Successfully",200), HttpStatus.OK);
 		}catch(Exception e) {
@@ -169,10 +169,10 @@ public class ProfileContoller {
 			formatter.format(date);
 			LoginEntity findById = loginRepository.findById(loginEntity.getUid()).get();
 			loginEntity.setUid(findById.getUid());
-			loginEntity.setIs_active(findById.isIs_active());
+			loginEntity.setActive(findById.isActive());
 			loginEntity.setDeleted(findById.isDeleted());
-			loginEntity.setCreated_on(findById.toString());
-			loginEntity.setModified_on(date.toString());
+			loginEntity.setCreatedOn(findById.toString());
+			loginEntity.setModifiedOn(date.toString());
 			loginRepository.save(loginEntity);
 			return new ResponseEntity<>(new GlobalResponse("SUCCESS","Updated Successfully",200), HttpStatus.OK);
 		}catch(Exception e) {

@@ -32,9 +32,11 @@ public class LoginEntity {
 	@Id
 	private Long uid;
 	@NotNull(message = "User's first name must not be null")
-	private String first_name;
+	@Field(name = "first_name")
+	private String firstName;
 	@NotNull(message = "User's last name must not be null")
-	private String last_name;
+	@Field(name = "last_name")
+	private String lastName;
 //	@Email
 	@NotNull(message = "User's email must not be null")
 	private String email;
@@ -42,12 +44,14 @@ public class LoginEntity {
 	private String password;
 //	@NumberFormat
 	@NotNull(message = "User's mobile_no must not be null")
-	private String mobile_no;
+	@Field(name = "mobile_no")
+	private String mobileNo;
 //	@DateTimeFormat()
 	@NotNull(message = "User's dob must not be null")
 	private String dob;
 	
-	private boolean is_active;
+	@Field(name = "is_active")
+	private boolean isActive;
 
 	@Field(value = "is_deleted")
 	private boolean isDeleted;
@@ -58,278 +62,222 @@ public class LoginEntity {
 	@NotNull(message = "User's role must not be null")
 	private String roleName;
 
-	private String auth_token;
+	@Field(name = "auth_token")
+	private String authToken;
 
-	private String created_by;
+	@Field(name = "created_by")
+	private String createdBy;
 
-	private String created_on;
+	@Field(name = "created_on")
+	private String createdOn;
 
-	private String modified_by;
+	@Field(name = "modified_by")
+	private String modifiedBy;
 
-	private String modified_on;
+	@Field(name = "modified_on")
+	private String modifiedOn;
+	
 	@NotNull(message = "User's profile_pic must not be null")
-	private String profile_pic;
+	@Field(name = "profile_pic")
+	private String profilePic;
 	
 	private JSONObject logins;
-	
-	
-	public JSONObject getLogins() {
-		return logins;
-	}
-
-
-	public void setLogins(JSONObject logins) {
-		this.logins = logins;
-	}
-
-
-	public Long getUid() {
-		return uid;
-	}
-
-
-	public void setUid(Long uid) {
-		this.uid = uid;
-	}
-
-
-	public String getFirst_name() {
-		return first_name;
-	}
-
-
-	public void setFirst_name(String first_name) {
-		this.first_name = first_name;
-	}
-
-
-	public String getLast_name() {
-		return last_name;
-	}
-
-
-	public void setLast_name(String last_name) {
-		this.last_name = last_name;
-	}
-
-
-	public String getEmail() {
-		return email;
-	}
-
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-
-	public String getPassword() {
-		return password;
-	}
-
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-
-	public String getMobile_no() {
-		return mobile_no;
-	}
-
-
-	public void setMobile_no(String mobile_no) {
-		this.mobile_no = mobile_no;
-	}
-
-
-	public String getDob() {
-		return dob;
-	}
-
-
-	public void setDob(String dob) {
-		this.dob = dob;
-	}
-
-
-	public boolean isIs_active() {
-		return is_active;
-	}
-
-
-	public void setIs_active(boolean is_active) {
-		this.is_active = is_active;
-	}
-
-
-	
-
-
-	public boolean isDeleted() {
-		return isDeleted;
-	}
-
-
-	public void setDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
-
-
-	public Long getRole() {
-		return role;
-	}
-
-
-	public void setRole(Long role) {
-		this.role = role;
-	}
-
-
-	public String getAuth_token() {
-		return auth_token;
-	}
-
-
-	public void setAuth_token(String auth_token) {
-		this.auth_token = auth_token;
-	}
-
-
-	public String getCreated_by() {
-		return created_by;
-	}
-
-
-	public void setCreated_by(String created_by) {
-		this.created_by = created_by;
-	}
-
-
-	public String getCreated_on() {
-		return created_on;
-	}
-
-
-	public void setCreated_on(String created_on) {
-		this.created_on = created_on;
-	}
-
-
-	public String getModified_by() {
-		return modified_by;
-	}
-
-
-	public void setModified_by(String modified_by) {
-		this.modified_by = modified_by;
-	}
-
-
-	public String getModified_on() {
-		return modified_on;
-	}
-
-
-	public void setModified_on(String modified_on) {
-		this.modified_on = modified_on;
-	}
-
-
-	public String getProfile_pic() {
-		return profile_pic;
-	}
-
-
-	public void setProfile_pic(String profile_pic) {
-		this.profile_pic = profile_pic;
-	}
-
-
-	
-
-
-	public String getRoleName() {
-		return roleName;
-	}
-
-
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
-
-
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
-
-
-
-
-	
-
-	
-
-	
-
-
-	
-
-	
-
-
-	
-
-	@Override
-	public String toString() {
-		return "LoginEntity [uid=" + uid + ", first_name=" + first_name + ", last_name=" + last_name + ", email="
-				+ email + ", password=" + password + ", mobile_no=" + mobile_no + ", dob=" + dob + ", is_active="
-				+ is_active + ", isDeleted=" + isDeleted + ", role=" + role + ", roleName=" + roleName + ", auth_token="
-				+ auth_token + ", created_by=" + created_by + ", created_on=" + created_on + ", modified_by="
-				+ modified_by + ", modified_on=" + modified_on + ", profile_pic=" + profile_pic + ", logins=" + logins
-				+ "]";
-	}
-
-
-	
-
-
-	public LoginEntity(Long uid, @NotNull(message = "User's first name must not be null") String first_name,
-			@NotNull(message = "User's last name must not be null") String last_name,
-			@NotNull(message = "User's email must not be null") String email,
-			@NotNull(message = "User's password must not be null") String password,
-			@NotNull(message = "User's mobile_no must not be null") String mobile_no,
-			@NotNull(message = "User's dob must not be null") String dob, boolean is_active, boolean isDeleted,
-			@NotNull(message = "User's role must not be null") Long role,
-			@NotNull(message = "User's role must not be null") String roleName, String auth_token, String created_by,
-			String created_on, String modified_by, String modified_on,
-			@NotNull(message = "User's profile_pic must not be null") String profile_pic, JSONObject logins) {
-		super();
-		this.uid = uid;
-		this.first_name = first_name;
-		this.last_name = last_name;
-		this.email = email;
-		this.password = password;
-		this.mobile_no = mobile_no;
-		this.dob = dob;
-		this.is_active = is_active;
-		this.isDeleted = isDeleted;
-		this.role = role;
-		this.roleName = roleName;
-		this.auth_token = auth_token;
-		this.created_by = created_by;
-		this.created_on = created_on;
-		this.modified_by = modified_by;
-		this.modified_on = modified_on;
-		this.profile_pic = profile_pic;
-		this.logins = logins;
-	}
-
 
 	public LoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+	public LoginEntity(Long uid, @NotNull(message = "User's first name must not be null") String firstName,
+			@NotNull(message = "User's last name must not be null") String lastName,
+			@NotNull(message = "User's email must not be null") String email,
+			@NotNull(message = "User's password must not be null") String password,
+			@NotNull(message = "User's mobile_no must not be null") String mobileNo,
+			@NotNull(message = "User's dob must not be null") String dob, boolean isActive, boolean isDeleted,
+			@NotNull(message = "User's role must not be null") Long role,
+			@NotNull(message = "User's role must not be null") String roleName, String authToken, String createdBy,
+			String createdOn, String modifiedBy, String modifiedOn,
+			@NotNull(message = "User's profile_pic must not be null") String profilePic, JSONObject logins) {
+		super();
+		this.uid = uid;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+		this.mobileNo = mobileNo;
+		this.dob = dob;
+		this.isActive = isActive;
+		this.isDeleted = isDeleted;
+		this.role = role;
+		this.roleName = roleName;
+		this.authToken = authToken;
+		this.createdBy = createdBy;
+		this.createdOn = createdOn;
+		this.modifiedBy = modifiedBy;
+		this.modifiedOn = modifiedOn;
+		this.profilePic = profilePic;
+		this.logins = logins;
+	}
+
+	@Override
+	public String toString() {
+		return "LoginEntity [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+				+ ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", isActive=" + isActive
+				+ ", isDeleted=" + isDeleted + ", role=" + role + ", roleName=" + roleName + ", authToken=" + authToken
+				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", modifiedBy=" + modifiedBy
+				+ ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic + ", logins=" + logins + "]";
+	}
+
+	public Long getUid() {
+		return uid;
+	}
+
+	public void setUid(Long uid) {
+		this.uid = uid;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getMobileNo() {
+		return mobileNo;
+	}
+
+	public void setMobileNo(String mobileNo) {
+		this.mobileNo = mobileNo;
+	}
+
+	public String getDob() {
+		return dob;
+	}
+
+	public void setDob(String dob) {
+		this.dob = dob;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	public Long getRole() {
+		return role;
+	}
+
+	public void setRole(Long role) {
+		this.role = role;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+
+	public String getAuthToken() {
+		return authToken;
+	}
+
+	public void setAuthToken(String authToken) {
+		this.authToken = authToken;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(String createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public String getModifiedOn() {
+		return modifiedOn;
+	}
+
+	public void setModifiedOn(String modifiedOn) {
+		this.modifiedOn = modifiedOn;
+	}
+
+	public String getProfilePic() {
+		return profilePic;
+	}
+
+	public void setProfilePic(String profilePic) {
+		this.profilePic = profilePic;
+	}
+
+	public JSONObject getLogins() {
+		return logins;
+	}
+
+	public void setLogins(JSONObject logins) {
+		this.logins = logins;
+	}
+
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
+	}
+	
+	
+	
 
 	
 	
