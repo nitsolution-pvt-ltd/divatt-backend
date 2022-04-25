@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.exception.CustomException;
+import com.divatt.admin.repo.AdminModulesRepo;
 import com.divatt.admin.repo.LoginRepository;
 import com.divatt.admin.services.SequenceGenerator;
 import com.fasterxml.jackson.annotation.JacksonInject.Value;
@@ -56,7 +58,13 @@ public class ProfileContoller {
 	private MongoOperations mongoOperations;
 	
 	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
 	private SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+	private AdminModulesRepo adminModulesRepo;
 	
 	Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
 	
@@ -126,8 +134,10 @@ public class ProfileContoller {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
+			loginEntity.setPassword(passwordEncoder.encode(loginEntity.getPassword()));
 			loginEntity.setUid((long)sequenceGenerator.getNextSequence(LoginEntity.SEQUENCE_NAME));
 			loginEntity.setRole(loginEntity.getRole());
+			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName());
 			loginEntity.setRoleName(loginEntity.getRoleName().toUpperCase());
 			loginEntity.setIs_active(true);
 			loginEntity.setDeleted(false);
