@@ -430,7 +430,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							DesignerLoginEntity save = designerLoginRepo.save(loginEntity);
 							return new GlobalResponse("SUCCESS", "Password changed successfully", 200);
 
-						} catch (Exception Z) {
+						} catch (Exception Z) { 
 							try {
 								if (!passwordEncoder.matches(globalEntity.getOldPass(),
 										findByUserEmail.get().getPassword()))
