@@ -366,6 +366,7 @@ public class UserService {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<ProductEntity> getProductUser(Integer limit) {
 		try
 		{

@@ -295,7 +295,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.addUser()");
 		try {
 			if (error.hasErrors()) {
-				throw new CustomException("Check The Fields");
+				throw new CustomException("Please check all input fields");
 			}
 
 			Optional<UserLoginEntity> findById = userLoginRepo.findById(userLoginEntityParam.getId());
@@ -311,23 +311,18 @@ public class UserController {
 			userLoginEntity.setMobileNo(userLoginEntityParam.getMobileNo());
 			userLoginEntity.setDob(userLoginEntityParam.getDob());
 			userLoginRepo.save(userLoginEntity);
-			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Updated Successfully", 200));
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Updated successfully", 200));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
 
-	
 	@GetMapping("/product/list/{limit}")
-	public List<ProductEntity> productListing (@PathVariable Integer limit)
-	{
-		try
-		{
+	public List<ProductEntity> productListing(@PathVariable Integer limit) {
+		try {
 			return this.userService.getProductUser(limit);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
