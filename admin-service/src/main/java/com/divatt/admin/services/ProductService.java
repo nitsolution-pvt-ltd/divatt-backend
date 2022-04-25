@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,13 +19,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.admin.entity.GlobalResponse;
-import com.divatt.admin.entity.ProductEntity;
+import com.divatt.admin.entity.product.ProductEntity;
 import com.divatt.admin.exception.CustomException;
 
 
 
 @Service
 public class ProductService {
+	
+	@Autowired
+    private MongoTemplate mongoTemplate;
+	
+	
 	public GlobalResponse productApproval(Integer productId, Integer designerId, String comment) {
 		try
 		{

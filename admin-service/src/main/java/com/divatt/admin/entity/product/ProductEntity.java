@@ -1,4 +1,4 @@
-package com.divatt.admin.entity;
+package com.divatt.admin.entity.product;
 
 import java.util.Arrays;
 import java.util.Date;

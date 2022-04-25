@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,15 +27,20 @@ public class SubCategoryService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SubCategoryService.class);
 
 	@Autowired
-	SubCategoryRepo subCategoryRepo;
+	private SubCategoryRepo subCategoryRepo;
 
 	@Autowired
-	SequenceGenerator sequenceGenerator;
+	private SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+    private MongoTemplate mongoTemplate;
 
 	public GlobalResponse postSubCategoryDetails(@RequestBody SubCategoryEntity subCategoryEntity) {
 		LOGGER.info("Inside - SubCategoryService.postSubCategoryDetails()");
 
 		try {
+			
+//			subCategoryRepo.findByCategoryName(subCategoryEntity.getCategoryName()).orElseThrow(null)
 
 			Optional<SubCategoryEntity> findBySubCategoryName = subCategoryRepo
 					.findByCategoryName(subCategoryEntity.getCategoryName());
@@ -269,8 +275,7 @@ public class SubCategoryService {
 						
 					}
 				}
-			}
-			System.out.println(subCategoryList);
+			}			
 			return subCategoryList;
 		}
 		catch(Exception e)
