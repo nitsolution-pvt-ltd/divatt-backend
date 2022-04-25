@@ -5,10 +5,12 @@ import java.util.Date;
 
 import javax.validation.constraints.NotEmpty;
 
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
+@Document(collection = "tbl_products")
 public class ProductEntity {
 
 	

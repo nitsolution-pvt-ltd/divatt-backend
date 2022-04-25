@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.product.ProductEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.services.ProductService;
 
@@ -46,7 +47,7 @@ public class ProductController {
 				as("inventory_docs");
 		Aggregation aggregation = Aggregation.newAggregation(lookupOperation);
 		ResponseEntity
-		.ok(mongoTemplate.aggregate(aggregation, "tbl_products", String.class)
+		.ok(mongoTemplate.aggregate(aggregation, ProductEntity.class, String.class)
 				.getMappedResults());
 	}
 }
