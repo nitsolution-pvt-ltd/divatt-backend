@@ -133,5 +133,17 @@ public class SubCategoryController {
 			throw new CustomException(e.getMessage());
 		}	
 	}
-
+	
+	@PostMapping("/subcategoryVerification")
+	public List<Integer> subVerification(@RequestBody List<Integer> subCategoryId)
+	{
+		try
+		{
+			return this.subCategoryService.subcategoryVerification(subCategoryId);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

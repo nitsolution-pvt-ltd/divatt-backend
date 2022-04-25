@@ -1,5 +1,6 @@
 package com.divatt.admin.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +28,11 @@ public class CategoryService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CategoryService.class);
 
 	@Autowired
-	CategoryRepo categoryRepo;
+	private CategoryRepo categoryRepo;
 
 	@Autowired
-	SequenceGenerator sequenceGenerator;
+	private SequenceGenerator sequenceGenerator;
+
 
 	public GlobalResponse postCategoryDetails(@RequestBody CategoryEntity categoryEntity) {
 		LOGGER.info("Inside - CategoryService.postCategoryDetails()");
@@ -243,4 +245,27 @@ public class CategoryService {
 		}
 	}
 
+	public List<Integer> categoryVerification(List<Integer> categoryId) {
+		try
+		{
+			List<Integer> verificationList= new ArrayList<Integer>();
+			for(int i=0;i<categoryId.size();i++)
+			{
+				if(categoryRepo.existsById(categoryId.get(i)))
+				{
+					CategoryEntity viewCategoryDetails = viewCategoryDetails(categoryId.get(i)).get();
+					if(viewCategoryDetails.getIsActive().equals(true))
+					{
+						verificationList.add(categoryId.get(i));
+					}
+				}
+			}
+			System.out.println(verificationList);
+			return verificationList;
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

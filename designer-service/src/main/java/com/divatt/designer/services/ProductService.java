@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
@@ -62,10 +65,12 @@ public class ProductService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
-	public List<ListProduct> allList() {
+	public  Map<String, Object> allList(int page, int limit, String sort, String sortName, Boolean isDeleted,
+			String keyword, Optional<String> sortBy) {
 		try {
 			LOGGER.info("Inside - ProductService.allList()");
 			List<ProductMasterEntity> productdata= productRepo.findAll();
+			//List<Integer> 
 			List<Integer>productId=productdata.stream().map(e->e.getDesignerId()).collect(Collectors.toList());
 			//System.out.println(productId);
 			List<DesignerProfileEntity> profileData=new ArrayList<DesignerProfileEntity>();
@@ -81,7 +86,40 @@ public class ProductService {
 				listProduct.setProductMasterEntity(productdata.get(i));
 				allData.add(listProduct);
 			}
-			return allData;
+			
+			if (allData.isEmpty()) {
+				throw new CustomException("Product not found!");
+			} else {
+				//List<ProductMasterEntity> list = productRepo.findByProductIdIn(allData);
+
+				int CountData = (int) allData.size();
+				if (limit == 0) {
+					limit = CountData;
+				}
+
+				Pageable pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+				Page<ListProduct> findAll = productRepo.findByDesignerIdIn(allData, pagingSort);
+
+				int totalPage = findAll.getTotalPages() - 1;
+				if (totalPage < 0) {
+					totalPage = 0;
+				}
+
+				Map<String, Object> response = new HashMap<>();
+				response.put("data", findAll.getContent());
+				response.put("currentPage", findAll.getNumber());
+				response.put("total", CountData);
+				response.put("totalPage", totalPage);
+				response.put("perPage", findAll.getSize());
+				response.put("perPageElement", findAll.getNumberOfElements());
+
+				if (findAll.getSize() <= 0) {
+					throw new CustomException("Product not found!");
+				} else {
+					return response;
+				}
+			}
+			//return allData;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -98,9 +136,12 @@ public class ProductService {
 				Query query1= new Query();
 				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName").is(productData.getProductName()));
 				List<ProductMasterEntity> productInfo= mongoOperations.find(query1, ProductMasterEntity.class);
-				//System.out.println(productInfo.size());
 				if(productInfo.isEmpty())
 				{
+					RestTemplate restTemplate= new RestTemplate();
+					ResponseEntity<String> categoryResponse=restTemplate.getForEntity("http://localhost:8084/dev/category/view/"+productData.getCategoryId(), String.class);
+					System.out.println(categoryResponse);
+					ResponseEntity<String> subcategoryResponse=restTemplate.getForEntity("http://localhost:8084/dev/subcategory/view/"+productData.getSubCategoryId(), String.class);
 					productRepo.save(customFunction.filterDataEntity(productData));
 					return new  GlobalResponce("Success!!", "Product added successfully", 200);
 				}
@@ -116,15 +157,14 @@ public class ProductService {
 		}
 	}
 
-	public Optional<?> productDetails(Integer productId) {
+	public ProductMasterEntity productDetails(Integer productId) {
 		try {
 			LOGGER.info("Inside-ProductService.productDetails()");
 			if (productRepo.existsById(productId)) {
 				LOGGER.info("Inside - ProductService.productDetails()");
-				Optional<ProductMasterEntity> findById = productRepo.findById(productId);
-				return findById;
+				return productRepo.findById(productId).get();
 			} else {
-				return Optional.of(new GlobalResponce("Bad request", "Product id does not exist", 400));
+				throw new CustomException("Product not found");
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -354,6 +394,71 @@ public class ProductService {
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public List<ProductMasterEntity> getApproval() {
+		try
+		{
+			return this.productRepo.findAll();
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public List<ProductMasterEntity> getListProduct(Integer limit) {
+		try
+		{
+			List<ProductMasterEntity>productList=productRepo.findAll();
+			List<ProductMasterEntity>filterProductList=new ArrayList<>();
+			List<Integer> categoryList=productList.stream().map(e->e.getCategoryId()).collect(Collectors.toList());
+			//System.out.println(categoryList);
+			List<Integer> subCategoryList=productList.stream().map(e->e.getSubCategoryId()).collect(Collectors.toList());
+			//System.out.println(subCategoryList);
+			Query query= new Query();
+			query.addCriteria(Criteria.where("isApprove").is(true));
+			List<ProductMasterEntity> userProductList=mongoOperations.find(query, ProductMasterEntity.class);
+			List<ProductMasterEntity> fiterProduct= new ArrayList<ProductMasterEntity>();
+			List<Integer> productIdList=userProductList.stream().map(e->e.getProductId()).collect(Collectors.toList());
+			System.out.println(productIdList);
+			List<Integer> randomIntegers=new ArrayList<Integer>();
+//			new Random().ints(productIdList.get(0), productIdList.lastIndexOf()).limit(productIdList.size()).forEach(p->randomIntegers.add(p));
+			//Integer integer = randomIntegers.get(4);
+			Random random= new Random();
+			for (int i = 0; i < limit; i++) {
+				 
+	            // take a random index between 0 to size
+	            // of given List
+	            int randomIndex = random.nextInt(productIdList.size());
+	 
+	            // add element in temporary list
+	            randomIntegers.add(productIdList.get(randomIndex));
+	        }
+			System.out.println(randomIntegers);
+			if(randomIntegers.size()<=limit)
+			{
+				for(int i=0;i<randomIntegers.size();i++)
+				{
+					ProductMasterEntity entity= productDetails(randomIntegers.get(i));
+					filterProductList.add(entity);
+				}
+				return filterProductList;
+			}
+			else
+			{
+				for(int i=0;i<limit;i++)
+				{
+					ProductMasterEntity entity= (ProductMasterEntity) productDetails(randomIntegers.get(i));
+					filterProductList.add(entity);
+				}
+				return filterProductList;
+			}
+		}
+		catch(Exception e)
+		{
+			throw new  CustomException(e.getMessage());
 		}
 	}
 
