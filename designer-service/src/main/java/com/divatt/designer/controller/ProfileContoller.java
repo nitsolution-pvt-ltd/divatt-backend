@@ -29,10 +29,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
+import com.divatt.designer.repo.DesignerLogRepo;
 import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.response.GlobalResponce;
@@ -59,6 +61,8 @@ public class ProfileContoller {
 	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	@Autowired DesignerLogRepo designerLogRepo;
 	
 	
 	@GetMapping("/{id}")
@@ -98,6 +102,12 @@ public class ProfileContoller {
 				designerProfileEntity.setDesignerProfile(designerProfile);
 				designerProfileRepo.save(designerProfileEntity);	
 			}
+			
+			DesignerLogEntity designerLogEntity = new DesignerLogEntity();
+			//designerLogEntity.
+			designerLogRepo.save(null);
+			
+			
 			JsonObject jo = new JsonObject();
 			jo.addProperty("senderMailId", designerProfileEntity.getDesignerProfile().getEmail());
 			jo.addProperty("subject", "Successfully Registration");

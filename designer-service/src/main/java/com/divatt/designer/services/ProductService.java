@@ -201,15 +201,8 @@ public class ProductService {
 		try {
 			LOGGER.info("Inside - ProductService.approveProduct()");
 			if (productRepo.existsById(productId)) {
-				Boolean status;
 				Optional<ProductMasterEntity> productData = productRepo.findById(productId);
 				ProductMasterEntity productEntity = productData.get();
-//				if (productEntity.getIsActive().equals(true)) {
-//					status = false;
-//				} else {
-//					status = true;
-//				}
-//				productEntity.setIsActive(status);
 				productEntity.setIsApprove(aprove);
 				productEntity.setComment(comment);
 				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
