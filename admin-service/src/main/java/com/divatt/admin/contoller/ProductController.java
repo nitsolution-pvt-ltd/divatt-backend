@@ -8,7 +8,9 @@ import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +18,7 @@ import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.product.ProductEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.services.ProductService;
+import com.google.gson.JsonObject;
 
 @RestController
 //@Description("This Conttroller is responsible for Control the product service")
@@ -27,9 +30,8 @@ public class ProductController {
 	@Autowired
     private MongoTemplate mongoTemplate;
 
-	@PutMapping("/changeProductApprovalStatus/{productId}/{designerId}/{comment}")
-	public GlobalResponse changeProductApprovalStatus(@PathVariable Integer productId, @PathVariable Integer designerId,
-			@PathVariable String comment) {
+	@PostMapping("/changeProductApprovalStatus/{productId}/{designerId}")
+	public GlobalResponse changeProductApprovalStatus(@RequestBody Object comment,@PathVariable Integer productId, @PathVariable Integer designerId) {
 		try {
 			return this.productService.productApproval(productId, designerId, comment);
 			// return null;

@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.google.gson.JsonObject;
 @Document(collection = "tbl_products")
 public class ProductMasterEntity {
 
@@ -75,8 +76,8 @@ public class ProductMasterEntity {
 	private String approvedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
-	private String comment;
 	private String SKQCode;
+	private Object comment;
 	public ProductMasterEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -91,8 +92,8 @@ public class ProductMasterEntity {
 			StandardSOH[] standeredSOH, Integer customizationSOH, Object extraSpecifications,
 			Specification specifications, Boolean isSubmitted, Boolean isApprove, Boolean isActive, Boolean isDeleted,
 			Date createdOn, String createdBy, String submittedBy, Date submittedOn, String updatedBy, Date updatedOn,
-			@NotEmpty(message = "Approval Name Required") String approvedBy, Date approvedOn, String comment,
-			String sKQCode) {
+			@NotEmpty(message = "Approval Name Required") String approvedBy, Date approvedOn, String sKQCode,
+			JsonObject comment) {
 		super();
 		this.productId = productId;
 		this.designerName = designerName;
@@ -129,8 +130,8 @@ public class ProductMasterEntity {
 		this.updatedOn = updatedOn;
 		this.approvedBy = approvedBy;
 		this.approvedOn = approvedOn;
-		this.comment = comment;
 		this.SKQCode = sKQCode;
+		this.comment = comment;
 	}
 	@Override
 	public String toString() {
@@ -146,7 +147,7 @@ public class ProductMasterEntity {
 				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
 				+ ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy=" + updatedBy
 				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", comment=" + comment + ", SKQCode=" + SKQCode + "]";
+				+ ", SKQCode=" + SKQCode + ", comment=" + comment + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -358,21 +359,19 @@ public class ProductMasterEntity {
 	public void setApprovedOn(Date approvedOn) {
 		this.approvedOn = approvedOn;
 	}
-	public String getComment() {
-		return comment;
-	}
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
 	public String getSKQCode() {
 		return SKQCode;
 	}
 	public void setSKQCode(String sKQCode) {
 		SKQCode = sKQCode;
 	}
+	public Object getComment() {
+		return comment;
+	}
+	public void setComment(Object comment) {
+		this.comment = comment;
+	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
-	
 }

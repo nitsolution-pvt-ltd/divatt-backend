@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.product.ProductEntity;
 import com.divatt.admin.exception.CustomException;
+import com.google.gson.JsonObject;
 
 
 
@@ -31,7 +32,7 @@ public class ProductService {
     private MongoTemplate mongoTemplate;
 	
 	
-	public GlobalResponse productApproval(Integer productId, Integer designerId, String comment) {
+	public GlobalResponse productApproval(Integer productId, Integer designerId, Object comment) {
 		try
 		{
 			RestTemplate restTemplate= new RestTemplate();
@@ -68,4 +69,4 @@ public class ProductService {
 		}
 	}
 
-}
+	}
