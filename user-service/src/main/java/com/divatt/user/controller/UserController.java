@@ -303,10 +303,10 @@ public class UserController {
 
 	}
 
-	@GetMapping("/product/list/{limit}")
-	public List<ProductEntity> productListing(@PathVariable Integer limit) {
+	@GetMapping("/product/list")
+	public ResponseEntity<?> productListing() {
 		try {
-			return this.userService.getProductUser(limit);
+			return this.userService.getProductUser();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

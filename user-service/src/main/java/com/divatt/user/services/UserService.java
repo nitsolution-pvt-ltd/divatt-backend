@@ -39,6 +39,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.GetRequest;
+import com.mashape.unirest.request.body.Body;
 
 import springfox.documentation.spring.web.json.Json;
 
@@ -374,12 +376,16 @@ public class UserService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<ProductEntity> getProductUser(Integer limit) {
+	public ResponseEntity<?> getProductUser() {
 		try {
+			
 			RestTemplate restTemplate = new RestTemplate();
-			ResponseEntity<?> categoryResponse = restTemplate
-					.getForEntity("http://localhost:8083/dev/product/userProductList/" + limit, List.class);
-			return (List<ProductEntity>) categoryResponse.getBody();
+			
+			String body = restTemplate.getForEntity("http://localhost:8083/dev/product/userProductList", String.class).getBody();
+			
+
+			 Json js = new Json(body);
+			return ResponseEntity.ok(js);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

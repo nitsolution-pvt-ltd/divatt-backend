@@ -2,10 +2,13 @@ package com.divatt.designer.services;
 
 
 
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import static org.springframework.data.mongodb.core.FindAndModifyOptions.options;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -27,6 +30,13 @@ public class SequenceGenerator {
 	
 	@Autowired
 	private MongoOperations mongoOperations;
+	
+	public long getCurrentSequence(String seqName) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("id").is(seqName));
+		List<DatabaseSequence> find = mongoOperations.find(query, DatabaseSequence.class);
+		return find.get(0).getSeq();
+	}
 	
 	public long generateSequence(String seqName) {
 		DatabaseSequence counter =  mongoOperations.findAndModify(query(where("_id").is(seqName)),
