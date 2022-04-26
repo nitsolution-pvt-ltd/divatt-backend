@@ -400,7 +400,10 @@ public class ProductService {
 		long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
 		Random rd = new Random();
 	      List<Integer> lst = new ArrayList<>();
-	      List<ProductMasterEntity> findAll = productRepo.findAll();
+	      List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndIsApproveAndIsSubmitted(false,true,false);
+	      if(findAll.size()<=15) {
+	    	  return ResponseEntity.ok(findAll);
+	      }
 	      List<ProductMasterEntity> productMasterEntity = new ArrayList<>();
 	      Boolean flag = true;
 	      while(flag) {
