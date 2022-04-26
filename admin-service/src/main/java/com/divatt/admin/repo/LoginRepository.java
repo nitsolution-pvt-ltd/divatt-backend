@@ -24,7 +24,7 @@ public interface LoginRepository extends MongoRepository<LoginEntity, Object> {
 	
 	public Page<LoginEntity> findByIsDeleted(Boolean isDeleted,Pageable pagingSort);
 	
-		@Query(value = "{ $or: [ { 'first_name' : {$regex:?0,$options:'i'} }, { 'last_name' : {$regex:?0,$options:'i'} },{ 'email' : {$regex:?0,$options:'i'} },{ 'mobile_no' : {$regex:?0,$options:'i'} },{ 'created_on' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
+		@Query(value = "{ $or: [ { 'firstName' : {$regex:?0,$options:'i'} }, { 'lastName' : {$regex:?0,$options:'i'} },{ 'email' : {$regex:?0,$options:'i'} },{ 'mobileNo' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
 	public Page<LoginEntity> Search(String sortKey, Boolean isDeleted,Pageable pageable);
 	
 	

@@ -17,7 +17,7 @@ public class AdminModules {
 	
 	@Id
 	@Field(name = "_id")
-	private Long mId;
+	private Long id;
 	
 	@Field(name = "meta_key")
 	private String metaKey;
@@ -31,6 +31,8 @@ public class AdminModules {
 	@Field(name = "modules")
 	private ArrayList<AdminModule> modules;
 	
+	@Field(name = "is_deleted")
+	private Boolean isDeleted;
 	
 	public AdminModules() {
 		super();
@@ -39,35 +41,128 @@ public class AdminModules {
 
 	
 
-	public AdminModules(Long mId, String metaKey, ArrayList<Object> adminModules, String roleName,
-			ArrayList<AdminModule> modules) {
+	
+
+
+
+	
+
+
+
+
+
+
+
+	
+
+
+
+	public AdminModules(Long id, String metaKey, ArrayList<Object> adminModules, String roleName,
+			ArrayList<AdminModule> modules, Boolean isDeleted) {
 		super();
-		this.mId = mId;
+		this.id = id;
 		this.metaKey = metaKey;
 		this.adminModules = adminModules;
 		this.roleName = roleName;
 		this.modules = modules;
+		this.isDeleted = isDeleted;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
 
 
 
 	@Override
 	public String toString() {
-		return "AdminModules [mId=" + mId + ", metaKey=" + metaKey + ", adminModules=" + adminModules + ", roleName="
-				+ roleName + ", modules=" + modules + "]";
+		return "AdminModules [id=" + id + ", metaKey=" + metaKey + ", adminModules=" + adminModules + ", roleName="
+				+ roleName + ", modules=" + modules + ", isDeleted=" + isDeleted + "]";
 	}
 
 
 
-	public Long getmId() {
-		return mId;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+	public Long getId() {
+		return id;
 	}
 
 
 
-	public void setmId(Long mId) {
-		this.mId = mId;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setId(Long id) {
+		this.id = id;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -115,6 +210,36 @@ public class AdminModules {
 
 	public void setModules(ArrayList<AdminModule> modules) {
 		this.modules = modules;
+	}
+
+
+
+
+
+
+
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+
+
+
+
+
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+
+
+
+
+
+
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
 	}
 
 
