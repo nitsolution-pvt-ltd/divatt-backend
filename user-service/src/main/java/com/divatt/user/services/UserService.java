@@ -1,11 +1,14 @@
 package com.divatt.user.services;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -21,10 +24,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.entity.ProductEntity;
+import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
+import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.cart.UserCartRepo;
 import com.divatt.user.repo.pCommentRepo.ProductCommentRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
@@ -52,6 +57,9 @@ public class UserService {
 
 	@Autowired
 	private ProductCommentRepo productCommentRepo;
+
+	@Autowired
+	private UserDesignerRepo userDesignerRepo;
 
 	public GlobalResponse postWishlistService(WishlistEntity wishlistEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
@@ -327,19 +335,19 @@ public class UserService {
 			} else {
 				ProductCommentEntity<?> RowsDetails = findByRow.get();
 				Boolean Status = false;
-				String message=null;
+				String message = null;
 				if (findByRow.get().getIsVisible() == true) {
 					Status = false;
-					message= "actived";
+					message = "actived";
 				} else {
 					Status = true;
-					message= "inactive";
+					message = "inactive";
 				}
 				RowsDetails.setIsVisible(Status);
 				RowsDetails.setCreatedOn(new Date());
 
 				productCommentRepo.save(RowsDetails);
-				return new GlobalResponse("SUCCESS", "Reviewed status "+message+" successfully", 200);
+				return new GlobalResponse("SUCCESS", "Reviewed status " + message + " successfully", 200);
 			}
 
 		} catch (Exception e) {
@@ -348,7 +356,6 @@ public class UserService {
 
 	}
 
-	
 	@SuppressWarnings("rawtypes")
 	public GlobalResponse deleteProductCommentService(Integer Id) {
 		try {
@@ -368,20 +375,54 @@ public class UserService {
 
 	@SuppressWarnings("unchecked")
 	public List<ProductEntity> getProductUser(Integer limit) {
-		try
-		{
-			RestTemplate restTemplate= new RestTemplate();
-			ResponseEntity<?> categoryResponse=restTemplate.getForEntity("http://localhost:8083/dev/product/userProductList/"+limit, List.class);
-			//System.out.println(categoryResponse.getBody());
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<?> categoryResponse = restTemplate
+					.getForEntity("http://localhost:8083/dev/product/userProductList/" + limit, List.class);
 			return (List<ProductEntity>) categoryResponse.getBody();
 
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
 		}
-		catch(Exception e)
-		{
+	}
+
+	public ResponseEntity<?> postfollowDesignerService(@Valid UserDesignerEntity userDesignerEntity) {
+		try {
+			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+			Date date = new Date();
+			formatter.format(date);
+			userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e) -> {
+				userDesignerEntity.setId(e.getId());
+			}, () -> {
+				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
+			});
+
+			userDesignerEntity.setCreatedOn(date.toString());
+			UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
+			if (save != null && save.getIsFollowing() == true)
+				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Follow successfully", 200));
+			else if (save != null && save.getIsFollowing() == false)
+				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Unfollow successfully", 200));
+			else
+				throw new CustomException("Something went wrong! try again later");
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 	
 	
+
+	public Map<String, Object> getDesignerDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
+			String keyword, Optional<String> sortBy) {
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<?> categoryResponse = restTemplate
+					.getForEntity("http://localhost:8083/dev/product/userProductList/" + limit, String.class);
+			return (Map<String, Object>) categoryResponse.getBody();
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
 }

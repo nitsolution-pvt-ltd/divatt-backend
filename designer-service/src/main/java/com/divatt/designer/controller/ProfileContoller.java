@@ -45,97 +45,99 @@ import com.mashape.unirest.http.Unirest;
 
 import springfox.documentation.spring.web.json.Json;
 
-
 @RestController
 @RequestMapping("/designer")
 public class ProfileContoller {
-	
+
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
-	
+
 	@Autowired
 	private DesignerLoginRepo designerLoginRepo;
-	
+
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
-	@Autowired DesignerLogRepo designerLogRepo;
-	
-	
+
+	@Autowired
+	DesignerLogRepo designerLogRepo;
+
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getDesigner(@PathVariable Long id){
+	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
 		try {
 			return ResponseEntity.ok(designerProfileRepo.findById(id));
-		}catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
+
 	}
-	
+
 	@PostMapping("/add")
-	public ResponseEntity<?> addDesigner(@Valid @RequestBody DesignerProfileEntity designerProfileEntity){
+	public ResponseEntity<?> addDesigner(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
 		try {
 			designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
-			if(designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail()).isPresent())
-				throw new CustomException("Email Already Present");
+			if (designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail()).isPresent())
+				throw new CustomException("Email already present");
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
 //			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 //			Date date = new Date(designerProfileEntity.getDesignerProfile().getDob());
 //			String format = formatter.format(date);
 //			System.out.println("format "+format);
-			designerLoginEntity.setdId((long)sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
+			designerLoginEntity.setdId((long) sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
 			designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
-			designerLoginEntity.setPassword(bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
+			designerLoginEntity.setPassword(
+					bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 			designerLoginEntity.setIsActive(false);
 			designerLoginEntity.setIsDeleted(false);
 			designerLoginEntity.setIsApproved(false);
 			designerLoginEntity.setIsProfileCompleated(false);
 			designerLoginEntity.setIsProfileSubmitted(false);
-			if(designerLoginRepo.save(designerLoginEntity)!=null) {
+			if (designerLoginRepo.save(designerLoginEntity) != null) {
 				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
-				designerProfileEntity.setId((long)sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
+				designerProfileEntity
+						.setId((long) sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
 				DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
-				designerProfile.setPassword(bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
+				designerProfile.setPassword(
+						bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 				designerProfileEntity.setDesignerProfile(designerProfile);
-				designerProfileRepo.save(designerProfileEntity);	
+				designerProfileRepo.save(designerProfileEntity);
 			}
-			
+
 			DesignerLogEntity designerLogEntity = new DesignerLogEntity();
-			//designerLogEntity.
+			// designerLogEntity.
 			designerLogRepo.save(null);
-			
-			
+
 			JsonObject jo = new JsonObject();
 			jo.addProperty("senderMailId", designerProfileEntity.getDesignerProfile().getEmail());
 			jo.addProperty("subject", "Successfully Registration");
 			jo.addProperty("body", "Welcome " + designerProfileEntity.getDesignerProfile().getEmail() + ""
 					+ ",\n                           "
-					+ " you have been register successfully.Please active your account by clicking the bellow link "+ URI.create("http://localhost:8083/dev/designer/redirect/"+Base64.getEncoder().encodeToString(designerLoginEntity.getEmail().toString().getBytes())) +" . We will verify your details and come back to you soon." );
+					+ " you have been register successfully.Please active your account by clicking the bellow link "
+					+ URI.create("http://localhost:8083/dev/designer/redirect/"
+							+ Base64.getEncoder().encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
+					+ " . We will verify your details and come back to you soon.");
 			jo.addProperty("enableHtml", false);
 			try {
 				Unirest.setTimeouts(0, 0);
 				HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
-				  .header("Content-Type", "application/json")
-				  .body(jo.toString())
-				  .asString();
-			}catch(Exception e) {
+						.header("Content-Type", "application/json").body(jo.toString()).asString();
+			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
-			
-			return ResponseEntity.ok(new GlobalResponce("SUCCESS","Register Successfully",200));
-		}catch(Exception e) {
+
+			return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Registered successfully", 200));
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
+
 	}
-	
+
 	@PutMapping("/update")
-	public ResponseEntity<?> updateDesigner(@Valid @RequestBody DesignerLoginEntity designerLoginEntity){
+	public ResponseEntity<?> updateDesigner(@Valid @RequestBody DesignerLoginEntity designerLoginEntity) {
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerLoginEntity.getdId());
-		if(!findById.isPresent())
+		if (!findById.isPresent())
 			throw new CustomException("Designer Details Not Found");
 		else {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
@@ -146,88 +148,86 @@ public class ProfileContoller {
 			designerLoginEntityDB.setIsProfileSubmitted(designerLoginEntity.getIsProfileSubmitted());
 			designerLoginRepo.save(designerLoginEntityDB);
 		}
-		return ResponseEntity.ok(new GlobalResponce("SUCCESS","Data Updated Successfully",200));
+		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
 	}
-	
+
 	@PutMapping("/profile/update")
-	public ResponseEntity<?> updateDesignerProfile(@Valid @RequestBody DesignerProfileEntity designerProfileEntity){
+	public ResponseEntity<?> updateDesignerProfile(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerProfileEntity.getDesignerId());
-		if(!findById.isPresent())
+		if (!findById.isPresent())
 			throw new CustomException("Designer details not found");
 		else {
-			
-			Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo.findBydesignerId(findById.get().getdId());
-			if(!findBydesignerId.isPresent())
+
+			Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo
+					.findBydesignerId(findById.get().getdId());
+			if (!findBydesignerId.isPresent())
 				throw new CustomException("Designer profile not found");
-			
+
 			DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
 			designerProfile.setEmail(findById.get().getEmail());
 			designerProfile.setPassword(findById.get().getPassword());
-			
+
 			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
-			System.out.println("designerProfileEntityDB "+designerProfileEntityDB.toString());
+			System.out.println("designerProfileEntityDB " + designerProfileEntityDB.toString());
 			designerProfileEntityDB.setBoutiqueProfile(designerProfileEntity.getBoutiqueProfile());
 			designerProfileEntityDB.setDesignerProfile(designerProfile);
 			designerProfileEntityDB.setSocialProfile(designerProfileEntity.getSocialProfile());
-			
+
 //			if(designerProfileRepo.save(designerProfileEntity)!=null) {
-				designerProfileRepo.save(designerProfileEntityDB);
-				DesignerLoginEntity designerLoginEntityDB = findById.get();
-				designerLoginEntityDB.setIsProfileSubmitted(true);
-				designerLoginRepo.save(designerLoginEntityDB);
+			designerProfileRepo.save(designerProfileEntityDB);
+			DesignerLoginEntity designerLoginEntityDB = findById.get();
+			designerLoginEntityDB.setIsProfileSubmitted(true);
+			designerLoginRepo.save(designerLoginEntityDB);
 //			}
 		}
-		
-		return ResponseEntity.ok(new GlobalResponce("SUCCESS","Data Updated Successfully",200));
+
+		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
 	}
-	
+
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
-	public Map<String, Object> getAll(			
-			@RequestParam(defaultValue = "0") int page, 
-			@RequestParam(defaultValue = "10") int limit,
-			@RequestParam(defaultValue = "DESC") String sort, 
+	public Map<String, Object> getAll(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
-			@RequestParam(defaultValue = "false") Boolean isDeleted, 
-			@RequestParam(defaultValue = "false") Boolean isApproved, 
-			@RequestParam(defaultValue = "false") Boolean isProfileCompleated, 
+			@RequestParam(defaultValue = "false") Boolean isDeleted,
+			@RequestParam(defaultValue = "false") Boolean isApproved,
+			@RequestParam(defaultValue = "false") Boolean isProfileCompleated,
 			@RequestParam(defaultValue = "false") Boolean isProfileSubmitted,
-			@RequestParam(defaultValue = "isDeleted") String fieldName,
-			@RequestParam(defaultValue = "") String keyword,
+			@RequestParam(defaultValue = "isDeleted") String fieldName, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 
-		try {		
-			return this.getDesignerProfDetails(page, limit, sort, sortName, isDeleted,isApproved,isProfileCompleated,
-					isProfileSubmitted,keyword,sortBy,fieldName);
+		try {
+			return this.getDesignerProfDetails(page, limit, sort, sortName, isDeleted, isApproved, isProfileCompleated,
+					isProfileSubmitted, keyword, sortBy, fieldName);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
-	
+
 	@RequestMapping(value = "/redirect/{email}", method = RequestMethod.GET)
-	public void method(HttpServletResponse httpServletResponse,@PathVariable("email") String email) {
-		Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(new String(Base64.getDecoder().decode(email)));
-		if(findByEmail.isPresent()) {
+	public void method(HttpServletResponse httpServletResponse, @PathVariable("email") String email) {
+		Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
+				.findByEmail(new String(Base64.getDecoder().decode(email)));
+		if (findByEmail.isPresent()) {
 			DesignerLoginEntity designerLoginEntity = findByEmail.get();
 			designerLoginEntity.setIsActive(true);
 			designerLoginRepo.save(designerLoginEntity);
 		}
-			
-	    httpServletResponse.setHeader("Location", "http://localhost:8083/dev/swagger-ui/index.html");
-	    httpServletResponse.setStatus(302);
+
+		httpServletResponse.setHeader("Location", "http://localhost:8083/dev/swagger-ui/index.html");
+		httpServletResponse.setStatus(302);
 	}
-	
-	
-	
-	public Map<String, Object> getDesignerProfDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			Boolean isApproved,Boolean isProfileCompleated, Boolean isProfileSubmitted, String keyword, Optional<String> sortBy,String fieldName) {
+
+	public Map<String, Object> getDesignerProfDetails(int page, int limit, String sort, String sortName,
+			Boolean isDeleted, Boolean isApproved, Boolean isProfileCompleated, Boolean isProfileSubmitted,
+			String keyword, Optional<String> sortBy, String fieldName) {
 		try {
 			int CountData = (int) designerLoginRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
 				limit = CountData;
 			}
-			
+
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
@@ -237,50 +237,47 @@ public class ProfileContoller {
 			Page<DesignerLoginEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				
-				
-				if(fieldName.equals("isDeleted"))
-					findAll = designerLoginRepo.findByIsDeleted(isDeleted,pagingSort);
-				else if(fieldName.equals("isApproved"))
+
+				if (fieldName.equals("isDeleted"))
+					findAll = designerLoginRepo.findByIsDeleted(isDeleted, pagingSort);
+				else if (fieldName.equals("isApproved"))
 					findAll = designerLoginRepo.findByIsApproved(isApproved, pagingSort);
-				else if(fieldName.equals("isProfileCompleated"))
+				else if (fieldName.equals("isProfileCompleated"))
 					findAll = designerLoginRepo.findByIsProfileCompleated(isProfileCompleated, pagingSort);
-				else if(fieldName.equals("isProfileSubmitted"))
+				else if (fieldName.equals("isProfileSubmitted"))
 					findAll = designerLoginRepo.findByIsProfileSubmitted(isProfileSubmitted, pagingSort);
 				else {
-					findAll = designerLoginRepo.findByIsDeleted(isDeleted,pagingSort);
+					findAll = designerLoginRepo.findByIsDeleted(isDeleted, pagingSort);
 				}
-				
 
 			} else {
-				if(fieldName.equals("isDeleted"))
+				if (fieldName.equals("isDeleted"))
 					findAll = designerLoginRepo.SearchByDelete(keyword, isDeleted, pagingSort);
-				else if(fieldName.equals("isApproved"))
+				else if (fieldName.equals("isApproved"))
 					findAll = designerLoginRepo.SearchByApproved(keyword, isApproved, pagingSort);
-				else if(fieldName.equals("isProfileCompleated"))
+				else if (fieldName.equals("isProfileCompleated"))
 					findAll = designerLoginRepo.SearchByProfileCompleated(keyword, isProfileCompleated, pagingSort);
-				else if(fieldName.equals("isProfileSubmitted"))
+				else if (fieldName.equals("isProfileSubmitted"))
 					findAll = designerLoginRepo.SearchByProfileSubmitted(keyword, isProfileSubmitted, pagingSort);
 				else {
 					findAll = designerLoginRepo.SearchByDelete(keyword, isDeleted, pagingSort);
 				}
 			}
-			
-			if (findAll.getSize() <= 1) 
+
+			if (findAll.getSize() <= 1)
 				throw new CustomException("Institute Not Found!");
-			
-			
-			findAll.map(e->{
+
+			findAll.map(e -> {
 				try {
-					e.setDesignerProfileEntity(designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
-				}catch(Exception o) {
-					
+					e.setDesignerProfileEntity(
+							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
+				} catch (Exception o) {
+
 				}
-				
+
 				return e;
 			});
-			
-			
+
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
@@ -294,7 +291,7 @@ public class ProfileContoller {
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
 
-				return response;
+			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

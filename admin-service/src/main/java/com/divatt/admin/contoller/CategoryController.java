@@ -71,6 +71,21 @@ public class CategoryController {
 
 	}
 	
+	@RequestMapping(value = { "/getAllCategory" }, method = RequestMethod.GET)
+	public List<CategoryEntity> getAllCategoryDetails(			
+			@RequestParam(defaultValue = "DESC") String sort, 
+			@RequestParam(defaultValue = "true") Boolean Status,
+			@RequestParam(defaultValue = "false") Boolean isDeleted) {
+		LOGGER.info("Inside - CategoryController.getAllCategoryDetails()");
+
+		try {		
+			return this.categoryService.getAllCategoryDetails(isDeleted, Status);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
 	@GetMapping("/view/{catId}")
 	public Optional<CategoryEntity> viewCategoryDetails(@PathVariable() Integer catId) {
 		LOGGER.info("Inside - SubCategoryController.viewCategoryDetails()");

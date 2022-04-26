@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.SubCategoryRepo;
@@ -65,6 +66,21 @@ public class SubCategoryController {
 		try {		
 			return this.subCategoryService.getSubCategoryDetails(page, limit, sort, sortName, isDeleted, keyword,
 					sortBy);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@RequestMapping(value = { "/getAllSubcategory/{catId}" }, method = RequestMethod.GET)
+	public List<SubCategoryEntity> getAllSubCategory(@PathVariable() String catId,			
+			@RequestParam(defaultValue = "DESC") String sort, 
+			@RequestParam(defaultValue = "true") Boolean Status,
+			@RequestParam(defaultValue = "false") Boolean isDeleted) {
+		LOGGER.info("Inside - CategoryController.getAllCategoryDetails()");
+
+		try {		
+			return this.subCategoryService.getAllSubCategoryDetails(catId,isDeleted, Status);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
