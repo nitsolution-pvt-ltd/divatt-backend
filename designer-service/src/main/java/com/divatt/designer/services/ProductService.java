@@ -156,7 +156,6 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 	public ProductMasterEntity productDetails(Integer productId) {
 		try {
 			LOGGER.info("Inside-ProductService.productDetails()");
@@ -195,28 +194,6 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
-	public GlobalResponce approveProduct(Integer productId,Boolean aprove, String comment) {
-		try {
-			LOGGER.info("Inside - ProductService.approveProduct()");
-			if (productRepo.existsById(productId)) {
-				Optional<ProductMasterEntity> productData = productRepo.findById(productId);
-				ProductMasterEntity productEntity = productData.get();
-				productEntity.setIsApprove(aprove);
-				productEntity.setComment(comment);
-				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
-				productEntity.setUpdatedOn(new Date());
-				productRepo.save(productEntity);
-				return new GlobalResponce("Success", "Product approve successfully", 200);
-			} else {
-				return new GlobalResponce("Bad request", "Product does not exist", 400);
-			}
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
-
 	public GlobalResponce updateProduct(Integer productId, ProductMasterEntity productMasterEntity) {
 		try {
 			LOGGER.info("Inside-ProductService.updateProduct()");
@@ -479,10 +456,75 @@ public class ProductService {
 		}
 		catch(Exception e)
 		{
-			throw new  CustomException(e.getMessage());
+			throw new  CustomException("No Product Found");
 		}
 	}
 
+	public Map<String, Object> getProductDetailsPerStatus(String status, int page, int limit, String sort, String sortName,
+			Boolean isDeleted, String keyword, Optional<String> sortBy) {
+		
+		try {
+			int CountData = (int) productRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			} 
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+ 
+			Page<ProductMasterEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				if(status.equals("all")) {
+					
+					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					
+				}else if (status.equals("pending")) {
+					
+					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					
+				}else if(status.equals("approved")) {
+					
+					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					
+				}else if(status.equals("rejected")) {
+					
+					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					
+				}
+//				findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+			} else {
+				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Product not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	
+	}
 	
 
 }

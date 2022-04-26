@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.google.gson.JsonObject;
 
 @Document(collection = "tbl_products")
 public class ProductEntity {
@@ -52,7 +53,7 @@ public class ProductEntity {
 	private String approvedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
-	private String comment;
+	private Object comment;
 	private String SKQCode;
 	public ProductEntity() {
 		super();
@@ -65,7 +66,7 @@ public class ProductEntity {
 			Integer customizationSOH, Object extraSpecifications, Object specifications, Boolean isSubmitted,
 			Boolean isApprove, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			String submittedBy, Date submittedOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn,
-			String comment, String sKQCode) {
+			Object comment, String sKQCode) {
 		super();
 		this.productId = productId;
 		this.designerId = designerId;
@@ -103,6 +104,22 @@ public class ProductEntity {
 		this.approvedOn = approvedOn;
 		this.comment = comment;
 		this.SKQCode = sKQCode;
+	}
+	@Override
+	public String toString() {
+		return "ProductEntity [productId=" + productId + ", designerId=" + designerId + ", categoryId=" + categoryId
+				+ ", subCategoryId=" + subCategoryId + ", gender=" + gender + ", productName=" + productName
+				+ ", productDescription=" + productDescription + ", age=" + age + ", cod=" + cod + ", customization="
+				+ customization + ", purchaseQuantity=" + purchaseQuantity + ", priceType=" + priceType
+				+ ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive + ", giftWrap=" + giftWrap
+				+ ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images=" + Arrays.toString(images)
+				+ ", standeredSOH=" + Arrays.toString(standeredSOH) + ", customizationSOH=" + customizationSOH
+				+ ", extraSpecifications=" + extraSpecifications + ", specifications=" + specifications
+				+ ", isSubmitted=" + isSubmitted + ", isApprove=" + isApprove + ", isActive=" + isActive
+				+ ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
+				+ ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy=" + updatedBy
+				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
+				+ ", comment=" + comment + ", SKQCode=" + SKQCode + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -308,10 +325,10 @@ public class ProductEntity {
 	public void setApprovedOn(Date approvedOn) {
 		this.approvedOn = approvedOn;
 	}
-	public String getComment() {
+	public Object getComment() {
 		return comment;
 	}
-	public void setComment(String comment) {
+	public void setComment(Object comment) {
 		this.comment = comment;
 	}
 	public String getSKQCode() {
@@ -319,22 +336,6 @@ public class ProductEntity {
 	}
 	public void setSKQCode(String sKQCode) {
 		SKQCode = sKQCode;
-	}
-	@Override
-	public String toString() {
-		return "ProductEntity [productId=" + productId + ", designerId=" + designerId + ", categoryId=" + categoryId
-				+ ", subCategoryId=" + subCategoryId + ", gender=" + gender + ", productName=" + productName
-				+ ", productDescription=" + productDescription + ", age=" + age + ", cod=" + cod + ", customization="
-				+ customization + ", purchaseQuantity=" + purchaseQuantity + ", priceType=" + priceType
-				+ ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive + ", giftWrap=" + giftWrap
-				+ ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images=" + Arrays.toString(images)
-				+ ", standeredSOH=" + Arrays.toString(standeredSOH) + ", customizationSOH=" + customizationSOH
-				+ ", extraSpecifications=" + extraSpecifications + ", specifications=" + specifications
-				+ ", isSubmitted=" + isSubmitted + ", isApprove=" + isApprove + ", isActive=" + isActive
-				+ ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
-				+ ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy=" + updatedBy
-				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", comment=" + comment + ", SKQCode=" + SKQCode + "]";
 	}
 	
 }

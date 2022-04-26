@@ -115,6 +115,9 @@ public class CustomFunction {
 			filterProductEntity.setSubmittedBy(productData.getSubmittedBy());
 			filterProductEntity.setSubmittedOn(new Date());
 			filterProductEntity.setTaxInclusive(productData.getTaxInclusive());
+			filterProductEntity.setApprovedBy(productData.getApprovedBy());
+			filterProductEntity.setIsApprove(productData.getIsApprove());
+			filterProductEntity.setApprovedOn(new Date());
 			return filterProductEntity;
 		}
 		catch(Exception e)

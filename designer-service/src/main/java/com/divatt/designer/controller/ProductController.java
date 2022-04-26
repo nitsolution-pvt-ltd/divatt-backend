@@ -84,19 +84,6 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	@PutMapping("/{productId}/{aprove}")
-	public GlobalResponce approveProduct(@PathVariable("productId") Integer productId,@PathVariable("aprove") Boolean aprove,@PathVariable("comment") String comment) {
-		try {
-			LOGGER.info("Inside- ProductController.approveProduct()");
-			return this.productService.approveProduct(productId,aprove,comment);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
-	
-	
-
 	@PutMapping("/update/{productId}")
 	public GlobalResponce updateProductData(@RequestBody ProductMasterEntity productMasterEntity,
 			@PathVariable Integer productId) {
@@ -204,6 +191,22 @@ public class ProductController implements ProductServiceImp {
 		}
 		catch(Exception e)
 		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/listPerStatus")
+	public Map<String, Object> getAllProductDetails(@RequestParam(defaultValue = "all") String status,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+
+		try {
+			LOGGER.info("Inside - designer -> ProductController.getProductDetailsPerStatus()");
+			return this.productService.getProductDetailsPerStatus(status,page, limit, sort, sortName, isDeleted, keyword, sortBy);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
