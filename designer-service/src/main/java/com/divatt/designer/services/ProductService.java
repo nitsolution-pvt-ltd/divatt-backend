@@ -479,7 +479,24 @@ public class ProductService {
 			Page<ProductMasterEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+				if(status.equals("all")) {
+					
+					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					
+				}else if (status.equals("pending")) {
+					
+					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					
+				}else if(status.equals("approved")) {
+					
+					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					
+				}else if(status.equals("rejected")) {
+					
+					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					
+				}
+//				findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
 			} else {
 				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
 

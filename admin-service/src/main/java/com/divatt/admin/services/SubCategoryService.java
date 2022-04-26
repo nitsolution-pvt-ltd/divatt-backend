@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.SubCategoryRepo;
@@ -31,15 +32,15 @@ public class SubCategoryService {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
-	
+
 	@Autowired
-    private MongoTemplate mongoTemplate;
+	private MongoTemplate mongoTemplate;
 
 	public GlobalResponse postSubCategoryDetails(@RequestBody SubCategoryEntity subCategoryEntity) {
 		LOGGER.info("Inside - SubCategoryService.postSubCategoryDetails()");
 
 		try {
-			
+
 //			subCategoryRepo.findByCategoryName(subCategoryEntity.getCategoryName()).orElseThrow(null)
 
 			Optional<SubCategoryEntity> findBySubCategoryName = subCategoryRepo
@@ -70,7 +71,7 @@ public class SubCategoryService {
 		}
 
 	}
- 
+
 	public Map<String, Object> getSubCategoryDetails(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, String keyword, Optional<String> sortBy) {
 		try {
@@ -109,20 +110,18 @@ public class SubCategoryService {
 //						return subCategoryEntity;
 //				}).collect(Collectors.toList());
 //				 Page<SubCategoryEntity> list=new Page<>(page,limit,lists);
-			
-			Page<SubCategoryEntity> map = findAll
-					.map(e -> {
+
+			Page<SubCategoryEntity> map = findAll.map(e -> {
 				try {
-					SubCategoryEntity subCategoryEntity = subCategoryRepo.findById(Integer.parseInt(e.getParentId())).get();
+					SubCategoryEntity subCategoryEntity = subCategoryRepo.findById(Integer.parseInt(e.getParentId()))
+							.get();
 					subCategoryEntity.setSubCategory(e);
 					return subCategoryEntity;
-				}catch(Exception z) {
+				} catch (Exception z) {
 					return e;
 				}
-				
-			});
-			
 
+			});
 
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
@@ -220,20 +219,20 @@ public class SubCategoryService {
 				throw new CustomException("Subcategory not exist!");
 			} else {
 				Boolean isStatus = null;
-				String message=null;
+				String message = null;
 				if (filterSubCatDetails.getIsActive() == false) {
 					isStatus = true;
-					message= "actived";
+					message = "actived";
 				} else {
 					isStatus = false;
-					message= "inactive";
+					message = "inactive";
 				}
 
 				filterSubCatDetails.setIsActive(isStatus);
 				filterSubCatDetails.setCreatedOn(new Date());
 				subCategoryRepo.save(filterSubCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Status "+message+" successfully", 200);
+				return new GlobalResponse("SUCCESS", "Status " + message + " successfully", 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -261,26 +260,38 @@ public class SubCategoryService {
 	}
 
 	public List<Integer> subcategoryVerification(List<Integer> subCategoryId) {
-		try
-		{
-			List<Integer> subCategoryList= new ArrayList<Integer>();
-			for(int i=0;i<subCategoryId.size();i++)
-			{
-				if(subCategoryRepo.existsById(subCategoryId.get(i)))
-				{
-					SubCategoryEntity subCategoryData= viewSubCategoryDetails(subCategoryId.get(i)).get();
-					if(subCategoryData.getIsActive().equals(true))
-					{
+		try {
+			List<Integer> subCategoryList = new ArrayList<Integer>();
+			for (int i = 0; i < subCategoryId.size(); i++) {
+				if (subCategoryRepo.existsById(subCategoryId.get(i))) {
+					SubCategoryEntity subCategoryData = viewSubCategoryDetails(subCategoryId.get(i)).get();
+					if (subCategoryData.getIsActive().equals(true)) {
 						subCategoryList.add(subCategoryId.get(i));
-						
+
 					}
 				}
-			}			
+			}
 			return subCategoryList;
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	public List<SubCategoryEntity> getAllSubCategoryDetails(String catId, Boolean isDeleted, Boolean Status) {
+		try {
+
+			List<SubCategoryEntity> findAll = subCategoryRepo
+					.findByParentIdAndIsDeletedAndIsActive(catId,
+					isDeleted, Status);
+
+			if (findAll.isEmpty()) {
+				throw new CustomException("Subcategory not found!");
+			} else {
+				return findAll;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 }

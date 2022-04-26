@@ -122,25 +122,10 @@ public class UserController {
 
 	}
 
-	@PostMapping("/follow")
+	@PostMapping("/followDesigner")
 	public ResponseEntity<?> followDesigner(@Valid @RequestBody UserDesignerEntity userDesignerEntity) {
 		try {
-			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
-			Date date = new Date();
-			formatter.format(date);
-			userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e) -> {
-				userDesignerEntity.setId(e.getId());
-			}, () -> {
-				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
-			});
-
-			userDesignerEntity.setCreatedOn(date.toString());
-			UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
-			if (save != null)
-				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Data Save Successfully", 200));
-			else
-				throw new CustomException("Data Not Save Try Again");
-
+			return this.userService.postfollowDesignerService(userDesignerEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -278,7 +263,7 @@ public class UserController {
 
 	@RequestMapping(value = "/redirect/{email}", method = RequestMethod.GET)
 	public void method(HttpServletResponse httpServletResponse, @PathVariable("email") String email) {
-		System.out.println("sgfdrg " + new String(Base64.getDecoder().decode(email)));
+		
 		Optional<UserLoginEntity> findByEmail = userLoginRepo
 				.findByEmail(new String(Base64.getDecoder().decode(email)));
 		if (findByEmail.isPresent()) {
@@ -326,4 +311,27 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@RequestMapping(value = { "/getDesigner" }, method = RequestMethod.GET)
+	public Map<String, Object> getCategoryDetails(			
+			@RequestParam(defaultValue = "0") int page, 
+			@RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, 
+			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, 			
+			@RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		LOGGER.info("Inside - CategoryController.getListCategoryDetails()");
+
+		try {		
+			return this.userService.getDesignerDetails(page, limit, sort, sortName, isDeleted, keyword,
+					sortBy);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	
+	
 }

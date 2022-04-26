@@ -268,4 +268,19 @@ public class CategoryService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	public List<CategoryEntity> getAllCategoryDetails(Boolean isDeleted, Boolean Status) {
+		try {
+			
+			List<CategoryEntity> findAll = categoryRepo.findByIsDeletedAndIsActiveAndParentId(isDeleted,Status, "0");
+			
+			if (findAll.isEmpty()) {
+				throw new CustomException("Category not found!");
+			} else {
+				return findAll;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
