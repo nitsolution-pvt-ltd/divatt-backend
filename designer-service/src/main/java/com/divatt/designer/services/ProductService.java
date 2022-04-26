@@ -485,15 +485,15 @@ public class ProductService {
 					
 				}else if (status.equals("pending")) {
 					
-					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					findAll = productRepo.findByIsDeletedAndIsSubmitted(isDeleted,true, pagingSort);
 					
 				}else if(status.equals("approved")) {
 					
-					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					findAll = productRepo.findByIsDeletedAndIsApproveAndIsSubmitted(isDeleted,true,false, pagingSort);
 					
 				}else if(status.equals("rejected")) {
 					
-					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					findAll = productRepo.findByIsDeletedAndIsApproveAndIsSubmitted(isDeleted,false,false, pagingSort);
 					
 				}
 //				findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
