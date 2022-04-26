@@ -45,6 +45,11 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	Page<ProductMasterEntity> listDesignerProductsearch(String keyword, Boolean isDeleted, Integer designerId,Pageable pagingSort);
 	
 	
+	Integer countByIsDeleted(Boolean isDeleted);
+	
+	Integer countByIsDeletedAndIsApproveAndIsSubmitted(Boolean isDeleted, Boolean IsApprove, Boolean isSubmitted);
+	
+	Integer countByIsDeletedAndIsSubmitted(Boolean isDeleted, Boolean isSubmitted);	
 	
 
 }

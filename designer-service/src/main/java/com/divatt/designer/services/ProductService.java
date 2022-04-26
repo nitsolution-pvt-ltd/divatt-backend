@@ -53,44 +53,39 @@ public class ProductService {
 
 	@Autowired
 	private DesignerLoginRepo designerLoginRepo;
-	
-	
+
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
-	
-	
+
 	@Autowired
 	private MongoOperations mongoOperations;
-	
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
-	public  Map<String, Object> allList(int page, int limit, String sort, String sortName, Boolean isDeleted,
+	public Map<String, Object> allList(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
 			LOGGER.info("Inside - ProductService.allList()");
-			List<ProductMasterEntity> productdata= productRepo.findAll();
-			//List<Integer> 
-			List<Integer>productId=productdata.stream().map(e->e.getDesignerId()).collect(Collectors.toList());
-			//System.out.println(productId);
-			List<DesignerProfileEntity> profileData=new ArrayList<DesignerProfileEntity>();
-			for(int i=0;i<productId.size();i++)
-			{
+			List<ProductMasterEntity> productdata = productRepo.findAll();
+			// List<Integer>
+			List<Integer> productId = productdata.stream().map(e -> e.getDesignerId()).collect(Collectors.toList());
+			// System.out.println(productId);
+			List<DesignerProfileEntity> profileData = new ArrayList<DesignerProfileEntity>();
+			for (int i = 0; i < productId.size(); i++) {
 				profileData.add(designerProfileRepo.findBydesignerId(Long.valueOf(productId.get(i))).get());
 			}
-			LinkedList<ListProduct> allData=new LinkedList<ListProduct>();
-			ListProduct listProduct= new ListProduct();
-			for(int i=0;i<productId.size();i++)
-			{
+			LinkedList<ListProduct> allData = new LinkedList<ListProduct>();
+			ListProduct listProduct = new ListProduct();
+			for (int i = 0; i < productId.size(); i++) {
 				listProduct.setDesignerProfileEntity(profileData.get(i));
 				listProduct.setProductMasterEntity(productdata.get(i));
 				allData.add(listProduct);
 			}
-			
+
 			if (allData.isEmpty()) {
 				throw new CustomException("Product not found!");
 			} else {
-				//List<ProductMasterEntity> list = productRepo.findByProductIdIn(allData);
+				// List<ProductMasterEntity> list = productRepo.findByProductIdIn(allData);
 
 				int CountData = (int) allData.size();
 				if (limit == 0) {
@@ -119,7 +114,7 @@ public class ProductService {
 					return response;
 				}
 			}
-			//return allData;
+			// return allData;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -130,23 +125,23 @@ public class ProductService {
 			LOGGER.info("Inside-ProductService.addData()");
 			Query query = new Query();
 			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
-			List<DesignerProfileEntity> designerProfileInfo= mongoOperations.find(query, DesignerProfileEntity.class);
-			if(!designerProfileInfo.isEmpty())
-			{
-				Query query1= new Query();
-				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName").is(productData.getProductName()));
-				List<ProductMasterEntity> productInfo= mongoOperations.find(query1, ProductMasterEntity.class);
-				if(productInfo.isEmpty())
-				{
-					RestTemplate restTemplate= new RestTemplate();
-					ResponseEntity<String> categoryResponse=restTemplate.getForEntity("http://localhost:8084/dev/category/view/"+productData.getCategoryId(), String.class);
+			List<DesignerProfileEntity> designerProfileInfo = mongoOperations.find(query, DesignerProfileEntity.class);
+			if (!designerProfileInfo.isEmpty()) {
+				Query query1 = new Query();
+				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName")
+						.is(productData.getProductName()));
+				List<ProductMasterEntity> productInfo = mongoOperations.find(query1, ProductMasterEntity.class);
+				if (productInfo.isEmpty()) {
+					RestTemplate restTemplate = new RestTemplate();
+					ResponseEntity<String> categoryResponse = restTemplate.getForEntity(
+							"http://localhost:8084/dev/category/view/" + productData.getCategoryId(), String.class);
 					System.out.println(categoryResponse);
-					ResponseEntity<String> subcategoryResponse=restTemplate.getForEntity("http://localhost:8084/dev/subcategory/view/"+productData.getSubCategoryId(), String.class);
+					ResponseEntity<String> subcategoryResponse = restTemplate.getForEntity(
+							"http://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
+							String.class);
 					productRepo.save(customFunction.filterDataEntity(productData));
-					return new  GlobalResponce("Success!!", "Product added successfully", 200);
-				}
-				else
-				{
+					return new GlobalResponce("Success!!", "Product added successfully", 200);
+				} else {
 					return new GlobalResponce("Error!!", "Product already added", 400);
 				}
 			} else {
@@ -156,6 +151,7 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	public ProductMasterEntity productDetails(Integer productId) {
 		try {
 			LOGGER.info("Inside-ProductService.productDetails()");
@@ -194,23 +190,20 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	public GlobalResponce updateProduct(Integer productId, ProductMasterEntity productMasterEntity) {
 		try {
 			LOGGER.info("Inside-ProductService.updateProduct()");
-			if(productRepo.existsById(productId))
-			{
-				Query query= new Query();
+			if (productRepo.existsById(productId)) {
+				Query query = new Query();
 				query.addCriteria(Criteria.where("designerId").is(productMasterEntity.getDesignerId()));
-				List<ProductMasterEntity>productInfo= mongoOperations.find(query, ProductMasterEntity.class);
-				if(productInfo.isEmpty())
-				{
+				List<ProductMasterEntity> productInfo = mongoOperations.find(query, ProductMasterEntity.class);
+				if (productInfo.isEmpty()) {
 					throw new CustomException("Designer id can to be change");
 				}
 				productRepo.save(customFunction.updateFunction(productMasterEntity, productId));
 				return new GlobalResponce("Success", "Product updated successfully", 200);
-			}
-			else
-			{
+			} else {
 				throw new CustomException("Product not found");
 			}
 		} catch (Exception e) {
@@ -252,14 +245,14 @@ public class ProductService {
 			Pageable pagingSort = null;
 			if (limit == 0) {
 				limit = CountData;
-			} 
+			}
 
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
- 
+
 			Page<ProductMasterEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
@@ -334,171 +327,38 @@ public class ProductService {
 	}
 
 	public List<ProductMasterEntity> designerIdList(Integer designerId1) {
-		try
-		{
-			Query query= new Query();
+		try {
+			Query query = new Query();
 			query.addCriteria(Criteria.where("designerId").is(designerId1));
-			List<ProductMasterEntity> productList=mongoOperations.find(query, ProductMasterEntity.class);
+			List<ProductMasterEntity> productList = mongoOperations.find(query, ProductMasterEntity.class);
 			System.out.println(productList);
 			return productList;
-		}
-		catch(Exception e)
-		{
-			throw new CustomException(e.getMessage());
-		}
-	}
-
-	public Map<String, Object> designerIdListPage(Integer designerId, Optional<String> sortBy, int page,
-			String sort, String sortName, Boolean isDeleted, int limit,String keyword) {
-		try {
-			int CountData = (int) productRepo.count();
-			Pageable pagingSort = null;
-			if (limit == 0) {
-				limit = CountData;
-			}
-
-			if (sort.equals("ASC")) {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
-			} else {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-			}
-
-			Page<ProductMasterEntity> findAll = null;
-
-			if (keyword.isEmpty()) {
-				findAll = productRepo.findByIsDeletedAndDesignerId(isDeleted, designerId,pagingSort);
-			} else {
-				findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId,pagingSort);
-
-			}
-
-			int totalPage = findAll.getTotalPages() - 1;
-			if (totalPage < 0) {
-				totalPage = 0;
-			}
-
-			Map<String, Object> response = new HashMap<>();
-			response.put("data", findAll.getContent());
-			response.put("currentPage", findAll.getNumber());
-			response.put("total", findAll.getTotalElements());
-			response.put("totalPage", totalPage);
-			response.put("perPage", findAll.getSize());
-			response.put("perPageElement", findAll.getNumberOfElements());
-
-			if (findAll.getSize() <=1) {
-				throw new CustomException("Product not found!");
-			} else {
-				return response;
-			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
-	public List<ProductMasterEntity> getApproval() {
-		try
-		{
-			return this.productRepo.findAll();
-		}
-		catch(Exception e)
-		{
-			throw new CustomException(e.getMessage());
-		}
-	}
-
-	public List<ProductMasterEntity> getListProduct(Integer limit) {
-		try
-		{
-			List<ProductMasterEntity>productList=productRepo.findAll();
-			List<ProductMasterEntity>filterProductList=new ArrayList<>();
-			List<Integer> categoryList=productList.stream().map(e->e.getCategoryId()).collect(Collectors.toList());
-			//System.out.println(categoryList);
-			List<Integer> subCategoryList=productList.stream().map(e->e.getSubCategoryId()).collect(Collectors.toList());
-			//System.out.println(subCategoryList);
-			Query query= new Query();
-			query.addCriteria(Criteria.where("isApprove").is(true));
-			List<ProductMasterEntity> userProductList=mongoOperations.find(query, ProductMasterEntity.class);
-			List<ProductMasterEntity> fiterProduct= new ArrayList<ProductMasterEntity>();
-			List<Integer> productIdList=userProductList.stream().map(e->e.getProductId()).collect(Collectors.toList());
-			System.out.println(productIdList);
-			List<Integer> randomIntegers=new ArrayList<Integer>();
-//			new Random().ints(productIdList.get(0), productIdList.lastIndexOf()).limit(productIdList.size()).forEach(p->randomIntegers.add(p));
-			//Integer integer = randomIntegers.get(4);
-			Random random= new Random();
-			for (int i = 0; i < limit; i++) {
-				 
-	            // take a random index between 0 to size
-	            // of given List
-	            int randomIndex = random.nextInt(productIdList.size());
-	 
-	            // add element in temporary list
-	            randomIntegers.add(productIdList.get(randomIndex));
-	        }
-			System.out.println(randomIntegers);
-			if(randomIntegers.size()<=limit)
-			{
-				for(int i=0;i<randomIntegers.size();i++)
-				{
-					ProductMasterEntity entity= productDetails(randomIntegers.get(i));
-					filterProductList.add(entity);
-				}
-				return filterProductList;
-			}
-			else
-			{
-				for(int i=0;i<limit;i++)
-				{
-					ProductMasterEntity entity= (ProductMasterEntity) productDetails(randomIntegers.get(i));
-					filterProductList.add(entity);
-				}
-				return filterProductList;
-			}
-		}
-		catch(Exception e)
-		{
-			throw new  CustomException("No Product Found");
-		}
-	}
-
-	public Map<String, Object> getProductDetailsPerStatus(String status, int page, int limit, String sort, String sortName,
-			Boolean isDeleted, String keyword, Optional<String> sortBy) {
-		
+	public Map<String, Object> designerIdListPage(Integer designerId, Optional<String> sortBy, int page, String sort,
+			String sortName, Boolean isDeleted, int limit, String keyword) {
 		try {
 			int CountData = (int) productRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
 				limit = CountData;
-			} 
+			}
 
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
- 
+
 			Page<ProductMasterEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				if(status.equals("all")) {
-					
-					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
-					
-				}else if (status.equals("pending")) {
-					
-					findAll = productRepo.findByIsDeletedAndIsSubmitted(isDeleted,true, pagingSort);
-					
-				}else if(status.equals("approved")) {
-					
-					findAll = productRepo.findByIsDeletedAndIsApproveAndIsSubmitted(isDeleted,true,false, pagingSort);
-					
-				}else if(status.equals("rejected")) {
-					
-					findAll = productRepo.findByIsDeletedAndIsApproveAndIsSubmitted(isDeleted,false,false, pagingSort);
-					
-				}
-//				findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+				findAll = productRepo.findByIsDeletedAndDesignerId(isDeleted, designerId, pagingSort);
 			} else {
-				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
+				findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId, pagingSort);
 
 			}
 
@@ -523,8 +383,141 @@ public class ProductService {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-	
 	}
-	
+
+	public List<ProductMasterEntity> getApproval() {
+		try {
+			return this.productRepo.findAll();
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public List<ProductMasterEntity> getListProduct(Integer limit) {
+		try {
+			List<ProductMasterEntity> productList = productRepo.findAll();
+			List<ProductMasterEntity> filterProductList = new ArrayList<>();
+			List<Integer> categoryList = productList.stream().map(e -> e.getCategoryId()).collect(Collectors.toList());
+			// System.out.println(categoryList);
+			List<Integer> subCategoryList = productList.stream().map(e -> e.getSubCategoryId())
+					.collect(Collectors.toList());
+			// System.out.println(subCategoryList);
+			Query query = new Query();
+			query.addCriteria(Criteria.where("isApprove").is(true));
+			List<ProductMasterEntity> userProductList = mongoOperations.find(query, ProductMasterEntity.class);
+			List<ProductMasterEntity> fiterProduct = new ArrayList<ProductMasterEntity>();
+			List<Integer> productIdList = userProductList.stream().map(e -> e.getProductId())
+					.collect(Collectors.toList());
+			System.out.println(productIdList);
+			List<Integer> randomIntegers = new ArrayList<Integer>();
+//			new Random().ints(productIdList.get(0), productIdList.lastIndexOf()).limit(productIdList.size()).forEach(p->randomIntegers.add(p));
+			// Integer integer = randomIntegers.get(4);
+			Random random = new Random();
+			for (int i = 0; i < limit; i++) {
+
+				// take a random index between 0 to size
+				// of given List
+				int randomIndex = random.nextInt(productIdList.size());
+
+				// add element in temporary list
+				randomIntegers.add(productIdList.get(randomIndex));
+			}
+			System.out.println(randomIntegers);
+			if (randomIntegers.size() <= limit) {
+				for (int i = 0; i < randomIntegers.size(); i++) {
+					ProductMasterEntity entity = productDetails(randomIntegers.get(i));
+					filterProductList.add(entity);
+				}
+				return filterProductList;
+			} else {
+				for (int i = 0; i < limit; i++) {
+					ProductMasterEntity entity = (ProductMasterEntity) productDetails(randomIntegers.get(i));
+					filterProductList.add(entity);
+				}
+				return filterProductList;
+			}
+		} catch (Exception e) {
+			throw new CustomException("No Product Found");
+		}
+	}
+
+	public Map<String, Object> getProductDetailsPerStatus(String status, int page, int limit, String sort,
+			String sortName, Boolean isDeleted, String keyword, Optional<String> sortBy) {
+
+		try {
+			int CountData = (int) productRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<ProductMasterEntity> findAll = null;
+			Integer all = 0;
+			Integer pending = 0;
+			Integer approved = 0;
+			Integer rejected = 0;
+
+			if (keyword.isEmpty()) {
+				all = productRepo.countByIsDeleted(isDeleted);
+				pending = productRepo.countByIsDeletedAndIsSubmitted(isDeleted, true);
+				approved = productRepo.countByIsDeletedAndIsApproveAndIsSubmitted(isDeleted, true, false);
+				rejected = productRepo.countByIsDeletedAndIsApproveAndIsSubmitted(isDeleted, false, false);
+
+				if (status.equals("all")) {
+
+					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+
+				} else if (status.equals("pending")) {
+
+					findAll = productRepo.findByIsDeletedAndIsSubmitted(isDeleted, true, pagingSort);
+
+				} else if (status.equals("approved")) {
+
+					findAll = productRepo.findByIsDeletedAndIsApproveAndIsSubmitted(isDeleted, true, false, pagingSort);
+
+				} else if (status.equals("rejected")) {
+
+					findAll = productRepo.findByIsDeletedAndIsApproveAndIsSubmitted(isDeleted, false, false,
+							pagingSort);
+
+				}
+			} else {
+				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+			response.put("all", all);
+			response.put("pending", pending);
+			response.put("approved", approved);
+			response.put("rejected", rejected);
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Product not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
 
 }
