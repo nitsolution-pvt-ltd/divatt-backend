@@ -72,7 +72,6 @@ public class ProductMasterEntity {
 	private String updatedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date updatedOn;
-	@NotEmpty(message = "Approval Name Required")
 	private String approvedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
