@@ -131,8 +131,7 @@ public class ProfileContoller {
 			loginEntity.setPassword(passwordEncoder.encode(loginEntity.getPassword()));
 			loginEntity.setUid((long) sequenceGenerator.getNextSequence(LoginEntity.SEQUENCE_NAME));
 			loginEntity.setRole(loginEntity.getRole());
-			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName());
-			loginEntity.setRoleName(loginEntity.getRoleName().toUpperCase());
+			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName().toUpperCase());
 			loginEntity.setActive(true);
 			loginEntity.setDeleted(false);
 			loginEntity.setCreatedOn(date.toString());
