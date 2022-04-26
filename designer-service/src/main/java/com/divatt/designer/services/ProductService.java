@@ -463,11 +463,12 @@ public class ProductService {
 			Integer approved = 0;
 			Integer rejected = 0;
 
+			all = productRepo.countByIsDeleted(isDeleted);
+			pending = productRepo.countByIsDeletedAndIsSubmitted(isDeleted, true);
+			approved = productRepo.countByIsDeletedAndIsApproveAndIsSubmitted(isDeleted, true, false);
+			rejected = productRepo.countByIsDeletedAndIsApproveAndIsSubmitted(isDeleted, false, false);
+
 			if (keyword.isEmpty()) {
-				all = productRepo.countByIsDeleted(isDeleted);
-				pending = productRepo.countByIsDeletedAndIsSubmitted(isDeleted, true);
-				approved = productRepo.countByIsDeletedAndIsApproveAndIsSubmitted(isDeleted, true, false);
-				rejected = productRepo.countByIsDeletedAndIsApproveAndIsSubmitted(isDeleted, false, false);
 
 				if (status.equals("all")) {
 
