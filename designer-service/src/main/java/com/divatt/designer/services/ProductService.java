@@ -483,6 +483,54 @@ public class ProductService {
 		}
 	}
 
+	public Map<String, Object> getProductDetailsPerStatus(String status, int page, int limit, String sort, String sortName,
+			Boolean isDeleted, String keyword, Optional<String> sortBy) {
+		
+		try {
+			int CountData = (int) productRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			} 
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+ 
+			Page<ProductMasterEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+			} else {
+				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Product not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	
+	}
 	
 
 }
