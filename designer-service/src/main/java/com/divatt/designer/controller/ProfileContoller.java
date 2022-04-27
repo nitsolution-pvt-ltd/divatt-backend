@@ -2,12 +2,15 @@ package com.divatt.designer.controller;
 
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -217,6 +220,52 @@ public class ProfileContoller {
 		httpServletResponse.setHeader("Location", "http://localhost:8083/dev/swagger-ui/index.html");
 		httpServletResponse.setStatus(302);
 	}
+	
+	
+	@GetMapping("/userDesignerList")
+	public ResponseEntity<?> userDesignertList()
+	{
+		try
+		{
+			long count = sequenceGenerator.getCurrentSequence(DesignerLoginEntity.SEQUENCE_NAME);
+			Random rd = new Random();
+		      List<Integer> lst = new ArrayList<>();
+		      List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeleted(false);
+		      if(findAll.size()<=15) {
+		    	  return ResponseEntity.ok(findAll);
+		      }
+		      List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
+		      Boolean flag = true;
+		      while(flag) {
+		    	  int nextInt = rd.nextInt((int)count);
+		    	  for(DesignerLoginEntity obj : findAll) {
+		    		  if(obj.getdId() == nextInt) {
+		    			  designerLoginEntity.add(obj);
+		    			  System.out.println(obj.toString());
+		    		  }
+		    		  if(designerLoginEntity.size()>14)
+		    			  flag = false;
+		    	  }
+		    	  
+		      }
+		      Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
+					try {
+						e.setDesignerProfileEntity(
+								designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
+					} catch (Exception o) {
+
+					}
+
+					return e;
+				});
+			return ResponseEntity.ok(map);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 
 	public Map<String, Object> getDesignerProfDetails(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, Boolean isApproved, Boolean isProfileCompleated, Boolean isProfileSubmitted,

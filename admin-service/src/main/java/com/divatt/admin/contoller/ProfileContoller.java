@@ -217,7 +217,7 @@ public class ProfileContoller {
 
 	}
 	
-	@DeleteMapping("/muldelete")
+	@PutMapping("/muldelete")
 	public GlobalResponse subAdminMulDelete(@RequestBody() List<Integer> CateID) {
 		LOGGER.info("Inside - ProfileContoller.subAdminMulDelete()");
 		try {
