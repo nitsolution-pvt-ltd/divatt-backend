@@ -58,17 +58,14 @@ public class ProductMasterEntity {
 	private Object extraSpecifications;
 	//@NotEmpty(message = "Product Specification Required")
 	private Specification specifications;
-	private Boolean isSubmitted;
 	//@NotEmpty(message = "Product Approval Required")
-	private Boolean isApprove;
 	private Boolean isActive;
 	private Boolean isDeleted;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date createdOn;
 	private String createdBy;
-	private String submittedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
-	private Date submittedOn;
+	private Date adminStatusOn;
 	private String updatedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date updatedOn;
@@ -77,6 +74,7 @@ public class ProductMasterEntity {
 	private Date approvedOn;
 	private String SKQCode;
 	private String comments;
+	private String adminStatus;
 	public ProductMasterEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -89,9 +87,9 @@ public class ProductMasterEntity {
 			@NotEmpty(message = "Price Type Required") String priceType, Float taxPercentage, Boolean taxInclusive,
 			Boolean giftWrap, GiftEntity giftWrapAmount, PriceEntity price, ImagesEntity[] images,
 			StandardSOH[] standeredSOH, Integer customizationSOH, Object extraSpecifications,
-			Specification specifications, Boolean isSubmitted, Boolean isApprove, Boolean isActive, Boolean isDeleted,
-			Date createdOn, String createdBy, String submittedBy, Date submittedOn, String updatedBy, Date updatedOn,
-			String approvedBy, Date approvedOn, String sKQCode, String comments) {
+			Specification specifications, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
+			Date adminStatusOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String sKQCode,
+			String comments, String adminStatus) {
 		super();
 		this.productId = productId;
 		this.designerName = designerName;
@@ -116,20 +114,18 @@ public class ProductMasterEntity {
 		this.customizationSOH = customizationSOH;
 		this.extraSpecifications = extraSpecifications;
 		this.specifications = specifications;
-		this.isSubmitted = isSubmitted;
-		this.isApprove = isApprove;
 		this.isActive = isActive;
 		this.isDeleted = isDeleted;
 		this.createdOn = createdOn;
 		this.createdBy = createdBy;
-		this.submittedBy = submittedBy;
-		this.submittedOn = submittedOn;
+		this.adminStatusOn = adminStatusOn;
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
 		this.approvedBy = approvedBy;
 		this.approvedOn = approvedOn;
 		this.SKQCode = sKQCode;
 		this.comments = comments;
+		this.adminStatus = adminStatus;
 	}
 	@Override
 	public String toString() {
@@ -141,11 +137,10 @@ public class ProductMasterEntity {
 				+ ", giftWrap=" + giftWrap + ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images="
 				+ Arrays.toString(images) + ", standeredSOH=" + Arrays.toString(standeredSOH) + ", customizationSOH="
 				+ customizationSOH + ", extraSpecifications=" + extraSpecifications + ", specifications="
-				+ specifications + ", isSubmitted=" + isSubmitted + ", isApprove=" + isApprove + ", isActive="
-				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
-				+ ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy=" + updatedBy
+				+ specifications + ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn
+				+ ", createdBy=" + createdBy + ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy
 				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", SKQCode=" + SKQCode + ", comments=" + comments + "]";
+				+ ", SKQCode=" + SKQCode + ", comments=" + comments + ", adminStatus=" + adminStatus + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -285,18 +280,6 @@ public class ProductMasterEntity {
 	public void setSpecifications(Specification specifications) {
 		this.specifications = specifications;
 	}
-	public Boolean getIsSubmitted() {
-		return isSubmitted;
-	}
-	public void setIsSubmitted(Boolean isSubmitted) {
-		this.isSubmitted = isSubmitted;
-	}
-	public Boolean getIsApprove() {
-		return isApprove;
-	}
-	public void setIsApprove(Boolean isApprove) {
-		this.isApprove = isApprove;
-	}
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -321,17 +304,11 @@ public class ProductMasterEntity {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-	public String getSubmittedBy() {
-		return submittedBy;
+	public Date getAdminStatusOn() {
+		return adminStatusOn;
 	}
-	public void setSubmittedBy(String submittedBy) {
-		this.submittedBy = submittedBy;
-	}
-	public Date getSubmittedOn() {
-		return submittedOn;
-	}
-	public void setSubmittedOn(Date submittedOn) {
-		this.submittedOn = submittedOn;
+	public void setAdminStatusOn(Date adminStatusOn) {
+		this.adminStatusOn = adminStatusOn;
 	}
 	public String getUpdatedBy() {
 		return updatedBy;
@@ -369,7 +346,14 @@ public class ProductMasterEntity {
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
+	public String getAdminStatus() {
+		return adminStatus;
+	}
+	public void setAdminStatus(String adminStatus) {
+		this.adminStatus = adminStatus;
+	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+	
 }

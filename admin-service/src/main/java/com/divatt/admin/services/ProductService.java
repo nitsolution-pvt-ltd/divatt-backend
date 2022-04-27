@@ -40,21 +40,21 @@ public class ProductService {
 			ProductEntity productdata= exchange.getBody();
 			if(productdata.getDesignerId().equals(designerId))
 			{
-				if(productdata.getIsApprove().equals(false))
+				if(productdata.getAdminStatus().equals("Pending"))
 				{
 					productdata.setApprovedBy("Admin");
 					productdata.setApprovedOn(new Date());
-					productdata.setIsApprove(true);
 					productdata.setComments(comment);
-					//System.out.println(productdata);
+					productdata.setAdminStatus("Approve");
+					productdata.setAdminStatusOn(new Date());
 					
 				}
 				else
 				{
-					productdata.setIsApprove(false);
 					productdata.setComments(comment);
+					productdata.setAdminStatus("Rejected");
+					productdata.setAdminStatusOn(new Date());
 				}
-				//Map<String, String> params= new HashMap<String,String>();
 				restTemplate.put("Http://localhost:8083/dev/product/update/"+productId, productdata, String.class);
 				return new GlobalResponse("Status Updated", "Product approval status changed", 200);
 			}
