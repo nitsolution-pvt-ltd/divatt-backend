@@ -1,5 +1,6 @@
 package com.divatt.admin.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,13 +48,36 @@ public class SpecificationService {
 	}
 
 
-	public List<SpecificationEntity> listOfSpecification(String gender) {
+	public List<SpecificationEntity> listOfSpecification(String categoryName) {
 		try
 		{
+			if(categoryName.toLowerCase().contains("women"))
+			{
+				categoryName="women";
+			}
+			else if(categoryName.toLowerCase().contains("men"))
+			{
+				System.out.println("Hiii");
+				categoryName="men";
+			}
+			else if(categoryName.toLowerCase().contains("kid"))
+			{
+				categoryName="kid";
+			}
+			else
+			{
+				throw new CustomException("Invalid category name");
+			}
 			Query query= new Query();
-			query.addCriteria(Criteria.where("categoryName").is(gender));
+			query.addCriteria(Criteria.where("categoryName").is(categoryName));
 			List<SpecificationEntity> listOfSpecificationData=mongoOperations.find(query, SpecificationEntity.class);
-			return listOfSpecificationData;
+			Query query1= new Query();
+			query1.addCriteria(Criteria.where("categoryName").is("all"));
+			List<SpecificationEntity>allListOfSpecification=mongoOperations.find(query1, SpecificationEntity.class);
+			List<SpecificationEntity> allSpeList=new ArrayList<SpecificationEntity>();
+			allSpeList.addAll(allListOfSpecification);
+			allSpeList.addAll(listOfSpecificationData);
+			return allSpeList;
 		}
 		catch(Exception e)
 		{

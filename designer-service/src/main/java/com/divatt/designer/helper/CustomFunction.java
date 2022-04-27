@@ -52,7 +52,7 @@ public class CustomFunction {
 			filterProductEntity.setGiftWrapAmount(productData.getGiftWrapAmount());
 			filterProductEntity.setGiftWrap(productData.getGiftWrap());
 			filterProductEntity.setImages(productData.getImages());
-			filterProductEntity.setIsActive(true);
+			filterProductEntity.setIsActive(false);
 			filterProductEntity.setIsApprove(false);
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
@@ -86,6 +86,7 @@ public class CustomFunction {
 			filterProductEntity.setSKQCode(productRepo.findById(productId).get().getSKQCode());
 			filterProductEntity.setAge(productData.getAge());
 			//filterProductEntity.setApprovedBy(productData.getApprovedBy());
+			filterProductEntity.setComments(productData.getComments());
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
 			filterProductEntity.setCreatedBy(productData.getCreatedBy());
@@ -98,11 +99,11 @@ public class CustomFunction {
 			filterProductEntity.setGiftWrapAmount(productData.getGiftWrapAmount());
 			filterProductEntity.setGiftWrap(productData.getGiftWrap());
 			filterProductEntity.setImages(productData.getImages());
-			filterProductEntity.setIsActive(true);
+			filterProductEntity.setIsActive(productData.getIsActive());
 			//filterProductEntity.setIsApprove(productData.getIsApprove());
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
-			filterProductEntity.setIsSubmitted(true);
+			filterProductEntity.setIsSubmitted(productData.getIsSubmitted());
 			filterProductEntity.setPrice(productData.getPrice());
 			filterProductEntity.setPriceType(productData.getPriceType());
 			filterProductEntity.setProductDescription(productData.getProductDescription());

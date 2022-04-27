@@ -45,13 +45,14 @@ public class ProductService {
 					productdata.setApprovedBy("Admin");
 					productdata.setApprovedOn(new Date());
 					productdata.setIsApprove(true);
-					productdata.setComment(comment);
+					productdata.setComments(comment);
+					//System.out.println(productdata);
 					
 				}
 				else
 				{
 					productdata.setIsApprove(false);
-					productdata.setComment(comment);
+					productdata.setComments(comment);
 				}
 				//Map<String, String> params= new HashMap<String,String>();
 				restTemplate.put("Http://localhost:8083/dev/product/update/"+productId, productdata, String.class);
