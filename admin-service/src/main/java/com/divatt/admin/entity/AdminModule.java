@@ -5,21 +5,32 @@ import java.util.HashMap;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.mongodb.BasicDBList;
+
 public class AdminModule {
 	@Field(name = "mod_name")
 	private String modName;
 	@Field(name = "mod_privs")
 	private HashMap<String,Boolean> modPrivs;
+	
+	private Object modDetails;
 
 	
 
 	
 
-	public AdminModule(String modName, HashMap<String, Boolean> modPrivs) {
+	
+
+
+
+	public AdminModule(String modName, HashMap<String, Boolean> modPrivs, BasicDBList modDetails) {
 		super();
 		this.modName = modName;
 		this.modPrivs = modPrivs;
+		this.modDetails = modDetails;
 	}
+
+
 
 
 
@@ -48,6 +59,22 @@ public class AdminModule {
 	public void setModName(String modName) {
 		this.modName = modName;
 	}
+
+
+
+	public Object getModDetails() {
+		return modDetails;
+	}
+
+
+
+
+
+	public void setModDetails(Object modDetails) {
+		this.modDetails = modDetails;
+	}
+
+
 
 
 

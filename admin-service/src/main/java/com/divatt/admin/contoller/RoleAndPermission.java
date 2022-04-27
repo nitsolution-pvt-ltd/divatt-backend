@@ -120,18 +120,17 @@ public class RoleAndPermission {
 
 			Optional<AdminModules> findById = adminModulesRepo.findById(id);
 			if (findById.isPresent()) {
-				Optional<AdminModules> findByRoleMetaKey = adminModulesRepo.findByMetaKey("admin_modules");
-				Json js = new Json(findByRoleMetaKey.get().getAdminModules().toString());
-				System.out.println(js.toString());
-//				AdminModules adminModules2 = findById.get();
-//				Optional<AdminModules> findByRoleMetaKey = adminModulesRepo.findByMetaKey("admin_modules");
-//				ArrayList<Json> adminModules3 = findByRoleMetaKey.get().getAdminModules();
-//				ArrayList<AdminModule> modules = adminModules2.getModules();
-//				for(AdminModule obj : modules) {
-////					adminModules3.get(0).g
-//					obj.getModName();
-//				}
-				return ResponseEntity.ok(findById.get());
+				Optional<AdminModules> findByMetaKey = adminModulesRepo.findByMetaKey("admin_modules");
+				AdminModules adminModules2 = findById.get();
+				ArrayList<AdminModule> modules = adminModules2.getModules();
+				for(int i = 0 ; i < modules.size() ; i++) {
+					AdminModule adminModule = modules.get(i);
+					adminModule.setModDetails(findByMetaKey.get().getAdminModules().get(i));
+					modules.set(i, adminModule);
+					
+				}
+				adminModules2.setModules(modules);
+				return ResponseEntity.ok(adminModules2);
 			}
 			else
 				throw new CustomException("Data not found");
@@ -164,7 +163,7 @@ public class RoleAndPermission {
 			e.setModPrivs(modPrivs);
 		}
 		adminModules.setModules(modules);
-		adminModules.setRoleName(adminModules.getRoleName());
+		adminModules.setRoleName(adminModules.getRoleName().toUpperCase());
 		adminModules.setIsDeleted(false);
 		adminModulesRepo.save(adminModules);
 		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Role added successfully", 200));
