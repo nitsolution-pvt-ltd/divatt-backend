@@ -4,6 +4,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -187,7 +188,7 @@ public class RoleAndPermission {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteRoleId(@PathVariable("id") Long id) {
-		LOGGER.info("Inside - ProfileContoller.deleteRoleId()");
+		LOGGER.info("Inside - RoleAndPermission.deleteRoleId()");
 		try {
 			if (mongoOperations.exists(query(where("id").is(id)), AdminModules.class)) {
 				if (mongoOperations.exists(query(where("role").is(id+"")), LoginEntity.class))
@@ -203,6 +204,31 @@ public class RoleAndPermission {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+	
+	
+	@DeleteMapping("/muldelete")
+	public GlobalResponse roleMulDelete(@RequestBody() List<Integer> RolesId) {
+		LOGGER.info("Inside - RoleAndPermission.roleMulDelete()");
+		try {
+			if (!RolesId.equals(null)){
+				for (Integer obj : RolesId) {
+
+					 Optional<AdminModules> findById = adminModulesRepo.findById(Long.parseLong(obj+""));
+					 AdminModules filterCatDetails = findById.get();
+
+					if (filterCatDetails.getId() != null) {
+						filterCatDetails.setIsDeleted(true);
+						adminModulesRepo.save(filterCatDetails);
+					}
+				}
+				return new GlobalResponse("SUCCESS", "Role deleted successfully", 200);
+			}else {
+				throw new CustomException("Role Id Not Found!");
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}	
 	}
 	
 	

@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
+import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminModulesRepo;
 import com.divatt.admin.repo.LoginRepository;
@@ -215,6 +216,32 @@ public class ProfileContoller {
 		}
 
 	}
+	
+	@DeleteMapping("/muldelete")
+	public GlobalResponse subAdminMulDelete(@RequestBody() List<Integer> CateID) {
+		LOGGER.info("Inside - ProfileContoller.subAdminMulDelete()");
+		try {
+			if (!CateID.equals(null)){
+				for (Integer CateIdRowId : CateID) {
+
+					 Optional<LoginEntity> findById = loginRepository.findById(CateIdRowId);
+					 LoginEntity filterCatDetails = findById.get();
+
+					if (filterCatDetails.getUid() != null) {
+						filterCatDetails.setDeleted(true);
+						filterCatDetails.setCreatedOn(new Date().toLocaleString());
+						loginRepository.save(filterCatDetails);
+					}
+				}
+				return new GlobalResponse("SUCCESS", "Subadmin deleted successfully", 200);
+			}else {
+				throw new CustomException("Subadmin Id Not Found!");
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}	
+	}
+	
 
 	public Map<String, Object> getAdminProfDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
