@@ -51,5 +51,15 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	Integer countByIsDeletedAndIsSubmitted(Boolean isDeleted, Boolean isSubmitted);	
 	
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'isApprove' : ?2, 'isSubmitted' : ?3, 'isActive' : ?4 }]}")
+	Page<ProductMasterEntity> SearchAndfindByIsDeletedAndIsApproveAndIsSubmittedAndIsActive(String keyword,Boolean isDeleted, Boolean IsApprove, Boolean isSubmitted,Boolean isActive, Pageable pagingSort);
+	
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'isApprove' : ?2, 'isSubmitted' : ?3, 'isActive' : ?4 }]}")
+	Page<ProductMasterEntity> SearchAndfindByIsDeletedAndIsSubmittedAndIsActive(String keyword,Boolean isDeleted, Boolean isSubmitted,Boolean isActive, Pageable pagingSort);
+	
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'isApprove' : ?2, 'isSubmitted' : ?3, 'isActive' : ?4 }]}")
+	Page<ProductMasterEntity> SearchAppAndfindByIsDeletedAndIsApproveAndIsSubmittedAndIsActive(String keyword,Boolean isDeleted, Boolean IsApprove, Boolean isSubmitted,Boolean isActive, Pageable pagingSort);
+
+	
 
 }
