@@ -53,7 +53,7 @@ public class ProductEntity {
 	private String approvedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
-	private Object comment;
+	private String comments;
 	private String SKQCode;
 	public ProductEntity() {
 		super();
@@ -66,7 +66,7 @@ public class ProductEntity {
 			Integer customizationSOH, Object extraSpecifications, Object specifications, Boolean isSubmitted,
 			Boolean isApprove, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			String submittedBy, Date submittedOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn,
-			Object comment, String sKQCode) {
+			String comments, String sKQCode) {
 		super();
 		this.productId = productId;
 		this.designerId = designerId;
@@ -102,7 +102,7 @@ public class ProductEntity {
 		this.updatedOn = updatedOn;
 		this.approvedBy = approvedBy;
 		this.approvedOn = approvedOn;
-		this.comment = comment;
+		this.comments = comments;
 		this.SKQCode = sKQCode;
 	}
 	@Override
@@ -119,7 +119,7 @@ public class ProductEntity {
 				+ ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
 				+ ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy=" + updatedBy
 				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", comment=" + comment + ", SKQCode=" + SKQCode + "]";
+				+ ", comments=" + comments + ", SKQCode=" + SKQCode + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -325,11 +325,11 @@ public class ProductEntity {
 	public void setApprovedOn(Date approvedOn) {
 		this.approvedOn = approvedOn;
 	}
-	public Object getComment() {
-		return comment;
+	public String getComments() {
+		return comments;
 	}
-	public void setComment(Object comment) {
-		this.comment = comment;
+	public void setComments(String comments) {
+		this.comments = comments;
 	}
 	public String getSKQCode() {
 		return SKQCode;

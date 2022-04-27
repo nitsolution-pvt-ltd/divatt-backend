@@ -13,6 +13,7 @@ import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -182,12 +183,12 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	@GetMapping("/userProductList/{limit}")
-	public List<ProductMasterEntity> userProductList(@PathVariable Integer limit)
+	@GetMapping("/userProductList")
+	public ResponseEntity<?> userProductList()
 	{
 		try
 		{
-			return this.productService.getListProduct(limit);
+			return this.productService.getListProduct();
 		}
 		catch(Exception e)
 		{

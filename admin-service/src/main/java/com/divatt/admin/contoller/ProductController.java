@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.admin.entity.CommentEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.product.ProductEntity;
 import com.divatt.admin.exception.CustomException;
@@ -30,10 +31,14 @@ public class ProductController {
 	@Autowired
     private MongoTemplate mongoTemplate;
 
-	@PostMapping("/changeProductApprovalStatus/{productId}/{designerId}")
-	public GlobalResponse changeProductApprovalStatus(@RequestBody Object comment,@PathVariable Integer productId, @PathVariable Integer designerId) {
+	@PostMapping("/changeProductApprovalStatus")
+	public GlobalResponse changeProductApprovalStatus(@RequestBody CommentEntity comment) {
 		try {
-			return this.productService.productApproval(productId, designerId, comment);
+			int productId=comment.getProductId();
+			int designerId=comment.getDesignerId();
+			String commString=comment.getComments();
+			System.out.println(commString);
+			return this.productService.productApproval(productId, designerId, commString);
 			// return null;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

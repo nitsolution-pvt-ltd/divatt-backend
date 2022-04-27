@@ -25,6 +25,9 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	Page<ProductMasterEntity> findByIsDeletedAndIsApproveAndIsSubmitted(Boolean isDeleted, Boolean IsApprove, Boolean isSubmitted, Pageable pagingSort);
 	
+	List<ProductMasterEntity> findByIsDeletedAndIsApproveAndIsSubmitted(Boolean isDeleted, Boolean IsApprove, Boolean isSubmitted);
+
+	
 	Page<ProductMasterEntity> findByIsDeletedAndIsSubmitted(Boolean isDeleted, Boolean isSubmitted, Pageable pagingSort);
 	
 
