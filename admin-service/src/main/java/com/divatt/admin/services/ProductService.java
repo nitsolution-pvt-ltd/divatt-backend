@@ -36,26 +36,28 @@ public class ProductService {
 		try
 		{
 			RestTemplate restTemplate= new RestTemplate();
-			ResponseEntity<ProductEntity> exchange = restTemplate.exchange("http://localhost:8083/dev/product/view/"+productId, HttpMethod.GET, null ,ProductEntity.class);
+			ResponseEntity<ProductEntity> exchange = restTemplate.exchange("http://localhost:8083/dev/designerProduct/view/"+productId, HttpMethod.GET, null ,ProductEntity.class);
 			ProductEntity productdata= exchange.getBody();
 			if(productdata.getDesignerId().equals(designerId))
 			{
-				if(productdata.getAdminStatus().equals("Pending"))
+				if(productdata.getAdminApproved().equals("Pending"))
 				{
 					productdata.setApprovedBy("Admin");
 					productdata.setApprovedOn(new Date());
 					productdata.setComments(comment);
-					productdata.setAdminStatus("Approve");
+					productdata.setIsActive(true);
+					productdata.setAdminApproved("Approved");
 					productdata.setAdminStatusOn(new Date());
 					
 				}
 				else
 				{
 					productdata.setComments(comment);
-					productdata.setAdminStatus("Rejected");
+					productdata.setIsActive(false);
+					productdata.setAdminApproved("Rejected");
 					productdata.setAdminStatusOn(new Date());
 				}
-				restTemplate.put("Http://localhost:8083/dev/product/update/"+productId, productdata, String.class);
+				restTemplate.put("Http://localhost:8083/dev/designerProduct/update/"+productId, productdata, String.class);
 				return new GlobalResponse("Status Updated", "Product approval status changed", 200);
 			}
 			else

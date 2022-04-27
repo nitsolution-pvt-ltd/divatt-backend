@@ -53,7 +53,7 @@ public class ProductEntity {
 	private Date approvedOn;
 	private String comments;
 	private String SKQCode;
-	private String adminStatus;
+	private String adminApproved;
 	public ProductEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -65,7 +65,7 @@ public class ProductEntity {
 			Integer customizationSOH, Object extraSpecifications, Object specifications, Boolean isActive,
 			Boolean isDeleted, Date createdOn, String createdBy, String submittedBy, Date adminStatusOn,
 			String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String comments, String sKQCode,
-			String adminStatus) {
+			String adminApproved) {
 		super();
 		this.productId = productId;
 		this.designerId = designerId;
@@ -101,7 +101,7 @@ public class ProductEntity {
 		this.approvedOn = approvedOn;
 		this.comments = comments;
 		this.SKQCode = sKQCode;
-		this.adminStatus = adminStatus;
+		this.adminApproved = adminApproved;
 	}
 	@Override
 	public String toString() {
@@ -116,7 +116,7 @@ public class ProductEntity {
 				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
 				+ ", submittedBy=" + submittedBy + ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy
 				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", comments=" + comments + ", SKQCode=" + SKQCode + ", adminStatus=" + adminStatus + "]";
+				+ ", comments=" + comments + ", SKQCode=" + SKQCode + ", adminApproved=" + adminApproved + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -322,11 +322,11 @@ public class ProductEntity {
 	public void setSKQCode(String sKQCode) {
 		SKQCode = sKQCode;
 	}
-	public String getAdminStatus() {
-		return adminStatus;
+	public String getAdminApproved() {
+		return adminApproved;
 	}
-	public void setAdminStatus(String adminStatus) {
-		this.adminStatus = adminStatus;
+	public void setAdminApproved(String adminApproved) {
+		this.adminApproved = adminApproved;
 	}
 	
 }
