@@ -38,7 +38,6 @@ public class CustomFunction {
 			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
 			filterProductEntity.setSKQCode(randomString.getAlphaNumericString(10));
 			filterProductEntity.setAge(productData.getAge());
-			filterProductEntity.setApprovedBy(null);
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
 			//filterProductEntity.setComment(productData);
@@ -53,10 +52,8 @@ public class CustomFunction {
 			filterProductEntity.setGiftWrap(productData.getGiftWrap());
 			filterProductEntity.setImages(productData.getImages());
 			filterProductEntity.setIsActive(false);
-			filterProductEntity.setIsApprove(false);
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
-			filterProductEntity.setIsSubmitted(true);
 			filterProductEntity.setPrice(productData.getPrice());
 			filterProductEntity.setPriceType(productData.getPriceType());
 			filterProductEntity.setProductDescription(productData.getProductDescription());
@@ -65,9 +62,9 @@ public class CustomFunction {
 			filterProductEntity.setSpecifications(productData.getSpecifications());
 			filterProductEntity.setStanderedSOH(productData.getStanderedSOH());
 			filterProductEntity.setSubCategoryId(productData.getSubCategoryId());
-			filterProductEntity.setSubmittedBy(productData.getSubmittedBy());
-			filterProductEntity.setSubmittedOn(new Date());
+			filterProductEntity.setAdminStatusOn(new Date());
 			filterProductEntity.setTaxInclusive(productData.getTaxInclusive());
+			filterProductEntity.setAdminStatus("Pending");
 			return filterProductEntity;
 			//filterProductEntity.setUpdatedBy(productData.getUpdatedBy());
 			//filterProductEntity.setUpdatedOn();
@@ -99,11 +96,9 @@ public class CustomFunction {
 			filterProductEntity.setGiftWrapAmount(productData.getGiftWrapAmount());
 			filterProductEntity.setGiftWrap(productData.getGiftWrap());
 			filterProductEntity.setImages(productData.getImages());
-			filterProductEntity.setIsActive(productData.getIsActive());
-			//filterProductEntity.setIsApprove(productData.getIsApprove());
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
-			filterProductEntity.setIsSubmitted(productData.getIsSubmitted());
+			filterProductEntity.setAdminStatus(productData.getAdminStatus());
 			filterProductEntity.setPrice(productData.getPrice());
 			filterProductEntity.setPriceType(productData.getPriceType());
 			filterProductEntity.setProductDescription(productData.getProductDescription());
@@ -112,12 +107,10 @@ public class CustomFunction {
 			filterProductEntity.setSpecifications(productData.getSpecifications());
 			filterProductEntity.setStanderedSOH(productData.getStanderedSOH());
 			filterProductEntity.setSubCategoryId(productData.getSubCategoryId());
-			filterProductEntity.setSubmittedBy(productData.getSubmittedBy());
-			filterProductEntity.setSubmittedOn(new Date());
+			filterProductEntity.setAdminStatusOn(productData.getAdminStatusOn());
 			filterProductEntity.setTaxInclusive(productData.getTaxInclusive());
 			filterProductEntity.setApprovedBy(productData.getApprovedBy());
-			filterProductEntity.setIsApprove(productData.getIsApprove());
-			filterProductEntity.setApprovedOn(new Date());
+			filterProductEntity.setApprovedOn(productData.getApprovedOn());
 			filterProductEntity.setComments(productData.getComments());
 			return filterProductEntity;
 		}

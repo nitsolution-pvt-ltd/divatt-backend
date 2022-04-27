@@ -37,8 +37,6 @@ public class ProductEntity {
 	private Integer customizationSOH;
 	private Object extraSpecifications;
 	private Object specifications;
-	private Boolean isSubmitted;
-	private Boolean isApprove;
 	private Boolean isActive;
 	private Boolean isDeleted;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
@@ -46,7 +44,7 @@ public class ProductEntity {
 	private String createdBy;
 	private String submittedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
-	private Date submittedOn;
+	private Date adminStatusOn;
 	private String updatedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date updatedOn;
@@ -55,6 +53,7 @@ public class ProductEntity {
 	private Date approvedOn;
 	private String comments;
 	private String SKQCode;
+	private String adminStatus;
 	public ProductEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -63,10 +62,10 @@ public class ProductEntity {
 			String gender, String productName, String productDescription, Object age, Boolean cod,
 			Boolean customization, Object purchaseQuantity, String priceType, Float taxPercentage, Boolean taxInclusive,
 			Boolean giftWrap, Object giftWrapAmount, Object price, Object[] images, Object[] standeredSOH,
-			Integer customizationSOH, Object extraSpecifications, Object specifications, Boolean isSubmitted,
-			Boolean isApprove, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
-			String submittedBy, Date submittedOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn,
-			String comments, String sKQCode) {
+			Integer customizationSOH, Object extraSpecifications, Object specifications, Boolean isActive,
+			Boolean isDeleted, Date createdOn, String createdBy, String submittedBy, Date adminStatusOn,
+			String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String comments, String sKQCode,
+			String adminStatus) {
 		super();
 		this.productId = productId;
 		this.designerId = designerId;
@@ -90,20 +89,19 @@ public class ProductEntity {
 		this.customizationSOH = customizationSOH;
 		this.extraSpecifications = extraSpecifications;
 		this.specifications = specifications;
-		this.isSubmitted = isSubmitted;
-		this.isApprove = isApprove;
 		this.isActive = isActive;
 		this.isDeleted = isDeleted;
 		this.createdOn = createdOn;
 		this.createdBy = createdBy;
 		this.submittedBy = submittedBy;
-		this.submittedOn = submittedOn;
+		this.adminStatusOn = adminStatusOn;
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
 		this.approvedBy = approvedBy;
 		this.approvedOn = approvedOn;
 		this.comments = comments;
 		this.SKQCode = sKQCode;
+		this.adminStatus = adminStatus;
 	}
 	@Override
 	public String toString() {
@@ -114,12 +112,11 @@ public class ProductEntity {
 				+ ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive + ", giftWrap=" + giftWrap
 				+ ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images=" + Arrays.toString(images)
 				+ ", standeredSOH=" + Arrays.toString(standeredSOH) + ", customizationSOH=" + customizationSOH
-				+ ", extraSpecifications=" + extraSpecifications + ", specifications=" + specifications
-				+ ", isSubmitted=" + isSubmitted + ", isApprove=" + isApprove + ", isActive=" + isActive
-				+ ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
-				+ ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy=" + updatedBy
+				+ ", extraSpecifications=" + extraSpecifications + ", specifications=" + specifications + ", isActive="
+				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
+				+ ", submittedBy=" + submittedBy + ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy
 				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", comments=" + comments + ", SKQCode=" + SKQCode + "]";
+				+ ", comments=" + comments + ", SKQCode=" + SKQCode + ", adminStatus=" + adminStatus + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -253,18 +250,6 @@ public class ProductEntity {
 	public void setSpecifications(Object specifications) {
 		this.specifications = specifications;
 	}
-	public Boolean getIsSubmitted() {
-		return isSubmitted;
-	}
-	public void setIsSubmitted(Boolean isSubmitted) {
-		this.isSubmitted = isSubmitted;
-	}
-	public Boolean getIsApprove() {
-		return isApprove;
-	}
-	public void setIsApprove(Boolean isApprove) {
-		this.isApprove = isApprove;
-	}
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -295,11 +280,11 @@ public class ProductEntity {
 	public void setSubmittedBy(String submittedBy) {
 		this.submittedBy = submittedBy;
 	}
-	public Date getSubmittedOn() {
-		return submittedOn;
+	public Date getAdminStatusOn() {
+		return adminStatusOn;
 	}
-	public void setSubmittedOn(Date submittedOn) {
-		this.submittedOn = submittedOn;
+	public void setAdminStatusOn(Date adminStatusOn) {
+		this.adminStatusOn = adminStatusOn;
 	}
 	public String getUpdatedBy() {
 		return updatedBy;
@@ -336,6 +321,12 @@ public class ProductEntity {
 	}
 	public void setSKQCode(String sKQCode) {
 		SKQCode = sKQCode;
+	}
+	public String getAdminStatus() {
+		return adminStatus;
+	}
+	public void setAdminStatus(String adminStatus) {
+		this.adminStatus = adminStatus;
 	}
 	
 }
