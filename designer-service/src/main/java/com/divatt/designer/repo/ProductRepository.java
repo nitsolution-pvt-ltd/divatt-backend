@@ -23,9 +23,9 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	Page<ProductMasterEntity> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
 	
-	Page<ProductMasterEntity> findByIsDeletedAndAdminApproved(Boolean isDeleted, String AdminApprove, Pageable pagingSort);
+	Page<ProductMasterEntity> findByIsDeletedAndAdminStatus(Boolean isDeleted, String AdminStatus, Pageable pagingSort);
 	
-	List<ProductMasterEntity> findByIsDeletedAndAdminApproved(Boolean isDeleted, String IsApproved);
+	List<ProductMasterEntity> findByIsDeletedAndAdminStatus(Boolean isDeleted, String AdminStatus);
 
 	
 	//Page<ProductMasterEntity> findByIsDeletedAndIsApproved(Boolean isDeleted, Boolean isSubmitted, Pageable pagingSort);
@@ -50,18 +50,18 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	Integer countByIsDeleted(Boolean isDeleted);
 	
-	Integer countByIsDeletedAndAdminApproved(Boolean isDeleted, String AdminAdApproved);
+	Integer countByIsDeletedAndAdminStatus(Boolean isDeleted, String AdminStatus);
 	
 //	Integer countByIsDeletedAndAdminAdApproved(Boolean isDeleted, String AdminAdApproved);	
 	
-	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2, 'isActive' : ?3 }]}")
-	Page<ProductMasterEntity> SearchAndfindByIsDeletedAndAdminApprovedAndIsActive(String keyword,Boolean isDeleted, String AdminApproved, Boolean isSubmitted,Boolean isActive, Pageable pagingSort);
+//	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2, 'isActive' : ?3 }]}")
+//	Page<ProductMasterEntity> SearchAndfindByIsDeletedAndAdminStatusAndIsActive(String keyword,Boolean isDeleted, String AdminStatus, Boolean isActive, Pageable pagingSort);
 	
-	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2, 'isActive' : ?3 }]}")
-	Page<ProductMasterEntity> SearchAndfindByIsDeletedAndAdminApprovedAndIsActive(String keyword,Boolean isDeleted, String AdminApproved,Boolean isActive, Pageable pagingSort);
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2 }]}")
+	Page<ProductMasterEntity> SearchAndfindByIsDeletedAndAdminStatus(String keyword,Boolean isDeleted, String AdminStatus, Pageable pagingSort);
 	
-	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2, 'isActive' : ?3 }]}")
-	Page<ProductMasterEntity> SearchAppAndfindByIsDeletedAndAdminApprovedAndIsActive(String keyword,Boolean isDeleted, String AdminApproved,Boolean isActive, Pageable pagingSort);
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2}]}")
+	Page<ProductMasterEntity> SearchAppAndfindByIsDeletedAndAdminStatus(String keyword,Boolean isDeleted, String AdminStatus, Pageable pagingSort);
 
 	
 

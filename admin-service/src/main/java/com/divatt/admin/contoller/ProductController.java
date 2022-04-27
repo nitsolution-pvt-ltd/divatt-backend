@@ -31,7 +31,7 @@ public class ProductController {
 	@Autowired
     private MongoTemplate mongoTemplate;
 
-	@PostMapping("/changeProductApprovalStatus")
+	@PutMapping("/changeProductApprovalStatus")
 	public GlobalResponse changeProductApprovalStatus(@RequestBody CommentEntity comment) {
 		try {
 			int productId=comment.getProductId();

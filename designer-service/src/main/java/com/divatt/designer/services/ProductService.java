@@ -400,7 +400,7 @@ public class ProductService {
 		long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
 		Random rd = new Random();
 	      List<Integer> lst = new ArrayList<>();
-	      List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndAdminApproved(false,"Approved");
+	      List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndAdminStatus(false,"Approved");
 	      if(findAll.size()<=15) {
 	    	  return ResponseEntity.ok(findAll);
 	      }
@@ -501,9 +501,9 @@ public class ProductService {
 			Integer rejected = 0;
 
 			all = productRepo.countByIsDeleted(isDeleted);
-			pending = productRepo.countByIsDeletedAndAdminApproved(isDeleted, "Pending");
-			approved = productRepo.countByIsDeletedAndAdminApproved(isDeleted, "Approved");
-			rejected = productRepo.countByIsDeletedAndAdminApproved(isDeleted, "Rejected");
+			pending = productRepo.countByIsDeletedAndAdminStatus(isDeleted, "Pending");
+			approved = productRepo.countByIsDeletedAndAdminStatus(isDeleted, "Approved");
+			rejected = productRepo.countByIsDeletedAndAdminStatus(isDeleted, "Rejected");
 
 			if (keyword.isEmpty()) {
 
@@ -513,15 +513,15 @@ public class ProductService {
 
 				} else if (status.equals("pending")) {
 
-					findAll = productRepo.findByIsDeletedAndAdminApproved(isDeleted, "Pending", pagingSort);
+					findAll = productRepo.findByIsDeletedAndAdminStatus(isDeleted, "Pending", pagingSort);
 
 				} else if (status.equals("approved")) {
 
-					findAll = productRepo.findByIsDeletedAndAdminApproved(isDeleted, "Approved", pagingSort);
+					findAll = productRepo.findByIsDeletedAndAdminStatus(isDeleted, "Approved", pagingSort);
 
 				} else if (status.equals("rejected")) {
 
-					findAll = productRepo.findByIsDeletedAndAdminApproved(isDeleted, "Rejected",
+					findAll = productRepo.findByIsDeletedAndAdminStatus(isDeleted, "Rejected",
 							pagingSort);
 				}
 			} else {
@@ -533,15 +533,15 @@ public class ProductService {
 
 				} else if (status.equals("pending")) {
 
-					findAll = productRepo.SearchAndfindByIsDeletedAndAdminApprovedAndIsActive(keyword,isDeleted, "Pending", true,pagingSort);
+					findAll = productRepo.SearchAndfindByIsDeletedAndAdminStatus(keyword,isDeleted, "Pending",pagingSort);
 
 				} else if (status.equals("approved")) {
 
-					findAll = productRepo.SearchAppAndfindByIsDeletedAndAdminApprovedAndIsActive(keyword,isDeleted, "Approved",true, pagingSort);
+					findAll = productRepo.SearchAppAndfindByIsDeletedAndAdminStatus(keyword,isDeleted, "Approved", pagingSort);
 
 				} else if (status.equals("rejected")) {
 
-					findAll = productRepo.SearchAndfindByIsDeletedAndAdminApprovedAndIsActive(keyword,isDeleted, "Rejected",true,pagingSort);
+					findAll = productRepo.SearchAndfindByIsDeletedAndAdminStatus(keyword,isDeleted, "Rejected",pagingSort);
 
 				}
 
