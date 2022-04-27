@@ -33,17 +33,17 @@ public class SpecificationController {
 		{
 			return this.specificationService.addSpecification(specificationEntity);
 		}
-		catch(Exception e)
+		catch(Exception e) 
 		{
 			throw new CustomException(e.getMessage());
 		}
 	}
-	@GetMapping("/listOfSpecification/{gender}")
-	public List<SpecificationEntity>listOfSpecification(@PathVariable String gender)
+	@GetMapping("/listOfSpecification/{categoryName}")
+	public List<SpecificationEntity>listOfSpecification(@PathVariable String categoryName)
 	{
 		try
 		{
-			return this.specificationService.listOfSpecification(gender);
+			return this.specificationService.listOfSpecification(categoryName);
 		}
 		catch(Exception e)
 		{

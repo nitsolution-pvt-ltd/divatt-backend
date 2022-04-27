@@ -347,7 +347,7 @@ public class ProductService {
 			if (limit == 0) {
 				limit = CountData;
 			}
-
+			
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
@@ -523,10 +523,27 @@ public class ProductService {
 
 					findAll = productRepo.findByIsDeletedAndIsApproveAndIsSubmitted(isDeleted, false, false,
 							pagingSort);
-
 				}
 			} else {
-				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
+//				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
+				
+				if (status.equals("all")) {
+
+					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+
+				} else if (status.equals("pending")) {
+
+					findAll = productRepo.SearchAndfindByIsDeletedAndIsSubmittedAndIsActive(keyword,isDeleted, true,true, pagingSort);
+
+				} else if (status.equals("approved")) {
+
+					findAll = productRepo.SearchAppAndfindByIsDeletedAndIsApproveAndIsSubmittedAndIsActive(keyword,isDeleted, true, false,true, pagingSort);
+
+				} else if (status.equals("rejected")) {
+
+					findAll = productRepo.SearchAndfindByIsDeletedAndIsApproveAndIsSubmittedAndIsActive(keyword,isDeleted, false, false,true,pagingSort);
+
+				}
 
 			}
 
