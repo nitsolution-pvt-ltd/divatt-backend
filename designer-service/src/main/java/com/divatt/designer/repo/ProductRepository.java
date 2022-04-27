@@ -23,12 +23,12 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	Page<ProductMasterEntity> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
 	
-	Page<ProductMasterEntity> findByIsDeletedAndIsApproveAndIsSubmitted(Boolean isDeleted, Boolean IsApprove, Boolean isSubmitted, Pageable pagingSort);
+	Page<ProductMasterEntity> findByIsDeletedAndAdminApproved(Boolean isDeleted, String AdminApprove, Pageable pagingSort);
 	
-	List<ProductMasterEntity> findByIsDeletedAndIsApproveAndIsSubmitted(Boolean isDeleted, Boolean IsApprove, Boolean isSubmitted);
+	List<ProductMasterEntity> findByIsDeletedAndAdminApproved(Boolean isDeleted, String IsApproved);
 
 	
-	Page<ProductMasterEntity> findByIsDeletedAndIsSubmitted(Boolean isDeleted, Boolean isSubmitted, Pageable pagingSort);
+	//Page<ProductMasterEntity> findByIsDeletedAndIsApproved(Boolean isDeleted, Boolean isSubmitted, Pageable pagingSort);
 	
 
 	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'gender' : {$regex:?0,$options:'i'} },{ 'productDescription' : {$regex:?0,$options:'i'} },{ 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1 }]}")
@@ -50,18 +50,18 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	Integer countByIsDeleted(Boolean isDeleted);
 	
-	Integer countByIsDeletedAndIsApproveAndIsSubmitted(Boolean isDeleted, Boolean IsApprove, Boolean isSubmitted);
+	Integer countByIsDeletedAndAdminApproved(Boolean isDeleted, String AdminAdApproved);
 	
-	Integer countByIsDeletedAndIsSubmitted(Boolean isDeleted, Boolean isSubmitted);	
+//	Integer countByIsDeletedAndAdminAdApproved(Boolean isDeleted, String AdminAdApproved);	
 	
-	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'isApprove' : ?2, 'isSubmitted' : ?3, 'isActive' : ?4 }]}")
-	Page<ProductMasterEntity> SearchAndfindByIsDeletedAndIsApproveAndIsSubmittedAndIsActive(String keyword,Boolean isDeleted, Boolean IsApprove, Boolean isSubmitted,Boolean isActive, Pageable pagingSort);
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2, 'isActive' : ?3 }]}")
+	Page<ProductMasterEntity> SearchAndfindByIsDeletedAndAdminApprovedAndIsActive(String keyword,Boolean isDeleted, String AdminApproved, Boolean isSubmitted,Boolean isActive, Pageable pagingSort);
 	
-	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'isApprove' : ?2, 'isSubmitted' : ?3, 'isActive' : ?4 }]}")
-	Page<ProductMasterEntity> SearchAndfindByIsDeletedAndIsSubmittedAndIsActive(String keyword,Boolean isDeleted, Boolean isSubmitted,Boolean isActive, Pageable pagingSort);
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2, 'isActive' : ?3 }]}")
+	Page<ProductMasterEntity> SearchAndfindByIsDeletedAndAdminApprovedAndIsActive(String keyword,Boolean isDeleted, String AdminApproved,Boolean isActive, Pageable pagingSort);
 	
-	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'isApprove' : ?2, 'isSubmitted' : ?3, 'isActive' : ?4 }]}")
-	Page<ProductMasterEntity> SearchAppAndfindByIsDeletedAndIsApproveAndIsSubmittedAndIsActive(String keyword,Boolean isDeleted, Boolean IsApprove, Boolean isSubmitted,Boolean isActive, Pageable pagingSort);
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2, 'isActive' : ?3 }]}")
+	Page<ProductMasterEntity> SearchAppAndfindByIsDeletedAndAdminApprovedAndIsActive(String keyword,Boolean isDeleted, String AdminApproved,Boolean isActive, Pageable pagingSort);
 
 	
 

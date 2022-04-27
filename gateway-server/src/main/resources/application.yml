@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 spring:
   cloud:
     gateway:
@@ -33,9 +26,9 @@ spring:
         id: Admin
         predicates[0]: Path=/dev/product/**
       routes[6]:
-        uri: http://localhost:8083/dev/product
+        uri: http://localhost:8083/dev/designerProduct
         id: Designer
-        predicates[0]: Path=/dev/product/**
+        predicates[0]: Path=/dev/designerProduct/**
       routes[7]:
         uri: http://localhost:8083/dev/designer
         id: Designer

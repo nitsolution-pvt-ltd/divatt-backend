@@ -74,7 +74,7 @@ public class ProductMasterEntity {
 	private Date approvedOn;
 	private String SKQCode;
 	private String comments;
-	private String adminStatus;
+	private String adminApproved;
 	public ProductMasterEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -89,7 +89,7 @@ public class ProductMasterEntity {
 			StandardSOH[] standeredSOH, Integer customizationSOH, Object extraSpecifications,
 			Specification specifications, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			Date adminStatusOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String sKQCode,
-			String comments, String adminStatus) {
+			String comments, String adminApproved) {
 		super();
 		this.productId = productId;
 		this.designerName = designerName;
@@ -125,7 +125,7 @@ public class ProductMasterEntity {
 		this.approvedOn = approvedOn;
 		this.SKQCode = sKQCode;
 		this.comments = comments;
-		this.adminStatus = adminStatus;
+		this.adminApproved = adminApproved;
 	}
 	@Override
 	public String toString() {
@@ -140,7 +140,7 @@ public class ProductMasterEntity {
 				+ specifications + ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn
 				+ ", createdBy=" + createdBy + ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy
 				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", SKQCode=" + SKQCode + ", comments=" + comments + ", adminStatus=" + adminStatus + "]";
+				+ ", SKQCode=" + SKQCode + ", comments=" + comments + ", adminApproved=" + adminApproved + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -346,11 +346,11 @@ public class ProductMasterEntity {
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
-	public String getAdminStatus() {
-		return adminStatus;
+	public String getAdminApproved() {
+		return adminApproved;
 	}
-	public void setAdminStatus(String adminStatus) {
-		this.adminStatus = adminStatus;
+	public void setAdminApproved(String adminStatus) {
+		this.adminApproved = adminStatus;
 	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
