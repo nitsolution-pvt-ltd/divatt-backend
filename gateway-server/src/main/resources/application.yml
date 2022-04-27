@@ -29,14 +29,18 @@ spring:
         id: Admin
         predicates[0]: Path=/dev/subcategory/**
       routes[5]:
+        uri: http://localhost:8084/dev/product
+        id: Admin
+        predicates[0]: Path=/dev/product/**
+      routes[6]:
         uri: http://localhost:8083/dev/product
         id: Designer
         predicates[0]: Path=/dev/product/**
-      routes[6]:
+      routes[7]:
         uri: http://localhost:8083/dev/designer
         id: Designer
         predicates[0]: Path=/dev/designer/**
-      routes[7]:
+      routes[8]:
         uri: http://localhost:8082/dev/user
         id: User
         predicates[0]: Path=/dev/user/**
