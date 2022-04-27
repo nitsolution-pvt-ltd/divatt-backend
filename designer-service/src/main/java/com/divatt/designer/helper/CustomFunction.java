@@ -64,7 +64,7 @@ public class CustomFunction {
 			filterProductEntity.setSubCategoryId(productData.getSubCategoryId());
 			filterProductEntity.setAdminStatusOn(new Date());
 			filterProductEntity.setTaxInclusive(productData.getTaxInclusive());
-			filterProductEntity.setAdminApproved("Pending");
+			filterProductEntity.setAdminStatus("Pending");
 			return filterProductEntity;
 			//filterProductEntity.setUpdatedBy(productData.getUpdatedBy());
 			//filterProductEntity.setUpdatedOn();
@@ -99,7 +99,7 @@ public class CustomFunction {
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setIsActive(productData.getIsActive());
-			filterProductEntity.setAdminApproved(productData.getAdminApproved());
+			filterProductEntity.setAdminStatus(productData.getAdminStatus());
 			filterProductEntity.setPrice(productData.getPrice());
 			filterProductEntity.setPriceType(productData.getPriceType());
 			filterProductEntity.setProductDescription(productData.getProductDescription());
