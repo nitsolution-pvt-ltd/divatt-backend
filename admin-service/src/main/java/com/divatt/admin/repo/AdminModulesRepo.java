@@ -15,6 +15,7 @@ import com.divatt.admin.entity.LoginEntity;
 public interface AdminModulesRepo extends MongoRepository<AdminModules, Long>{
 	
 	public Optional<AdminModules> findByRoleName(Long roleName);
+	public Optional<AdminModules> findByMetaKey(String metaKey);
 	
 	public List<AdminModules> findByIsDeleted(Boolean isDeleted);
 	

@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,12 @@ import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminModulesRepo;
+import com.divatt.admin.repo.LoginRepository;
 import com.divatt.admin.services.SequenceGenerator;
+import com.google.gson.JsonObject;
+import com.mongodb.BasicDBList;
+
+import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("/admin")
@@ -53,6 +60,9 @@ public class RoleAndPermission {
 	
 	@Autowired
 	private MongoOperations mongoOperations;
+	
+	@Autowired
+	private LoginRepository loginRepository;
 
 	Logger LOGGER = LoggerFactory.getLogger(RoleAndPermission.class);
 
@@ -69,6 +79,8 @@ public class RoleAndPermission {
 			orElseThrow.forEach(e -> {
 				adminModules = e;
 			});
+
+			
 			return ResponseEntity.ok(adminModules);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -107,9 +119,20 @@ public class RoleAndPermission {
 		try {
 
 			Optional<AdminModules> findById = adminModulesRepo.findById(id);
-			if (findById.isPresent())
+			if (findById.isPresent()) {
+				Optional<AdminModules> findByRoleMetaKey = adminModulesRepo.findByMetaKey("admin_modules");
+				Json js = new Json(findByRoleMetaKey.get().getAdminModules().toString());
+				System.out.println(js.toString());
+//				AdminModules adminModules2 = findById.get();
+//				Optional<AdminModules> findByRoleMetaKey = adminModulesRepo.findByMetaKey("admin_modules");
+//				ArrayList<Json> adminModules3 = findByRoleMetaKey.get().getAdminModules();
+//				ArrayList<AdminModule> modules = adminModules2.getModules();
+//				for(AdminModule obj : modules) {
+////					adminModules3.get(0).g
+//					obj.getModName();
+//				}
 				return ResponseEntity.ok(findById.get());
-
+			}
 			else
 				throw new CustomException("Data not found");
 		} catch (Exception e) {
@@ -142,6 +165,7 @@ public class RoleAndPermission {
 		}
 		adminModules.setModules(modules);
 		adminModules.setRoleName(adminModules.getRoleName());
+		adminModules.setIsDeleted(false);
 		adminModulesRepo.save(adminModules);
 		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Role added successfully", 200));
 	}
@@ -167,6 +191,8 @@ public class RoleAndPermission {
 		LOGGER.info("Inside - ProfileContoller.deleteRoleId()");
 		try {
 			if (mongoOperations.exists(query(where("id").is(id)), AdminModules.class)) {
+				if (mongoOperations.exists(query(where("role").is(id+"")), LoginEntity.class))
+					throw new CustomException("Role is given to an admin");
 				Optional.of(mongoOperations.findAndModify(query(where("id").is(id)),
 						new Update().set("isDeleted", true), AdminModules.class))
 						.orElseThrow(() -> new RuntimeException("Internal Server Error"));
