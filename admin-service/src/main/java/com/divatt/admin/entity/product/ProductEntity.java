@@ -53,7 +53,7 @@ public class ProductEntity {
 	private String approvedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
-	private Object comment;
+	private String comment;
 	private String SKQCode;
 	public ProductEntity() {
 		super();
@@ -66,7 +66,7 @@ public class ProductEntity {
 			Integer customizationSOH, Object extraSpecifications, Object specifications, Boolean isSubmitted,
 			Boolean isApprove, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			String submittedBy, Date submittedOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn,
-			Object comment, String sKQCode) {
+			String comment, String sKQCode) {
 		super();
 		this.productId = productId;
 		this.designerId = designerId;
@@ -325,10 +325,10 @@ public class ProductEntity {
 	public void setApprovedOn(Date approvedOn) {
 		this.approvedOn = approvedOn;
 	}
-	public Object getComment() {
+	public String getComment() {
 		return comment;
 	}
-	public void setComment(Object comment) {
+	public void setComment(String comment) {
 		this.comment = comment;
 	}
 	public String getSKQCode() {

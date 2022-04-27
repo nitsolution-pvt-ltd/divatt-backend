@@ -76,7 +76,7 @@ public class ProductMasterEntity {
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
 	private String SKQCode;
-	private Object comment;
+	private String comments;
 	public ProductMasterEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -91,8 +91,7 @@ public class ProductMasterEntity {
 			StandardSOH[] standeredSOH, Integer customizationSOH, Object extraSpecifications,
 			Specification specifications, Boolean isSubmitted, Boolean isApprove, Boolean isActive, Boolean isDeleted,
 			Date createdOn, String createdBy, String submittedBy, Date submittedOn, String updatedBy, Date updatedOn,
-			@NotEmpty(message = "Approval Name Required") String approvedBy, Date approvedOn, String sKQCode,
-			JsonObject comment) {
+			String approvedBy, Date approvedOn, String sKQCode, String comments) {
 		super();
 		this.productId = productId;
 		this.designerName = designerName;
@@ -130,7 +129,7 @@ public class ProductMasterEntity {
 		this.approvedBy = approvedBy;
 		this.approvedOn = approvedOn;
 		this.SKQCode = sKQCode;
-		this.comment = comment;
+		this.comments = comments;
 	}
 	@Override
 	public String toString() {
@@ -146,7 +145,7 @@ public class ProductMasterEntity {
 				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
 				+ ", submittedBy=" + submittedBy + ", submittedOn=" + submittedOn + ", updatedBy=" + updatedBy
 				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", SKQCode=" + SKQCode + ", comment=" + comment + "]";
+				+ ", SKQCode=" + SKQCode + ", comments=" + comments + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -364,11 +363,11 @@ public class ProductMasterEntity {
 	public void setSKQCode(String sKQCode) {
 		SKQCode = sKQCode;
 	}
-	public Object getComment() {
-		return comment;
+	public String getComments() {
+		return comments;
 	}
-	public void setComment(Object comment) {
-		this.comment = comment;
+	public void setComments(String comments) {
+		this.comments = comments;
 	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;

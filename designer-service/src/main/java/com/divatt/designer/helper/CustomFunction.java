@@ -41,7 +41,7 @@ public class CustomFunction {
 			filterProductEntity.setApprovedBy(null);
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
-			filterProductEntity.setComment(productData.getComment());
+			//filterProductEntity.setComment(productData);
 			filterProductEntity.setCreatedBy(productData.getCreatedBy());
 			filterProductEntity.setCreatedOn(new Date());
 			filterProductEntity.setCustomization(productData.getCustomization());
@@ -88,7 +88,6 @@ public class CustomFunction {
 			//filterProductEntity.setApprovedBy(productData.getApprovedBy());
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
-			filterProductEntity.setComment(productData.getComment());
 			filterProductEntity.setCreatedBy(productData.getCreatedBy());
 			filterProductEntity.setCreatedOn(new Date());
 			filterProductEntity.setCustomization(productData.getCustomization());
@@ -118,6 +117,7 @@ public class CustomFunction {
 			filterProductEntity.setApprovedBy(productData.getApprovedBy());
 			filterProductEntity.setIsApprove(productData.getIsApprove());
 			filterProductEntity.setApprovedOn(new Date());
+			filterProductEntity.setComments(productData.getComments());
 			return filterProductEntity;
 		}
 		catch(Exception e)

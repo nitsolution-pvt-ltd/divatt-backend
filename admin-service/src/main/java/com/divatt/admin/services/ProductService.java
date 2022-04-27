@@ -32,7 +32,7 @@ public class ProductService {
     private MongoTemplate mongoTemplate;
 	
 	
-	public GlobalResponse productApproval(Integer productId, Integer designerId, Object comment) {
+	public GlobalResponse productApproval(Integer productId, Integer designerId, String comment) {
 		try
 		{
 			RestTemplate restTemplate= new RestTemplate();
