@@ -19,6 +19,7 @@ import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.specification.SpecificationEntity;
 import com.divatt.admin.exception.CustomException;
+import com.divatt.admin.repo.CategoryRepo;
 import com.divatt.admin.repo.SpecificationRepo;
 
 @Service
@@ -26,6 +27,9 @@ public class SpecificationService {
 
 	@Autowired
 	private SpecificationRepo specRepo;
+	
+	@Autowired
+	private CategoryRepo categoryRepo;
 	
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
@@ -50,9 +54,10 @@ public class SpecificationService {
 	}
 
 
-	public List<SpecificationEntity> listOfSpecification(String categoryName) {
+	public List<SpecificationEntity> listOfSpecification(Integer categoryId) {
 		try
 		{
+			String categoryName=categoryRepo.findById(categoryId).get().getCategoryName();
 			if(categoryName.toLowerCase().contains("women"))
 			{
 				categoryName="women";

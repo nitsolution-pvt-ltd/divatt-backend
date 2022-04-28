@@ -39,12 +39,12 @@ public class SpecificationController {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	@GetMapping("/listOfSpecification/{categoryName}")
-	public List<SpecificationEntity>listOfSpecification(@PathVariable String categoryName)
+	@GetMapping("/listOfSpecification/{categoryId}")
+	public List<SpecificationEntity>listOfSpecification(@PathVariable Integer categoryId)
 	{
 		try
 		{
-			return this.specificationService.listOfSpecification(categoryName);
+			return this.specificationService.listOfSpecification(categoryId);
 		}
 		catch(Exception e)
 		{
