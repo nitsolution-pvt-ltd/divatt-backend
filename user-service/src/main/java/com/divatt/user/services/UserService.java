@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -378,13 +379,13 @@ public class UserService {
 	@SuppressWarnings("unchecked")
 	public ResponseEntity<?> getProductUser() {
 		try {
-			
-			RestTemplate restTemplate = new RestTemplate();
-			
-			String body = restTemplate.getForEntity("http://localhost:8083/dev/product/userProductList", String.class).getBody();
-			
 
-			 Json js = new Json(body);
+			RestTemplate restTemplate = new RestTemplate();
+
+			String body = restTemplate.getForEntity("http://localhost:8083/dev/product/userProductList", String.class)
+					.getBody();
+
+			Json js = new Json(body);
 			return ResponseEntity.ok(js);
 
 		} catch (Exception e) {
@@ -415,8 +416,6 @@ public class UserService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
 
 	public Map<String, Object> getDesignerDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
@@ -429,6 +428,20 @@ public class UserService {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	public ResponseEntity<?> productDetails(Integer productId) {
+		try {
+
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> exchange = restTemplate.exchange(
+					"http://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null, String.class);
+			Json js = new Json(exchange.getBody());
+			return ResponseEntity.ok(js);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 
 }

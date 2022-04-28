@@ -39,11 +39,9 @@ public class ProductController {
 			String adminStatus=comment.getAdminStatus();
 			String commString=comment.getComments();
 			String ApprovedBy=comment.getApprovedBy();
-			
-			
-			System.out.println(commString);
+						
 			return this.productService.productApproval(productId, designerId, commString,ApprovedBy,adminStatus);
-			// return null;
+			
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

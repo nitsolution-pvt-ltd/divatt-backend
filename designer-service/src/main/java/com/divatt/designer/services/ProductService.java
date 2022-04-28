@@ -136,7 +136,7 @@ public class ProductService {
 					RestTemplate restTemplate = new RestTemplate();
 					ResponseEntity<String> categoryResponse = restTemplate.getForEntity(
 							"http://localhost:8084/dev/category/view/" + productData.getCategoryId(), String.class);
-					System.out.println(categoryResponse);
+					
 					ResponseEntity<String> subcategoryResponse = restTemplate.getForEntity(
 							"http://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
 							String.class);
