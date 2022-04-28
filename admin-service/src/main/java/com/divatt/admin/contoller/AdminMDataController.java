@@ -17,14 +17,14 @@ import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.services.AdminMService;
 
 @RestController
-@RequestMapping("/	")
+@RequestMapping("/adminMData")
 public class AdminMDataController {
 
 	@Autowired
 	private AdminMService adminMService;
 	
 	@GetMapping("/coloreList")
-	public ColourMetaEntity colourList()
+	public List<ColourEntity> colourList()
 	{
 		try
 		{

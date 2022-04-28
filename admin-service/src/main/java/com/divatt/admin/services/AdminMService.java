@@ -24,13 +24,22 @@ public class AdminMService {
 	@Autowired
 	private AdminMDataRepo adminMDataRepo;
 	
-	public ColourMetaEntity getColour() {
+	public List<ColourEntity> getColour() {
 		try
 		{
 			Query query= new Query();
 			query.addCriteria(Criteria.where("meta_key").is("colors"));
-			return mongoOperations.findOne(query, ColourMetaEntity.class);
-			//return coloreData;
+			 ColourMetaEntity coloreData = mongoOperations.findOne(query, ColourMetaEntity.class);
+			 List<ColourEntity> coloreEntity=coloreData.getColors();
+			 List<ColourEntity>filterColour=new ArrayList<ColourEntity>();
+			 for(int i=0;i<coloreEntity.size();i++)
+			 {
+				 if(coloreEntity.get(i).getIs_active().equals("true"))
+				 {
+					 filterColour.add(coloreEntity.get(i));
+				 }
+			 }
+			return filterColour;
 		}
 		catch(Exception e)
 		{
