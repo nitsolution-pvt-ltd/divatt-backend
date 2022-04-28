@@ -68,9 +68,9 @@ public class ProductService {
 		try {
 			LOGGER.info("Inside - ProductService.allList()");
 			List<ProductMasterEntity> productdata = productRepo.findAll();
-			// List<Integer>
+
 			List<Integer> productId = productdata.stream().map(e -> e.getDesignerId()).collect(Collectors.toList());
-			// System.out.println(productId);
+
 			List<DesignerProfileEntity> profileData = new ArrayList<DesignerProfileEntity>();
 			for (int i = 0; i < productId.size(); i++) {
 				profileData.add(designerProfileRepo.findBydesignerId(Long.valueOf(productId.get(i))).get());
@@ -86,7 +86,6 @@ public class ProductService {
 			if (allData.isEmpty()) {
 				throw new CustomException("Product not found!");
 			} else {
-				// List<ProductMasterEntity> list = productRepo.findByProductIdIn(allData);
 
 				int CountData = (int) allData.size();
 				if (limit == 0) {
@@ -115,7 +114,6 @@ public class ProductService {
 					return response;
 				}
 			}
-			// return allData;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -136,7 +134,7 @@ public class ProductService {
 					RestTemplate restTemplate = new RestTemplate();
 					ResponseEntity<String> categoryResponse = restTemplate.getForEntity(
 							"http://localhost:8084/dev/category/view/" + productData.getCategoryId(), String.class);
-					
+
 					ResponseEntity<String> subcategoryResponse = restTemplate.getForEntity(
 							"http://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
 							String.class);
@@ -347,7 +345,7 @@ public class ProductService {
 			if (limit == 0) {
 				limit = CountData;
 			}
-			
+
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
@@ -394,89 +392,31 @@ public class ProductService {
 		}
 	}
 
-	
-	
 	public ResponseEntity<?> getListProduct() {
 		long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
 		Random rd = new Random();
-	      List<Integer> lst = new ArrayList<>();
-	      List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndAdminStatus(false,"Approved");
-	      if(findAll.size()<=15) {
-	    	  return ResponseEntity.ok(findAll);
-	      }
-	      List<ProductMasterEntity> productMasterEntity = new ArrayList<>();
-	      Boolean flag = true;
-	      while(flag) {
-	    	  int nextInt = rd.nextInt((int)count);
-	    	  for(ProductMasterEntity obj : findAll) {
-	    		  if(obj.getProductId() == nextInt) {
-	    			  productMasterEntity.add(obj);
-	    			  System.out.println(obj.toString());
-	    		  }
-	    		  if(productMasterEntity.size()>14)
-	    			  flag = false;
-	    	  }
-	    	  
-	      }
-	      
-		return ResponseEntity.ok(productMasterEntity);
-		
-	}
-	
 
-//	public List<ProductMasterEntity> getListProduct(Integer limit) {
-//		try
-//		{
-//			List<ProductMasterEntity>productList=productRepo.findAll();
-//			List<ProductMasterEntity>filterProductList=new ArrayList<>();
-//			List<Integer> categoryList=productList.stream().map(e->e.getCategoryId()).collect(Collectors.toList());
-//			//System.out.println(categoryList);
-//			List<Integer> subCategoryList=productList.stream().map(e->e.getSubCategoryId()).collect(Collectors.toList());
-//			//System.out.println(subCategoryList);
-//			Query query= new Query();
-//			query.addCriteria(Criteria.where("isApprove").is(true));
-//			List<ProductMasterEntity> userProductList=mongoOperations.find(query, ProductMasterEntity.class);
-//			List<ProductMasterEntity> fiterProduct= new ArrayList<ProductMasterEntity>();
-//			List<Integer> productIdList=userProductList.stream().map(e->e.getProductId()).collect(Collectors.toList());
-//			System.out.println(productIdList);
-//			List<Integer> randomIntegers=new ArrayList<Integer>();
-////			new Random().ints(productIdList.get(0), productIdList.lastIndexOf()).limit(productIdList.size()).forEach(p->randomIntegers.add(p));
-//			//Integer integer = randomIntegers.get(4);
-//			Random random= new Random();
-//			for (int i = 0; i < limit; i++) {
-//				 
-//	            // take a random index between 0 to size
-//	            // of given List
-//	            int randomIndex = random.nextInt(productIdList.size());
-//	 
-//	            // add element in temporary list
-//	            randomIntegers.add(productIdList.get(randomIndex));
-//	        }
-//			System.out.println(randomIntegers);
-//			if(randomIntegers.size()<=limit)
-//			{
-//				for(int i=0;i<randomIntegers.size();i++)
-//				{
-//					ProductMasterEntity entity= productDetails(randomIntegers.get(i));
-//					filterProductList.add(entity);
-//				}
-//				return filterProductList;
-//			}
-//			else
-//			{
-//				for(int i=0;i<limit;i++)
-//				{
-//					ProductMasterEntity entity= (ProductMasterEntity) productDetails(randomIntegers.get(i));
-//					filterProductList.add(entity);
-//				}
-//				return filterProductList;
-//			}
-//		}
-//		catch(Exception e)
-//		{
-//			throw new  CustomException("No Product Found");
-//		}
-//	}
+		List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndAdminStatus(false, "Approved");
+		if (findAll.size() <= 15) {
+			return ResponseEntity.ok(findAll);
+		}
+		List<ProductMasterEntity> productMasterEntity = new ArrayList<>();
+		Boolean flag = true;
+		while (flag) {
+			int nextInt = rd.nextInt((int) count);
+			for (ProductMasterEntity obj : findAll) {
+				if (obj.getProductId() == nextInt) {
+					productMasterEntity.add(obj);
+				}
+				if (productMasterEntity.size() > 14)
+					flag = false;
+			}
+
+		}
+
+		return ResponseEntity.ok(productMasterEntity);
+
+	}
 
 	public Map<String, Object> getProductDetailsPerStatus(String status, int page, int limit, String sort,
 			String sortName, Boolean isDeleted, String keyword, Optional<String> sortBy) {
@@ -521,27 +461,28 @@ public class ProductService {
 
 				} else if (status.equals("rejected")) {
 
-					findAll = productRepo.findByIsDeletedAndAdminStatus(isDeleted, "Rejected",
-							pagingSort);
+					findAll = productRepo.findByIsDeletedAndAdminStatus(isDeleted, "Rejected", pagingSort);
 				}
 			} else {
-//				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
-				
+
 				if (status.equals("all")) {
 
 					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
 
 				} else if (status.equals("pending")) {
 
-					findAll = productRepo.SearchAndfindByIsDeletedAndAdminStatus(keyword,isDeleted, "Pending",pagingSort);
+					findAll = productRepo.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Pending",
+							pagingSort);
 
 				} else if (status.equals("approved")) {
 
-					findAll = productRepo.SearchAppAndfindByIsDeletedAndAdminStatus(keyword,isDeleted, "Approved", pagingSort);
+					findAll = productRepo.SearchAppAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",
+							pagingSort);
 
 				} else if (status.equals("rejected")) {
 
-					findAll = productRepo.SearchAndfindByIsDeletedAndAdminStatus(keyword,isDeleted, "Rejected",pagingSort);
+					findAll = productRepo.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Rejected",
+							pagingSort);
 
 				}
 
@@ -575,4 +516,100 @@ public class ProductService {
 
 	}
 
+	public Map<String, Object> getDesignerListUserService(Integer page, Integer limit, Optional<String> sortBy,
+			Integer page2, String sort, String sortName, String keyword, Boolean isDeleted) {
+		try {
+			int CountData = (int) productRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<ProductMasterEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = productRepo.findByIsDeletedAndAdminStatus(isDeleted,"Approved", pagingSort);
+			} else {
+				findAll = productRepo.DesignerSearchfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Product not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+//	public Map<String, Object> getDesignerListUserService(Integer page, Integer limit, Optional<String> sortBy,
+//			Integer page2, String sort, String sortName, String keyword, Boolean isDeleted) {
+//		try {
+//			int CountData = (int) productRepo.count();
+//			Pageable pagingSort = null;
+//			if (limit == 0) {
+//				limit = CountData;
+//			}
+//
+//			if (sort.equals("ASC")) {
+//				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+//			} else {
+//				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+//			}
+//
+//			Page<ProductMasterEntity> findAll = null;
+//
+//			if (keyword.isEmpty()) {
+//				findAll = productRepo.findByIsDeletedAndAdminStatus(isDeleted,"Approved", pagingSort);
+//			} else {
+//				findAll = productRepo.DesignerSearchfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",pagingSort);
+//
+//			}
+//
+//			int totalPage = findAll.getTotalPages() - 1;
+//			if (totalPage < 0) {
+//				totalPage = 0;
+//			}
+//
+//			Map<String, Object> response = new HashMap<>();
+//			response.put("data", findAll.getContent());
+//			response.put("currentPage", findAll.getNumber());
+//			response.put("total", findAll.getTotalElements());
+//			response.put("totalPage", totalPage);
+//			response.put("perPage", findAll.getSize());
+//			response.put("perPageElement", findAll.getNumberOfElements());
+//
+//			if (findAll.getSize() <= 1) {
+//				throw new CustomException("Product not found!");
+//			} else {
+//				return response;
+//			}
+//		} catch (Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
+
+
+	
 }
