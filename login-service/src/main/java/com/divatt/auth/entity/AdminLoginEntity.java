@@ -48,24 +48,27 @@ public class AdminLoginEntity {
 	
 	private String role;
 	
-	@Field(name = "authToken")
-	private String auth_token;
+	@Field(name = "roel_name")
+	private String roleName;
 	
-	@Field(name = "createdBy")
-	private String created_by;
+	@Field(name = "auth_token")
+	private String authToken;
 	
-	@Field(name = "createdOn")
-	private String created_on;
+	@Field(name = "created_by")
+	private String createdBy;
 	
-	@Field(name = "modifiedBy")
-	private String modified_by;
+	@Field(name = "created_on")
+	private String createdOn;
+	
+	@Field(name = "modified_by")
+	private String modifiedBy;
 	
 	
-	@Field(name = "modifiedOn")
-	private String modified_on;
+	@Field(name = "modified_on")
+	private String modifiedOn;
 	
-	@Field(name = "profilePic")
-	private String profile_pic;
+	@Field(name = "profile_pic")
+	private String profilePic;
 	
 	private Json logins;
 	
@@ -74,30 +77,12 @@ public class AdminLoginEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	
-
-	
-
-
-	
-
-	
-
-
-
-
-
-
-
-
-	
-
 
 
 	public AdminLoginEntity(Object uid, String firstName, String lastName, String email, String password,
-			String mobileNo, String dob, boolean is_active, boolean is_deleted, String role, String auth_token,
-			String created_by, String created_on, String modified_by, String modified_on, String profile_pic,
-			Json logins) {
+			String mobileNo, String dob, boolean is_active, boolean is_deleted, String role, String roleName,
+			String authToken, String createdBy, String createdOn, String modifiedBy, String modifiedOn,
+			String profilePic, Json logins) {
 		super();
 		this.uid = uid;
 		this.firstName = firstName;
@@ -109,41 +94,15 @@ public class AdminLoginEntity {
 		this.is_active = is_active;
 		this.is_deleted = is_deleted;
 		this.role = role;
-		this.auth_token = auth_token;
-		this.created_by = created_by;
-		this.created_on = created_on;
-		this.modified_by = modified_by;
-		this.modified_on = modified_on;
-		this.profile_pic = profile_pic;
+		this.roleName = roleName;
+		this.authToken = authToken;
+		this.createdBy = createdBy;
+		this.createdOn = createdOn;
+		this.modifiedBy = modifiedBy;
+		this.modifiedOn = modifiedOn;
+		this.profilePic = profilePic;
 		this.logins = logins;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
 
 
 
@@ -151,293 +110,64 @@ public class AdminLoginEntity {
 	public String toString() {
 		return "AdminLoginEntity [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
 				+ email + ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", is_active="
-				+ is_active + ", is_deleted=" + is_deleted + ", role=" + role + ", auth_token=" + auth_token
-				+ ", created_by=" + created_by + ", created_on=" + created_on + ", modified_by=" + modified_by
-				+ ", modified_on=" + modified_on + ", profile_pic=" + profile_pic + ", logins=" + logins + "]";
+				+ is_active + ", is_deleted=" + is_deleted + ", role=" + role + ", roleName=" + roleName
+				+ ", authToken=" + authToken + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", modifiedBy="
+				+ modifiedBy + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic + ", logins=" + logins + "]";
 	}
 
 
 
+	public String getRoleName() {
+		return roleName;
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
 
 
 	public Object getUid() {
 		return uid;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setUid(Object uid) {
 		this.uid = uid;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	public String getFirstName() {
 		return firstName;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public String getLastName() {
 		return lastName;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	public String getEmail() {
 		return email;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	public String getPassword() {
 		return password;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public String getMobileNo() {
 		return mobileNo;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	public void setMobileNo(String mobileNo) {
@@ -445,528 +175,38 @@ public class AdminLoginEntity {
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public String getDob() {
 		return dob;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setDob(String dob) {
 		this.dob = dob;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	public boolean isIs_active() {
 		return is_active;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setIs_active(boolean is_active) {
 		this.is_active = is_active;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	public boolean isIs_deleted() {
 		return is_deleted;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setIs_deleted(boolean is_deleted) {
 		this.is_deleted = is_deleted;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public String getRole() {
 		return role;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setRole(String role) {
 		this.role = role;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getAuth_token() {
-		return auth_token;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setAuth_token(String auth_token) {
-		this.auth_token = auth_token;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getCreated_by() {
-		return created_by;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setCreated_by(String created_by) {
-		this.created_by = created_by;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getCreated_on() {
-		return created_on;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setCreated_on(String created_on) {
-		this.created_on = created_on;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getModified_by() {
-		return modified_by;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setModified_by(String modified_by) {
-		this.modified_by = modified_by;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getModified_on() {
-		return modified_on;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setModified_on(String modified_on) {
-		this.modified_on = modified_on;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getProfile_pic() {
-		return profile_pic;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void setProfile_pic(String profile_pic) {
-		this.profile_pic = profile_pic;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public Json getLogins() {
 		return logins;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	public void setLogins(Json logins) {
 		this.logins = logins;
@@ -974,21 +214,75 @@ public class AdminLoginEntity {
 
 
 
+	public String getAuthToken() {
+		return authToken;
+	}
 
 
 
+	public void setAuthToken(String authToken) {
+		this.authToken = authToken;
+	}
 
 
 
+	public String getCreatedBy() {
+		return createdBy;
+	}
 
 
 
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 
 
 
+	public String getCreatedOn() {
+		return createdOn;
+	}
 
 
 
+	public void setCreatedOn(String createdOn) {
+		this.createdOn = createdOn;
+	}
+
+
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+
+
+	public String getModifiedOn() {
+		return modifiedOn;
+	}
+
+
+
+	public void setModifiedOn(String modifiedOn) {
+		this.modifiedOn = modifiedOn;
+	}
+
+
+
+	public String getProfilePic() {
+		return profilePic;
+	}
+
+
+
+	public void setProfilePic(String profilePic) {
+		this.profilePic = profilePic;
+	}
 
 
 
@@ -996,41 +290,5 @@ public class AdminLoginEntity {
 		return SEQUENCE_NAME;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	
-
-
-
-
-	
-
-
-
-	
-
-	
-	
-	
-
-	
-
 }

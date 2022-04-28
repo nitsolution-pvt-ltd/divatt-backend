@@ -116,7 +116,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(vendor.getUsername());
 			if (findByUserName.isPresent()) {
 				AdminLoginEntity loginEntityAfterCheck = findByUserName.get();
-				loginEntityAfterCheck.setAuth_token(token);
+				loginEntityAfterCheck.setAuthToken(token);
 				AdminLoginEntity save = loginRepository.save(loginEntityAfterCheck);
 
 				if (save.equals(null)) {
