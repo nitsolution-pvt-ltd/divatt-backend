@@ -98,7 +98,8 @@ public class LoginAdminData implements UserDetails{
 			this.message = message;
 			this.status = status;
 			this.role = Stream.of(role).map(SimpleGrantedAuthority::new).collect(Collectors.toList())  ;
-			this.authority = this.role.get(0).getAuthority();
+//			this.authority = this.role.get(0).getAuthority();
+			this.authority = "ADMIN";
 		}
 
 

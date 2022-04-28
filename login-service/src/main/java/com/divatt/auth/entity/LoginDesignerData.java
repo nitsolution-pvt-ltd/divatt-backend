@@ -55,7 +55,8 @@ public class LoginDesignerData implements UserDetails{
 		this.isProfileCompleated = isProfileCompleated;
 		this.isProfileSubmitted = isProfileSubmitted;
 		this.token = token;
-		this.authority = this.role.get(0).getAuthority();
+//		this.authority = this.role.get(0).getAuthority();
+		this.authority = "DESIGNER";
 	}
 
 

@@ -381,7 +381,7 @@ public class UserService {
 			
 			RestTemplate restTemplate = new RestTemplate();
 			
-			String body = restTemplate.getForEntity("http://localhost:8083/dev/product/userProductList", String.class).getBody();
+			String body = restTemplate.getForEntity("http://localhost:8083/dev/designerProduct/userProductList", String.class).getBody();
 			
 
 			 Json js = new Json(body);
