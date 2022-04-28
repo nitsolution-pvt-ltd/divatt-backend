@@ -312,6 +312,16 @@ public class UserController {
 		}
 	}
 	
+	
+	@GetMapping("/designer/list")
+	public ResponseEntity<?> designerListing() {
+		try {
+			return this.userService.getDesignerUser();
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 	@RequestMapping(value = { "/getDesigner" }, method = RequestMethod.GET)
 	public Map<String, Object> getCategoryDetails(			
 			@RequestParam(defaultValue = "0") int page, 

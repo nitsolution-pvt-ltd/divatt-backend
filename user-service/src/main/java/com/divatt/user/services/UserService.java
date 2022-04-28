@@ -393,6 +393,24 @@ public class UserService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public ResponseEntity<?> getDesignerUser() {
+		try {
+
+			RestTemplate restTemplate = new RestTemplate();
+			
+			String body = restTemplate.getForEntity("http://localhost:8083/dev/designer/userDesignerList", String.class).getBody();
+			
+
+
+			Json js = new Json(body);
+			return ResponseEntity.ok(js);
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
 	public ResponseEntity<?> postfollowDesignerService(@Valid UserDesignerEntity userDesignerEntity) {
 		try {
