@@ -30,7 +30,7 @@ public class SpecificationEntity {
 	private String name;
 	@NotNull(message = "Type is required")
 	private String type;
-	private String option[];
+	private Object option[];
 	private Boolean isActive;
 	private Boolean isDeleted;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
@@ -42,7 +42,7 @@ public class SpecificationEntity {
 	public SpecificationEntity(Integer id, @NotNull(message = "Required entity requred") Boolean required,
 			@NotNull(message = "category name required") String categoryName,
 			@NotNull(message = "Specification name required") String name,
-			@NotNull(message = "Type is required") String type, String[] option, Boolean isActive, Boolean isDeleted,
+			@NotNull(message = "Type is required") String type, Object[] option, Boolean isActive, Boolean isDeleted,
 			Date addonDate) {
 		super();
 		this.id = id;
@@ -91,10 +91,10 @@ public class SpecificationEntity {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public String[] getOption() {
+	public Object[] getOption() {
 		return option;
 	}
-	public void setOption(String[] option) {
+	public void setOption(Object[] option) {
 		this.option = option;
 	}
 	public Boolean getIsActive() {
