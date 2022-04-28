@@ -321,7 +321,7 @@ public class UserController {
 			@RequestParam(defaultValue = "false") Boolean isDeleted, 			
 			@RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		LOGGER.info("Inside - CategoryController.getListCategoryDetails()");
+		LOGGER.info("Inside - UserController.getListCategoryDetails()");
 
 		try {		
 			return this.userService.getDesignerDetails(page, limit, sort, sortName, isDeleted, keyword,
@@ -330,6 +330,16 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+	
+	@GetMapping("/view/{productId}")
+	public ResponseEntity<?> viewProductDetails(@PathVariable Integer productId) {
+		try {
+			LOGGER.info("Inside- UserController.viewProductDetails()");
+			return userService.productDetails(productId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 
 	
