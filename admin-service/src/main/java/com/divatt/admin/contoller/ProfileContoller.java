@@ -138,7 +138,7 @@ public class ProfileContoller {
 			loginEntity.setCreatedOn(date.toString());
 			loginEntity.setModifiedOn(date.toString());
 			loginRepository.save(loginEntity);
-			return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Sub admin added successfully", 200),
+					return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Sub admin added successfully", 200),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

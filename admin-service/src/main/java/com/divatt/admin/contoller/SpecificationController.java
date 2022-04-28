@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,12 +39,38 @@ public class SpecificationController {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	@GetMapping("/listOfSpecification/{categoryName}")
-	public List<SpecificationEntity>listOfSpecification(@PathVariable String categoryName)
+	@GetMapping("/listOfSpecification/{categoryId}")
+	public List<SpecificationEntity>listOfSpecification(@PathVariable Integer categoryId)
 	{
 		try
 		{
-			return this.specificationService.listOfSpecification(categoryName);
+			return this.specificationService.listOfSpecification(categoryId);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@PutMapping("/update/{specId}")
+	public GlobalResponse updateSpec(@PathVariable Integer specId,@RequestBody SpecificationEntity specificationData)
+	{
+		try
+		{
+			return this.specificationService.updateSpec(specificationData,specId);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@PutMapping("/delete/{specId}")
+	public GlobalResponse deleteSpec(@PathVariable Integer specId)
+	{
+		try
+		{
+			return this.specificationService.deleteSpec(specId);
 		}
 		catch(Exception e)
 		{

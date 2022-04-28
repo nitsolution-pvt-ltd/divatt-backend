@@ -1,6 +1,7 @@
 package com.divatt.admin.entity.specification;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -8,6 +9,9 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 @Document(collection = "tbl_product_specifications")
 public class SpecificationEntity {
@@ -29,6 +33,8 @@ public class SpecificationEntity {
 	private String option[];
 	private Boolean isActive;
 	private Boolean isDeleted;
+	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
+	private Date addonDate;
 	public SpecificationEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -36,7 +42,8 @@ public class SpecificationEntity {
 	public SpecificationEntity(Integer id, @NotNull(message = "Required entity requred") Boolean required,
 			@NotNull(message = "category name required") String categoryName,
 			@NotNull(message = "Specification name required") String name,
-			@NotNull(message = "Type is required") String type, String[] option, Boolean isActive, Boolean isDeleted) {
+			@NotNull(message = "Type is required") String type, String[] option, Boolean isActive, Boolean isDeleted,
+			Date addonDate) {
 		super();
 		this.id = id;
 		this.required = required;
@@ -46,12 +53,13 @@ public class SpecificationEntity {
 		this.option = option;
 		this.isActive = isActive;
 		this.isDeleted = isDeleted;
+		this.addonDate = addonDate;
 	}
 	@Override
 	public String toString() {
 		return "SpecificationEntity [id=" + id + ", required=" + required + ", categoryName=" + categoryName + ", name="
 				+ name + ", type=" + type + ", option=" + Arrays.toString(option) + ", isActive=" + isActive
-				+ ", isDeleted=" + isDeleted + "]";
+				+ ", isDeleted=" + isDeleted + ", addonDate=" + addonDate + "]";
 	}
 	public Integer getId() {
 		return id;
@@ -101,9 +109,14 @@ public class SpecificationEntity {
 	public void setIsDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
+	public Date getAddonDate() {
+		return addonDate;
+	}
+	public void setAddonDate(Date addonDate) {
+		this.addonDate = addonDate;
+	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
 	
 }

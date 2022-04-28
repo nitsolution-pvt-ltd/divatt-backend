@@ -1,6 +1,7 @@
 package com.divatt.admin.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.specification.SpecificationEntity;
 import com.divatt.admin.exception.CustomException;
+import com.divatt.admin.repo.CategoryRepo;
 import com.divatt.admin.repo.SpecificationRepo;
 
 @Service
@@ -25,6 +27,9 @@ public class SpecificationService {
 
 	@Autowired
 	private SpecificationRepo specRepo;
+	
+	@Autowired
+	private CategoryRepo categoryRepo;
 	
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
@@ -38,6 +43,7 @@ public class SpecificationService {
 				specificationEntity.setId(sequenceGenerator.getNextSequence(SpecificationEntity.SEQUENCE_NAME));
 				specificationEntity.setIsActive(true);
 				specificationEntity.setIsDeleted(false);
+				specificationEntity.setAddonDate(new Date());
 				specRepo.save(specificationEntity);
 				return new GlobalResponse("Success!!", "Data saved Successfully", 200);
 		}
@@ -48,9 +54,10 @@ public class SpecificationService {
 	}
 
 
-	public List<SpecificationEntity> listOfSpecification(String categoryName) {
+	public List<SpecificationEntity> listOfSpecification(Integer categoryId) {
 		try
 		{
+			String categoryName=categoryRepo.findById(categoryId).get().getCategoryName();
 			if(categoryName.toLowerCase().contains("women"))
 			{
 				categoryName="women";
@@ -69,15 +76,58 @@ public class SpecificationService {
 				throw new CustomException("Invalid category name");
 			}
 			Query query= new Query();
-			query.addCriteria(Criteria.where("categoryName").is(categoryName));
+			query.addCriteria(Criteria.where("categoryName").is(categoryName).and("isActive").is(true));
 			List<SpecificationEntity> listOfSpecificationData=mongoOperations.find(query, SpecificationEntity.class);
 			Query query1= new Query();
-			query1.addCriteria(Criteria.where("categoryName").is("all"));
+			query1.addCriteria(Criteria.where("categoryName").is("all").and("isActive").is(true));
 			List<SpecificationEntity>allListOfSpecification=mongoOperations.find(query1, SpecificationEntity.class);
 			List<SpecificationEntity> allSpeList=new ArrayList<SpecificationEntity>();
 			allSpeList.addAll(allListOfSpecification);
 			allSpeList.addAll(listOfSpecificationData);
 			return allSpeList;
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+
+	public GlobalResponse updateSpec(SpecificationEntity specificationData, Integer specId) {
+		try
+		{
+			if(specRepo.existsById(specId))
+			{
+				specificationData.setId(specId);
+				specificationData.setAddonDate(new Date());
+				specRepo.save(specificationData);
+				return new GlobalResponse("Success!!", "Specification Updated", 200);
+			}
+			else
+			{
+				throw new CustomException("Product not found");
+			}
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public GlobalResponse deleteSpec(Integer specId) {
+		try {
+			if(specRepo.existsById(specId))
+			{
+				SpecificationEntity specificationEntity=specRepo.findById(specId).get();
+				specificationEntity.setIsActive(false);
+				specificationEntity.setIsDeleted(true);
+				specRepo.save(specificationEntity);
+				return new GlobalResponse("Success", "Specification deleted successfully", 200);
+			}
+			else
+			{
+				throw new CustomException("Product Not Found");
+			}
 		}
 		catch(Exception e)
 		{
