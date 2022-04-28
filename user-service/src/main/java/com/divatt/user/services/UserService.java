@@ -418,13 +418,14 @@ public class UserService {
 		}
 	}
 
-	public Map<String, Object> getDesignerDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
+	public ResponseEntity<?> getDesignerDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
 			RestTemplate restTemplate = new RestTemplate();
-			ResponseEntity<?> categoryResponse = restTemplate
-					.getForEntity("http://localhost:8083/dev/product/userProductList/" + limit, String.class);
-			return (Map<String, Object>) categoryResponse.getBody();
+			ResponseEntity<?> Response = restTemplate
+					.getForEntity("http://localhost:8083/dev/designerProduct/getDesignerListUser", String.class);
+			Json json = new Json((String) Response.getBody());
+			return  ResponseEntity.ok(json);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

@@ -313,7 +313,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = { "/getDesigner" }, method = RequestMethod.GET)
-	public Map<String, Object> getCategoryDetails(			
+	public ResponseEntity<?> getDesignerDetails(			
 			@RequestParam(defaultValue = "0") int page, 
 			@RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, 
@@ -321,7 +321,7 @@ public class UserController {
 			@RequestParam(defaultValue = "false") Boolean isDeleted, 			
 			@RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		LOGGER.info("Inside - UserController.getListCategoryDetails()");
+		LOGGER.info("Inside - UserController.getDesignerDetails()");
 
 		try {		
 			return this.userService.getDesignerDetails(page, limit, sort, sortName, isDeleted, keyword,

@@ -46,7 +46,6 @@ public class ProductController implements ProductServiceImp {
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		
 
 		try {
 			LOGGER.info("Inside- ProductController.allList()");
@@ -85,6 +84,7 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@PutMapping("/update/{productId}")
 	public GlobalResponce updateProductData(@RequestBody ProductMasterEntity productMasterEntity,
 			@PathVariable Integer productId) {
@@ -163,52 +163,64 @@ public class ProductController implements ProductServiceImp {
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		try {
-			// List<ProductMasterEntity>list= productService.designerIdList(designerId);
 			return this.productService.designerIdListPage(designerId, sortBy, page, sort, sortName, isDeleted, limit,
 					keyword);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/getApproval")
-	public List<ProductMasterEntity> getApproval()
-	{
-		try
-		{
+	public List<ProductMasterEntity> getApproval() {
+		try {
 			return this.productService.getApproval();
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@GetMapping("/userProductList")
-	public ResponseEntity<?> userProductList()
-	{
-		try
-		{
+	public ResponseEntity<?> userProductList() {
+		try {
 			return this.productService.getListProduct();
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/listPerStatus")
 	public Map<String, Object> getAllProductDetails(@RequestParam(defaultValue = "all") String status,
-			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
-			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 
 		try {
 			LOGGER.info("Inside - designer -> ProductController.getProductDetailsPerStatus()");
-			return this.productService.getProductDetailsPerStatus(status,page, limit, sort, sortName, isDeleted, keyword, sortBy);
+			return this.productService.getProductDetailsPerStatus(status, page, limit, sort, sortName, isDeleted,
+					keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/getDesignerListUser")
+	public Map<String, Object> getDesignerListUser(@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer limit,@RequestParam(defaultValue = "DESC") String sort, 
+			@RequestParam(defaultValue = "productId") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		try {
+			LOGGER.info("Inside-ProductController.getDesignerListUser()");
+			
+			
+//			int limit = jsonArray.size();
+			
+			return productService.getDesignerListUserService(page, limit, sortBy, page, sort, sortName, keyword,isDeleted);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
 }

@@ -84,10 +84,7 @@ public class ProfileContoller {
 			if (designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail()).isPresent())
 				throw new CustomException("Email already present");
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
-//			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-//			Date date = new Date(designerProfileEntity.getDesignerProfile().getDob());
-//			String format = formatter.format(date);
-//			System.out.println("format "+format);
+
 			designerLoginEntity.setdId((long) sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
 			designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
 			designerLoginEntity.setPassword(
@@ -109,7 +106,7 @@ public class ProfileContoller {
 			}
 
 			DesignerLogEntity designerLogEntity = new DesignerLogEntity();
-			// designerLogEntity.
+
 			designerLogRepo.save(null);
 
 			JsonObject jo = new JsonObject();
@@ -176,12 +173,11 @@ public class ProfileContoller {
 			designerProfileEntityDB.setDesignerProfile(designerProfile);
 			designerProfileEntityDB.setSocialProfile(designerProfileEntity.getSocialProfile());
 
-//			if(designerProfileRepo.save(designerProfileEntity)!=null) {
 			designerProfileRepo.save(designerProfileEntityDB);
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setIsProfileSubmitted(true);
 			designerLoginRepo.save(designerLoginEntityDB);
-//			}
+
 		}
 
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
@@ -220,52 +216,46 @@ public class ProfileContoller {
 		httpServletResponse.setHeader("Location", "http://localhost:8083/dev/swagger-ui/index.html");
 		httpServletResponse.setStatus(302);
 	}
-	
-	
+
 	@GetMapping("/userDesignerList")
-	public ResponseEntity<?> userDesignertList()
-	{
-		try
-		{
+	public ResponseEntity<?> userDesignertList() {
+		try {
 			long count = sequenceGenerator.getCurrentSequence(DesignerLoginEntity.SEQUENCE_NAME);
 			Random rd = new Random();
-		      List<Integer> lst = new ArrayList<>();
-		      List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeleted(false);
-		      if(findAll.size()<=15) {
-		    	  return ResponseEntity.ok(findAll);
-		      }
-		      List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
-		      Boolean flag = true;
-		      while(flag) {
-		    	  int nextInt = rd.nextInt((int)count);
-		    	  for(DesignerLoginEntity obj : findAll) {
-		    		  if(obj.getdId() == nextInt) {
-		    			  designerLoginEntity.add(obj);
-		    			  System.out.println(obj.toString());
-		    		  }
-		    		  if(designerLoginEntity.size()>14)
-		    			  flag = false;
-		    	  }
-		    	  
-		      }
-		      Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
-					try {
-						e.setDesignerProfileEntity(
-								designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
-					} catch (Exception o) {
-
+			List<Integer> lst = new ArrayList<>();
+			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeleted(false);
+			if (findAll.size() <= 15) {
+				return ResponseEntity.ok(findAll);
+			}
+			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
+			Boolean flag = true;
+			while (flag) {
+				int nextInt = rd.nextInt((int) count);
+				for (DesignerLoginEntity obj : findAll) {
+					if (obj.getdId() == nextInt) {
+						designerLoginEntity.add(obj);
+						
 					}
+					if (designerLoginEntity.size() > 14)
+						flag = false;
+				}
 
-					return e;
-				});
+			}
+			Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
+				try {
+					e.setDesignerProfileEntity(
+							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
+				} catch (Exception o) {
+
+				}
+
+				return e;
+			});
 			return ResponseEntity.ok(map);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
 
 	public Map<String, Object> getDesignerProfDetails(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, Boolean isApproved, Boolean isProfileCompleated, Boolean isProfileSubmitted,
