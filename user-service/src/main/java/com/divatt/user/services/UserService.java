@@ -439,7 +439,7 @@ public class UserService {
 					"http://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null, String.class);
 			Json js = new Json(exchange.getBody());
 			return ResponseEntity.ok(js);
-		} catch (Exception e) {
+		} catch (Exception e) { 
 			throw new CustomException(e.getMessage());
 		}
 
