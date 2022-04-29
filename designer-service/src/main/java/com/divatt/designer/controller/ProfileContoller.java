@@ -149,7 +149,7 @@ public class ProfileContoller {
 			jo.addProperty("body", "Welcome " + designerProfileEntity.getDesignerProfile().getEmail() + ""
 					+ ",\n                           "
 					+ " you have been register successfully.Please active your account by clicking the bellow link "
-					+ URI.create("http://localhost:8083/dev/designer/redirect/"
+					+ URI.create("http://65.1.190.195:8083/dev/designer/redirect/"
 							+ Base64.getEncoder().encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
 					+ " . We will verify your details and come back to you soon.");
 			jo.addProperty("enableHtml", false);
@@ -318,7 +318,7 @@ public class ProfileContoller {
 				else if (fieldName.equals("isProfileCompleated"))
 					findAll = designerLoginRepo.findByIsProfileCompleated(isProfileCompleated, pagingSort);
 				else if (fieldName.equals("isProfileSubmitted"))
-					findAll = designerLoginRepo.findByIsProfileSubmitted(isProfileSubmitted, pagingSort);
+					findAll = designerLoginRepo.findByIsProfileSubmittedAndIsProfileCompleated(isProfileSubmitted,isProfileCompleated, pagingSort);
 				else {
 					findAll = designerLoginRepo.findByIsDeleted(isDeleted, pagingSort);
 				}
@@ -331,7 +331,7 @@ public class ProfileContoller {
 				else if (fieldName.equals("isProfileCompleated"))
 					findAll = designerLoginRepo.SearchByProfileCompleated(keyword, isProfileCompleated, pagingSort);
 				else if (fieldName.equals("isProfileSubmitted"))
-					findAll = designerLoginRepo.SearchByProfileSubmitted(keyword, isProfileSubmitted, pagingSort);
+					findAll = designerLoginRepo.SearchByProfileSubmittedAndProfileCompleated(keyword, isProfileSubmitted,isProfileCompleated, pagingSort);
 				else {
 					findAll = designerLoginRepo.SearchByDelete(keyword, isDeleted, pagingSort);
 				}
@@ -363,6 +363,10 @@ public class ProfileContoller {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
+			response.put("waitingForApproval", designerLoginRepo.findByIsApproved(false).size());
+			response.put("waitingForSubmit", designerLoginRepo.findByIsApproved(true).size());
+			response.put("submitted", designerLoginRepo.findByIsProfileSubmittedAndIsProfileCompleated(true,false).size());
+			response.put("compleated", designerLoginRepo.findByIsProfileCompleated(true).size());
 
 			return response;
 		} catch (Exception e) {
