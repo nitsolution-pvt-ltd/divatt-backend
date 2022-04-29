@@ -338,7 +338,7 @@ public class ProfileContoller {
 			}
 
 			if (findAll.getSize() <= 1)
-				throw new CustomException("Institute Not Found!");
+				throw new CustomException("Designer not found!");
 
 			findAll.map(e -> {
 				try {
