@@ -203,24 +203,37 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	@GetMapping("/getDesignerListUser")
-	public Map<String, Object> getDesignerListUser(@RequestParam(defaultValue = "0") Integer page,
-			@RequestParam(defaultValue = "10") Integer limit,@RequestParam(defaultValue = "DESC") String sort, 
+
+	@GetMapping("/getDesignerProductListUser")
+	public Map<String, Object> getDesignerProductListUser(@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "productId") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		try {
-			LOGGER.info("Inside-ProductController.getDesignerListUser()");
-			
-			
-//			int limit = jsonArray.size();
-			
-			return productService.getDesignerListUserService(page, limit, sortBy, page, sort, sortName, keyword,isDeleted);
+			LOGGER.info("Inside-ProductController.getDesignerProductListUser()");
+
+			return productService.getDesignerProductListService(page, limit, sortBy, sort, sortName, keyword,
+					isDeleted);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
+
+	@GetMapping("/getPerDesignerProductListUser/{designerId}")
+	public Map<String, Object> getPerDesignerProductListUser(@PathVariable Integer designerId,
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		try {
+			LOGGER.info("Inside-ProductController.getDesignerProductListUser()");
+
+			return productService.getPerDesignerProductListService(page, limit, sortBy, sort, sortName, keyword,
+					isDeleted, designerId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }

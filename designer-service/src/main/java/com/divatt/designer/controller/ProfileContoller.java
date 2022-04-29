@@ -87,13 +87,12 @@ public class ProfileContoller {
 		}
 
 	}
-	
-	
+
 	@GetMapping("/user/{id}")
 	public ResponseEntity<?> getUserDesigner(@PathVariable Long id) {
 		try {
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
-			if(!findById.isPresent())
+			if (!findById.isPresent())
 				throw new CustomException("This designer profile is not compleated");
 			Stream<DesignerLoginEntity> map = findById.stream().map(e -> {
 				try {
@@ -105,13 +104,12 @@ public class ProfileContoller {
 
 				return e;
 			});
-				return ResponseEntity.ok(map);
+			return ResponseEntity.ok(map);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
-	
 
 	@PostMapping("/add")
 	public ResponseEntity<?> addDesigner(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
@@ -270,7 +268,7 @@ public class ProfileContoller {
 				for (DesignerLoginEntity obj : findAll) {
 					if (obj.getdId() == nextInt) {
 						designerLoginEntity.add(obj);
-						
+
 					}
 					if (designerLoginEntity.size() > 14)
 						flag = false;

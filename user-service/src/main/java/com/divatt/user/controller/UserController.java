@@ -4,7 +4,6 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -263,7 +262,7 @@ public class UserController {
 
 	@RequestMapping(value = "/redirect/{email}", method = RequestMethod.GET)
 	public void method(HttpServletResponse httpServletResponse, @PathVariable("email") String email) {
-		
+
 		Optional<UserLoginEntity> findByEmail = userLoginRepo
 				.findByEmail(new String(Base64.getDecoder().decode(email)));
 		if (findByEmail.isPresent()) {
@@ -311,9 +310,8 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
-	@GetMapping("/designer/list")  
+
+	@GetMapping("/designer/list")
 	public ResponseEntity<?> designerListing() {
 		try {
 			return this.userService.getDesignerUser();
@@ -321,37 +319,58 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	@RequestMapping(value = { "/getDesigner" }, method = RequestMethod.GET)
-	public ResponseEntity<?> getDesignerDetails(			
-			@RequestParam(defaultValue = "0") int page, 
-			@RequestParam(defaultValue = "10") int limit,
-			@RequestParam(defaultValue = "DESC") String sort, 
-			@RequestParam(defaultValue = "createdOn") String sortName,
-			@RequestParam(defaultValue = "false") Boolean isDeleted, 			
-			@RequestParam(defaultValue = "") String keyword,
-			@RequestParam Optional<String> sortBy) {
-		LOGGER.info("Inside - UserController.getDesignerDetails()");
 
-		try {		
-			return this.userService.getDesignerDetails(page, limit, sort, sortName, isDeleted, keyword,
-					sortBy);
+	@RequestMapping(value = { "/getDesignerProductList" }, method = RequestMethod.GET)
+	public ResponseEntity<?> getDesignerProductDetails(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		LOGGER.info("Inside - UserController.getDesignerProductDetails()");
+
+		try {
+			return this.userService.getDesignerDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
-	
+
 	@GetMapping("/view/{productId}")
 	public ResponseEntity<?> viewProductDetails(@PathVariable Integer productId) {
+		LOGGER.info("Inside- UserController.viewProductDetails()");
 		try {
-			LOGGER.info("Inside- UserController.viewProductDetails()");
 			return userService.productDetails(productId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
-	
-	
+	@GetMapping("/designerProfile/{designerId}")
+	public ResponseEntity<?> viewDesignerProfileDetails(@PathVariable Integer designerId) {
+		LOGGER.info("Inside- UserController.viewDesignerProfileDetails()");
+		try {
+			return userService.getDesignerProfileDetailsService(designerId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@GetMapping("/getPerDesignerProductList/{designerId}")
+	public ResponseEntity<?> getPerDesignerProductDetails(@PathVariable Integer designerId,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		LOGGER.info("Inside - UserController.getPerDesignerProductDetails()");
+
+		try {
+			return this.userService.getPerDesignerProductListService(page, limit, sort, sortName, isDeleted, keyword,
+					sortBy, designerId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
 }
