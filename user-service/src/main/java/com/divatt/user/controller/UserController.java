@@ -310,14 +310,8 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
-<<<<<<< HEAD
-
-	@GetMapping("/designer/list")
-=======
-	
 	
 	@GetMapping("/designer/list")  
->>>>>>> fe6556543a5b232b9a75485fed8b1ec6a2767cff
 	public ResponseEntity<?> designerListing() {
 		try {
 			return this.userService.getDesignerUser();
