@@ -23,7 +23,7 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 	Optional<DesignerLoginEntity> findByDIdAndIsProfileCompleated(Long dId, Boolean isProfileCompleated);
 	
 	Page<DesignerLoginEntity> findByIsApproved(Boolean isApproved  ,Pageable pagingSort);
-	Page<DesignerLoginEntity> findByIsProfileSubmitted(Boolean isProfileSubmitted  ,Pageable pagingSort);
+	Page<DesignerLoginEntity> findByIsProfileSubmittedAndIsProfileCompleated(Boolean isProfileSubmitted, Boolean isProfileCompleated ,Pageable pagingSort);
 	Page<DesignerLoginEntity> findByIsProfileCompleated(Boolean isProfileCompleated  ,Pageable pagingSort);
 	public Page<DesignerLoginEntity> findByIsDeleted(Boolean isDeleted,Pageable pagingSort);
 	@Query(value = "{ $or: [ { 'email' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
@@ -32,6 +32,13 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 	public Page<DesignerLoginEntity> SearchByApproved(String sortKey, Boolean isApproved,Pageable pageable);
 	@Query(value = "{ $or: [ { 'email' : {$regex:?0,$options:'i'} } ],$and: [ { 'isProfileCompleated' : ?1 }]}")
 	public Page<DesignerLoginEntity> SearchByProfileCompleated(String sortKey, Boolean isProfileCompleated,Pageable pageable);
-	@Query(value = "{ $or: [ { 'email' : {$regex:?0,$options:'i'} } ],$and: [ { 'isProfileSubmitted' : ?1 }]}")
-	public Page<DesignerLoginEntity> SearchByProfileSubmitted(String sortKey, Boolean isProfileSubmitted,Pageable pageable);
+	@Query(value = "{ $or: [ { 'email' : {$regex:?0,$options:'i'} } ],$and: [ { 'isProfileSubmitted' : ?1 }],$and: [ { 'isProfileCompleated' : ?1 }]}")
+	public Page<DesignerLoginEntity> SearchByProfileSubmittedAndProfileCompleated(String sortKey, Boolean isProfileSubmitted, Boolean isProfileCompleated,Pageable pageable);
+
+
+	
+	List<DesignerLoginEntity> findByIsApproved(Boolean isApproved);
+	List<DesignerLoginEntity> findByIsProfileSubmittedAndIsProfileCompleated(Boolean isProfileSubmitted, Boolean isProfileCompleated);
+	List<DesignerLoginEntity> findByIsProfileCompleated(Boolean isProfileCompleated);
+	
 }

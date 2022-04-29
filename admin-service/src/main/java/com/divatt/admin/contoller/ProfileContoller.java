@@ -3,7 +3,9 @@ package com.divatt.admin.contoller;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
+import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +45,9 @@ import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminModulesRepo;
 import com.divatt.admin.repo.LoginRepository;
 import com.divatt.admin.services.SequenceGenerator;
+import com.google.gson.JsonObject;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
 
 @RestController
 @RequestMapping("/admin/profile")
@@ -137,6 +142,28 @@ public class ProfileContoller {
 			loginEntity.setDeleted(false);
 			loginEntity.setCreatedOn(date.toString());
 			loginEntity.setModifiedOn(date.toString());
+			
+			
+			
+			JsonObject jo = new JsonObject();
+			jo.addProperty("senderMailId", loginEntity.getEmail());
+			jo.addProperty("subject", "Successfully Registration");
+			jo.addProperty("body", "Welcome " + loginEntity.getEmail() + ""
+					+ ",\n                           "
+					+ " Your account created successfully.Please login your account by bellow credentials "
+					+ "\n Username:-  " + loginEntity.getEmail()
+					+ "\n Password:-  " + loginEntity.getPassword()
+					);
+			jo.addProperty("enableHtml", false);
+			try {
+				Unirest.setTimeouts(0, 0);
+				HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
+						.header("Content-Type", "application/json").body(jo.toString()).asString();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+			
+			
 			loginRepository.save(loginEntity);
 					return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Sub admin added successfully", 200),
 					HttpStatus.OK);
