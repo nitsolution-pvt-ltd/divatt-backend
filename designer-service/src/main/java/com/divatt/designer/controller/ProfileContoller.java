@@ -234,7 +234,7 @@ public class ProfileContoller {
 				for (DesignerLoginEntity obj : findAll) {
 					if (obj.getdId() == nextInt) {
 						designerLoginEntity.add(obj);
-						
+
 					}
 					if (designerLoginEntity.size() > 14)
 						flag = false;
