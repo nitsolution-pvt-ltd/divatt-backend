@@ -36,6 +36,7 @@ import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
+import com.divatt.designer.entity.profile.SocialProfile;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.repo.DesignerLogRepo;
 import com.divatt.designer.repo.DesignerLoginRepo;
@@ -72,7 +73,15 @@ public class ProfileContoller {
 		try {
 			Optional<DesignerProfileEntity> findById = designerProfileRepo.findBydesignerId(id);
 			if(findById.isPresent());
-				return ResponseEntity.ok(findById.get());
+			DesignerProfileEntity designerProfileEntity = findById.get();
+			try {
+				if(designerProfileEntity.getSocialProfile()==null)
+					designerProfileEntity.setSocialProfile(new SocialProfile());
+			}catch(Exception e) {
+				designerProfileEntity.setSocialProfile(new SocialProfile());
+			}
+			
+			return ResponseEntity.ok(designerProfileEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -134,7 +143,7 @@ public class ProfileContoller {
 
 			DesignerLogEntity designerLogEntity = new DesignerLogEntity();
 
-			designerLogRepo.save(null);
+//			designerLogRepo.save(null);
 
 			JsonObject jo = new JsonObject();
 			jo.addProperty("senderMailId", designerProfileEntity.getDesignerProfile().getEmail());
@@ -162,7 +171,7 @@ public class ProfileContoller {
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<?> updateDesigner(@Valid @RequestBody DesignerLoginEntity designerLoginEntity) {
+	public ResponseEntity<?> updateDesigner( @RequestBody DesignerLoginEntity designerLoginEntity) {
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerLoginEntity.getdId());
 		if (!findById.isPresent())
 			throw new CustomException("Designer Details Not Found");
