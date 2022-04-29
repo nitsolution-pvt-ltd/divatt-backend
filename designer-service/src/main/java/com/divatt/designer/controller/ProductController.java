@@ -219,19 +219,18 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/getPerDesignerProductListUser/{designerId}")
 	public Map<String, Object> getPerDesignerProductListUser(@PathVariable Integer designerId,
-			@RequestParam(defaultValue = "0") Integer page,
-			@RequestParam(defaultValue = "10") Integer limit, @RequestParam(defaultValue = "DESC") String sort,
-			@RequestParam(defaultValue = "productId") String sortName,
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		try {
 			LOGGER.info("Inside-ProductController.getDesignerProductListUser()");
 
 			return productService.getPerDesignerProductListService(page, limit, sortBy, sort, sortName, keyword,
-					isDeleted,designerId);
+					isDeleted, designerId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

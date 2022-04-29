@@ -515,10 +515,9 @@ public class ProductService {
 		}
 
 	}
-	
-	public Map<String, Object> getDesignerProductListService(Integer page,
-			Integer limit, Optional<String> sortBy,
-			 String sort, String sortName, String keyword, Boolean isDeleted) {
+
+	public Map<String, Object> getDesignerProductListService(Integer page, Integer limit, Optional<String> sortBy,
+			String sort, String sortName, String keyword, Boolean isDeleted) {
 		try {
 			int CountData = (int) productRepo.count();
 			Pageable pagingSort = null;
@@ -535,57 +534,10 @@ public class ProductService {
 			Page<ProductMasterEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = productRepo.findByIsDeletedAndAdminStatus(isDeleted,"Approved", pagingSort);
+				findAll = productRepo.findByIsDeletedAndAdminStatus(isDeleted, "Approved", pagingSort);
 			} else {
-				findAll = productRepo.DesignerSearchfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",pagingSort);
-
-			}
-
-			int totalPage = findAll.getTotalPages() - 1;
-			if (totalPage < 0) {
-				totalPage = 0;
-			}
-
-			Map<String, Object> response = new HashMap<>();
-			response.put("data", findAll.getContent());
-			response.put("currentPage", findAll.getNumber());
-			response.put("total", findAll.getTotalElements());
-			response.put("totalPage", totalPage);
-			response.put("perPage", findAll.getSize());
-			response.put("perPageElement", findAll.getNumberOfElements());
-
-			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
-			} else {
-				return response;
-			}
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
-	
-	public Map<String, Object> getPerDesignerProductListService(Integer page,
-			Integer limit, Optional<String> sortBy,
-			 String sort, String sortName, String keyword, Boolean isDeleted, Integer designerId) {
-		try {
-			int CountData = (int) productRepo.count();
-			Pageable pagingSort = null;
-			if (limit == 0) {
-				limit = CountData;
-			}
-
-			if (sort.equals("ASC")) {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
-			} else {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-			}
-
-			Page<ProductMasterEntity> findAll = null;
-
-			if (keyword.isEmpty()) {
-				findAll = productRepo.findByIsDeletedAndAdminStatusAndDesignerId(isDeleted,"Approved",designerId, pagingSort);
-			} else {
-				findAll = productRepo.DesignerSearchfindByIsDeletedAndAdminStatusAndDesignerId(keyword, isDeleted, "Approved",designerId,pagingSort);
+				findAll = productRepo.DesignerSearchfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",
+						pagingSort);
 
 			}
 
@@ -612,5 +564,53 @@ public class ProductService {
 		}
 	}
 
-	
+	public Map<String, Object> getPerDesignerProductListService(Integer page, Integer limit, Optional<String> sortBy,
+			String sort, String sortName, String keyword, Boolean isDeleted, Integer designerId) {
+		try {
+			int CountData = (int) productRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<ProductMasterEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = productRepo.findByIsDeletedAndAdminStatusAndDesignerId(isDeleted, "Approved", designerId,
+						pagingSort);
+			} else {
+				findAll = productRepo.DesignerSearchfindByIsDeletedAndAdminStatusAndDesignerId(keyword, isDeleted,
+						"Approved", designerId, pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Product not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }

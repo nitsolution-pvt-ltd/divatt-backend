@@ -468,8 +468,8 @@ public class UserService {
 
 			RestTemplate restTemplate = new RestTemplate();
 
-			String body = restTemplate.getForEntity("http://localhost:8083/dev/designer/" + designerId, String.class)
-					.getBody();
+			String body = restTemplate
+					.getForEntity("http://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();
 
 			Json js = new Json(body);
 			return ResponseEntity.ok(js);
@@ -478,14 +478,14 @@ public class UserService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	public ResponseEntity<?> getPerDesignerProductListService(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			String keyword, Optional<String> sortBy,Integer designerId) {
+
+	public ResponseEntity<?> getPerDesignerProductListService(int page, int limit, String sort, String sortName,
+			Boolean isDeleted, String keyword, Optional<String> sortBy, Integer designerId) {
 		try {
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<?> Response = restTemplate
-					.getForEntity("http://localhost:8083/dev/designerProduct/getPerDesignerProductListUser/"+designerId+"?page=" + page
-							+ "&limit=" + limit + "&", String.class);
+					.getForEntity("http://localhost:8083/dev/designerProduct/getPerDesignerProductListUser/"
+							+ designerId + "?page=" + page + "&limit=" + limit + "&", String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
 

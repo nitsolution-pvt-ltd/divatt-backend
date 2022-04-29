@@ -310,8 +310,8 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	@GetMapping("/designer/list")  
+
+	@GetMapping("/designer/list")
 	public ResponseEntity<?> designerListing() {
 		try {
 			return this.userService.getDesignerUser();
@@ -339,35 +339,34 @@ public class UserController {
 	@GetMapping("/view/{productId}")
 	public ResponseEntity<?> viewProductDetails(@PathVariable Integer productId) {
 		LOGGER.info("Inside- UserController.viewProductDetails()");
-		try {			
+		try {
 			return userService.productDetails(productId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/designerProfile/{designerId}")
 	public ResponseEntity<?> viewDesignerProfileDetails(@PathVariable Integer designerId) {
 		LOGGER.info("Inside- UserController.viewDesignerProfileDetails()");
-		try {			
+		try {
 			return userService.getDesignerProfileDetailsService(designerId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
+
 	@GetMapping("/getPerDesignerProductList/{designerId}")
 	public ResponseEntity<?> getPerDesignerProductDetails(@PathVariable Integer designerId,
-			@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "10") int limit, 
-			@RequestParam(defaultValue = "DESC") String sort,
-			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - UserController.getPerDesignerProductDetails()");
 
 		try {
-			return this.userService.getPerDesignerProductListService(page, limit, sort, sortName, isDeleted, keyword, sortBy,designerId);
+			return this.userService.getPerDesignerProductListService(page, limit, sort, sortName, isDeleted, keyword,
+					sortBy, designerId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
