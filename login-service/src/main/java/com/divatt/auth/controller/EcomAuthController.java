@@ -142,9 +142,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							findByUserNameDesigner.get().getIsApproved(),
 							findByUserNameDesigner.get().getIsProfileCompleated(),
 							findByUserNameDesigner.get().getIsProfileSubmitted(), token);
-
-					System.out.println("loginDesignerData   " + loginDesignerData.toString());
-//					Json js = new Json(loginDesignerData.toString());
+					
 					return new ResponseEntity<>(loginDesignerData, HttpStatus.OK);
 				} else {
 
@@ -158,7 +156,6 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					} else {
 						throw new CustomException("Email not found");
 					}
-//											.ifPresentOrElse((value)->{}, ()->{throw new CustomException("Internal Server Error");});
 
 				}
 
@@ -208,7 +205,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo.findByEmail(email);
 			Optional<UserLoginEntity> findByUserNameUser = userLoginRepo.findByEmail(email);
 			if (!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent() && !findByUserName.isPresent())
-				throw new CustomException("Username Not Found");
+				throw new CustomException("Username not found");
 //			if (findByUserName.isPresent()) {
 			PasswordResetEntity loginResetEntity = new PasswordResetEntity();
 			Object id = null;

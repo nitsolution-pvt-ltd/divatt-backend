@@ -30,7 +30,7 @@ public class MailService {
 			MimeMessageHelper helper = new MimeMessageHelper(message);
 
 			helper.setSubject(subject);
-			helper.setFrom("soumendolui077@gmail.com");
+			helper.setFrom("ahadul@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 			mailSender.send(message);

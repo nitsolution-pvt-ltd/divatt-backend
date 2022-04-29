@@ -66,16 +66,20 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 	@Bean
     public JavaMailSender javaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost("smtp.gmail.com");
+		mailSender.setHost("smtp.hostinger.in");
 		mailSender.setPort(587);
-		mailSender.setUsername("soumendolui077@gmail.com");
-		mailSender.setPassword("Soumen@1234c3");
+		mailSender.setUsername("ahadul@nitsolution.in");
+		mailSender.setPassword("Admin123@");
 		 
 		Properties properties = new Properties();
 		properties.setProperty("mail.smtp.auth", "true");
-//		properties.setProperty("mail.smtp.starttls.enable", "true");
+		properties.setProperty("mail.smtp.starttls.enable", "true");
 //		properties.setProperty("mail.smtp.starttls.required", "true");
 		//spring.mail.properties.mail.smtp.starttls.required=true
+		properties.setProperty("mail.smtp.ssl.enable", "false");
+		properties.setProperty("mail.smtps.quitwait", "false");
+		
+		
 		 
 		mailSender.setJavaMailProperties(properties);
         return mailSender;
