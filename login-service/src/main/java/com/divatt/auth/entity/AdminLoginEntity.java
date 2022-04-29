@@ -51,6 +51,9 @@ public class AdminLoginEntity {
 	@Field(name = "roel_name")
 	private String roleName;
 	
+	@Field(name = "gender")
+	private String gender;
+	
 	@Field(name = "auth_token")
 	private String authToken;
 	
@@ -79,9 +82,12 @@ public class AdminLoginEntity {
 
 
 
+	
+
+
 	public AdminLoginEntity(Object uid, String firstName, String lastName, String email, String password,
 			String mobileNo, String dob, boolean is_active, boolean is_deleted, String role, String roleName,
-			String authToken, String createdBy, String createdOn, String modifiedBy, String modifiedOn,
+			String gender, String authToken, String createdBy, String createdOn, String modifiedBy, String modifiedOn,
 			String profilePic, Json logins) {
 		super();
 		this.uid = uid;
@@ -95,6 +101,7 @@ public class AdminLoginEntity {
 		this.is_deleted = is_deleted;
 		this.role = role;
 		this.roleName = roleName;
+		this.gender = gender;
 		this.authToken = authToken;
 		this.createdBy = createdBy;
 		this.createdOn = createdOn;
@@ -106,14 +113,42 @@ public class AdminLoginEntity {
 
 
 
+
+
+
+	
+
+
 	@Override
 	public String toString() {
 		return "AdminLoginEntity [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
 				+ email + ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", is_active="
-				+ is_active + ", is_deleted=" + is_deleted + ", role=" + role + ", roleName=" + roleName
-				+ ", authToken=" + authToken + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", modifiedBy="
-				+ modifiedBy + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic + ", logins=" + logins + "]";
+				+ is_active + ", is_deleted=" + is_deleted + ", role=" + role + ", roleName=" + roleName + ", gender="
+				+ gender + ", authToken=" + authToken + ", createdBy=" + createdBy + ", createdOn=" + createdOn
+				+ ", modifiedBy=" + modifiedBy + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic
+				+ ", logins=" + logins + "]";
 	}
+
+
+
+
+
+
+	public String getGender() {
+		return gender;
+	}
+
+
+
+
+
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+
+
 
 
 

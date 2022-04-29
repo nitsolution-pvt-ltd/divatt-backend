@@ -313,7 +313,7 @@ public class UserController {
 	}
 	
 	
-	@GetMapping("/designer/list")
+	@GetMapping("/designer/list")  
 	public ResponseEntity<?> designerListing() {
 		try {
 			return this.userService.getDesignerUser();

@@ -73,6 +73,9 @@ public class LoginEntity {
 
 	@Field(name = "modified_by")
 	private String modifiedBy;
+	
+	@Field(name = "gender")
+	private String gender;
 
 	@Field(name = "modified_on")
 	private String modifiedOn;
@@ -88,6 +91,8 @@ public class LoginEntity {
 		// TODO Auto-generated constructor stub
 	}
 
+	
+
 	public LoginEntity(Long uid, @NotNull(message = "User's first name must not be null") String firstName,
 			@NotNull(message = "User's last name must not be null") String lastName,
 			@NotNull(message = "User's email must not be null") String email,
@@ -96,7 +101,7 @@ public class LoginEntity {
 			@NotNull(message = "User's dob must not be null") String dob, boolean isActive, boolean isDeleted,
 			@NotNull(message = "User's role must not be null") Long role,
 			@NotNull(message = "User's role must not be null") String roleName, String authToken, String createdBy,
-			String createdOn, String modifiedBy, String modifiedOn,
+			String createdOn, String modifiedBy, String gender, String modifiedOn,
 			@NotNull(message = "User's profile_pic must not be null") String profilePic, JSONObject logins) {
 		super();
 		this.uid = uid;
@@ -114,19 +119,38 @@ public class LoginEntity {
 		this.createdBy = createdBy;
 		this.createdOn = createdOn;
 		this.modifiedBy = modifiedBy;
+		this.gender = gender;
 		this.modifiedOn = modifiedOn;
 		this.profilePic = profilePic;
 		this.logins = logins;
 	}
+
+
+
+	
 
 	@Override
 	public String toString() {
 		return "LoginEntity [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
 				+ ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", isActive=" + isActive
 				+ ", isDeleted=" + isDeleted + ", role=" + role + ", roleName=" + roleName + ", authToken=" + authToken
-				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", modifiedBy=" + modifiedBy
-				+ ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic + ", logins=" + logins + "]";
+				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", modifiedBy=" + modifiedBy + ", gender="
+				+ gender + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic + ", logins=" + logins + "]";
 	}
+
+
+
+	public String getGender() {
+		return gender;
+	}
+
+
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+
 
 	public Long getUid() {
 		return uid;
