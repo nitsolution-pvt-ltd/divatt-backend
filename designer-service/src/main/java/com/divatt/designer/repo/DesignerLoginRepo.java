@@ -20,6 +20,8 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 	
 	List<DesignerLoginEntity> findByIsDeleted(Boolean isDeleted);
 	
+	Optional<DesignerLoginEntity> findByDIdAndIsProfileCompleated(Long dId, Boolean isProfileCompleated);
+	
 	Page<DesignerLoginEntity> findByIsApproved(Boolean isApproved  ,Pageable pagingSort);
 	Page<DesignerLoginEntity> findByIsProfileSubmitted(Boolean isProfileSubmitted  ,Pageable pagingSort);
 	Page<DesignerLoginEntity> findByIsProfileCompleated(Boolean isProfileCompleated  ,Pageable pagingSort);

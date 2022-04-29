@@ -73,7 +73,9 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 		 
 		Properties properties = new Properties();
 		properties.setProperty("mail.smtp.auth", "true");
-		properties.setProperty("mail.smtp.starttls.enable", "true");
+//		properties.setProperty("mail.smtp.starttls.enable", "true");
+//		properties.setProperty("mail.smtp.starttls.required", "true");
+		//spring.mail.properties.mail.smtp.starttls.required=true
 		 
 		mailSender.setJavaMailProperties(properties);
         return mailSender;
