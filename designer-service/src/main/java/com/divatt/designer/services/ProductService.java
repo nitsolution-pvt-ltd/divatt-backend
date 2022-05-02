@@ -413,7 +413,9 @@ public class ProductService {
 			}
 
 		}
-
+//		productMasterEntity.forEach(e->{
+//			
+//		});
 		return ResponseEntity.ok(productMasterEntity);
 
 	}

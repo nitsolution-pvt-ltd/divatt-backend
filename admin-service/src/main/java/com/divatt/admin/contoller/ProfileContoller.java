@@ -1,17 +1,19 @@
 package com.divatt.admin.contoller;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
+
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+import com.divatt.admin.helper.*;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -25,6 +27,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,11 +36,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.admin.entity.AdminModule;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.entity.category.SubCategoryEntity;
@@ -48,6 +53,7 @@ import com.divatt.admin.services.SequenceGenerator;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
+import com.mongodb.BasicDBList;
 
 @RestController
 @RequestMapping("/admin/profile")
@@ -67,6 +73,9 @@ public class ProfileContoller {
 
 	@Autowired
 	private AdminModulesRepo adminModulesRepo;
+	
+	@Autowired
+	private JwtUtil JwtUtil;
 
 	Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
 
@@ -200,6 +209,8 @@ public class ProfileContoller {
 			loginEntity.setDeleted(findById.isDeleted());
 			loginEntity.setCreatedOn(findById.toString());
 			loginEntity.setModifiedOn(date.toString());
+			loginEntity.setRole(loginEntity.getRole());
+			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName().toUpperCase());
 			loginRepository.save(loginEntity);
 			return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Updated successfully", 200), HttpStatus.OK);
 		} catch (Exception e) {
@@ -317,5 +328,25 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/checkPermission")
+	Boolean checkPermission(@RequestHeader("Authorization") String token , @RequestParam("moduleName") String moduleName ,@RequestParam("access") String access) {
+		System.out.println(token);
+		String extractUsername = JwtUtil.extractUsername(token.substring(7));
+		Long role = loginRepository.findByEmail(extractUsername).get().getRole();
+		ArrayList<AdminModule> modules = adminModulesRepo.findById(role).get().getModules();
+		Boolean haveAccess = false;
+		for(AdminModule obj : modules) {
+			if(obj.getModName().equals(moduleName)) {
+				haveAccess = obj.getModPrivs().get(access);
+			}
+		}
+//		if(!haveAccess)
+//			throw new CustomException("Don't have access on this module");
+		
+		return haveAccess;
+	}
+	
+	
 
 }

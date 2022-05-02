@@ -247,7 +247,7 @@ public class ProfileContoller {
 			designerLoginRepo.save(designerLoginEntity);
 		}
 
-		httpServletResponse.setHeader("Location", "http://localhost:8083/dev/swagger-ui/index.html");
+		httpServletResponse.setHeader("Location", "http://65.1.190.195/admin/#/auth");
 		httpServletResponse.setStatus(302);
 	}
 

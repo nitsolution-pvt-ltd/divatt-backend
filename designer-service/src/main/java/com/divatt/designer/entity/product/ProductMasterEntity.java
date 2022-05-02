@@ -9,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -21,7 +22,7 @@ public class ProductMasterEntity {
 	
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_products";
-	
+	@Field(name = "designer_name")
 	private String designerName;
 	private Integer designerId;
 	//@NotEmpty(message = "Category ID Required")

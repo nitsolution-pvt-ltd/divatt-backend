@@ -43,6 +43,7 @@ public class CustomFunction {
 			//filterProductEntity.setComment(productData);
 			filterProductEntity.setCreatedBy(productData.getCreatedBy());
 			filterProductEntity.setCreatedOn(new Date());
+			filterProductEntity.setDesignerName(productData.getDesignerName());
 			filterProductEntity.setCustomization(productData.getCustomization());
 			filterProductEntity.setCustomizationSOH(productData.getCustomizationSOH());
 			filterProductEntity.setDesignerId(productData.getDesignerId());
