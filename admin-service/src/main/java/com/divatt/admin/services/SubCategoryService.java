@@ -44,7 +44,7 @@ public class SubCategoryService {
 //			subCategoryRepo.findByCategoryName(subCategoryEntity.getCategoryName()).orElseThrow(null)
 
 			Optional<SubCategoryEntity> findBySubCategoryName = subCategoryRepo
-					.findByCategoryName(subCategoryEntity.getCategoryName());
+					.findByCategoryNameAndIsDeleted(subCategoryEntity.getCategoryName(),false);
 			if (findBySubCategoryName.isPresent()) {
 				throw new CustomException("Subcategory already exist!");
 			} else {
