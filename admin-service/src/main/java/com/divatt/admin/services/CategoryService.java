@@ -43,7 +43,7 @@ public class CategoryService {
 					.findByCategoryNameAndIsDeleted(categoryEntity.getCategoryName(),false);
 			if (findByCategoryName.isPresent()) {
 				throw new CustomException("Category already exist!");
-			} else {
+			} else { 
 				CategoryEntity filterCatDetails = new CategoryEntity();
 
 				filterCatDetails.setId(sequenceGenerator.getNextSequence(CategoryEntity.SEQUENCE_NAME));

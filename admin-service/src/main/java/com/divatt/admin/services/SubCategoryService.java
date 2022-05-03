@@ -41,7 +41,7 @@ public class SubCategoryService {
 
 		try {
 
-//			subCategoryRepo.findByCategoryName(subCategoryEntity.getCategoryName()).orElseThrow(null)
+//			subCategoryRepo.findByCategoryName(subCategoryEntity.getCategoryName()).orElseThrow(null) 
 
 			Optional<SubCategoryEntity> findBySubCategoryName = subCategoryRepo
 					.findByCategoryNameAndIsDeleted(subCategoryEntity.getCategoryName(),false);
