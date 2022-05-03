@@ -40,11 +40,11 @@ public class AdminLoginEntity {
 	
 	private String dob;
 	
-	@Field(name = "isActive")
-	private boolean is_active;
+	@Field(name = "is_active")
+	private boolean isActive;
 	
-	@Field(name = "isDeleted")
-	private boolean is_deleted;
+	@Field(name = "is_deleted")
+	private boolean isDeleted;
 	
 	private String role;
 	
@@ -81,12 +81,8 @@ public class AdminLoginEntity {
 	}
 
 
-
-	
-
-
 	public AdminLoginEntity(Object uid, String firstName, String lastName, String email, String password,
-			String mobileNo, String dob, boolean is_active, boolean is_deleted, String role, String roleName,
+			String mobileNo, String dob, boolean isActive, boolean isDeleted, String role, String roleName,
 			String gender, String authToken, String createdBy, String createdOn, String modifiedBy, String modifiedOn,
 			String profilePic, Json logins) {
 		super();
@@ -97,8 +93,8 @@ public class AdminLoginEntity {
 		this.password = password;
 		this.mobileNo = mobileNo;
 		this.dob = dob;
-		this.is_active = is_active;
-		this.is_deleted = is_deleted;
+		this.isActive = isActive;
+		this.isDeleted = isDeleted;
 		this.role = role;
 		this.roleName = roleName;
 		this.gender = gender;
@@ -112,26 +108,22 @@ public class AdminLoginEntity {
 	}
 
 
-
-
-
-
 	
+
+
+
+
 
 
 	@Override
 	public String toString() {
 		return "AdminLoginEntity [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
-				+ email + ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", is_active="
-				+ is_active + ", is_deleted=" + is_deleted + ", role=" + role + ", roleName=" + roleName + ", gender="
+				+ email + ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", isActive="
+				+ isActive + ", isDeleted=" + isDeleted + ", role=" + role + ", roleName=" + roleName + ", gender="
 				+ gender + ", authToken=" + authToken + ", createdBy=" + createdBy + ", createdOn=" + createdOn
 				+ ", modifiedBy=" + modifiedBy + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic
 				+ ", logins=" + logins + "]";
 	}
-
-
-
-
 
 
 	public String getGender() {
@@ -217,21 +209,27 @@ public class AdminLoginEntity {
 		this.dob = dob;
 	}
 
-	public boolean isIs_active() {
-		return is_active;
+	
+	public boolean isActive() {
+		return isActive;
 	}
 
-	public void setIs_active(boolean is_active) {
-		this.is_active = is_active;
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 
-	public boolean isIs_deleted() {
-		return is_deleted;
+
+	public boolean isDeleted() {
+		return isDeleted;
 	}
 
-	public void setIs_deleted(boolean is_deleted) {
-		this.is_deleted = is_deleted;
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
+
+
 	public String getRole() {
 		return role;
 	}

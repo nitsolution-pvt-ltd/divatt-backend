@@ -122,7 +122,8 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 //				if (save.equals(null)) {
 //					throw new CustomException("Data not save! try again");
 //				}
-
+				if(!findByUserName.get().isActive())
+					throw new CustomException("This account has been deactive");
 				return ResponseEntity
 						.ok(new LoginAdminData(token, findByUserName.get().getUid(), findByUserName.get().getEmail(),
 								findByUserName.get().getPassword(), "Login successful", 200, "ADMIN"));

@@ -40,6 +40,7 @@ import com.divatt.designer.entity.profile.SocialProfile;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.repo.DesignerLogRepo;
 import com.divatt.designer.repo.DesignerLoginRepo;
+import com.divatt.designer.repo.DesignerPersonalInfoRepo;
 import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
@@ -64,6 +65,9 @@ public class ProfileContoller {
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	@Autowired
+	private DesignerPersonalInfoRepo designerPersonalInfoRepo;
 
 	@Autowired
 	DesignerLogRepo designerLogRepo;
@@ -186,7 +190,7 @@ public class ProfileContoller {
 	}
 
 	@PutMapping("/profile/update")
-	public ResponseEntity<?> updateDesignerProfile(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
+	public ResponseEntity<?> updateDesignerProfile( @RequestBody DesignerProfileEntity designerProfileEntity) {
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerProfileEntity.getDesignerId());
 		if (!findById.isPresent())
 			throw new CustomException("Designer details not found");
@@ -211,6 +215,8 @@ public class ProfileContoller {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setIsProfileSubmitted(true);
 			designerLoginRepo.save(designerLoginEntityDB);
+			
+//			designerPersonalInfoRepo.save(designerProfileEntity.getDesignerPersonalInfoEntity());
 
 		}
 

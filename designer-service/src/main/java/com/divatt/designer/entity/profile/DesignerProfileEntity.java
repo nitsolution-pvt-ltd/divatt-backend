@@ -32,6 +32,8 @@ public class DesignerProfileEntity {
 	private SocialProfile socialProfile;
 	
 	private String designerName;
+	
+	private DesignerPersonalInfoEntity designerPersonalInfoEntity;
 
 	public DesignerProfileEntity() {
 		super();
@@ -40,14 +42,9 @@ public class DesignerProfileEntity {
 
 	
 
-	
-
-
-
-	
-
 	public DesignerProfileEntity(Long id, Long designerId, @NotNull DesignerProfile designerProfile,
-			@NotNull BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName) {
+			@NotNull BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName,
+			DesignerPersonalInfoEntity designerPersonalInfoEntity) {
 		super();
 		this.id = id;
 		this.designerId = designerId;
@@ -55,13 +52,29 @@ public class DesignerProfileEntity {
 		this.boutiqueProfile = boutiqueProfile;
 		this.socialProfile = socialProfile;
 		this.designerName = designerName;
+		this.designerPersonalInfoEntity = designerPersonalInfoEntity;
 	}
 
 
 
+	@Override
+	public String toString() {
+		return "DesignerProfileEntity [id=" + id + ", designerId=" + designerId + ", designerProfile=" + designerProfile
+				+ ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile + ", designerName="
+				+ designerName + ", designerPersonalInfoEntity=" + designerPersonalInfoEntity + "]";
+	}
 
 
 
+	public DesignerPersonalInfoEntity getDesignerPersonalInfoEntity() {
+		return designerPersonalInfoEntity;
+	}
+
+
+
+	public void setDesignerPersonalInfoEntity(DesignerPersonalInfoEntity designerPersonalInfoEntity) {
+		this.designerPersonalInfoEntity = designerPersonalInfoEntity;
+	}
 
 
 
@@ -82,51 +95,13 @@ public class DesignerProfileEntity {
 	}
 
 
-
-	
-
-
-
-	@Override
-	public String toString() {
-		return "DesignerProfileEntity [id=" + id + ", designerId=" + designerId + ", designerProfile=" + designerProfile
-				+ ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile + ", designerName="
-				+ designerName + "]";
-	}
-
-
-
-
-
-
-
-
-
-	
-
 	public Long getId() {
 		return id;
 	}
-
-
-
-
-
-
-
-
-
+	
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-
-
-
-
-
-
-
 
 	public Long getDesignerId() {
 		return designerId;
@@ -160,8 +135,5 @@ public class DesignerProfileEntity {
 		this.socialProfile = socialProfile;
 	}
 	
-	
-	
-	
-	
+
 }
