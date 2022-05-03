@@ -47,7 +47,7 @@ public class CategoryController {
 			 return this.categoryService.postCategoryDetails(categoryEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
-		}
+		} 
 
 	}
 		
