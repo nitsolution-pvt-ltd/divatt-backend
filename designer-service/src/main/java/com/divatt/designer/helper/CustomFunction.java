@@ -79,12 +79,14 @@ public class CustomFunction {
 	{
 		try
 		{
+			ProductMasterEntity productEntity=productRepo.findById(productId).get();
 			ProductMasterEntity filterProductEntity= new ProductMasterEntity();
 			filterProductEntity.setProductId(productId);
 			filterProductEntity.setSKQCode(productRepo.findById(productId).get().getSKQCode());
 			filterProductEntity.setAge(productData.getAge());
+			filterProductEntity.setDesignerName(productEntity.getDesignerName());
 			//filterProductEntity.setApprovedBy(productData.getApprovedBy());
-			filterProductEntity.setComments(productData.getComments());
+			filterProductEntity.setComments(productEntity.getComments());
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
 			filterProductEntity.setCreatedBy(productData.getCreatedBy());
@@ -99,8 +101,8 @@ public class CustomFunction {
 			filterProductEntity.setImages(productData.getImages());
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
-			filterProductEntity.setIsActive(productData.getIsActive());
-			filterProductEntity.setAdminStatus(productData.getAdminStatus());
+			filterProductEntity.setIsActive(productEntity.getIsActive());
+			filterProductEntity.setAdminStatus(productEntity.getAdminStatus());
 			filterProductEntity.setPrice(productData.getPrice());
 			filterProductEntity.setPriceType(productData.getPriceType());
 			filterProductEntity.setProductDescription(productData.getProductDescription());
@@ -109,11 +111,11 @@ public class CustomFunction {
 			filterProductEntity.setSpecifications(productData.getSpecifications());
 			filterProductEntity.setStanderedSOH(productData.getStanderedSOH());
 			filterProductEntity.setSubCategoryId(productData.getSubCategoryId());
-			filterProductEntity.setAdminStatusOn(productData.getAdminStatusOn());
+			filterProductEntity.setAdminStatusOn(productEntity.getAdminStatusOn());
 			filterProductEntity.setTaxInclusive(productData.getTaxInclusive());
-			filterProductEntity.setApprovedBy(productData.getApprovedBy());
-			filterProductEntity.setApprovedOn(productData.getApprovedOn());
-			filterProductEntity.setComments(productData.getComments());
+			filterProductEntity.setApprovedBy(productEntity.getApprovedBy());
+			filterProductEntity.setApprovedOn(productEntity.getApprovedOn());
+			filterProductEntity.setComments(productEntity.getComments());
 			return filterProductEntity;
 		}
 		catch(Exception e)
