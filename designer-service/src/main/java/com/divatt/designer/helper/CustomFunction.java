@@ -80,7 +80,7 @@ public class CustomFunction {
 		try
 		{
 			ProductMasterEntity productEntity=productRepo.findById(productId).get();
-			System.out.println(productEntity);
+			//System.out.println(productEntity);
 			ProductMasterEntity filterProductEntity= new ProductMasterEntity();
 			filterProductEntity.setProductId(productId);
 			filterProductEntity.setSKQCode(productRepo.findById(productId).get().getSKQCode());
@@ -102,8 +102,8 @@ public class CustomFunction {
 			filterProductEntity.setImages(productData.getImages());
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
-			filterProductEntity.setIsActive(productEntity.getIsActive());
-			filterProductEntity.setAdminStatus(productEntity.getAdminStatus());
+			filterProductEntity.setIsActive(productData.getIsActive());
+			filterProductEntity.setAdminStatus(productData.getAdminStatus());
 			filterProductEntity.setPrice(productData.getPrice());
 			filterProductEntity.setPriceType(productData.getPriceType());
 			filterProductEntity.setProductDescription(productData.getProductDescription());

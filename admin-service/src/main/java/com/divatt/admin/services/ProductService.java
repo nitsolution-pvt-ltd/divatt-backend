@@ -46,6 +46,7 @@ public class ProductService {
 				} else {
 					status = "pending";
 				}
+				//System.out.println(productdata);
 				restTemplate.put("Http://localhost:8083/dev/designerProduct/update/" + productId, productdata,
 						String.class);
 				return new GlobalResponse("Status Updated", "Product " + status + " successfully", 200);
