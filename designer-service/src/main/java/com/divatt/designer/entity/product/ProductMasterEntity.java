@@ -126,7 +126,7 @@ public class ProductMasterEntity {
 		this.updatedOn = updatedOn;
 		this.approvedBy = approvedBy;
 		this.approvedOn = approvedOn;
-		SKQCode = sKQCode;
+		this.SKQCode = sKQCode;
 		this.comments = comments;
 		this.adminStatus = adminStatus;
 	}

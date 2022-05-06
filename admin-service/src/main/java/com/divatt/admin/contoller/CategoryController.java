@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
+import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.CategoryRepo;
 import com.divatt.admin.services.CategoryService;
@@ -72,7 +73,7 @@ public class CategoryController {
 	}
 	
 	@RequestMapping(value = { "/getAllCategory" }, method = RequestMethod.GET)
-	public List<CategoryEntity> getAllCategoryDetails(			
+	public List<SubCategoryEntity> getAllCategoryDetails(			
 			@RequestParam(defaultValue = "DESC") String sort, 
 			@RequestParam(defaultValue = "true") Boolean Status,
 			@RequestParam(defaultValue = "false") Boolean isDeleted) {

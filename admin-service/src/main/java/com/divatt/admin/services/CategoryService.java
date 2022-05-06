@@ -1,6 +1,8 @@
 package com.divatt.admin.services;
 
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
+import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.CategoryRepo;
+import com.divatt.admin.repo.SubCategoryRepo;
 
 @Service
 public class CategoryService {
@@ -268,11 +272,19 @@ public class CategoryService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
-	public List<CategoryEntity> getAllCategoryDetails(Boolean isDeleted, Boolean Status) {
+	@Autowired
+	private SubCategoryRepo subCategoryRepo;
+	public List<SubCategoryEntity> getAllCategoryDetails(Boolean isDeleted, Boolean Status) {
 		try {
 			
-			List<CategoryEntity> findAll = categoryRepo.findByIsDeletedAndIsActiveAndParentId(isDeleted,Status, "0");
+			List<SubCategoryEntity> findAll= subCategoryRepo.findAll()
+					.stream().filter(e->e.getParentId().equals("0"))
+					.map(e->{
+						List<SubCategoryEntity> subCategoryList=subCategoryRepo.findByParentId(e.getId().toString());
+						subCategoryList.stream().filter(e1->e1.getSubCategory().equals(null)).forEach(x->e.setSubCategory(e));
+						return e;
+					})
+					.toList();
 			
 			if (findAll.isEmpty()) {
 				throw new CustomException("Category not found!");
