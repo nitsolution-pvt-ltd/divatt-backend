@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +15,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
+import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.CategoryRepo;
+import com.divatt.admin.repo.SubCategoryRepo;
 
 @Service
 public class CategoryService {
@@ -32,7 +36,9 @@ public class CategoryService {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
-
+	
+	@Autowired
+	private SubCategoryRepo subCategoryRepo;
 
 	public GlobalResponse postCategoryDetails(@RequestBody CategoryEntity categoryEntity) {
 		LOGGER.info("Inside - CategoryService.postCategoryDetails()");
@@ -268,16 +274,44 @@ public class CategoryService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
+	
 	public List<CategoryEntity> getAllCategoryDetails(Boolean isDeleted, Boolean Status) {
 		try {
-			
+						
 			List<CategoryEntity> findAll = categoryRepo.findByIsDeletedAndIsActiveAndParentId(isDeleted,Status, "0");
 			
 			if (findAll.isEmpty()) {
 				throw new CustomException("Category not found!");
 			} else {
 				return findAll;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	public ResponseEntity<?> getCategoryListDetailsService(Boolean isDeleted, Boolean Status) {
+		try {
+			
+			List<SubCategoryEntity> catList = subCategoryRepo.findByIsDeletedAndIsActiveAndParentId(isDeleted,Status, "0")
+					.stream()					
+					.map(e->{
+						List<SubCategoryEntity> subCategoryEntity = subCategoryRepo.findByIsDeletedAndIsActiveAndParentId(isDeleted,Status,e.getId().toString());
+						subCategoryEntity.forEach(x -> 
+						e.setSubCategory(x)
+						 );	
+						return e;
+				})
+				.filter(e->{
+					if(e.getSubCategory()!=null)
+						return true;
+					return false;
+				}).collect(Collectors.toList());
+			
+			if (catList.isEmpty()) {
+				throw new CustomException("Category not found!");
+			} else {
+				return ResponseEntity.ok(catList);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.category.SubCategoryEntity;
 
 
@@ -29,5 +30,9 @@ public interface SubCategoryRepo extends MongoRepository<SubCategoryEntity,Integ
 	
 	List<SubCategoryEntity> findByParentIdAndIsDeletedAndIsActive(String ParentId,Boolean isDeleted, Boolean Status);
 	
-
+	List<SubCategoryEntity> findByParentId(String ParentId);
+	
+	List<SubCategoryEntity> findByIsDeletedAndIsActiveAndParentId(Boolean isDeleted, Boolean Status,String string);
+	
+	
 }
