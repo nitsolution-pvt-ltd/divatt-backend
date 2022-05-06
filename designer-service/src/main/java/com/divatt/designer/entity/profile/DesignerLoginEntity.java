@@ -38,6 +38,10 @@ public class DesignerLoginEntity {
 	
 	@Field(name = "logins") private Json logins;
 	private DesignerProfileEntity designerProfileEntity;
+	
+	private Integer productCount;
+	
+	private Integer follwerCount;
 
 	public DesignerLoginEntity() {
 		super();
@@ -59,6 +63,86 @@ public class DesignerLoginEntity {
 
 
 	
+
+	public Integer getProductCount() {
+		return productCount;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setProductCount(Integer productCount) {
+		this.productCount = productCount;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public Integer getFollwerCount() {
+		return follwerCount;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setFollwerCount(Integer follwerCount) {
+		this.follwerCount = follwerCount;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String password, String authToken,
 			@NotNull Boolean isActive, @NotNull Boolean isDeleted, @NotNull Boolean isApproved,
