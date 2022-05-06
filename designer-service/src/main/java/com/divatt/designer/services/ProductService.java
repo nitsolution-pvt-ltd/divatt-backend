@@ -623,6 +623,10 @@ public class ProductService {
 			query.addCriteria(Criteria.where("designerId").is(Id).and("isActive").is(true));
 			List<ProductMasterEntity> productList=mongoOperations.find(query, ProductMasterEntity.class);
 			//return productList;
+			if(productList.isEmpty())
+			{
+				throw new CustomException("No product found");
+			}
 			long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
 			Random rd = new Random();
 			if (productList.size() < productList.size()) {
