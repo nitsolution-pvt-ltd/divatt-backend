@@ -97,7 +97,36 @@ logging:
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 1296000000
 
+connection: 
+  pool: 
+    initialPoolSize: 5
+    minPoolSize: 10
+    maxPoolSize: 20
+    maxIdleTime: 3000
+    
+spring.servlet.multipart:
+  enabled: true
+  max-file-size: 100MB
+#file.upload-path: C:\\Users\\shant\\Desktop\\uploadfile\\
+file.upload-path: /home/ubuntu/Attachment/
 
+
+
+#AWS properties
+cloud:
+  aws:
+    region:
+      static: ap-south-1
+    stack:
+      auto: false
+    credentials:
+      accessKey: AKIA5LPN4UP72CHINWRB
+      secretKey: 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
+
+application:
+  bucket:
+    name: lara-tri
+    basepath: D-App
 ---
 spring:
   profiles: prod

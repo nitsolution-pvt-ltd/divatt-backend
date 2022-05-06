@@ -4,6 +4,8 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 import static org.springframework.data.mongodb.core.query.Query.query;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import com.divatt.admin.helper.*;
+
+import javax.servlet.annotation.MultipartConfig;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -40,7 +44,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.divatt.admin.entity.AdminModule;
 import com.divatt.admin.entity.GlobalResponse;
@@ -54,11 +60,15 @@ import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mongodb.BasicDBList;
+import com.divatt.admin.services.*;
 
 @RestController
 @RequestMapping("/admin/profile")
 public class ProfileContoller {
 
+	@Autowired
+	private S3Service s3Service;
+	
 	@Autowired
 	private LoginRepository loginRepository;
 
@@ -345,6 +355,15 @@ public class ProfileContoller {
 //			throw new CustomException("Don't have access on this module");
 		
 		return haveAccess;
+	}
+	
+	@GetMapping("/s3")
+	public ResponseEntity<?> getFiles(){
+		return ResponseEntity.ok(s3Service.listFiles());
+	}
+	@PostMapping("/s3/upload")
+	public ResponseEntity<?> uploadFiles(@RequestPart(value = "file", required = false) MultipartFile file) throws IOException{
+		return ResponseEntity.ok(s3Service.uploadFile(file.getOriginalFilename(),file.getBytes()));
 	}
 	
 	

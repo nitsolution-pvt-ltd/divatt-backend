@@ -127,11 +127,8 @@ public class ProfileContoller {
 			designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
 			designerLoginEntity.setPassword(
 					bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
-			designerLoginEntity.setIsActive(false);
 			designerLoginEntity.setIsDeleted(false);
-			designerLoginEntity.setIsApproved(false);
-			designerLoginEntity.setIsProfileCompleated(false);
-			designerLoginEntity.setIsProfileSubmitted(false);
+			designerLoginEntity.setProfileStatus("INACTIVE");
 			if (designerLoginRepo.save(designerLoginEntity) != null) {
 				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
 				designerProfileEntity
@@ -178,12 +175,14 @@ public class ProfileContoller {
 		if (!findById.isPresent())
 			throw new CustomException("Designer Details Not Found");
 		else {
+			
+			if(designerLoginEntity.getProfileStatus().equals("REJECTED")) {
+				designerLoginEntity.setAdminComment(designerLoginEntity.getAdminComment());
+			}
+			
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
-			designerLoginEntityDB.setIsActive(designerLoginEntity.getIsActive());
+			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
-			designerLoginEntityDB.setIsApproved(designerLoginEntity.getIsApproved());
-			designerLoginEntityDB.setIsProfileCompleated(designerLoginEntity.getIsProfileCompleated());
-			designerLoginEntityDB.setIsProfileSubmitted(designerLoginEntity.getIsProfileSubmitted());
 			designerLoginRepo.save(designerLoginEntityDB);
 		}
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
@@ -213,7 +212,7 @@ public class ProfileContoller {
 
 			designerProfileRepo.save(designerProfileEntityDB);
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
-			designerLoginEntityDB.setIsProfileSubmitted(true);
+			designerLoginEntityDB.setProfileStatus("SUBMITTED");
 			designerLoginRepo.save(designerLoginEntityDB);
 			
 //			designerPersonalInfoRepo.save(designerProfileEntity.getDesignerPersonalInfoEntity());
@@ -228,15 +227,12 @@ public class ProfileContoller {
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted,
-			@RequestParam(defaultValue = "false") Boolean isApproved,
-			@RequestParam(defaultValue = "false") Boolean isProfileCompleated,
-			@RequestParam(defaultValue = "false") Boolean isProfileSubmitted,
-			@RequestParam(defaultValue = "isDeleted") String fieldName, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam(defaultValue = "APPROVE") String profileStatus,
+			@RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 
 		try {
-			return this.getDesignerProfDetails(page, limit, sort, sortName, isDeleted, isApproved, isProfileCompleated,
-					isProfileSubmitted, keyword, sortBy, fieldName);
+			return this.getDesignerProfDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy, profileStatus);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -249,7 +245,8 @@ public class ProfileContoller {
 				.findByEmail(new String(Base64.getDecoder().decode(email)));
 		if (findByEmail.isPresent()) {
 			DesignerLoginEntity designerLoginEntity = findByEmail.get();
-			designerLoginEntity.setIsActive(true);
+			if(designerLoginEntity.getProfileStatus().equals("INACTIVE"))
+				designerLoginEntity.setProfileStatus("ACTIVE");
 			designerLoginRepo.save(designerLoginEntity);
 		}
 
@@ -298,8 +295,8 @@ public class ProfileContoller {
 	}
 
 	public Map<String, Object> getDesignerProfDetails(int page, int limit, String sort, String sortName,
-			Boolean isDeleted, Boolean isApproved, Boolean isProfileCompleated, Boolean isProfileSubmitted,
-			String keyword, Optional<String> sortBy, String fieldName) {
+			Boolean isDeleted,
+			String keyword, Optional<String> sortBy,String profileStatus) {
 		try {
 			int CountData = (int) designerLoginRepo.count();
 			Pageable pagingSort = null;
@@ -316,31 +313,18 @@ public class ProfileContoller {
 			Page<DesignerLoginEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
+				
+				findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted,profileStatus,pagingSort);
 
-				if (fieldName.equals("isDeleted"))
-					findAll = designerLoginRepo.findByIsDeleted(isDeleted, pagingSort);
-				else if (fieldName.equals("isApproved"))
-					findAll = designerLoginRepo.findByIsApproved(isApproved, pagingSort);
-				else if (fieldName.equals("isProfileCompleated"))
-					findAll = designerLoginRepo.findByIsProfileCompleated(isProfileCompleated, pagingSort);
-				else if (fieldName.equals("isProfileSubmitted"))
-					findAll = designerLoginRepo.findByIsProfileSubmittedAndIsProfileCompleated(isProfileSubmitted,isProfileCompleated, pagingSort);
-				else {
-					findAll = designerLoginRepo.findByIsDeleted(isDeleted, pagingSort);
-				}
+//					findAll = designerLoginRepo.findByIsDeleted(isDeleted, pagingSort);
 
 			} else {
-				if (fieldName.equals("isDeleted"))
-					findAll = designerLoginRepo.SearchByDelete(keyword, isDeleted, pagingSort);
-				else if (fieldName.equals("isApproved"))
-					findAll = designerLoginRepo.SearchByApproved(keyword, isApproved, pagingSort);
-				else if (fieldName.equals("isProfileCompleated"))
-					findAll = designerLoginRepo.SearchByProfileCompleated(keyword, isProfileCompleated, pagingSort);
-				else if (fieldName.equals("isProfileSubmitted"))
-					findAll = designerLoginRepo.SearchByProfileSubmittedAndProfileCompleated(keyword, isProfileSubmitted,isProfileCompleated, pagingSort);
-				else {
-					findAll = designerLoginRepo.SearchByDelete(keyword, isDeleted, pagingSort);
-				}
+				
+				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted,profileStatus, pagingSort);
+				
+
+//					findAll = designerLoginRepo.SearchByDelete(keyword, isDeleted, pagingSort);
+				
 			}
 
 			if (findAll.getSize() <= 1)
@@ -369,10 +353,10 @@ public class ProfileContoller {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("waitingForApproval", designerLoginRepo.findByIsApproved(false).size());
-			response.put("waitingForSubmit", designerLoginRepo.findByIsApproved(true).size());
-			response.put("submitted", designerLoginRepo.findByIsProfileSubmittedAndIsProfileCompleated(true,false).size());
-			response.put("compleated", designerLoginRepo.findByIsProfileCompleated(true).size());
+			response.put("waitingForApproval", designerLoginRepo.findByProfileStatus("ACTIVE").size());
+			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatus("APPROVED").size());
+			response.put("submitted", designerLoginRepo.findByProfileStatus("SUBMITTED").size());
+			response.put("compleated", designerLoginRepo.findByProfileStatus("COMPLEATED").size());
 
 			return response;
 		} catch (Exception e) {
