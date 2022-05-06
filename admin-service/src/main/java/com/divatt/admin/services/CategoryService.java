@@ -1,6 +1,8 @@
 package com.divatt.admin.services;
 
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -274,7 +276,6 @@ public class CategoryService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
 	public List<CategoryEntity> getAllCategoryDetails(Boolean isDeleted, Boolean Status) {
 		try {
 						

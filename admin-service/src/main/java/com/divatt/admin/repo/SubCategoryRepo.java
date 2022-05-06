@@ -35,4 +35,5 @@ public interface SubCategoryRepo extends MongoRepository<SubCategoryEntity,Integ
 	List<SubCategoryEntity> findByIsDeletedAndIsActiveAndParentId(Boolean isDeleted, Boolean Status,String string);
 	
 	
+	
 }
