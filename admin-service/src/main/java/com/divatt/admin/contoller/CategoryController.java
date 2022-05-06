@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,7 +74,7 @@ public class CategoryController {
 	}
 	
 	@RequestMapping(value = { "/getAllCategory" }, method = RequestMethod.GET)
-	public List<SubCategoryEntity> getAllCategoryDetails(			
+	public List<CategoryEntity> getAllCategoryDetails(			
 			@RequestParam(defaultValue = "DESC") String sort, 
 			@RequestParam(defaultValue = "true") Boolean Status,
 			@RequestParam(defaultValue = "false") Boolean isDeleted) {
@@ -81,6 +82,21 @@ public class CategoryController {
 
 		try {		
 			return this.categoryService.getAllCategoryDetails(isDeleted, Status);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@RequestMapping(value = { "/getCategoryList" }, method = RequestMethod.GET)
+	public ResponseEntity<?> getCategoryListDetails(			
+			@RequestParam(defaultValue = "DESC") String sort, 
+			@RequestParam(defaultValue = "true") Boolean Status,
+			@RequestParam(defaultValue = "false") Boolean isDeleted) {
+		LOGGER.info("Inside - CategoryController.getCategoryList()");
+
+		try {		
+			return this.categoryService.getCategoryListDetailsService(isDeleted, Status);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
