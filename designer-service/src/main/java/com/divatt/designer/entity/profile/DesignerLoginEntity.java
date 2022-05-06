@@ -47,102 +47,20 @@ public class DesignerLoginEntity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-	
-
-	
-
-
-
-	
-
-
-
-
-
-
-
-	
-
 	public Integer getProductCount() {
 		return productCount;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	public void setProductCount(Integer productCount) {
 		this.productCount = productCount;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public Integer getFollwerCount() {
 		return follwerCount;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setFollwerCount(Integer follwerCount) {
 		this.follwerCount = follwerCount;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String password, String authToken,
 			@NotNull Boolean isActive, @NotNull Boolean isDeleted, @NotNull Boolean isApproved,
@@ -163,30 +81,6 @@ public class DesignerLoginEntity {
 		this.designerProfileEntity = designerProfileEntity;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
 	@Override
 	public String toString() {
 		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", password=" + password + ", authToken="
@@ -196,83 +90,21 @@ public class DesignerLoginEntity {
 				+ designerProfileEntity + "]";
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public DesignerProfileEntity getDesignerProfileEntity() {
 		return designerProfileEntity;
 	}
-
-
-
-
-
-
 
 	public void setDesignerProfileEntity(DesignerProfileEntity designerProfileEntity) {
 		this.designerProfileEntity = designerProfileEntity;
 	}
 
-
-
-
-
-
-
-	
-
 	public Long getdId() {
 		return dId;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void setdId(Long dId) {
 		this.dId = dId;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	public String getEmail() {
 		return email;
@@ -386,12 +218,7 @@ public class DesignerLoginEntity {
 
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
-	}
-
-	
-	
-	
-	
+	}	
 	
 
 }
