@@ -235,5 +235,16 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
+	@GetMapping("/UserDesignerProductList/{designerId}")
+	public List<ProductMasterEntity>UserDesignerProductList (@PathVariable Integer designerId)
+	{
+		try
+		{
+			return this.productService.UserDesignerProductList(designerId);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

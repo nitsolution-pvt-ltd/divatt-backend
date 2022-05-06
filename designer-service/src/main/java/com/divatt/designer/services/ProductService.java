@@ -28,6 +28,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.entity.ListProduct;
@@ -123,7 +124,7 @@ public class ProductService {
 		try {
 			LOGGER.info("Inside-ProductService.addData()");
 			Query query = new Query();
-			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
+			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()).and("isActive").is(true));
 			List<DesignerProfileEntity> designerProfileInfo = mongoOperations.find(query, DesignerProfileEntity.class);
 			if (!designerProfileInfo.isEmpty()) {
 				Query query1 = new Query();
@@ -615,4 +616,40 @@ public class ProductService {
 		}
 	}
 
+	public List<ProductMasterEntity> UserDesignerProductList(Integer Id) {
+		try
+		{
+			Query query= new Query();
+			query.addCriteria(Criteria.where("designerId").is(Id).and("isActive").is(true));
+			List<ProductMasterEntity> productList=mongoOperations.find(query, ProductMasterEntity.class);
+			//return productList;
+			if(productList.isEmpty())
+			{
+				throw new CustomException("No product found");
+			}
+			long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
+			Random rd = new Random();
+			if (productList.size() < productList.size()) {
+				return productList;
+			}
+			List<ProductMasterEntity> productMasterEntity = new ArrayList<>();
+			Boolean flag = true;
+			while (flag) {
+				int nextInt = rd.nextInt((int) count);
+				for (ProductMasterEntity obj : productList) {
+					if (obj.getProductId() == nextInt) {
+						productMasterEntity.add(obj);
+					}
+					if (productMasterEntity.size() > 14)
+						flag = false;
+				}
+
+			}
+			return productMasterEntity;
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

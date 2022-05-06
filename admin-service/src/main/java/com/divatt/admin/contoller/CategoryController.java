@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
+import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.CategoryRepo;
 import com.divatt.admin.services.CategoryService;
@@ -80,6 +82,21 @@ public class CategoryController {
 
 		try {		
 			return this.categoryService.getAllCategoryDetails(isDeleted, Status);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@RequestMapping(value = { "/getCategoryList" }, method = RequestMethod.GET)
+	public ResponseEntity<?> getCategoryListDetails(			
+			@RequestParam(defaultValue = "DESC") String sort, 
+			@RequestParam(defaultValue = "true") Boolean Status,
+			@RequestParam(defaultValue = "false") Boolean isDeleted) {
+		LOGGER.info("Inside - CategoryController.getCategoryList()");
+
+		try {		
+			return this.categoryService.getCategoryListDetailsService(isDeleted, Status);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
