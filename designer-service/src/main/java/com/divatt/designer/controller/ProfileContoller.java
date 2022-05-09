@@ -42,6 +42,7 @@ import com.divatt.designer.repo.DesignerLogRepo;
 import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerPersonalInfoRepo;
 import com.divatt.designer.repo.DesignerProfileRepo;
+import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
 import com.google.gson.JsonObject;
@@ -68,6 +69,9 @@ public class ProfileContoller {
 	
 	@Autowired
 	private DesignerPersonalInfoRepo designerPersonalInfoRepo;
+	
+	@Autowired
+	private ProductRepository productRepo;
 
 	@Autowired
 	DesignerLogRepo designerLogRepo;
@@ -260,17 +264,20 @@ public class ProfileContoller {
 			long count = sequenceGenerator.getCurrentSequence(DesignerLoginEntity.SEQUENCE_NAME);
 			Random rd = new Random();
 			List<Integer> lst = new ArrayList<>();
-			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeleted(false);
+			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndIsApproved(false,"Approved");
 			if (findAll.size() <= 15) {
 				return ResponseEntity.ok(findAll);
 			}
 			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
 			Boolean flag = true;
+			Integer productCount = 0;
+			HashMap<String,Integer> maps=new HashMap<String,Integer>();
 			while (flag) {
 				int nextInt = rd.nextInt((int) count);
 				for (DesignerLoginEntity obj : findAll) {
+					
 					if (obj.getdId() == nextInt) {
-						designerLoginEntity.add(obj);
+						designerLoginEntity.add(obj);					  
 
 					}
 					if (designerLoginEntity.size() > 14)
@@ -280,6 +287,7 @@ public class ProfileContoller {
 			}
 			Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
 				try {
+					e.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerId(false,"Approved",e.getdId()));
 					e.setDesignerProfileEntity(
 							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
 				} catch (Exception o) {

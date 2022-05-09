@@ -37,13 +37,29 @@ public class DesignerLoginEntity {
 	
 	@DBRef
 	private DesignerProfileEntity designerProfileEntity;
+	
+	private Integer productCount;
+	
+	private Integer follwerCount;
 
 	public DesignerLoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	public Integer getProductCount() {
+		return productCount;
+	}
 
-	
+	public void setProductCount(Integer productCount) {
+		this.productCount = productCount;
+	}
+
+	public Integer getFollwerCount() {
+		return follwerCount;
+	}
+	public void setFollwerCount(Integer follwerCount) {
+		this.follwerCount = follwerCount;
+	}
 
 	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String password, String authToken,
 			@NotNull Boolean isDeleted, @NotNull String profileStatus, @NotNull String accountStatus,
@@ -61,10 +77,6 @@ public class DesignerLoginEntity {
 		this.designerProfileEntity = designerProfileEntity;
 	}
 
-
-
-	
-
 	@Override
 	public String toString() {
 		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", password=" + password + ", authToken="
@@ -72,8 +84,6 @@ public class DesignerLoginEntity {
 				+ accountStatus + ", adminComment=" + adminComment + ", logins=" + logins + ", designerProfileEntity="
 				+ designerProfileEntity + "]";
 	}
-
-
 
 	public DesignerProfileEntity getDesignerProfileEntity() {
 		return designerProfileEntity;
@@ -127,12 +137,6 @@ public class DesignerLoginEntity {
 		this.isDeleted = isDeleted;
 	}
 
-
-
-	
-
-
-
 	public String getProfileStatus() {
 		return profileStatus;
 	}
@@ -175,12 +179,7 @@ public class DesignerLoginEntity {
 
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
-	}
-
-	
-	
-	
-	
+	}	
 	
 
 }

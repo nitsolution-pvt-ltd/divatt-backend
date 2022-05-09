@@ -59,6 +59,8 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	Integer countByIsDeletedAndAdminStatus(Boolean isDeleted, String AdminStatus);
 	
+	Integer countByIsDeletedAndAdminStatusAndDesignerId(Boolean isDeleted, String AdminStatus,Long DesignerId);
+	
 //	Integer countByIsDeletedAndAdminAdApproved(Boolean isDeleted, String AdminAdApproved);	
 	
 //	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.dealPrice' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2, 'isActive' : ?3 }]}")
