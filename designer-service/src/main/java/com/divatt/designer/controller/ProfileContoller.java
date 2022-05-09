@@ -265,6 +265,7 @@ public class ProfileContoller {
 			Random rd = new Random();
 			
 			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(false,"APPROVE");
+
 			if (findAll.size() <= 15) {
 				return ResponseEntity.ok(findAll);
 			}

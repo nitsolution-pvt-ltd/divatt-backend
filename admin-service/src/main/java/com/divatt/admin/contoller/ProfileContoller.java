@@ -33,6 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,6 +65,7 @@ import com.divatt.admin.services.*;
 
 @RestController
 @RequestMapping("/admin/profile")
+
 public class ProfileContoller {
 
 	@Autowired
@@ -88,9 +90,9 @@ public class ProfileContoller {
 	private JwtUtil JwtUtil;
 
 	Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
-
+//eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyYW1AZ21haWwuY29tIiwiZXhwIjoxNjUzMzcyODY2LCJpYXQiOjE2NTIwNzY4NjZ9.fL7EuQfCtBsn3rGRh8mcDQJd_GyLyZkrI69ID7G8LYU
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
-	public Map<String, Object> getAll(@RequestParam(defaultValue = "0") int page,
+	public Map<String, Object> getAll(@RequestHeader("Authorization") String token,@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
@@ -98,6 +100,8 @@ public class ProfileContoller {
 		LOGGER.info("Inside - ProfileContoller.getAll()");
 
 		try {
+			if(!checkPermission(token, "module7", "list"))
+				throw new CustomException("Don't have list permission");
 			return this.getAdminProfDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -106,10 +110,12 @@ public class ProfileContoller {
 	}
 
 	@GetMapping("/all")
-	public List<LoginEntity> getAllProf() {
+	public List<LoginEntity> getAllProf(@RequestHeader("Authorization") String token) {
 		LOGGER.info("Inside - ProfileContoller.getAllProf()");
 
 		try {
+			if(!checkPermission(token, "module7", "list"))
+				throw new CustomException("Don't have list permission");
 			List<LoginEntity> orElseThrow = Optional
 					.of(mongoOperations.find(query(where("is_deleted").is(false)), LoginEntity.class))
 					.orElseThrow(() -> new CustomException("Internal Server Error"));
@@ -123,9 +129,11 @@ public class ProfileContoller {
 	}
 
 	@GetMapping("/{id}")
-	public LoginEntity getProfById(@PathVariable("id") Long id) {
+	public LoginEntity getProfById(@RequestHeader("Authorization") String token,@PathVariable("id") Long id) {
 		LOGGER.info("Inside - ProfileContoller.getProfById()");
 		try {
+			if(!checkPermission(token, "module7", "list"))
+				throw new CustomException("Don't have get permission");
 			List<LoginEntity> orElseThrow = Optional.of(mongoOperations
 					.find(query(where("_id").is(id).andOperator(where("is_deleted").is(false))), LoginEntity.class))
 					.orElseThrow(() -> new RuntimeException("Internal Server Error"));
@@ -139,12 +147,14 @@ public class ProfileContoller {
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<?> addProfile(@Valid @RequestBody LoginEntity loginEntity, Errors error) {
+	public ResponseEntity<?> addProfile(@RequestHeader("Authorization") String token,@Valid @RequestBody LoginEntity loginEntity, Errors error) {
 		LOGGER.info("Inside - ProfileContoller.addProfile()");
 		try {
 			if (error.hasErrors()) {
 				throw new CustomException("Please check all input fields");
 			}
+			if(!checkPermission(token, "module7", "create"))
+				throw new CustomException("Don't have create permission");
 			Optional<LoginEntity> findByEmail = loginRepository.findByEmail(loginEntity.getEmail());
 			if (findByEmail.isPresent()) {
 				throw new CustomException("This email already present");
@@ -194,13 +204,15 @@ public class ProfileContoller {
 
 	@SuppressWarnings("unlikely-arg-type")
 	@PutMapping("/update")
-	public ResponseEntity<?> updateProfile(@Valid @RequestBody LoginEntity loginEntity, Errors error) {
+	public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String token,@Valid @RequestBody LoginEntity loginEntity, Errors error) {
 		LOGGER.info("Inside - ProfileContoller.updateProfile()");
 		try {
 
 			if (error.hasErrors()) {
 				throw new CustomException("Check The Fields");
 			}
+			if(!checkPermission(token, "module7", "update"))
+				throw new CustomException("Don't have update permission");
 			if (loginEntity.getUid() == null || loginEntity.getUid().equals(""))
 				throw new CustomException("Id is Null");
 			if (!loginRepository.findByEmail(loginEntity.getEmail()).stream()
@@ -229,9 +241,11 @@ public class ProfileContoller {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteProfById(@PathVariable("id") Long id) {
+	public ResponseEntity<?> deleteProfById(@RequestHeader("Authorization") String token,@PathVariable("id") Long id) {
 		LOGGER.info("Inside - ProfileContoller.deleteProfById()");
 		try {
+			if(!checkPermission(token, "module7", "delete"))
+				throw new CustomException("Don't have delete permission");
 			if (mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
 				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)),
 						new Update().set("is_deleted", true), LoginEntity.class))
@@ -247,9 +261,11 @@ public class ProfileContoller {
 	}
 
 	@PutMapping("/{id}/{status}")
-	public ResponseEntity<?> changeStatusById(@PathVariable("id") Long id, @PathVariable("status") Boolean status) {
+	public ResponseEntity<?> changeStatusById(@RequestHeader("Authorization") String token,@PathVariable("id") Long id, @PathVariable("status") Boolean status) {
 		LOGGER.info("Inside - ProfileContoller.changeStatusById()");
 		try {
+			if(!checkPermission(token, "module7", "update"))
+				throw new CustomException("Don't have update permission");
 			if (mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
 				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)),
 						new Update().set("is_active", status), LoginEntity.class))
@@ -266,9 +282,11 @@ public class ProfileContoller {
 	}
 	
 	@PutMapping("/muldelete")
-	public GlobalResponse subAdminMulDelete(@RequestBody() List<Integer> CateID) {
+	public GlobalResponse subAdminMulDelete(@RequestHeader("Authorization") String token,@RequestBody() List<Integer> CateID) {
 		LOGGER.info("Inside - ProfileContoller.subAdminMulDelete()");
 		try {
+			if(!checkPermission(token, "module7", "delete"))
+				throw new CustomException("Don't have delete permission");
 			if (!CateID.equals(null)){
 				for (Integer CateIdRowId : CateID) {
 
@@ -339,8 +357,7 @@ public class ProfileContoller {
 		}
 	}
 	
-	@GetMapping("/checkPermission")
-	Boolean checkPermission(@RequestHeader("Authorization") String token , @RequestParam("moduleName") String moduleName ,@RequestParam("access") String access) {
+	Boolean checkPermission(String token ,String moduleName , String access) {
 		System.out.println(token);
 		String extractUsername = JwtUtil.extractUsername(token.substring(7));
 		Long role = loginRepository.findByEmail(extractUsername).get().getRole();
@@ -357,7 +374,7 @@ public class ProfileContoller {
 		return haveAccess;
 	}
 	
-	@GetMapping("/s3")
+	@GetMapping("/s3/getFiles")
 	public ResponseEntity<?> getFiles(){
 		return ResponseEntity.ok(s3Service.listFiles());
 	}

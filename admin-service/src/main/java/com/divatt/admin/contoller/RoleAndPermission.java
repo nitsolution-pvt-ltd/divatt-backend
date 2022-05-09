@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,6 +43,7 @@ import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminModulesRepo;
 import com.divatt.admin.repo.LoginRepository;
+import com.divatt.admin.services.RoleAndPermissionService;
 import com.divatt.admin.services.SequenceGenerator;
 import com.google.gson.JsonObject;
 import com.mongodb.BasicDBList;
@@ -63,16 +65,18 @@ public class RoleAndPermission {
 	@Autowired
 	private MongoOperations mongoOperations;
 	
+	
 	@Autowired
-	private LoginRepository loginRepository;
+	private RoleAndPermissionService roleAndPermissionService;
 
 	Logger LOGGER = LoggerFactory.getLogger(RoleAndPermission.class);
 
 	@GetMapping("/modules")
-	public ResponseEntity<?> getModules() {
+	public ResponseEntity<?> getModules(@RequestHeader("Authorization") String token) {
 		LOGGER.info("Inside - RoleAndPermission.getModules()");
 		try {
-
+			if(!roleAndPermissionService.checkPermission(token, "module6", "list"))
+				throw new CustomException("Don't have list permission");
 			Stream<AdminModules> orElseThrow = Optional
 					.of(adminModulesRepo.findAll().stream()
 							.filter(e -> e.getMetaKey() != null && e.getMetaKey().equals("admin_modules")))
@@ -91,10 +95,11 @@ public class RoleAndPermission {
 	}
 
 	@GetMapping("/roles")
-	public ResponseEntity<?> getRoles() {
+	public ResponseEntity<?> getRoles(@RequestHeader("Authorization") String token) {
 		LOGGER.info("Inside - RoleAndPermission.getRole()");
 		try {
-
+			if(!roleAndPermissionService.checkPermission(token, "module6", "list"))
+				throw new CustomException("Don't have list permission");
 			return ResponseEntity.ok(Optional.of(adminModulesRepo.findByIsDeleted(false).stream().filter(e -> {
 				try {
 					if (e.getMetaKey().equals("ROLE"))
