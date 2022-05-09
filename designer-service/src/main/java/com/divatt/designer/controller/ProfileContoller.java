@@ -264,7 +264,7 @@ public class ProfileContoller {
 			long count = sequenceGenerator.getCurrentSequence(DesignerLoginEntity.SEQUENCE_NAME);
 			Random rd = new Random();
 			List<Integer> lst = new ArrayList<>();
-			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndIsApproved(false,"Approved");
+			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(false,"Approved");
 			if (findAll.size() <= 15) {
 				return ResponseEntity.ok(findAll);
 			}
