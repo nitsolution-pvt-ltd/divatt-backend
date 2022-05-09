@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -33,6 +34,8 @@ public class DesignerLoginEntity {
 	@Field(name = "admin_comment") private String adminComment;
 	
 	@Field(name = "logins") private Json logins;
+	
+	@DBRef
 	private DesignerProfileEntity designerProfileEntity;
 
 	public DesignerLoginEntity() {
