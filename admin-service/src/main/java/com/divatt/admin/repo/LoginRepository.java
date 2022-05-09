@@ -27,7 +27,8 @@ public interface LoginRepository extends MongoRepository<LoginEntity, Object> {
 		@Query(value = "{ $or: [ { 'firstName' : {$regex:?0,$options:'i'} }, { 'lastName' : {$regex:?0,$options:'i'} },{ 'email' : {$regex:?0,$options:'i'} },{ 'mobileNo' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
 	public Page<LoginEntity> Search(String sortKey, Boolean isDeleted,Pageable pageable);
 	
-	
+//		@Query(value = "{ $or: [ { 'firstName' : {$regex:?0,$options:'i'} }, { 'lastName' : {$regex:?0,$options:'i'} },{ 'email' : {$regex:?0,$options:'i'} },{ 'mobileNo' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 },{ roleName : {$ne : 'SADMIN'} }]}")
+//		public Page<LoginEntity> Search(String sortKey, Boolean isDeleted,Pageable pageable);
 	
 //	@Query(value = "select login from LoginEntity login where userName = ?1 and accessToken = ?2")
 //	Optional<LoginEntity> findByUserNameAndToken(String userName,String accessToken);

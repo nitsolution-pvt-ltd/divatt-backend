@@ -121,10 +121,11 @@ public class RoleAndPermission {
 	}
 
 	@GetMapping("/role/{id}")
-	public ResponseEntity<?> getRole(@PathVariable("id") Long id) {
+	public ResponseEntity<?> getRole(@PathVariable("id") Long id,@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - RoleAndPermission.getRole()");
 		try {
-
+			if(!roleAndPermissionService.checkPermission(token, "module6", "list"))
+				throw new CustomException("Don't have list permission");
 			Optional<AdminModules> findById = adminModulesRepo.findById(id);
 			if (findById.isPresent()) {
 				Optional<AdminModules> findByMetaKey = adminModulesRepo.findByMetaKey("admin_modules");
@@ -147,8 +148,9 @@ public class RoleAndPermission {
 	}
 
 	@PostMapping("/role")
-	public ResponseEntity<?> addRole(@RequestBody AdminModules adminModules) {
-		
+	public ResponseEntity<?> addRole(@RequestHeader("Authorization") String token,@RequestBody AdminModules adminModules) {
+		if(!roleAndPermissionService.checkPermission(token, "module6", "create"))
+			throw new CustomException("Don't have add permission");
 		List<AdminModules> find = mongoOperations
 		.find(query(where("roleName").is(adminModules.getRoleName().toUpperCase())), AdminModules.class);
 		if(find.size()>0) {
@@ -178,13 +180,15 @@ public class RoleAndPermission {
 	
 	
 	@GetMapping("/list/role")
-	public ResponseEntity<?> getListOfRoles(@RequestParam(defaultValue = "0") int page,
+	public ResponseEntity<?> getListOfRoles(@RequestHeader("Authorization") String token,@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - RoleAndPermission.getListOfRoles()");
 		try {
+			if(!roleAndPermissionService.checkPermission(token, "module6", "list"))
+				throw new CustomException("Don't have list permission");
 			return this.getRolesForList(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -193,9 +197,11 @@ public class RoleAndPermission {
 	
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteRoleId(@PathVariable("id") Long id) {
+	public ResponseEntity<?> deleteRoleId(@RequestHeader("Authorization") String token,@PathVariable("id") Long id) {
 		LOGGER.info("Inside - RoleAndPermission.deleteRoleId()");
 		try {
+			if(!roleAndPermissionService.checkPermission(token, "module6", "delete"))
+				throw new CustomException("Don't have delete permission");
 			if (mongoOperations.exists(query(where("id").is(id)), AdminModules.class)) {
 				if (mongoOperations.exists(query(where("role").is(id+"")), LoginEntity.class))
 					throw new CustomException("Role is given to an admin");
@@ -214,9 +220,11 @@ public class RoleAndPermission {
 	
 	
 	@PutMapping("/muldelete")
-	public GlobalResponse roleMulDelete(@RequestBody() List<Integer> RolesId) {
+	public GlobalResponse roleMulDelete(@RequestHeader("Authorization") String token,@RequestBody() List<Integer> RolesId) {
 		LOGGER.info("Inside - RoleAndPermission.roleMulDelete()");
 		try {
+			if(!roleAndPermissionService.checkPermission(token, "module6", "delete"))
+				throw new CustomException("Don't have delete permission");
 			if (!RolesId.equals(null)){
 				for (Integer obj : RolesId) {
 

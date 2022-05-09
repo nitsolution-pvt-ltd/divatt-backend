@@ -186,6 +186,7 @@ public class ProfileContoller {
 			
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
+			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginRepo.save(designerLoginEntityDB);
 		}
@@ -264,7 +265,7 @@ public class ProfileContoller {
 			long count = sequenceGenerator.getCurrentSequence(DesignerLoginEntity.SEQUENCE_NAME);
 			Random rd = new Random();
 			List<Integer> lst = new ArrayList<>();
-			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(false,"Approved");
+			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(false,"APPROVE");
 			if (findAll.size() <= 15) {
 				return ResponseEntity.ok(findAll);
 			}
@@ -362,7 +363,7 @@ public class ProfileContoller {
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
 			response.put("waitingForApproval", designerLoginRepo.findByProfileStatus("ACTIVE").size());
-			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatus("APPROVED").size());
+			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatus("APPROVE").size());
 			response.put("submitted", designerLoginRepo.findByProfileStatus("SUBMITTED").size());
 			response.put("compleated", designerLoginRepo.findByProfileStatus("COMPLEATED").size());
 
