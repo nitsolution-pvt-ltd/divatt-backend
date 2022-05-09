@@ -263,15 +263,15 @@ public class ProfileContoller {
 		try {
 			long count = sequenceGenerator.getCurrentSequence(DesignerLoginEntity.SEQUENCE_NAME);
 			Random rd = new Random();
-			List<Integer> lst = new ArrayList<>();
-			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndIsApproved(false,"Approved");
+			
+			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(false,"APPROVE");
 			if (findAll.size() <= 15) {
 				return ResponseEntity.ok(findAll);
 			}
 			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
 			Boolean flag = true;
 			Integer productCount = 0;
-			HashMap<String,Integer> maps=new HashMap<String,Integer>();
+
 			while (flag) {
 				int nextInt = rd.nextInt((int) count);
 				for (DesignerLoginEntity obj : findAll) {
@@ -323,15 +323,8 @@ public class ProfileContoller {
 			if (keyword.isEmpty()) {
 				
 				findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted,profileStatus,pagingSort);
-
-//					findAll = designerLoginRepo.findByIsDeleted(isDeleted, pagingSort);
-
-			} else {
-				
-				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted,profileStatus, pagingSort);
-				
-
-//					findAll = designerLoginRepo.SearchByDelete(keyword, isDeleted, pagingSort);
+			} else {				
+				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted,profileStatus, pagingSort);				
 				
 			}
 
