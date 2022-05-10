@@ -179,12 +179,12 @@ public class ProfileContoller {
 		if (!findById.isPresent())
 			throw new CustomException("Designer Details Not Found");
 		else {
-			
-			if(designerLoginEntity.getProfileStatus().equals("REJECTED")) {
-				designerLoginEntity.setAdminComment(designerLoginEntity.getAdminComment());
-			}
-			
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
+			if(designerLoginEntity.getProfileStatus().equals("REJECTED")) {
+				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
+			}
+	
+			
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
@@ -208,6 +208,7 @@ public class ProfileContoller {
 			DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
 			designerProfile.setEmail(findById.get().getEmail());
 			designerProfile.setPassword(findById.get().getPassword());
+			designerProfile.setProfilePic(designerProfileEntity.getDesignerProfile().getProfilePic());
 
 			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
 			System.out.println("designerProfileEntityDB " + designerProfileEntityDB.toString());
@@ -360,6 +361,7 @@ public class ProfileContoller {
 			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatus("APPROVE").size());
 			response.put("submitted", designerLoginRepo.findByProfileStatus("SUBMITTED").size());
 			response.put("compleated", designerLoginRepo.findByProfileStatus("COMPLEATED").size());
+			response.put("rejected", designerLoginRepo.findByProfileStatus("REJECTED").size());
 
 			return response;
 		} catch (Exception e) {
