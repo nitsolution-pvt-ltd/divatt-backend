@@ -33,6 +33,7 @@ import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
@@ -367,6 +368,35 @@ public class UserController {
 		try {
 			return this.userService.getPerDesignerProductListService(page, limit, sort, sortName, isDeleted, keyword,
 					sortBy, designerId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+
+	@PostMapping("/order/payment/add")
+	public GlobalResponse postOrderPaymentDetails(@Valid @RequestBody OrderPaymentEntity orderPaymentEntity) {
+		LOGGER.info("Inside - UserController.postOrderPaymentDetails()");
+
+		try {
+			return this.userService.postOrderPaymentService(orderPaymentEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@RequestMapping(value = { "/order/payment/list" }, method = RequestMethod.GET)
+	public Map<String, Object> getOrderPaymentDetails(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "createdOn") String sortName,
+		    @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		LOGGER.info("Inside - UserController.getOrderPaymentDetails()");
+
+		try {
+			return this.userService.getOrderPaymentService(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
