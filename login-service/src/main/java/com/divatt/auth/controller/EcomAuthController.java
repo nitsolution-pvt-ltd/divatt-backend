@@ -135,6 +135,12 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 						throw new CustomException("Please active your account");
 					if (findByUserNameDesigner.get().getProfileStatus().equals("ACTIVE"))
 						throw new CustomException("Waiting for admin approve");
+					try {
+						if (!findByUserNameDesigner.get().getAccountStatus().equals("ACTIVE"))
+							throw new CustomException("This account has been deactive");
+					}catch (Exception e) {
+					}
+					
 					DesignerLoginEntity designerLoginEntity = findByUserNameDesigner.get();
 					designerLoginEntity.setAuthToken(token);
 					designerLoginRepo.save(designerLoginEntity);

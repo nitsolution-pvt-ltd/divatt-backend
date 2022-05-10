@@ -178,13 +178,14 @@ public class ProfileContoller {
 		if (!findById.isPresent())
 			throw new CustomException("Designer Details Not Found");
 		else {
-			
-			if(designerLoginEntity.getProfileStatus().equals("REJECTED")) {
-				designerLoginEntity.setAdminComment(designerLoginEntity.getAdminComment());
-			}
-			
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
+			if(designerLoginEntity.getProfileStatus().equals("REJECTED")) {
+				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
+			}
+	
+			
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
+			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginRepo.save(designerLoginEntityDB);
 		}
@@ -206,6 +207,7 @@ public class ProfileContoller {
 			DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
 			designerProfile.setEmail(findById.get().getEmail());
 			designerProfile.setPassword(findById.get().getPassword());
+			designerProfile.setProfilePic(designerProfileEntity.getDesignerProfile().getProfilePic());
 
 			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
 			
@@ -261,7 +263,7 @@ public class ProfileContoller {
 		try {
 			long count = sequenceGenerator.getCurrentSequence(DesignerLoginEntity.SEQUENCE_NAME);
 			Random rd = new Random();
-			
+
 			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(false,"APPROVE");
 
 			if (findAll.size() <= 15) {
@@ -269,7 +271,7 @@ public class ProfileContoller {
 			}
 			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
 			Boolean flag = true;
-			Integer productCount = 0;
+
 
 			while (flag) {
 				int nextInt = rd.nextInt((int) count);
@@ -354,9 +356,10 @@ public class ProfileContoller {
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
 			response.put("waitingForApproval", designerLoginRepo.findByProfileStatus("ACTIVE").size());
-			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatus("APPROVED").size());
+			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatus("APPROVE").size());
 			response.put("submitted", designerLoginRepo.findByProfileStatus("SUBMITTED").size());
 			response.put("compleated", designerLoginRepo.findByProfileStatus("COMPLEATED").size());
+			response.put("rejected", designerLoginRepo.findByProfileStatus("REJECTED").size());
 
 			return response;
 		} catch (Exception e) {

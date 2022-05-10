@@ -43,10 +43,21 @@ public class DesignerProfile {
 	@Field(name = "qualification")
 	private String qualification;
 	
+	@NotNull(message = "User's profile_pic must not be null")
+	@Field(name = "profile_pic")
+	private String profilePic;
 	
-	public DesignerProfile(String firstName, String lastName, String displayName, String mobileNo, String altMobileNo,
-			String dob, String gender, String maritalStatus, String qualification) {
+	
+	
+
+
+	public DesignerProfile(@NotNull String email, @NotNull String password, @NotNull String firstName,
+			@NotNull String lastName, @NotNull String displayName, @NotNull String mobileNo, String altMobileNo,
+			@NotNull String dob, @NotNull String gender, @NotNull String maritalStatus, String qualification,
+			@NotNull(message = "User's profile_pic must not be null") String profilePic) {
 		super();
+		this.email = email;
+		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.displayName = displayName;
@@ -56,6 +67,7 @@ public class DesignerProfile {
 		this.gender = gender;
 		this.maritalStatus = maritalStatus;
 		this.qualification = qualification;
+		this.profilePic = profilePic;
 	}
 
 
@@ -65,11 +77,15 @@ public class DesignerProfile {
 	}
 
 
+	
+
+
 	@Override
 	public String toString() {
-		return "DesignerProfile [firstName=" + firstName + ", lastName=" + lastName + ", displayName=" + displayName
-				+ ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo + ", dob=" + dob + ", gender=" + gender
-				+ ", maritalStatus=" + maritalStatus + ", qualification=" + qualification + "]";
+		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName=" + firstName + ", lastName="
+				+ lastName + ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
+				+ ", dob=" + dob + ", gender=" + gender + ", maritalStatus=" + maritalStatus + ", qualification="
+				+ qualification + ", profilePic=" + profilePic + "]";
 	}
 
 
@@ -80,6 +96,16 @@ public class DesignerProfile {
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
+	}
+
+
+	public String getProfilePic() {
+		return profilePic;
+	}
+
+
+	public void setProfilePic(String profilePic) {
+		this.profilePic = profilePic;
 	}
 
 

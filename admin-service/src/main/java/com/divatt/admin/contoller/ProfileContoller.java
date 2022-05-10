@@ -4,6 +4,9 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 import static org.springframework.data.mongodb.core.query.Query.query;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -17,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import com.divatt.admin.helper.*;
 
+import javax.imageio.ImageIO;
 import javax.servlet.annotation.MultipartConfig;
 import javax.validation.Valid;
 
@@ -383,6 +387,26 @@ public class ProfileContoller {
 		return ResponseEntity.ok(s3Service.uploadFile(file.getOriginalFilename(),file.getBytes()));
 	}
 	
+	@GetMapping("/testResize")
+	public String testResize() throws IOException {
+		File input = new File("/home/soumen/Downloads/soumen.jpg");
+        BufferedImage image = ImageIO.read(input);
+        
+        BufferedImage resized = resize(image, 500, 500);
+        
+        File output = new File("/home/soumen/Downloads/soumen_500_500.jpg");
+        ImageIO.write(resized, "png", output);
+		return "Success";
+	}
+	
+	 private static BufferedImage resize(BufferedImage img, int height, int width) {
+	        Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+	        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+	        Graphics2D g2d = resized.createGraphics();
+	        g2d.drawImage(tmp, 0, 0, null);
+	        g2d.dispose();
+	        return resized;
+	    }
 	
 
 }
