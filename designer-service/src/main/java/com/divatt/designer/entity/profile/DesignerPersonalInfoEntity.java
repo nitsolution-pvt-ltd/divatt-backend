@@ -2,6 +2,7 @@ package com.divatt.designer.entity.profile;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -9,6 +10,9 @@ import nonapi.io.github.classgraph.json.Id;
 
 @Document(collection = "tbl_designer_personal_info")
 public class DesignerPersonalInfoEntity {
+	
+	@Transient
+	public static final String SEQUENCE_NAME = "tbl_designer_personal_info";
 	
 	@Id
 	private Long id;
