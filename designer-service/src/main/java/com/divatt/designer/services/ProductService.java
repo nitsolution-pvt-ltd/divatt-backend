@@ -33,6 +33,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.product.ProductMasterEntity;
+import com.divatt.designer.entity.profile.DesignerLogEntity;
+import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
@@ -127,6 +129,9 @@ public class ProductService {
 			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
 			List<DesignerProfileEntity> designerProfileInfo = mongoOperations.find(query, DesignerProfileEntity.class);
 			if (!designerProfileInfo.isEmpty()) {
+				Query query2=new Query();
+				query2.addCriteria(Criteria.where("profile_status").is("SUBMITTED"));
+				List<DesignerLoginEntity> list=mongoOperations.find(query2, DesignerLoginEntity.class);
 				Query query1 = new Query();
 				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName")
 						.is(productData.getProductName()));
