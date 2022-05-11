@@ -180,14 +180,21 @@ public class ProductService {
 				ProductMasterEntity productEntity = productData.get();
 				if (productEntity.getIsActive().equals(true)) {
 					status = false;
+					productEntity.setIsActive(status);
+					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
+					productEntity.setUpdatedOn(new Date());
+					productRepo.save(productEntity);
+					return new GlobalResponce("Success", "Status Inactive successfully", 200);
 				} else {
 					status = true;
+					productEntity.setIsActive(status);
+					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
+					productEntity.setUpdatedOn(new Date());
+					productRepo.save(productEntity);
+					return new GlobalResponce("Success", "Status Active successfully", 200);
 				}
-				productEntity.setIsActive(status);
-				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
-				productEntity.setUpdatedOn(new Date());
-				productRepo.save(productEntity);
-				return new GlobalResponce("Success", "Status change successfully", 200);
+				
+				
 			} else {
 				return new GlobalResponce("Bad request", "Product does not exist", 400);
 			}
