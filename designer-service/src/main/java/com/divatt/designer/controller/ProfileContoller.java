@@ -50,6 +50,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 
 import springfox.documentation.spring.web.json.Json;
+import com.divatt.designer.repo.*;
 
 @RestController
 @RequestMapping("/designer")
@@ -76,6 +77,9 @@ public class ProfileContoller {
 	@Autowired
 	DesignerLogRepo designerLogRepo;
 
+	@Autowired
+	DatabaseSeqRepo databaseSeqRepo;
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
 		try {
@@ -263,32 +267,36 @@ public class ProfileContoller {
 	@GetMapping("/userDesignerList")
 	public ResponseEntity<?> userDesignertList() {
 		try {
-			long count = sequenceGenerator.getCurrentSequence(DesignerLoginEntity.SEQUENCE_NAME);
+			//designerLoginRepo.fi
+			long count = databaseSeqRepo.findById(DesignerLoginEntity.SEQUENCE_NAME).get().getSeq();
 			Random rd = new Random();
-
+			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
 			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(false,"APPROVE");
 
 			if (findAll.size() <= 15) {
-				return ResponseEntity.ok(findAll);
-			}
-			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
-			Boolean flag = true;
+				designerLoginEntity=findAll;
+				
+			}else {
+				Boolean flag = true;
 
 
-			while (flag) {
-				int nextInt = rd.nextInt((int) count);
-				for (DesignerLoginEntity obj : findAll) {
-					
-					if (obj.getdId() == nextInt) {
-						designerLoginEntity.add(obj);					  
+				while (flag) {
+					int nextInt = rd.nextInt((int) count);
+					for (DesignerLoginEntity obj : findAll) {
+						
+						if (obj.getdId() == nextInt) {
+							designerLoginEntity.add(obj);					  
 
+						}
+						if (designerLoginEntity.size() > 14)
+							flag = false;
 					}
-					if (designerLoginEntity.size() > 14)
-						flag = false;
+
 				}
 
 			}
-			Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
+			
+						Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
 				try {
 					e.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerId(false,"Approved",e.getdId()));
 					e.setDesignerProfileEntity(

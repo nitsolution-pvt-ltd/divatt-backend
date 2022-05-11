@@ -32,8 +32,9 @@ public class SequenceGenerator {
 	private MongoOperations mongoOperations;
 	
 	public long getCurrentSequence(String seqName) {
+		
 		Query query = new Query();
-		query.addCriteria(Criteria.where("id").is(seqName));
+		query.addCriteria(Criteria.where("_id").is(seqName));
 		List<DatabaseSequence> find = mongoOperations.find(query, DatabaseSequence.class);
 		return find.get(0).getSeq();
 	}
