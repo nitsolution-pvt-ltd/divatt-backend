@@ -131,10 +131,16 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo
 						.findByEmail(vendor.getUsername());
 				if (findByUserNameDesigner.isPresent()) {
-					if (findByUserNameDesigner.get().getIsActive() == false)
+					if (findByUserNameDesigner.get().getProfileStatus().equals("INACTIVE"))
 						throw new CustomException("Please active your account");
-					if (findByUserNameDesigner.get().getIsApproved() == false)
+					if (findByUserNameDesigner.get().getProfileStatus().equals("ACTIVE"))
 						throw new CustomException("Waiting for admin approve");
+					try {
+						if (!findByUserNameDesigner.get().getAccountStatus().equals("ACTIVE"))
+							throw new CustomException("This account has been deactive");
+					}catch (Exception e) {
+					}
+					
 					DesignerLoginEntity designerLoginEntity = findByUserNameDesigner.get();
 					designerLoginEntity.setAuthToken(token);
 					designerLoginRepo.save(designerLoginEntity);
@@ -142,9 +148,10 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							findByUserNameDesigner.get().getEmail(), findByUserNameDesigner.get().getPassword(),
 							"Login successful",
 							Stream.of("DESIGNER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()), 200,
-							findByUserNameDesigner.get().getIsApproved(),
-							findByUserNameDesigner.get().getIsProfileCompleated(),
-							findByUserNameDesigner.get().getIsProfileSubmitted(), token);
+							findByUserNameDesigner.get().getAdminComment(),
+							findByUserNameDesigner.get().getProfileStatus(),
+							token,
+							 "DESIGNER");
 					
 					return new ResponseEntity<>(loginDesignerData, HttpStatus.OK);
 				} else {

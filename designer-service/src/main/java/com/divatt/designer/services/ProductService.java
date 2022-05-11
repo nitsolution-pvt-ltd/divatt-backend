@@ -331,7 +331,7 @@ public class ProductService {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("designerId").is(designerId1));
 			List<ProductMasterEntity> productList = mongoOperations.find(query, ProductMasterEntity.class);
-			System.out.println(productList);
+			
 			return productList;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

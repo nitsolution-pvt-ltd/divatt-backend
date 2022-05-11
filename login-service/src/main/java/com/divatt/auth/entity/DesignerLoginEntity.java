@@ -19,13 +19,10 @@ public class DesignerLoginEntity {
 	@Field(name = "email") private String email;
 	@Field(name = "password") private String password;
 	@Field(name = "auth_token") private String authToken;
-	@Field(name = "is_active") private Boolean isActive;
 	@Field(name = "is_deleted") private Boolean isDeleted;
-	@Field(name = "is_approved") private Boolean isApproved;
-	@Field(name = "is_profile_completed") private Boolean isProfileCompleated;
-	@Field(name = "is_profile_submitted") private Boolean isProfileSubmitted;
 	@Field(name = "admin_comment") private String adminComment;
-	
+	@Field(name = "profile_status") private String profileStatus;
+	@Field(name = "account_status") private String accountStatus;
 	@Field(name = "logins") private Json logins;
 
 	public DesignerLoginEntity() {
@@ -33,33 +30,25 @@ public class DesignerLoginEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	
-
-	public DesignerLoginEntity(Object uid, String email, String password, String authToken, Boolean isActive,
-			Boolean isDeleted, Boolean isApproved, Boolean isProfileCompleated, Boolean isProfileSubmitted,
-			String adminComment, Json logins) {
+	public DesignerLoginEntity(Object uid, String email, String password, String authToken, Boolean isDeleted,
+			String adminComment, String profileStatus, String accountStatus, Json logins) {
 		super();
 		this.uid = uid;
 		this.email = email;
 		this.password = password;
 		this.authToken = authToken;
-		this.isActive = isActive;
 		this.isDeleted = isDeleted;
-		this.isApproved = isApproved;
-		this.isProfileCompleated = isProfileCompleated;
-		this.isProfileSubmitted = isProfileSubmitted;
 		this.adminComment = adminComment;
+		this.profileStatus = profileStatus;
+		this.accountStatus = accountStatus;
 		this.logins = logins;
 	}
-
-
 
 	@Override
 	public String toString() {
 		return "DesignerLoginEntity [uid=" + uid + ", email=" + email + ", password=" + password + ", authToken="
-				+ authToken + ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", isApproved=" + isApproved
-				+ ", isProfileCompleated=" + isProfileCompleated + ", isProfileSubmitted=" + isProfileSubmitted
-				+ ", adminComment=" + adminComment + ", logins=" + logins + "]";
+				+ authToken + ", isDeleted=" + isDeleted + ", adminComment=" + adminComment + ", profileStatus="
+				+ profileStatus + ", accountStatus=" + accountStatus + ", logins=" + logins + "]";
 	}
 
 	public Object getUid() {
@@ -68,6 +57,22 @@ public class DesignerLoginEntity {
 
 	public void setUid(Object uid) {
 		this.uid = uid;
+	}
+
+	public String getProfileStatus() {
+		return profileStatus;
+	}
+
+	public void setProfileStatus(String profileStatus) {
+		this.profileStatus = profileStatus;
+	}
+
+	public String getAccountStatus() {
+		return accountStatus;
+	}
+
+	public void setAccountStatus(String accountStatus) {
+		this.accountStatus = accountStatus;
 	}
 
 	public String getEmail() {
@@ -96,16 +101,7 @@ public class DesignerLoginEntity {
 
 
 
-	public Boolean getIsActive() {
-		return isActive;
-	}
-
-
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
+	
 
 
 	public Boolean getIsDeleted() {
@@ -117,43 +113,6 @@ public class DesignerLoginEntity {
 	public void setIsDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
-
-
-
-	public Boolean getIsApproved() {
-		return isApproved;
-	}
-
-
-
-	public void setIsApproved(Boolean isApproved) {
-		this.isApproved = isApproved;
-	}
-
-
-
-	public Boolean getIsProfileCompleated() {
-		return isProfileCompleated;
-	}
-
-
-
-	public void setIsProfileCompleated(Boolean isProfileCompleated) {
-		this.isProfileCompleated = isProfileCompleated;
-	}
-
-
-
-	public Boolean getIsProfileSubmitted() {
-		return isProfileSubmitted;
-	}
-
-
-
-	public void setIsProfileSubmitted(Boolean isProfileSubmitted) {
-		this.isProfileSubmitted = isProfileSubmitted;
-	}
-
 
 
 	public String getAdminComment() {

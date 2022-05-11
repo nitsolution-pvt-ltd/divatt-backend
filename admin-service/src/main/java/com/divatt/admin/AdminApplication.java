@@ -10,6 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.divatt.admin.config.YMLConfig;
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -48,5 +51,7 @@ public class AdminApplication implements CommandLineRunner{
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		return passwordEncoder;
 	}
+	
+	
 
 }

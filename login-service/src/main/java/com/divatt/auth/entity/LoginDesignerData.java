@@ -23,9 +23,8 @@ public class LoginDesignerData implements UserDetails{
 	private String message;
 	private List<GrantedAuthority> role;
 	private int status;
-	private Boolean isApproved;
-	private Boolean isProfileCompleated;
-	private Boolean isProfileSubmitted;
+	private String adminComment;
+	private String profileStatus;
 	private String token;
 	private String authority;
 	
@@ -42,8 +41,13 @@ public class LoginDesignerData implements UserDetails{
 	
 
 	
+	
+
+
+
+
 	public LoginDesignerData(Object uId, String email, String password, String message, List<GrantedAuthority> role,
-			int status, Boolean isApproved, Boolean isProfileCompleated, Boolean isProfileSubmitted, String token) {
+			int status, String adminComment, String profileStatus, String token, String authority) {
 		super();
 		UId = uId;
 		this.email = email;
@@ -51,13 +55,16 @@ public class LoginDesignerData implements UserDetails{
 		this.message = message;
 		this.role = role;
 		this.status = status;
-		this.isApproved = isApproved;
-		this.isProfileCompleated = isProfileCompleated;
-		this.isProfileSubmitted = isProfileSubmitted;
+		this.adminComment = adminComment;
+		this.profileStatus = profileStatus;
 		this.token = token;
-//		this.authority = this.role.get(0).getAuthority();
-		this.authority = "DESIGNER";
+		this.authority = authority;
 	}
+
+
+
+
+
 
 
 
@@ -158,48 +165,6 @@ public class LoginDesignerData implements UserDetails{
 
 
 
-	public Boolean getIsApproved() {
-		return isApproved;
-	}
-
-
-
-
-	public void setIsApproved(Boolean isApproved) {
-		this.isApproved = isApproved;
-	}
-
-
-
-
-	public Boolean getIsProfileCompleated() {
-		return isProfileCompleated;
-	}
-
-
-
-
-	public void setIsProfileCompleated(Boolean isProfileCompleated) {
-		this.isProfileCompleated = isProfileCompleated;
-	}
-
-
-
-
-	public Boolean getIsProfileSubmitted() {
-		return isProfileSubmitted;
-	}
-
-
-
-
-	public void setIsProfileSubmitted(Boolean isProfileSubmitted) {
-		this.isProfileSubmitted = isProfileSubmitted;
-	}
-
-
-
-
 	
 
 
@@ -234,13 +199,70 @@ public class LoginDesignerData implements UserDetails{
 
 
 
+	
+
+
+
+
+	public String getAdminComment() {
+		return adminComment;
+	}
+
+
+
+
+
+
+
+
+
+	public void setAdminComment(String adminComment) {
+		this.adminComment = adminComment;
+	}
+
+
+
+
+
+
+
+
+
+	public String getProfileStatus() {
+		return profileStatus;
+	}
+
+
+
+
+
+
+
+
+
+	public void setProfileStatus(String profileStatus) {
+		this.profileStatus = profileStatus;
+	}
+
+
+
+
+
+
+
+
+
 	@Override
 	public String toString() {
 		return "LoginDesignerData [UId=" + UId + ", email=" + email + ", password=" + password + ", message=" + message
-				+ ", role=" + role + ", status=" + status + ", isApproved=" + isApproved + ", isProfileCompleated="
-				+ isProfileCompleated + ", isProfileSubmitted=" + isProfileSubmitted + ", token=" + token
-				+ ", authority=" + authority + "]";
+				+ ", role=" + role + ", status=" + status + ", adminComment=" + adminComment + ", profileStatus="
+				+ profileStatus + ", token=" + token + ", authority=" + authority + "]";
 	}
+
+
+
+
+
 
 
 
