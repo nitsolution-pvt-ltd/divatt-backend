@@ -31,7 +31,7 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'gender' : {$regex:?0,$options:'i'} },{ 'productDescription' : {$regex:?0,$options:'i'} },{ 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'age.min' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2 }]}")
 	Page<ProductMasterEntity> DesignerSearchfindByIsDeletedAndAdminStatusAndDesignerId(String keyword, Boolean isDeleted, String AdminStatus,Integer DesignerId,Pageable pagingSort);
 	
-	List<ProductMasterEntity> findByIsDeletedAndAdminStatus(Boolean isDeleted, String AdminStatus);
+	List<ProductMasterEntity> findByIsDeletedAndAdminStatusAndIsActive(Boolean isDeleted, String AdminStatus,Boolean IsActive);
 	
 	
 

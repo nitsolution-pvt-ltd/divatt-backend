@@ -409,7 +409,7 @@ public class ProductService {
 		long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
 		Random rd = new Random();
 
-		List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndAdminStatus(false, "Approved");
+		List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndAdminStatusAndIsActive(false, "Approved",true);
 		if (findAll.size() <= 15) {
 			return ResponseEntity.ok(findAll);
 		}
