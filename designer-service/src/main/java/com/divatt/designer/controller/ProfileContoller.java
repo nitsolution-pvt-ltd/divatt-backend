@@ -116,7 +116,7 @@ public class ProfileContoller {
 
 				return e;
 			});
-			return ResponseEntity.ok(map);
+			return ResponseEntity.ok(map.toList().get(0));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
