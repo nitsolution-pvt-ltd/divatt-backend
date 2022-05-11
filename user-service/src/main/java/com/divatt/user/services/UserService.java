@@ -85,25 +85,26 @@ public class UserService {
 
 	}
 
-	public GlobalResponse postWishlistService(WishlistEntity wishlistEntity) {
+	public GlobalResponse postWishlistService(ArrayList<WishlistEntity> wishlistEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
 
-		try {
-			Optional<WishlistEntity> findByCategoryName = wishlistRepo
-					.findByProductIdAndUserId(wishlistEntity.getProductId(), wishlistEntity.getUserId());
-			if (findByCategoryName.isPresent()) {
-				throw new CustomException("Product already exist!");
-			} else {
+		try {			
 				WishlistEntity filterCatDetails = new WishlistEntity();
-
-				filterCatDetails.setId(sequenceGenerator.getNextSequence(wishlistEntity.SEQUENCE_NAME));
-				filterCatDetails.setUserId(wishlistEntity.getUserId());
-				filterCatDetails.setProductId(wishlistEntity.getProductId());
-				filterCatDetails.setAddedOn(new Date());
-
-				wishlistRepo.save(filterCatDetails);
+				
+				for (WishlistEntity getRow : wishlistEntity)
+		        {
+				Optional<WishlistEntity> findByCategoryName = wishlistRepo.findByProductIdAndUserId(getRow.getProductId(), getRow.getUserId());
+					
+				if (!findByCategoryName.isPresent()) {
+		            filterCatDetails.setId(sequenceGenerator.getNextSequence(WishlistEntity.SEQUENCE_NAME));
+					filterCatDetails.setUserId(getRow.getUserId());
+					filterCatDetails.setProductId(getRow.getProductId());
+					filterCatDetails.setAddedOn(new Date());
+					wishlistRepo.save(filterCatDetails);
+					}
+		        }
+				
 				return new GlobalResponse("SUCCESS", "Wishlist added succesfully", 200);
-			}
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -520,15 +521,14 @@ public class UserService {
 
 		try {
 
-			RazorpayClient razorpayClient = new RazorpayClient("rzp_test_33EcTc515DgVWP", "y5ePsG4qOpWAsKfVpExaRi6W");
+			RazorpayClient razorpayClient = new RazorpayClient("rzp_test_q5ch2uQXmBRynp", "AYotTQdNFtrVXwHSyskFCB2o");
 			JSONObject options = new JSONObject();
-			options.put("amount", 5000);
+			options.put("amount", 50);
 			options.put("currency", "INR");
-			options.put("receipt", "OR" + getRandomString());
+			options.put("receipt", "RC" + getRandomString());
 			Order order = razorpayClient.Orders.create(options);
-System.out.println(order.toString());
 
-List<Payment> payments = razorpayClient.Payments.fetchAll();
+			List<Payment> payments = razorpayClient.Payments.fetchAll();
 			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 
 			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
