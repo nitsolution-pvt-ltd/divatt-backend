@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
+import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.entity.profile.SocialProfile;
@@ -223,6 +224,10 @@ public class ProfileContoller {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setProfileStatus("SUBMITTED");
 			designerLoginRepo.save(designerLoginEntityDB);
+			DesignerPersonalInfoEntity designerPersonalInfoEntity = designerProfileEntity.getDesignerPersonalInfoEntity();
+			designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
+			designerPersonalInfoEntity.setId((long)sequenceGenerator.getNextSequence(DesignerPersonalInfoEntity.SEQUENCE_NAME));
+			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
 			
 
 		}
