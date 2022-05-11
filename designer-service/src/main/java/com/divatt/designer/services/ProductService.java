@@ -124,7 +124,7 @@ public class ProductService {
 		try {
 			LOGGER.info("Inside-ProductService.addData()");
 			Query query = new Query();
-			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()).and("isActive").is(true));
+			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
 			List<DesignerProfileEntity> designerProfileInfo = mongoOperations.find(query, DesignerProfileEntity.class);
 			if (!designerProfileInfo.isEmpty()) {
 				Query query1 = new Query();
