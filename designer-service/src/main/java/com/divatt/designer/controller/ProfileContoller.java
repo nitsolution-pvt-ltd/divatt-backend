@@ -150,7 +150,6 @@ public class ProfileContoller {
 
 			DesignerLogEntity designerLogEntity = new DesignerLogEntity();
 
-//			designerLogRepo.save(null);
 
 			JsonObject jo = new JsonObject();
 			jo.addProperty("senderMailId", designerProfileEntity.getDesignerProfile().getEmail());
@@ -215,7 +214,7 @@ public class ProfileContoller {
 			designerProfile.setProfilePic(designerProfileEntity.getDesignerProfile().getProfilePic());
 
 			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
-			System.out.println("designerProfileEntityDB " + designerProfileEntityDB.toString());
+			
 			designerProfileEntityDB.setBoutiqueProfile(designerProfileEntity.getBoutiqueProfile());
 			designerProfileEntityDB.setDesignerProfile(designerProfile);
 			designerProfileEntityDB.setSocialProfile(designerProfileEntity.getSocialProfile());
@@ -225,7 +224,6 @@ public class ProfileContoller {
 			designerLoginEntityDB.setProfileStatus("SUBMITTED");
 			designerLoginRepo.save(designerLoginEntityDB);
 			
-//			designerPersonalInfoRepo.save(designerProfileEntity.getDesignerPersonalInfoEntity());
 
 		}
 

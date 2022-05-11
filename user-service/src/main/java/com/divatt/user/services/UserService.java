@@ -7,10 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.validation.Valid;
 
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +25,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
-import com.divatt.user.entity.ProductEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.cart.UserCartRepo;
+import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.repo.pCommentRepo.ProductCommentRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
@@ -40,8 +42,10 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.GetRequest;
-import com.mashape.unirest.request.body.Body;
+import com.razorpay.Order;
+import com.razorpay.Payment;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
 
 import springfox.documentation.spring.web.json.Json;
 
@@ -63,6 +67,23 @@ public class UserService {
 
 	@Autowired
 	private UserDesignerRepo userDesignerRepo;
+
+	@Autowired
+	private UserOrderPaymentRepo userOrderPaymentRepo;
+
+	protected String getRandomString() {
+//		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		String SALTCHARS = "1234567890";
+		StringBuilder salt = new StringBuilder();
+		Random rnd = new Random();
+		while (salt.length() < 16) {
+			int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+			salt.append(SALTCHARS.charAt(index));
+		}
+		String saltStr = salt.toString();
+		return saltStr;
+
+	}
 
 	public GlobalResponse postWishlistService(WishlistEntity wishlistEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
@@ -154,7 +175,7 @@ public class UserService {
 		}
 	}
 
-	public ResponseEntity<?> getUserWishlistDetails(@RequestBody JSONObject getWishlist, Integer userId)
+	public ResponseEntity<?> getUserWishlistDetails(@RequestBody org.json.simple.JSONObject getWishlist, Integer userId)
 			throws UnirestException {
 		LOGGER.info("Inside - UserService.getUserWishlistDetails()");
 		try {
@@ -226,7 +247,7 @@ public class UserService {
 
 	}
 
-	public ResponseEntity<?> getUserCartDetailsService(@RequestBody JSONObject getCart, Integer userId)
+	public ResponseEntity<?> getUserCartDetailsService(@RequestBody org.json.simple.JSONObject getWishlist, Integer userId)
 			throws UnirestException {
 		LOGGER.info("Inside - UserService.getUserCartDetailsService()");
 		try {
@@ -240,8 +261,8 @@ public class UserService {
 			JsonObject cartObj = new JsonObject();
 
 			cartObj.addProperty("productId", productIds.toString());
-			cartObj.addProperty("limit", Integer.parseInt(getCart.get("limit").toString()));
-			cartObj.addProperty("page", Integer.parseInt(getCart.get("page").toString()));
+			cartObj.addProperty("limit", Integer.parseInt(getWishlist.get("limit").toString()));
+			cartObj.addProperty("page", Integer.parseInt(getWishlist.get("page").toString()));
 
 			if (productIds.isEmpty()) {
 				return ResponseEntity
@@ -489,6 +510,87 @@ public class UserService {
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
 
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public GlobalResponse postOrderPaymentService(OrderPaymentEntity orderPaymentEntity) {
+		LOGGER.info("Inside - UserService.postOrderPaymentService()");
+
+		try {
+
+			RazorpayClient razorpayClient = new RazorpayClient("rzp_test_33EcTc515DgVWP", "y5ePsG4qOpWAsKfVpExaRi6W");
+			JSONObject options = new JSONObject();
+			options.put("amount", 5000);
+			options.put("currency", "INR");
+			options.put("receipt", "OR" + getRandomString());
+			Order order = razorpayClient.Orders.create(options);
+System.out.println(order.toString());
+
+List<Payment> payments = razorpayClient.Payments.fetchAll();
+			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
+
+			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
+			filterCatDetails.setOrderId("OR" + getRandomString());
+			filterCatDetails.setPaymentMode(orderPaymentEntity.getPaymentMode());
+			filterCatDetails.setPaymentDetails(payments);
+			filterCatDetails.setPaymentResponse(order);
+			filterCatDetails.setPaymentStatus(orderPaymentEntity.getPaymentStatus());
+			filterCatDetails.setCreatedOn(new Date());
+
+			userOrderPaymentRepo.save(filterCatDetails);
+			return new GlobalResponse("SUCCESS", "Order placed succesfully", 200);
+
+		} catch (RazorpayException e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	public Map<String, Object> getOrderPaymentService(int page, int limit, String sort, String sortName, String keyword,
+			Optional<String> sortBy) {
+		LOGGER.info("Inside - UserService.getOrderPaymentService()");
+		try {
+			int CountData = (int) userOrderPaymentRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<OrderPaymentEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = userOrderPaymentRepo.findAll(pagingSort);
+			} else {
+				findAll = userOrderPaymentRepo.Search(keyword, pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Payment not found!");
+			} else {
+				return response;
+			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
