@@ -2,8 +2,10 @@ package com.divatt.user.controller;
 
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -70,7 +72,7 @@ public class UserController {
 	private UserLoginRepo userLoginRepo;
 
 	@PostMapping("/wishlist/add")
-	public GlobalResponse postWishlistDetails(@Valid @RequestBody WishlistEntity wishlistEntity) {
+	public GlobalResponse postWishlistDetails(@Valid @RequestBody ArrayList<WishlistEntity> wishlistEntity) {
 		LOGGER.info("Inside - UserController.postWishlistDetails()");
 
 		try {

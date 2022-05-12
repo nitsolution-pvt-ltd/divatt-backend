@@ -33,6 +33,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.product.ProductMasterEntity;
+import com.divatt.designer.entity.profile.DesignerLogEntity;
+import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
@@ -127,6 +129,9 @@ public class ProductService {
 			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
 			List<DesignerProfileEntity> designerProfileInfo = mongoOperations.find(query, DesignerProfileEntity.class);
 			if (!designerProfileInfo.isEmpty()) {
+				Query query2=new Query();
+				query2.addCriteria(Criteria.where("profile_status").is("SUBMITTED"));
+				List<DesignerLoginEntity> list=mongoOperations.find(query2, DesignerLoginEntity.class);
 				Query query1 = new Query();
 				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName")
 						.is(productData.getProductName()));
@@ -175,14 +180,21 @@ public class ProductService {
 				ProductMasterEntity productEntity = productData.get();
 				if (productEntity.getIsActive().equals(true)) {
 					status = false;
+					productEntity.setIsActive(status);
+					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
+					productEntity.setUpdatedOn(new Date());
+					productRepo.save(productEntity);
+					return new GlobalResponce("Success", "Status Inactive successfully", 200);
 				} else {
 					status = true;
+					productEntity.setIsActive(status);
+					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
+					productEntity.setUpdatedOn(new Date());
+					productRepo.save(productEntity);
+					return new GlobalResponce("Success", "Status Active successfully", 200);
 				}
-				productEntity.setIsActive(status);
-				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
-				productEntity.setUpdatedOn(new Date());
-				productRepo.save(productEntity);
-				return new GlobalResponce("Success", "Status change successfully", 200);
+				
+				
 			} else {
 				return new GlobalResponce("Bad request", "Product does not exist", 400);
 			}
@@ -397,7 +409,7 @@ public class ProductService {
 		long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
 		Random rd = new Random();
 
-		List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndAdminStatus(false, "Approved");
+		List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndAdminStatusAndIsActive(false, "Approved",true);
 		if (findAll.size() <= 15) {
 			return ResponseEntity.ok(findAll);
 		}
