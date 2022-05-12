@@ -382,6 +382,10 @@ public class ProfileContoller {
 	public ResponseEntity<?> getFiles(){
 		return ResponseEntity.ok(s3Service.listFiles());
 	}
+	@GetMapping("/s3/getBuckets")
+	public ResponseEntity<?> getBuckets(){
+		return ResponseEntity.ok(s3Service.getAllBuckets());
+	}
 	@PostMapping("/s3/upload")
 	public ResponseEntity<?> uploadFiles(@RequestPart(value = "file", required = false) MultipartFile file) throws IOException{
 		return ResponseEntity.ok(s3Service.uploadFile(file.getOriginalFilename(),file.getBytes()));

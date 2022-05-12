@@ -120,12 +120,12 @@ cloud:
     stack:
       auto: false
     credentials:
-      accessKey: AKIA5LPN4UP72CHINWRB
-      secretKey: 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
+      accessKey: AKIA3UEGY4UHZ77545ME
+      secretKey: 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
 
 application:
   bucket:
-    name: lara-tri
+    name: divatt-uat
     basepath: D-App
 ---
 spring:

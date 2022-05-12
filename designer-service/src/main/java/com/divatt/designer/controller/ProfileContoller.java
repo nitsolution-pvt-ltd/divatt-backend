@@ -115,18 +115,14 @@ public class ProfileContoller {
 				throw new CustomException("This designer profile is not compleated");
 			if(!findById.get().getProfileStatus().equals("COMPLEATED"))
 				throw new CustomException("This designer profile is not compleated");
-			Stream<DesignerLoginEntity> map = findById.stream().map(e -> {
-				try {
-					e.setDesignerProfileEntity(
-							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
-					e.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerId(false, "Approved", Long.parseLong(e.getdId().toString())));
-				} catch (Exception o) {
-
-				}
-
-				return e;
-			});
-			return ResponseEntity.ok(map.toList().get(0));
+			
+			DesignerLoginEntity designerLoginEntity = findById.get();
+			designerLoginEntity.setDesignerProfileEntity(
+					designerProfileRepo.findBydesignerId(Long.parseLong(designerLoginEntity.getdId().toString())).get());
+			designerLoginEntity.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerId(false, "Approved", Long.parseLong(designerLoginEntity.getdId().toString())));
+			
+			
+			return ResponseEntity.ok(designerLoginEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
