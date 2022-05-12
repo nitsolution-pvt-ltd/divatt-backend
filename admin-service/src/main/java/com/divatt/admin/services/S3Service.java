@@ -63,7 +63,7 @@ public class S3Service {
             iofs.write(content);
 //            System.out.println("file.getName() "+file.get);
             amazonS3Client.putObject(defaultBucketName, file.getName(), file);
-            amazonS3Client.setObjectAcl(defaultBucketName,file.getName(),CannedAccessControlList.PublicRead);
+//            amazonS3Client.setObjectAcl(defaultBucketName,file.getName(),CannedAccessControlList.PublicRead);
             URL url = amazonS3Client.getUrl(defaultBucketName, file.getName());
             fileUploadResponse.setFileName(file.getName());
             fileUploadResponse.setPath(url+"");
