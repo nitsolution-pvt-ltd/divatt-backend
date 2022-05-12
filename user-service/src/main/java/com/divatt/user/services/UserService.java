@@ -491,9 +491,15 @@ public class UserService {
 
 			String body = restTemplate
 					.getForEntity("http://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();
-
-			Json js = new Json(body);
-			return ResponseEntity.ok(js);
+//			JSONObject js = new JSONObject(new Json(body).value());
+//			org.json.simple.JSONObject jso = new org.json.simple.JSONObject("");
+			
+//			Json js = ;
+//			Map<String, Object> mp = new HashMap<>();
+//			mp.put("designer", js);
+//			mp.put(body, mp)
+			
+			return ResponseEntity.ok(new Json(body));
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

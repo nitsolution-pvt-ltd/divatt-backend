@@ -1,6 +1,7 @@
 package com.divatt.user.entity;
 
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.DefaultValue;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -22,13 +23,14 @@ public class UserDesignerEntity {
 	@NotNull(message = "Designer name is required!")
 	@Field(name = "designer_id") 
 	private Long designerId;
+	
 	@Field(name = "comment") 
-	private String comment;
+	private String comment = "";
 	@Field(name = "raiting") 
-	private Long raiting;
+	private Long raiting = 0l;
 	@NotNull(message = "Following is required!")
 	@Field(name = "is_following") 
-	private Boolean isFollowing;
+	private Boolean isFollowing = false;
 	@Field(name = "created_on") 
 	private String createdOn;
 	
