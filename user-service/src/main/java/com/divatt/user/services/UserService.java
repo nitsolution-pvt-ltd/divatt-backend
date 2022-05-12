@@ -508,7 +508,7 @@ public class UserService {
 		try {
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<?> Response = restTemplate
-					.getForEntity("http://localhost:8083/dev/designerProduct/getPerDesignerProductListUser/"
+					.getForEntity("http://localhost:8083/dev/designerProduct/getPerDesignerProductUser/"
 							+ designerId + "?page=" + page + "&limit=" + limit + "&", String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);

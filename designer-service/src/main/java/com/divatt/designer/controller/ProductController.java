@@ -235,6 +235,22 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/getPerDesignerProductUser/{designerId}")
+	public ResponseEntity<?> getPerDesignerProductUser(@PathVariable Integer designerId,
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		try {
+			LOGGER.info("Inside-ProductController.getPerDesignerProductUser()");
+
+			return productService.getPerDesignerProductService(designerId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 	@GetMapping("/UserDesignerProductList/{designerId}")
 	public List<ProductMasterEntity>UserDesignerProductList (@PathVariable Integer designerId)
 	{
