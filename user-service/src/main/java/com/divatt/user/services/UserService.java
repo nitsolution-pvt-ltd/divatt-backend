@@ -176,11 +176,10 @@ public class UserService {
 		}
 	}
 
-	public ResponseEntity<?> getUserWishlistDetails(@RequestBody org.json.simple.JSONObject getWishlist, Integer userId)
+	public ResponseEntity<?> getUserWishlistDetails(Integer userId, Integer page, Integer limit)
 			throws UnirestException {
 		LOGGER.info("Inside - UserService.getUserWishlistDetails()");
 		try {
-
 			List<WishlistEntity> findByUserId = wishlistRepo.findByUserId(userId);
 			List<Integer> productIds = new ArrayList<>();
 
@@ -190,8 +189,9 @@ public class UserService {
 			JsonObject wishlistObj = new JsonObject();
 
 			wishlistObj.addProperty("productId", productIds.toString());
-			wishlistObj.addProperty("limit", Integer.parseInt(getWishlist.get("limit").toString()));
-			wishlistObj.addProperty("page", Integer.parseInt(getWishlist.get("page").toString()));
+			wishlistObj.addProperty("limit", limit);
+			wishlistObj.addProperty("page", page);
+			System.out.println(wishlistObj);
 			HttpResponse<JsonNode> response = null;
 			if (productIds != null) {
 				Unirest.setTimeouts(0, 0);
