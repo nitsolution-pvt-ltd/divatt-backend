@@ -79,6 +79,7 @@ public class OrderAndPaymentContoller {
 			Date date = new Date();
 			String format = formatter.format(date);
 			String orderId = "OR"+System.currentTimeMillis();
+			orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
 			orderDetailsEntity.setOrderId("OR"+System.currentTimeMillis());
 			orderDetailsEntity.setCreatedOn(format);
 			orderDetailsRepo.save(orderDetailsEntity);
