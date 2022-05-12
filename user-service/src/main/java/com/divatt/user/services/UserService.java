@@ -112,13 +112,13 @@ public class UserService {
 
 	}
 
-	public GlobalResponse deleteWishlistService(Integer Id) {
+	public GlobalResponse deleteWishlistService(Integer productId, Integer userId) {
 		try {
-			Optional<WishlistEntity> findByProductRow = wishlistRepo.findById(Id);
+			Optional<WishlistEntity> findByProductRow = wishlistRepo.findByProductIdAndUserId(productId,userId);
 			if (!findByProductRow.isPresent()) {
 				throw new CustomException("Product not exist!");
 			} else {
-				wishlistRepo.deleteById(Id);
+				wishlistRepo.deleteByProductIdAndUserId(productId, userId);
 				return new GlobalResponse("SUCCESS", "Wishlist removed succesfully", 200);
 			}
 

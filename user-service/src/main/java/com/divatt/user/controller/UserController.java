@@ -109,7 +109,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.deleteWishlistDetails()");
 
 		try {
-			return this.userService.deleteWishlistService(wishlistEntity.getId());
+			return this.userService.deleteWishlistService(wishlistEntity.getProductId(),wishlistEntity.getUserId());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
