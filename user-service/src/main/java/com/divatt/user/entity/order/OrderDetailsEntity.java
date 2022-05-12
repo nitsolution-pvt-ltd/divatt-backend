@@ -19,7 +19,6 @@ public class OrderDetailsEntity {
 	@Field(name = "user_id") 
 	private Long userId;
 	
-	@NotNull(message = "OrderId is required!")
 	@Field(name = "order_id") 
 	private String orderId;
 	
@@ -56,7 +55,7 @@ public class OrderDetailsEntity {
 	private Long totalAmount;
 	
 	@Field(name = "created_on") 
-	private Long createdOn;
+	private String createdOn;
 
 	public OrderDetailsEntity() {
 		super();
@@ -72,7 +71,7 @@ public class OrderDetailsEntity {
 			@NotNull(message = "NetPrice is required!") Long netPrice,
 			@NotNull(message = "TaxAmount is required!") Long taxAmount,
 			@NotNull(message = "TotalAmount is required!") Long totalAmount,
-			Long createdOn) {
+			String createdOn) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -184,11 +183,11 @@ public class OrderDetailsEntity {
 		this.totalAmount = totalAmount;
 	}
 
-	public Long getCreatedOn() {
+	public String getCreatedOn() {
 		return createdOn;
 	}
 
-	public void setCreatedOn(Long createdOn) {
+	public void setCreatedOn(String createdOn) {
 		this.createdOn = createdOn;
 	}
 
