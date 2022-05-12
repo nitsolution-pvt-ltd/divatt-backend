@@ -35,8 +35,10 @@ import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
+import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.entity.wishlist.WishlistEntity;
@@ -53,6 +55,9 @@ public class UserController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+	@Autowired
+	private OrderDetailsRepo orderDetailsRepo;
+	
 	@Autowired
 	private Environment env;
 
@@ -404,5 +409,20 @@ public class UserController {
 		}
 
 	}
+	
+	@PostMapping("/order")
+	public ResponseEntity<?> addOrder(@RequestBody OrderDetailsEntity orderDetailsEntity){
+		LOGGER.info("Inside - UserController.addOrder()");
+		try {
+			orderDetailsRepo.save(orderDetailsEntity);
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Updated successfully", 200));
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
+	}
+	
+	
+	
 
 }

@@ -491,10 +491,12 @@ public class UserService {
 			RestTemplate restTemplate = new RestTemplate();
 
 			String body = restTemplate
-					.getForEntity("http://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();
-
-			Json js = new Json(body);
-			return ResponseEntity.ok(js);
+					.getForEntity("http://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();	
+			JsonNode jn =new JsonNode(body);
+			JSONObject object = jn.getObject();
+			object.put("follwerCount", userDesignerRepo.findByDesignerId(Long.parseLong(object.get("dId").toString())).size());
+			
+			return ResponseEntity.ok(new Json(object.toString()));
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

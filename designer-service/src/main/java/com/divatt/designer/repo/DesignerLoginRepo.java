@@ -20,6 +20,8 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 	
 	List<DesignerLoginEntity> findByIsDeletedAndProfileStatus(Boolean isDeleted,String profileStatus);
 	
+	List<DesignerLoginEntity> findByIsDeletedAndProfileStatusAndDId(Boolean isDeleted,String profileStatus, long dId);
+	
 	List<DesignerLoginEntity> findByProfileStatus(String profileStatus);
 	
 	public Page<DesignerLoginEntity> findByIsDeletedAndProfileStatus(Boolean isDeleted,String profileStatus,Pageable pagingSort);

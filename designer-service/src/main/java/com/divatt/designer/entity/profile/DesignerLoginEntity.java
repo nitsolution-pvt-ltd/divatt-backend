@@ -38,9 +38,10 @@ public class DesignerLoginEntity {
 	@DBRef
 	private DesignerProfileEntity designerProfileEntity;
 	
-	private Integer productCount;
+	private Integer productCount = 0;
 	
-	private Integer follwerCount;
+	
+	private Integer follwerCount = 0;
 
 	public DesignerLoginEntity() {
 		super();
