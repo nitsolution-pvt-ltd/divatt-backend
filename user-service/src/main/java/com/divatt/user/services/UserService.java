@@ -94,7 +94,9 @@ public class UserService {
 				for (WishlistEntity getRow : wishlistEntity)
 		        {
 				Optional<WishlistEntity> findByCategoryName = wishlistRepo.findByProductIdAndUserId(getRow.getProductId(), getRow.getUserId());
-					
+				if(wishlistEntity.size()<=1 && findByCategoryName.isPresent()) {
+					throw new CustomException("Wishlist already exist");
+				}
 				if (!findByCategoryName.isPresent()) {
 		            filterCatDetails.setId(sequenceGenerator.getNextSequence(WishlistEntity.SEQUENCE_NAME));
 					filterCatDetails.setUserId(getRow.getUserId());
@@ -494,7 +496,7 @@ public class UserService {
 					.getForEntity("http://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();	
 			JsonNode jn =new JsonNode(body);
 			JSONObject object = jn.getObject();
-			object.put("follwerCount", userDesignerRepo.findByDesignerId(Long.parseLong(object.get("dId").toString())).size());
+			object.put("follwerCount", userDesignerRepo.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()),true).size());
 			
 			return ResponseEntity.ok(new Json(object.toString()));
 
