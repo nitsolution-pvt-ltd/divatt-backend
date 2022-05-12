@@ -21,4 +21,6 @@ public interface WishlistRepo extends MongoRepository<WishlistEntity, Integer> {
 	@Query(value = "{ $or: [ { 'product_id' : {$regex:?0,$options:'i'} }, { 'user_id' : {$regex:?0,$options:'i'} } ]}")
 	Page<WishlistEntity> Search(String sortKey, Pageable pageable);
 
+	void deleteByProductIdAndUserId(Integer productId, Integer userId);
+
 }

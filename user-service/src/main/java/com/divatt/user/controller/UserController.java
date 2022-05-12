@@ -109,20 +109,23 @@ public class UserController {
 		LOGGER.info("Inside - UserController.deleteWishlistDetails()");
 
 		try {
-			return this.userService.deleteWishlistService(wishlistEntity.getId());
+			return this.userService.deleteWishlistService(wishlistEntity.getProductId(),wishlistEntity.getUserId());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
 
-	@RequestMapping(value = { "/wishlist/getUserWishist" }, method = RequestMethod.GET)
-	public ResponseEntity<?> getWishlistRestDetails(@RequestBody org.json.simple.JSONObject getWishlist,
+	@GetMapping("/wishlist/getUserWishist")
+	public ResponseEntity<?> getWishlistRestDetails(
+			@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer limit,
 			@RequestParam(defaultValue = "") Integer userId) {
+	
 		LOGGER.info("Inside - UserController.getWishlistRestDetails()");
 
-		try {
-			return this.userService.getUserWishlistDetails(getWishlist, userId);
+		try {			
+			return this.userService.getUserWishlistDetails(userId,page,limit);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

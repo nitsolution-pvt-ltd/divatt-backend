@@ -112,13 +112,13 @@ public class UserService {
 
 	}
 
-	public GlobalResponse deleteWishlistService(Integer Id) {
+	public GlobalResponse deleteWishlistService(Integer productId, Integer userId) {
 		try {
-			Optional<WishlistEntity> findByProductRow = wishlistRepo.findById(Id);
+			Optional<WishlistEntity> findByProductRow = wishlistRepo.findByProductIdAndUserId(productId,userId);
 			if (!findByProductRow.isPresent()) {
 				throw new CustomException("Product not exist!");
 			} else {
-				wishlistRepo.deleteById(Id);
+				wishlistRepo.deleteByProductIdAndUserId(productId, userId);
 				return new GlobalResponse("SUCCESS", "Wishlist removed succesfully", 200);
 			}
 
@@ -176,11 +176,10 @@ public class UserService {
 		}
 	}
 
-	public ResponseEntity<?> getUserWishlistDetails(@RequestBody org.json.simple.JSONObject getWishlist, Integer userId)
+	public ResponseEntity<?> getUserWishlistDetails(Integer userId, Integer page, Integer limit)
 			throws UnirestException {
 		LOGGER.info("Inside - UserService.getUserWishlistDetails()");
 		try {
-
 			List<WishlistEntity> findByUserId = wishlistRepo.findByUserId(userId);
 			List<Integer> productIds = new ArrayList<>();
 
@@ -190,12 +189,13 @@ public class UserService {
 			JsonObject wishlistObj = new JsonObject();
 
 			wishlistObj.addProperty("productId", productIds.toString());
-			wishlistObj.addProperty("limit", Integer.parseInt(getWishlist.get("limit").toString()));
-			wishlistObj.addProperty("page", Integer.parseInt(getWishlist.get("page").toString()));
+			wishlistObj.addProperty("limit", limit);
+			wishlistObj.addProperty("page", page);
+			System.out.println(wishlistObj);
 			HttpResponse<JsonNode> response = null;
 			if (productIds != null) {
 				Unirest.setTimeouts(0, 0);
-				response = Unirest.post("http://localhost:8083/dev/product/getProductList")
+				response = Unirest.post("http://localhost:8083/dev/designerProduct/getProductList")
 						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
 			}
 			return ResponseEntity.ok(new Json(response.getBody().toString()));
@@ -508,7 +508,7 @@ public class UserService {
 		try {
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<?> Response = restTemplate
-					.getForEntity("http://localhost:8083/dev/designerProduct/getPerDesignerProductListUser/"
+					.getForEntity("http://localhost:8083/dev/designerProduct/getPerDesignerProductUser/"
 							+ designerId + "?page=" + page + "&limit=" + limit + "&", String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
