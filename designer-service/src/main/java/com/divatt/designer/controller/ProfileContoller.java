@@ -85,6 +85,7 @@ public class ProfileContoller {
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
 		try {
 			Optional<DesignerProfileEntity> findById = designerProfileRepo.findBydesignerId(id);
+			
 			if(findById.isPresent());
 			DesignerProfileEntity designerProfileEntity = findById.get();
 			try {
@@ -92,6 +93,11 @@ public class ProfileContoller {
 					designerProfileEntity.setSocialProfile(new SocialProfile());
 			}catch(Exception e) {
 				designerProfileEntity.setSocialProfile(new SocialProfile());
+			}
+			try {
+				designerProfileEntity.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
+			}catch(Exception e) {
+				
 			}
 			
 			return ResponseEntity.ok(designerProfileEntity);
@@ -107,10 +113,13 @@ public class ProfileContoller {
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
 			if (!findById.isPresent())
 				throw new CustomException("This designer profile is not compleated");
+			if(!findById.get().getProfileStatus().equals("COMPLEATED"))
+				throw new CustomException("This designer profile is not compleated");
 			Stream<DesignerLoginEntity> map = findById.stream().map(e -> {
 				try {
 					e.setDesignerProfileEntity(
 							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
+					e.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerId(false, "Approved", Long.parseLong(e.getdId().toString())));
 				} catch (Exception o) {
 
 				}
@@ -198,7 +207,7 @@ public class ProfileContoller {
 	}
 
 	@PutMapping("/profile/update")
-	public ResponseEntity<?> updateDesignerProfile( @RequestBody DesignerProfileEntity designerProfileEntity) {
+	public ResponseEntity<?> updateDesignerProfile(@RequestBody DesignerProfileEntity designerProfileEntity) {
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerProfileEntity.getDesignerId());
 		if (!findById.isPresent())
 			throw new CustomException("Designer details not found");

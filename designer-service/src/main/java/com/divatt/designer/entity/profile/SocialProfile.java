@@ -16,6 +16,7 @@ public class SocialProfile {
 	private String address;
 	@Field(name = "achievements")
 	private String achievements;
+	
 	public SocialProfile() {
 		super();
 		// TODO Auto-generated constructor stub
