@@ -103,7 +103,7 @@ public class CustomFunction {
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
 			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setIsActive(productRepo.findById(productId).get().getIsActive());
-			filterProductEntity.setAdminStatus(productRepo.findById(productId).get().getAdminStatus());
+			filterProductEntity.setAdminStatus(productData.getAdminStatus());
 			filterProductEntity.setPrice(productData.getPrice());
 			filterProductEntity.setPriceType(productData.getPriceType());
 			filterProductEntity.setProductDescription(productData.getProductDescription());

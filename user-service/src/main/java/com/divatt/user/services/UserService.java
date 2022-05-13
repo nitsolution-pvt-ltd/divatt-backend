@@ -28,9 +28,11 @@ import org.springframework.web.client.RestTemplate;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
+import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.cart.UserCartRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
@@ -70,6 +72,9 @@ public class UserService {
 
 	@Autowired
 	private UserOrderPaymentRepo userOrderPaymentRepo;
+	
+	@Autowired
+	private OrderDetailsRepo orderDetailsRepo;
 
 	protected String getRandomString() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -572,6 +577,54 @@ public class UserService {
 				findAll = userOrderPaymentRepo.findAll(pagingSort);
 			} else {
 				findAll = userOrderPaymentRepo.Search(keyword, pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Payment not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	public Map<String, Object> getOrders(int page, int limit, String sort, String sortName, String keyword,
+			Optional<String> sortBy) {
+		LOGGER.info("Inside - UserService.getOrders()");
+		try {
+			int CountData = (int) orderDetailsRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<OrderDetailsEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = orderDetailsRepo.findAll(pagingSort);
+			} else {
+				findAll = orderDetailsRepo.Search(keyword, pagingSort);
 
 			}
 
