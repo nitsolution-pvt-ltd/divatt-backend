@@ -223,7 +223,7 @@ public class UserService {
 			} else {
 				UserCartEntity filterCatDetails = new UserCartEntity();
 
-				filterCatDetails.setId(sequenceGenerator.getNextSequence(userCartEntity.SEQUENCE_NAME));
+				filterCatDetails.setId(sequenceGenerator.getNextSequence(UserCartEntity.SEQUENCE_NAME));
 				filterCatDetails.setUserId(userCartEntity.getUserId());
 				filterCatDetails.setProductId(userCartEntity.getProductId());
 				filterCatDetails.setAddedOn(new Date());
@@ -305,7 +305,7 @@ public class UserService {
 			} else {
 				ProductCommentEntity<?> RowsDetails = new ProductCommentEntity<Object>();
 
-				RowsDetails.setId(sequenceGenerator.getNextSequence(productCommentEntity.SEQUENCE_NAME));
+				RowsDetails.setId(sequenceGenerator.getNextSequence(ProductCommentEntity.SEQUENCE_NAME));
 				RowsDetails.setUserId(productCommentEntity.getUserId());
 				RowsDetails.setProductId(productCommentEntity.getProductId());
 				RowsDetails.setRating(productCommentEntity.getRating());
@@ -405,7 +405,6 @@ public class UserService {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public ResponseEntity<?> getProductUser() {
 		try {
 
@@ -475,7 +474,6 @@ public class UserService {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public ResponseEntity<?> getDesignerUser() {
 		try {
 
