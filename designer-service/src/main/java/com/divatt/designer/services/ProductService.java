@@ -130,8 +130,10 @@ public class ProductService {
 			List<DesignerProfileEntity> designerProfileInfo = mongoOperations.find(query, DesignerProfileEntity.class);
 			if (!designerProfileInfo.isEmpty()) {
 				Query query2=new Query();
-				query2.addCriteria(Criteria.where("profile_status").is("SUBMITTED"));
+				query2.addCriteria(Criteria.where("profile_status").is("COMPLETED").and("_id").is(productData.getDesignerId()));
 				List<DesignerLoginEntity> list=mongoOperations.find(query2, DesignerLoginEntity.class);
+				if(!list.isEmpty())
+				{
 				Query query1 = new Query();
 				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName")
 						.is(productData.getProductName()));
@@ -149,7 +151,13 @@ public class ProductService {
 				} else {
 					return new GlobalResponce("Error!!", "Product already added", 400);
 				}
-			} else {
+			}
+				else
+				{
+					return new GlobalResponce("Error!!", "Designer doucument is not appoved", 400);
+				}
+			}
+				else {
 				return new GlobalResponce("Error!!", "Designerid does not exist!!", 400);
 			}
 		} catch (Exception e) {
