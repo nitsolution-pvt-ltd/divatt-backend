@@ -188,11 +188,23 @@ public class UserController {
 	}
 
 	@PostMapping("/cart/add")
-	public GlobalResponse postCartDetails(@Valid @RequestBody UserCartEntity userCartEntity) {
+	public GlobalResponse postCartDetails(@Valid @RequestBody List<UserCartEntity> userCartEntity) {
 		LOGGER.info("Inside - UserController.postCartDetails()");
 
 		try {
 			return this.userService.postCartDetailsService(userCartEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@PutMapping("/cart/update")
+	public ResponseEntity<?> putCartDetails(@Valid @RequestBody UserCartEntity userCartEntity) {
+		LOGGER.info("Inside - UserController.putCartDetails()");
+
+		try {
+			return this.userService.putCartDetailsService(userCartEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
