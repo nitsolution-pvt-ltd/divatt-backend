@@ -223,7 +223,7 @@ public class UserService {
 			} else {
 				UserCartEntity filterCatDetails = new UserCartEntity();
 
-				filterCatDetails.setId(sequenceGenerator.getNextSequence(userCartEntity.SEQUENCE_NAME));
+				filterCatDetails.setId(sequenceGenerator.getNextSequence(UserCartEntity.SEQUENCE_NAME));
 				filterCatDetails.setUserId(userCartEntity.getUserId());
 				filterCatDetails.setProductId(userCartEntity.getProductId());
 				filterCatDetails.setAddedOn(new Date());
@@ -238,14 +238,14 @@ public class UserService {
 
 	}
 
-	public GlobalResponse deleteCartService(Integer Id) {
+	public GlobalResponse deleteCartService(Integer productId,Integer userId) {
 		LOGGER.info("Inside - UserService.deleteCartService()");
 		try {
-			Optional<UserCartEntity> findByProductRow = userCartRepo.findById(Id);
+			Optional<UserCartEntity> findByProductRow = userCartRepo.findByProductIdAndUserId(productId,userId);
 			if (!findByProductRow.isPresent()) {
 				throw new CustomException("Cart not exist!");
 			} else {
-				userCartRepo.deleteById(Id);
+				userCartRepo.deleteByProductIdAndUserId(productId,userId);
 				return new GlobalResponse("SUCCESS", "Cart removed succesfully", 200);
 			}
 
@@ -255,7 +255,7 @@ public class UserService {
 
 	}
 
-	public ResponseEntity<?> getUserCartDetailsService(@RequestBody org.json.simple.JSONObject getWishlist, Integer userId)
+	public ResponseEntity<?> getUserCartDetailsService(Integer userId, Integer page, Integer limit)
 			throws UnirestException {
 		LOGGER.info("Inside - UserService.getUserCartDetailsService()");
 		try {
@@ -269,8 +269,8 @@ public class UserService {
 			JsonObject cartObj = new JsonObject();
 
 			cartObj.addProperty("productId", productIds.toString());
-			cartObj.addProperty("limit", Integer.parseInt(getWishlist.get("limit").toString()));
-			cartObj.addProperty("page", Integer.parseInt(getWishlist.get("page").toString()));
+			cartObj.addProperty("limit", limit);
+			cartObj.addProperty("page", page);
 
 			if (productIds.isEmpty()) {
 				return ResponseEntity
@@ -279,7 +279,7 @@ public class UserService {
 
 			try {
 				Unirest.setTimeouts(0, 0);
-				HttpResponse<JsonNode> response = Unirest.post("http://localhost:8083/dev/product/getProductList")
+				HttpResponse<JsonNode> response = Unirest.post("http://localhost:8083/dev/designerProduct/getProductList")
 						.header("Content-Type", "application/json").body(cartObj.toString()).asJson();
 				return ResponseEntity.ok(new Json(response.getBody().toString()));
 			} catch (Exception e2) {
@@ -305,7 +305,7 @@ public class UserService {
 			} else {
 				ProductCommentEntity<?> RowsDetails = new ProductCommentEntity<Object>();
 
-				RowsDetails.setId(sequenceGenerator.getNextSequence(productCommentEntity.SEQUENCE_NAME));
+				RowsDetails.setId(sequenceGenerator.getNextSequence(ProductCommentEntity.SEQUENCE_NAME));
 				RowsDetails.setUserId(productCommentEntity.getUserId());
 				RowsDetails.setProductId(productCommentEntity.getProductId());
 				RowsDetails.setRating(productCommentEntity.getRating());
@@ -405,7 +405,6 @@ public class UserService {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public ResponseEntity<?> getProductUser() {
 		try {
 
@@ -475,7 +474,6 @@ public class UserService {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public ResponseEntity<?> getDesignerUser() {
 		try {
 

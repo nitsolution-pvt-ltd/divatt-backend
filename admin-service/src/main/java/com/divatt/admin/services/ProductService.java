@@ -49,6 +49,7 @@ public class ProductService {
 				//System.out.println(productdata);
 				restTemplate.put("Http://localhost:8083/dev/designerProduct/update/" + productId, productdata,
 						String.class);
+				System.out.println(productdata);
 				return new GlobalResponse("Status Updated", "Product " + status + " successfully", 200);
 			} else {
 				return new GlobalResponse("Bad Request", "ProductID and designerId are mismatched", 400);

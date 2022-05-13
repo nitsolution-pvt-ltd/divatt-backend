@@ -204,7 +204,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.deleteCartDetails()");
 
 		try {
-			return this.userService.deleteCartService(userCartEntity.getId());
+			return this.userService.deleteCartService(userCartEntity.getProductId(),userCartEntity.getUserId());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -212,12 +212,13 @@ public class UserController {
 	}
 
 	@RequestMapping(value = { "/cart/getUserCart" }, method = RequestMethod.GET)
-	public ResponseEntity<?> getUserCartRestDetails(@RequestBody org.json.simple.JSONObject getWishlist,
+	public ResponseEntity<?> getUserCartRestDetails(@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer limit,
 			@RequestParam(defaultValue = "") Integer userId) {
 		LOGGER.info("Inside - UserController.getUserCartRestDetails()");
 
 		try {
-			return this.userService.getUserCartDetailsService(getWishlist, userId);
+			return this.userService.getUserCartDetailsService(userId,page,limit);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
