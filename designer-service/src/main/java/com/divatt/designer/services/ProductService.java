@@ -129,9 +129,9 @@ public class ProductService {
 			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
 			List<DesignerProfileEntity> designerProfileInfo = mongoOperations.find(query, DesignerProfileEntity.class);
 			if (!designerProfileInfo.isEmpty()) {
-				Query query2=new Query();
+				Query query2 = new Query();
 				query2.addCriteria(Criteria.where("profile_status").is("SUBMITTED"));
-				List<DesignerLoginEntity> list=mongoOperations.find(query2, DesignerLoginEntity.class);
+				List<DesignerLoginEntity> list = mongoOperations.find(query2, DesignerLoginEntity.class);
 				Query query1 = new Query();
 				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName")
 						.is(productData.getProductName()));
@@ -193,8 +193,7 @@ public class ProductService {
 					productRepo.save(productEntity);
 					return new GlobalResponce("Success", "Status Active successfully", 200);
 				}
-				
-				
+
 			} else {
 				return new GlobalResponce("Bad request", "Product does not exist", 400);
 			}
@@ -343,7 +342,7 @@ public class ProductService {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("designerId").is(designerId1));
 			List<ProductMasterEntity> productList = mongoOperations.find(query, ProductMasterEntity.class);
-			
+
 			return productList;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -409,7 +408,8 @@ public class ProductService {
 		long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
 		Random rd = new Random();
 
-		List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndAdminStatusAndIsActive(false, "Approved",true);
+		List<ProductMasterEntity> findAll = productRepo.findByIsDeletedAndAdminStatusAndIsActive(false, "Approved",
+				true);
 		if (findAll.size() <= 15) {
 			return ResponseEntity.ok(findAll);
 		}
@@ -625,14 +625,12 @@ public class ProductService {
 	}
 
 	public List<ProductMasterEntity> UserDesignerProductList(Integer Id) {
-		try
-		{
-			Query query= new Query();
+		try {
+			Query query = new Query();
 			query.addCriteria(Criteria.where("designerId").is(Id).and("isActive").is(true));
-			List<ProductMasterEntity> productList=mongoOperations.find(query, ProductMasterEntity.class);
+			List<ProductMasterEntity> productList = mongoOperations.find(query, ProductMasterEntity.class);
 
-			if(productList.isEmpty())
-			{
+			if (productList.isEmpty()) {
 				throw new CustomException("Product not found");
 			}
 			long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
@@ -654,21 +652,18 @@ public class ProductService {
 
 			}
 			return productMasterEntity;
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
+
 	public ResponseEntity<?> getPerDesignerProductService(Integer designerId) {
-		try
-		{
+		try {
 			long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
 			Random rd = new Random();
 
-			List<ProductMasterEntity> findAll = productRepo.findByDesignerIdAndIsDeletedAndAdminStatusAndIsActive(designerId,false, "Approved",true);
+			List<ProductMasterEntity> findAll = productRepo
+					.findByDesignerIdAndIsDeletedAndAdminStatusAndIsActive(designerId, false, "Approved", true);
 			if (findAll.size() <= 15) {
 				return ResponseEntity.ok(findAll);
 			}
@@ -685,9 +680,7 @@ public class ProductService {
 				}
 			}
 			return ResponseEntity.ok(productMasterEntity);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
