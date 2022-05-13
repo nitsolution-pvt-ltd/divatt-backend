@@ -95,6 +95,9 @@ public class ProfileContoller {
 				designerProfileEntity.setSocialProfile(new SocialProfile());
 			}
 			try {
+				DesignerLoginEntity designerLoginEntity = designerLoginRepo.findById(id).get();
+				designerProfileEntity.setAccountStatus(designerLoginEntity.getAccountStatus());
+				designerProfileEntity.setProfileStatus(designerLoginEntity.getProfileStatus());
 				designerProfileEntity.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
 			}catch(Exception e) {
 				

@@ -33,6 +33,10 @@ public class DesignerProfileEntity {
 	
 	private String designerName;
 	
+	private String profileStatus;
+	
+	private String accountStatus;
+	
 	private DesignerPersonalInfoEntity designerPersonalInfoEntity;
 
 	public DesignerProfileEntity() {
@@ -42,9 +46,17 @@ public class DesignerProfileEntity {
 
 	
 
+	
+
+
+
+	
+
+
+
 	public DesignerProfileEntity(Long id, Long designerId, @NotNull DesignerProfile designerProfile,
 			@NotNull BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName,
-			DesignerPersonalInfoEntity designerPersonalInfoEntity) {
+			String profileStatus, String accountStatus, DesignerPersonalInfoEntity designerPersonalInfoEntity) {
 		super();
 		this.id = id;
 		this.designerId = designerId;
@@ -52,8 +64,18 @@ public class DesignerProfileEntity {
 		this.boutiqueProfile = boutiqueProfile;
 		this.socialProfile = socialProfile;
 		this.designerName = designerName;
+		this.profileStatus = profileStatus;
+		this.accountStatus = accountStatus;
 		this.designerPersonalInfoEntity = designerPersonalInfoEntity;
 	}
+
+
+
+
+
+
+
+
 
 
 
@@ -61,13 +83,38 @@ public class DesignerProfileEntity {
 	public String toString() {
 		return "DesignerProfileEntity [id=" + id + ", designerId=" + designerId + ", designerProfile=" + designerProfile
 				+ ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile + ", designerName="
-				+ designerName + ", designerPersonalInfoEntity=" + designerPersonalInfoEntity + "]";
+				+ designerName + ", profileStatus=" + profileStatus + ", accountStatus=" + accountStatus
+				+ ", designerPersonalInfoEntity=" + designerPersonalInfoEntity + "]";
 	}
 
 
 
 	public DesignerPersonalInfoEntity getDesignerPersonalInfoEntity() {
 		return designerPersonalInfoEntity;
+	}
+
+
+
+	public String getProfileStatus() {
+		return profileStatus;
+	}
+
+
+
+	public void setProfileStatus(String profileStatus) {
+		this.profileStatus = profileStatus;
+	}
+
+
+
+	public String getAccountStatus() {
+		return accountStatus;
+	}
+
+
+
+	public void setAccountStatus(String accountStatus) {
+		this.accountStatus = accountStatus;
 	}
 
 

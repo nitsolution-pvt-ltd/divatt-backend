@@ -50,7 +50,6 @@ import com.divatt.auth.services.MailService;
 import com.divatt.auth.services.SequenceGenerator;
 import com.google.gson.JsonObject;
 
-
 @RestController
 @SuppressWarnings("all")
 @RequestMapping("/auth")
@@ -98,6 +97,8 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		LOGGER.info("Inside - EcomAuthController.superAdminLogin()");
 
 		try {
+			
+		//** CHECKING THE USER IS REAL OR NOT  **//
 			try {
 				this.authenticationManager.authenticate(
 						new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
@@ -108,25 +109,27 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					throw new CustomException(e.getMessage());
 
 			}
-
+		//** CHECKING END(IF USER IS REAL THEN ONLY HE CAN GO TO NEXT LINE)  **//
+			
+			
 			UserDetails vendor = this.loginUserDetails.loadUserByUsername(loginEntity.getEmail());
 
 			String token = jwtUtil.generateToken(vendor);
-
+		//*****  WE ARE CHECKING IN THREE TABLE ADMIN DESIGNER AND USER  *****//
+			//** IF IT IS A ADMIN START **//
+			
+			
 			Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(vendor.getUsername());
-			if (findByUserName.isPresent()) {
-//				AdminLoginEntity loginEntityAfterCheck = findByUserName.get();
-//				loginEntityAfterCheck.setAuthToken(token);
-//				AdminLoginEntity save = loginRepository.save(loginEntityAfterCheck);
-
-//				if (save.equals(null)) {
-//					throw new CustomException("Data not save! try again");
-//				}
-				if(!findByUserName.get().isActive())
+			if (findByUserName.isPresent()) {  
+				if (!findByUserName.get().isActive())
 					throw new CustomException("This account has been deactive");
 				return ResponseEntity
 						.ok(new LoginAdminData(token, findByUserName.get().getUid(), findByUserName.get().getEmail(),
 								findByUserName.get().getPassword(), "Login successful", 200, "ADMIN"));
+			
+			//**  ADMIN END **//
+				
+			//** IF IT IS A DESIGNER START **//	
 			} else {
 				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo
 						.findByEmail(vendor.getUsername());
@@ -138,9 +141,9 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					try {
 						if (!findByUserNameDesigner.get().getAccountStatus().equals("ACTIVE"))
 							throw new CustomException("This account has been deactive");
-					}catch (Exception e) {
+					} catch (Exception e) {
 					}
-					
+
 					DesignerLoginEntity designerLoginEntity = findByUserNameDesigner.get();
 					designerLoginEntity.setAuthToken(token);
 					designerLoginRepo.save(designerLoginEntity);
@@ -149,11 +152,14 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							"Login successful",
 							Stream.of("DESIGNER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()), 200,
 							findByUserNameDesigner.get().getAdminComment(),
-							findByUserNameDesigner.get().getProfileStatus(),
-							token,
-							 "DESIGNER");
-					
+							findByUserNameDesigner.get().getProfileStatus(), token, "DESIGNER");
+
 					return new ResponseEntity<>(loginDesignerData, HttpStatus.OK);
+					
+			//**  DESIGNER END **//
+					
+			//** IF IT IS A USER START **//	
+					
 				} else {
 
 					Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(vendor.getUsername());
@@ -168,6 +174,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					}
 
 				}
+			//**  USER END **//
 
 			}
 
@@ -177,6 +184,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 	}
 
 	@PostMapping("/sendMail")
+	@Description(value = "This API is responsible for send the mail")
 	public ResponseEntity<String> sendMail(@RequestBody() SendMail senderMailId) {
 		LOGGER.info("Inside - EcomAuthController.sendMail()");
 
@@ -437,7 +445,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							DesignerLoginEntity save = designerLoginRepo.save(loginEntity);
 							return new GlobalResponse("SUCCESS", "Password changed successfully", 200);
 
-						} catch (Exception Z) { 
+						} catch (Exception Z) {
 							try {
 								if (!passwordEncoder.matches(globalEntity.getOldPass(),
 										findByUserEmail.get().getPassword()))
@@ -467,31 +475,39 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 	}
 
 	@GetMapping("/info/{role}/{id}")
+	@Description(value = "Using this API user/designer/admin can get his all details")
 	public ResponseEntity<?> getDetails(@PathVariable("role") String role, @PathVariable("id") String id) {
-		if (role.equals("USER")) {
-			Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(id);
-			if (findByEmail.isPresent()) {
-				return ResponseEntity.ok(findByEmail);
+		
+		LOGGER.info("Inside - EcomAuthController.getDetails()");
+		try {
+			if (role.equals("USER")) {
+				Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(id);
+				if (findByEmail.isPresent()) {
+					return ResponseEntity.ok(findByEmail);
+				} else {
+					throw new CustomException("Email not present");
+				}
+			} else if (role.equals("DESIGNER")) {
+				Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(id);
+				if (findByEmail.isPresent()) {
+					System.out.println(Long.parseLong(findByEmail.get().getUid().toString()));
+					return ResponseEntity.ok(
+							designerProfileRepo.findByDesignerId(Long.parseLong(findByEmail.get().getUid().toString())));
+				} else {
+					throw new CustomException("Email not present");
+				}
 			} else {
-				throw new CustomException("Email not present");
+				Optional<AdminLoginEntity> findByEmail = loginRepository.findByEmail(id);
+				if (findByEmail.isPresent()) {
+					return ResponseEntity.ok(findByEmail);
+				} else {
+					throw new CustomException("Email not present");
+				}
 			}
-		} else if (role.equals("DESIGNER")) {
-			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(id);
-			if (findByEmail.isPresent()) {
-				System.out.println(Long.parseLong(findByEmail.get().getUid().toString()));
-				return ResponseEntity.ok(
-						designerProfileRepo.findByDesignerId(Long.parseLong(findByEmail.get().getUid().toString())));
-			} else {
-				throw new CustomException("Email not present");
-			}
-		} else {
-			Optional<AdminLoginEntity> findByEmail = loginRepository.findByEmail(id);
-			if (findByEmail.isPresent()) {
-				return ResponseEntity.ok(findByEmail);
-			} else {
-				throw new CustomException("Email not present");
-			}
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
 		}
+		
 	}
 
 	@GetMapping("/admin/testapi")

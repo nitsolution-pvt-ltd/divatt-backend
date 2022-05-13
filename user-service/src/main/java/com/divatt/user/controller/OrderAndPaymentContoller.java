@@ -83,7 +83,7 @@ public class OrderAndPaymentContoller {
 			orderDetailsEntity.setOrderId("OR"+System.currentTimeMillis());
 			orderDetailsEntity.setCreatedOn(format);
 			orderDetailsRepo.save(orderDetailsEntity);
-			
+			//need to call payment method
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Updated successfully", 200));
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
