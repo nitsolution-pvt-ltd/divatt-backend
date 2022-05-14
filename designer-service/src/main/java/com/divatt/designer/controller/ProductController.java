@@ -121,7 +121,7 @@ public class ProductController implements ProductServiceImp {
 		}
 	}
 
-	@PostMapping("/getProductList")
+	@PostMapping("/getWishlistProductList")
 	public Map<String, Object> productList(@RequestBody JSONObject productIdList,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
@@ -151,6 +151,32 @@ public class ProductController implements ProductServiceImp {
 			}
 
 			return productService.allWishlistProductData(list, sortBy, page, sort, sortName, isDeleted, limit);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@PostMapping("/getCartProductList")
+	public ResponseEntity<?> CartProductList(@RequestBody JSONObject productIdList) {
+		try {
+			LOGGER.info("Inside-ProductController.productList()");
+			
+			String productId = productIdList.get("productId").toString();
+			
+			JSONParser jsonParser = new JSONParser();
+			Object object = (Object) jsonParser.parse(productId);
+			JSONArray jsonArray = (JSONArray) object;
+			
+
+			List<Integer> list = new ArrayList<Integer>();
+			for (int i = 0; i < jsonArray.size(); i++) {
+				Object object2 = jsonArray.get(i);
+				int a = Integer.parseInt(object2.toString());
+				list.add(a);
+			}
+			
+
+			return productService.allCartProductData(list);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

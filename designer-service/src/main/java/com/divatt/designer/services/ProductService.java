@@ -303,7 +303,7 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
+	
 	public Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page,
 			String sort, String sortName, Boolean isDeleted, int limit) {
 		try {
@@ -338,6 +338,25 @@ public class ProductService {
 					throw new CustomException("Product not found!");
 				} else {
 					return response;
+				}
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public ResponseEntity<?> allCartProductData(List<Integer> productIdList) {
+		try {
+			LOGGER.info("Inside-ProductService.allWishlistProductData()");
+			if (productIdList.isEmpty()) {
+				throw new CustomException("Product not found!");
+			} else {
+				List<ProductMasterEntity> list = productRepo.findByProductIdIn(productIdList);
+				
+				if (list.size() <= 0) {
+					throw new CustomException("Product not found!");
+				} else {
+					return ResponseEntity.ok(list);
 				}
 			}
 		} catch (Exception e) {
