@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +39,7 @@ import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
+import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
@@ -75,6 +77,9 @@ public class UserController {
 
 	@Autowired
 	private UserLoginRepo userLoginRepo;
+	
+	@Autowired
+	private JwtUtil jwtUtil;
 
 	@PostMapping("/wishlist/add")
 	public GlobalResponse postWishlistDetails(@Valid @RequestBody ArrayList<WishlistEntity> wishlistEntity) {
@@ -371,10 +376,20 @@ public class UserController {
 	}
 
 	@GetMapping("/designerProfile/{designerId}")
-	public ResponseEntity<?> viewDesignerProfileDetails(@PathVariable Integer designerId) {
+	public ResponseEntity<?> viewDesignerProfileDetails(@PathVariable Integer designerId,@RequestHeader(name = "Authorization" , defaultValue = "Bearer ") String token) {
 		LOGGER.info("Inside- UserController.viewDesignerProfileDetails()");
 		try {
-			return userService.getDesignerProfileDetailsService(designerId);
+			Long userId = 0l;
+			if(token.equals("Bearer "))
+				userId = 0l;
+			else {
+				Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
+				if(findByEmail.isPresent())
+					throw new CustomException("User not valid");
+				userId = findByEmail.get().getId();
+			}
+			
+			return userService.getDesignerProfileDetailsService(designerId, userId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

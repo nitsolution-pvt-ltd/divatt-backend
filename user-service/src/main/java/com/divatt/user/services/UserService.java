@@ -527,7 +527,7 @@ public class UserService {
 		}
 	}
 
-	public ResponseEntity<?> getDesignerProfileDetailsService(Integer designerId) {
+	public ResponseEntity<?> getDesignerProfileDetailsService(Integer designerId, Long userId) {
 		try {
 
 			RestTemplate restTemplate = new RestTemplate();
@@ -538,7 +538,11 @@ public class UserService {
 			JSONObject object = jn.getObject();
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
-
+			
+			if(userId != 0l)
+				object.put("UserDesigner", userDesignerRepo.findByUserId(userId).get());
+			
+			
 			return ResponseEntity.ok(new Json(object.toString()));
 
 		} catch (Exception e) {
