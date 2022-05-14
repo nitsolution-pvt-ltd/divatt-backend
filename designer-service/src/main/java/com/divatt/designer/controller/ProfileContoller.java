@@ -47,6 +47,7 @@ import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
 import com.google.gson.JsonObject;
+import com.google.inject.internal.Errors;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 
@@ -115,9 +116,9 @@ public class ProfileContoller {
 		try {
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
 			if (!findById.isPresent())
-				throw new CustomException("This designer profile is not compleated");
-			if(!findById.get().getProfileStatus().equals("COMPLEATED"))
-				throw new CustomException("This designer profile is not compleated");
+				throw new CustomException("This designer profile is not completed");
+			if(!findById.get().getProfileStatus().equals("COMPLETED"))
+				throw new CustomException("This designer profile is not completed");
 			
 			DesignerLoginEntity designerLoginEntity = findById.get();
 			designerLoginEntity.setDesignerProfileEntity(
@@ -186,7 +187,8 @@ public class ProfileContoller {
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<?> updateDesigner( @RequestBody DesignerLoginEntity designerLoginEntity) {
+	public ResponseEntity<?> updateDesigner(@RequestBody DesignerLoginEntity designerLoginEntity) {
+		
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerLoginEntity.getdId());
 		if (!findById.isPresent())
 			throw new CustomException("Designer Details Not Found");
@@ -206,7 +208,17 @@ public class ProfileContoller {
 	}
 
 	@PutMapping("/profile/update")
-	public ResponseEntity<?> updateDesignerProfile(@RequestBody DesignerProfileEntity designerProfileEntity) {
+	public ResponseEntity<?> updateDesignerProfile(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
+		try {
+				@Valid
+				DesignerPersonalInfoEntity designerPersonalInfoEntity = designerProfileEntity.getDesignerPersonalInfoEntity();	
+				designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
+				designerPersonalInfoEntity.setId((long)sequenceGenerator.getNextSequence(DesignerPersonalInfoEntity.SEQUENCE_NAME));
+				designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+		}catch(Exception e) {
+			throw new CustomException("Please check the fields");
+		}
+		
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerProfileEntity.getDesignerId());
 		if (!findById.isPresent())
 			throw new CustomException("Designer details not found");
@@ -232,10 +244,8 @@ public class ProfileContoller {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setProfileStatus("SUBMITTED");
 			designerLoginRepo.save(designerLoginEntityDB);
-			DesignerPersonalInfoEntity designerPersonalInfoEntity = designerProfileEntity.getDesignerPersonalInfoEntity();
-			designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
-			designerPersonalInfoEntity.setId((long)sequenceGenerator.getNextSequence(DesignerPersonalInfoEntity.SEQUENCE_NAME));
-			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+			
+			
 			
 
 		}
@@ -379,7 +389,7 @@ public class ProfileContoller {
 			response.put("waitingForApproval", designerLoginRepo.findByProfileStatus("ACTIVE").size());
 			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatus("APPROVE").size());
 			response.put("submitted", designerLoginRepo.findByProfileStatus("SUBMITTED").size());
-			response.put("compleated", designerLoginRepo.findByProfileStatus("COMPLEATED").size());
+			response.put("completed", designerLoginRepo.findByProfileStatus("COMPLETED").size());
 			response.put("rejected", designerLoginRepo.findByProfileStatus("REJECTED").size());
 
 			return response;
