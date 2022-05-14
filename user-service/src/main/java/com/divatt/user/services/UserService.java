@@ -1,6 +1,7 @@
 package com.divatt.user.services;
 
 import java.text.SimpleDateFormat;
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -555,11 +556,13 @@ public class UserService {
 			JSONObject object = jn.getObject();
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
-			
-			if(userId != 0l)
-				object.put("UserDesigner", userDesignerRepo.findByUserId(userId).get());
-			
-			
+			System.out.println(userDesignerRepo.findByUserId(userId).get());
+			if (userId != 0l) {
+				UserDesignerEntity userDesignerEntity = userDesignerRepo.findByUserId(userId).get();
+				object.put("isFollowing", userDesignerEntity.getIsFollowing());
+				object.put("rating", userDesignerEntity.getRaiting());
+			}
+
 			return ResponseEntity.ok(new Json(object.toString()));
 
 		} catch (Exception e) {

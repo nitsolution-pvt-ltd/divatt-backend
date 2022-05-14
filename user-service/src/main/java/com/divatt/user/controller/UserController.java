@@ -380,14 +380,16 @@ public class UserController {
 		LOGGER.info("Inside- UserController.viewDesignerProfileDetails()");
 		try {
 			Long userId = 0l;
-			if(token.equals("Bearer "))
-				userId = 0l;
-			else {
+			try {
 				Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
-				if(findByEmail.isPresent())
+				if(!findByEmail.isPresent())
 					throw new CustomException("User not valid");
 				userId = findByEmail.get().getId();
+			}catch(Exception e) {
+				
 			}
+				
+			
 			
 			return userService.getDesignerProfileDetailsService(designerId, userId);
 		} catch (Exception e) {
