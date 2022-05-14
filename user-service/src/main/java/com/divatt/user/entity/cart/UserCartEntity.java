@@ -100,9 +100,7 @@ public class UserCartEntity {
 		this.addedOn = addedOn;
 	}
 
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
+
 
 
 	

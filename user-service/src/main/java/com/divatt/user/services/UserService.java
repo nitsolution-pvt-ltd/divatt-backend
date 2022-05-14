@@ -11,6 +11,7 @@ import java.util.Random;
 
 import javax.validation.Valid;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,10 @@ import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.repo.pCommentRepo.ProductCommentRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -202,7 +207,7 @@ public class UserService {
 			HttpResponse<JsonNode> response = null;
 			if (productIds != null) {
 				Unirest.setTimeouts(0, 0);
-				response = Unirest.post("http://localhost:8083/dev/designerProduct/getProductList")
+				response = Unirest.post("http://localhost:8083/dev/designerProduct/getWishlistProductList")
 						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
 			}
 			return ResponseEntity.ok(new Json(response.getBody().toString()));
@@ -259,13 +264,13 @@ public class UserService {
 				RowsDetails.setProductId(userCartEntity.getProductId());
 				RowsDetails.setQty(userCartEntity.getQty());
 				RowsDetails.setAddedOn(new Date());
-				UserCartEntity getdata=userCartRepo.save(RowsDetails);
-				
+				UserCartEntity getdata = userCartRepo.save(RowsDetails);
+
 				Map<String, Object> map = new HashMap<>();
-				map.put("reason","SUCCESS");
-				map.put("message","Cart updated succesfully");
-				map.put("status",200);
-				map.put("qty",getdata.getQty());
+				map.put("reason", "SUCCESS");
+				map.put("message", "Cart updated succesfully");
+				map.put("status", 200);
+				map.put("qty", getdata.getQty());
 				return ResponseEntity.ok(map);
 			}
 		} catch (Exception e) {
@@ -316,12 +321,24 @@ public class UserService {
 			try {
 				Unirest.setTimeouts(0, 0);
 				HttpResponse<JsonNode> response = Unirest
-						.post("http://localhost:8083/dev/designerProduct/getProductList")
+						.post("http://localhost:8083/dev/designerProduct/getCartProductList")
 						.header("Content-Type", "application/json").body(cartObj.toString()).asJson();
-				return ResponseEntity.ok(new Json(response.getBody().toString()));
+
+				JSONArray array = response.getBody().getArray();
+
+				List<Object> l1 = new ArrayList<>();
+				array.forEach(e -> {
+					JsonNode jn = new JsonNode(e.toString());
+					JSONObject object = jn.getObject();
+
+					object.put("cartData", userCartRepo.findByUserIdAndProductId(userId,
+							Integer.parseInt(object.get("productId").toString())));
+					l1.add(object);
+				});
+
+				return ResponseEntity.ok(new Json(l1.toString()));
 			} catch (Exception e2) {
-				return ResponseEntity.ok(new Json(
-						"{\"reason\": \"ERROR\", \"message\": \"Designer Service is not running!\",\"status\": 400}"));
+				return ResponseEntity.ok(e2.getMessage());
 			}
 
 		} catch (Exception e) {

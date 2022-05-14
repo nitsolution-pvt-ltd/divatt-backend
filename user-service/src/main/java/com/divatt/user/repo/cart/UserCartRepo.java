@@ -1,5 +1,6 @@
 package com.divatt.user.repo.cart;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,5 +16,7 @@ public interface UserCartRepo extends MongoRepository<UserCartEntity, Integer> {
 	List<UserCartEntity> findByUserId(Integer UserId);
 
 	void deleteByProductIdAndUserId(Integer productId, Integer userId);
+
+	List<UserCartEntity> findByUserIdAndProductId(Integer userId, Integer productId);
 
 }
