@@ -23,7 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.entity.UserDesignerEntity;
@@ -40,10 +39,6 @@ import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.repo.pCommentRepo.ProductCommentRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -312,10 +307,14 @@ public class UserService {
 			cartObj.addProperty("productId", productIds.toString());
 			cartObj.addProperty("limit", limit);
 			cartObj.addProperty("page", page);
+			
+			Map<String, Object> map = new HashMap<>();
+			map.put("reason", "ERROR");
+			map.put("message", "Product not found");
+			map.put("status", 400);
 
 			if (productIds.isEmpty()) {
-				return ResponseEntity
-						.ok(new Json("{\"reason\": \"ERROR\", \"message\": \"Product not found!\",\"status\": 400}"));
+				return ResponseEntity.ok(map);
 			}
 
 			try {
