@@ -177,7 +177,7 @@ public class UserController {
 			jo.addProperty("enableHtml", false);
 			try {
 				Unirest.setTimeouts(0, 0);
-				HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
+				Unirest.post("http://localhost:8080/dev/auth/sendMail")
 						.header("Content-Type", "application/json").body(jo.toString()).asString();
 			} catch (Exception e) {
 
