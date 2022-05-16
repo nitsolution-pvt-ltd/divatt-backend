@@ -263,19 +263,19 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				try {
 					mailService.sendEmail(findByUserName.get().getEmail(), "Forgot Password Link",
 							"Hi " + findByUserName.get().getFirstName() + " " + findByUserName.get().getLastName()
-									+ " This is Your Code For Reset Password " + forgotPasswordLink,
+									+ " This is Your Link Reset Password " + "http://65.1.190.195/admin/#/auth/reset-password/"+forgotPasswordLink,
 							false);
 
 				} catch (Exception e) {
 					try {
 						mailService.sendEmail(findByUserNameDesigner.get().getEmail(), "Forgot Password Link",
 								"Hi " + findByUserNameDesigner.get().getEmail()
-										+ " This is your code for reset password " + forgotPasswordLink,
+										+ " This is Link for reset password " + "http://65.1.190.195/admin/#/auth/reset-password/"+forgotPasswordLink,
 								false);
 					} catch (Exception Z) {
 						mailService.sendEmail(findByUserNameUser.get().getEmail(), "Forgot Password Link",
-								"Hi " + findByUserNameUser.get().getEmail() + " This is your code for reset password "
-										+ forgotPasswordLink,
+								"Hi " + findByUserNameUser.get().getEmail() + " This is Link for reset password "
+										+ "http://65.1.190.195/divatt/forgetpassword/"+forgotPasswordLink,
 								false);
 					}
 
