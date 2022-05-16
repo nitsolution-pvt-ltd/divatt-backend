@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.annotation.MultipartConfig;
 import javax.validation.Valid;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ import com.divatt.admin.repo.LoginRepository;
 import com.divatt.admin.services.SequenceGenerator;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mongodb.BasicDBList;
 import com.divatt.admin.services.*;
@@ -157,6 +159,12 @@ public class ProfileContoller {
 			if (error.hasErrors()) {
 				throw new CustomException("Please check all input fields");
 			}
+			Unirest.setTimeouts(0, 0);
+			JsonNode body = Unirest.get("http://localhost:8080/dev/auth/Present/"+loginEntity.getEmail())
+			  .asJson().getBody();
+			JSONObject jsObj = body.getObject();
+			if((boolean) jsObj.get("isPresent"))
+				throw new CustomException("Email already present");
 			if(!checkPermission(token, "module7", "create"))
 				throw new CustomException("Don't have create permission");
 			Optional<LoginEntity> findByEmail = loginRepository.findByEmail(loginEntity.getEmail());
