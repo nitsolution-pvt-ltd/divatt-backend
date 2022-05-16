@@ -210,10 +210,15 @@ public class ProfileContoller {
 	@PutMapping("/profile/update")
 	public ResponseEntity<?> updateDesignerProfile(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
 		try {
-				@Valid
-				DesignerPersonalInfoEntity designerPersonalInfoEntity = designerProfileEntity.getDesignerPersonalInfoEntity();	
+			@Valid
+			DesignerPersonalInfoEntity designerPersonalInfoEntity = designerProfileEntity.getDesignerPersonalInfoEntity();	
+				Optional<DesignerPersonalInfoEntity> findByDesignerId = designerPersonalInfoRepo.findByDesignerId(designerProfileEntity.getDesignerId());
+				if(findByDesignerId.isPresent())
+					designerPersonalInfoEntity.setId(findByDesignerId.get().getId());
+				else
+					designerPersonalInfoEntity.setId((long)sequenceGenerator.getNextSequence(DesignerPersonalInfoEntity.SEQUENCE_NAME));
 				designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
-				designerPersonalInfoEntity.setId((long)sequenceGenerator.getNextSequence(DesignerPersonalInfoEntity.SEQUENCE_NAME));
+				
 				designerPersonalInfoRepo.save(designerPersonalInfoEntity);
 		}catch(Exception e) {
 			throw new CustomException("Please check the fields");
