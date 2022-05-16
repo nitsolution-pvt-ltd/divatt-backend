@@ -662,7 +662,7 @@ public class ProductService {
 			}
 			long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
 			Random rd = new Random();
-			if (productList.size() < productList.size()) {
+			if (productList.size() < 15) {
 				return productList;
 			}
 			List<ProductMasterEntity> productMasterEntity = new ArrayList<>();

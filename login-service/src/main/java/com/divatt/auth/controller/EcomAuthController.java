@@ -50,6 +50,8 @@ import com.divatt.auth.services.MailService;
 import com.divatt.auth.services.SequenceGenerator;
 import com.google.gson.JsonObject;
 
+import springfox.documentation.spring.web.json.Json;
+
 @RestController
 @SuppressWarnings("all")
 @RequestMapping("/auth")
@@ -508,6 +510,16 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			throw new CustomException(e.getMessage());
 		}
 		
+	}
+	
+	@GetMapping("/Present/{email}")
+	public ResponseEntity<?> checkUserPresent(@PathVariable("email") String email) {
+		JsonObject jsObj = new JsonObject();
+		if(userLoginRepo.findByEmail(email).isPresent() || designerLoginRepo.findByEmail(email).isPresent() || loginRepository.findByEmail(email).isPresent())
+			jsObj.addProperty("isPresent", true);
+		else
+			jsObj.addProperty("isPresent", false);
+		return ResponseEntity.ok(new Json(jsObj.toString()) );
 	}
 
 	@GetMapping("/admin/testapi")

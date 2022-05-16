@@ -15,6 +15,8 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,6 +51,7 @@ import com.divatt.designer.services.SequenceGenerator;
 import com.google.gson.JsonObject;
 import com.google.inject.internal.Errors;
 import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 
 import springfox.documentation.spring.web.json.Json;
@@ -137,8 +140,13 @@ public class ProfileContoller {
 	public ResponseEntity<?> addDesigner(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
 		try {
 			designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
-			if (designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail()).isPresent())
-				throw new CustomException("Email already present");
+
+				Unirest.setTimeouts(0, 0);
+				JsonNode body = Unirest.get("http://localhost:8080/dev/auth/Present/"+designerProfileEntity.getDesignerProfile().getEmail())
+				  .asJson().getBody();
+				JSONObject jsObj = body.getObject();
+				if((boolean) jsObj.get("isPresent"))
+					throw new CustomException("Email already present");
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
 
 			designerLoginEntity.setdId((long) sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
