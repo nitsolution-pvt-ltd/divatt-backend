@@ -18,7 +18,7 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 	
 	Optional<DesignerLoginEntity> findByEmail(String email);
 	
-	List<DesignerLoginEntity> findByIsDeletedAndProfileStatus(Boolean isDeleted,String profileStatus);
+	List<DesignerLoginEntity> findByIsDeletedAndProfileStatusAndAccountStatus(Boolean isDeleted,String profileStatus,String AccountStatus);
 	
 	List<DesignerLoginEntity> findByIsDeletedAndProfileStatusAndDId(Boolean isDeleted,String profileStatus, long dId);
 	

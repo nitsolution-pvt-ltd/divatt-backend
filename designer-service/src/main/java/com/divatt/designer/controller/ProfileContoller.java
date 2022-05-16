@@ -288,11 +288,10 @@ public class ProfileContoller {
 	@GetMapping("/userDesignerList")
 	public ResponseEntity<?> userDesignertList() {
 		try {
-			//designerLoginRepo.fi
 			long count = databaseSeqRepo.findById(DesignerLoginEntity.SEQUENCE_NAME).get().getSeq();
 			Random rd = new Random();
 			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
-			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(false,"APPROVE");
+			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false,"COMPLETED","ACTIVE");
 
 			if (findAll.size() <= 15) {
 				designerLoginEntity=findAll;
