@@ -275,7 +275,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					} catch (Exception Z) {
 						mailService.sendEmail(findByUserNameUser.get().getEmail(), "Forgot Password Link",
 								"Hi " + findByUserNameUser.get().getEmail() + " This is Link for reset password "
-										+ "http://65.1.190.195/divatt/forgetpassword/"+forgotPasswordLink,
+										+ "http://65.1.190.195/divatt/forgetpassword/#/"+forgotPasswordLink,
 								false);
 					}
 
