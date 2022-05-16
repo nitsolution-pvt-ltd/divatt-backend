@@ -12,6 +12,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 
 @RestController
@@ -151,6 +153,12 @@ public class UserController {
 			if (error.hasErrors()) {
 				throw new CustomException("Please check input fields");
 			}
+			Unirest.setTimeouts(0, 0);
+			JsonNode body = Unirest.get("http://localhost:8080/dev/auth/Present/"+userLoginEntity.getEmail())
+			  .asJson().getBody();
+			JSONObject jsObj = body.getObject();
+			if((boolean) jsObj.get("isPresent"))
+				throw new CustomException("Email already present");
 			if (userLoginRepo.findByEmail(userLoginEntity.getEmail()).isPresent())
 				throw new CustomException("Email id is already Present");
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
