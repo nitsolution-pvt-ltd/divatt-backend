@@ -103,7 +103,7 @@ public class UserService {
 				if (wishlistEntity.size() <= 1 && findByCategoryName.isPresent()) {
 					throw new CustomException("Wishlist already exist");
 				}
-				if (!findByCategoryName.isPresent()) {
+				if (!findByCategoryName.isPresent() && !getRow.getUserId().equals(null) && !getRow.getProductId().equals(null) ) {
 					filterCatDetails.setId(sequenceGenerator.getNextSequence(WishlistEntity.SEQUENCE_NAME));
 					filterCatDetails.setUserId(getRow.getUserId());
 					filterCatDetails.setProductId(getRow.getProductId());
@@ -226,7 +226,7 @@ public class UserService {
 				if (userCartEntity.size() <= 1 && findByCat.isPresent()) {
 					throw new CustomException("Product already added to the cart.");
 				} else {
-					if (!findByCat.isPresent()) {
+					if (!findByCat.isPresent() && !getRow.getUserId().equals(null) && !getRow.getProductId().equals(null)) {
 						filterCatDetails.setId(sequenceGenerator.getNextSequence(UserCartEntity.SEQUENCE_NAME));
 						filterCatDetails.setUserId(getRow.getUserId());
 						filterCatDetails.setProductId(getRow.getProductId());
@@ -275,14 +275,14 @@ public class UserService {
 
 	}
 
-	public GlobalResponse deleteCartService(Integer productId, Integer userId) {
+	public GlobalResponse deleteCartService(Integer pId) {
 		LOGGER.info("Inside - UserService.deleteCartService()");
 		try {
-			Optional<UserCartEntity> findByProductRow = userCartRepo.findByProductIdAndUserId(productId, userId);
+			Optional<UserCartEntity> findByProductRow = userCartRepo.findById(pId);
 			if (!findByProductRow.isPresent()) {
 				throw new CustomException("Cart not exist!");
 			} else {
-				userCartRepo.deleteByProductIdAndUserId(productId, userId);
+				userCartRepo.deleteById(pId);
 				return new GlobalResponse("SUCCESS", "Cart removed succesfully", 200);
 			}
 

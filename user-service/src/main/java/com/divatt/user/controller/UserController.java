@@ -226,7 +226,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.deleteCartDetails()");
 
 		try {
-			return this.userService.deleteCartService(userCartEntity.getProductId(),userCartEntity.getUserId());
+			return this.userService.deleteCartService(userCartEntity.getId());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
