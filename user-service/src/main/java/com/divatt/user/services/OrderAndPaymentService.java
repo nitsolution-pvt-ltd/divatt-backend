@@ -30,12 +30,11 @@ import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
-<<<<<<< HEAD
-=======
+
 import springfox.documentation.spring.web.json.Json;
 
 
->>>>>>> 1c762d2d9737900275949419083c7234623bf9dd
+
 @Service
 public class OrderAndPaymentService {
 
