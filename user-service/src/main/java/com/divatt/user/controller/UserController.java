@@ -471,29 +471,44 @@ public class UserController {
 			List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(userAddressEntity.getUserId());
 			if(!findById.isPresent())
 				throw new CustomException("Id not found");
-//			if(findById.get().getPrimary())
-//				userAddressEntity.setPrimary(true);
+			if(findById.get().getPrimary())
+				userAddressEntity.setPrimary(true);
 			userAddressEntity.setId(findById.get().getId());
 			userAddressEntity.setCreatedOn(findById.get().getCreatedOn());
 			userAddressRepo.save(userAddressEntity);
-				
-				
 			
 			
-//			if(userAddressEntity.getPrimary() && !findById.get().getPrimary()) {
-//				List<UserAddressEntity> list = findByUserId.stream().map(e->{
-//					if(e.getId()!=id)
-//						e.setPrimary(false);
-//					return e;
-//				}).toList();
-//				userAddressRepo.saveAll(findByUserId);
-//			}
+			if(userAddressEntity.getPrimary() && !findById.get().getPrimary()) {
+				List<UserAddressEntity> list = findByUserId.stream().map(e->{
+					if(e.getId()!=id)
+						e.setPrimary(false);
+					return e;
+				}).toList();
+				userAddressRepo.saveAll(list);
+			}
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Address updated successfully", 200));
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 	
+	
+	@PutMapping("/address/setprimary/{id}")
+	public ResponseEntity<?> setPrimaryAddress(@PathVariable("id") Long id){
+		Optional<UserAddressEntity> findById = userAddressRepo.findById(id);
+		if(!findById.isPresent())
+			throw new CustomException("Id not found");
+		List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(findById.get().getUserId());
+		List<UserAddressEntity> list = findByUserId.stream().map(e->{
+			if(e.getId()==id)
+				e.setPrimary(true);
+			else
+				e.setPrimary(false);
+			return e;
+		}).toList();
+		userAddressRepo.saveAll(list);
+		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "This address has been set as primary", 200));
+	}
 	
 	
 	
