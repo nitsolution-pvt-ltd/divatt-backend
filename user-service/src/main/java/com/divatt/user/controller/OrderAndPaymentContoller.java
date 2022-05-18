@@ -26,6 +26,7 @@ import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
+import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
 
@@ -36,19 +37,32 @@ public class OrderAndPaymentContoller {
 	private OrderDetailsRepo orderDetailsRepo;
 
 	@Autowired
-	private UserService userService;
+	private OrderAndPaymentService orderAndPaymentService;
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 	
+	
+	@PostMapping("/order/razorpay/create")
+	public ResponseEntity<?> postRazorpayOrderCreate(@Valid @RequestBody OrderPaymentEntity orderPaymentEntity) {
+		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
+
+		try {
+			return this.orderAndPaymentService.postRazorpayOrderCreateService(orderPaymentEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
 	@PostMapping("/order/payment/add")
 	public GlobalResponse postOrderPaymentDetails(@Valid @RequestBody OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
 
 		try {
-			return this.userService.postOrderPaymentService(orderPaymentEntity);
+			return this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -64,7 +78,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderPaymentDetails()");
 
 		try {
-			return this.userService.getOrderPaymentService(page, limit, sort, sortName, keyword, sortBy);
+			return this.orderAndPaymentService.getOrderPaymentService(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -100,7 +114,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()");
 
 		try {
-			return this.userService.getOrders(page, limit, sort, sortName, keyword, sortBy);
+			return this.orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
