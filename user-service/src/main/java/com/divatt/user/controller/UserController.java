@@ -425,7 +425,7 @@ public class UserController {
 	}
 
 	@GetMapping("/address")
-	public ResponseEntity<?> getAllAddress(@RequestHeader(name = "Authorization" , defaultValue = "Bearer ") String token){
+	public ResponseEntity<?> getAllAddress(@RequestHeader(name = "Authorization") String token){
 		LOGGER.info("Inside - UserController.getAllAddress()");
 		try {
 			Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
