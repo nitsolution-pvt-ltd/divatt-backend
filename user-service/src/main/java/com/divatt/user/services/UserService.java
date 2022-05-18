@@ -1,14 +1,13 @@
 package com.divatt.user.services;
 
 import java.text.SimpleDateFormat;
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
+
 
 import javax.validation.Valid;
 
@@ -29,8 +28,6 @@ import org.springframework.web.client.RestTemplate;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
-import com.divatt.user.entity.order.OrderDetailsEntity;
-import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.OrderDetailsRepo;
@@ -45,10 +42,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.razorpay.Order;
-import com.razorpay.Payment;
-import com.razorpay.RazorpayClient;
-import com.razorpay.RazorpayException;
+
 
 import springfox.documentation.spring.web.json.Json;
 

@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
@@ -28,6 +29,10 @@ import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
+import springfox.documentation.spring.web.json.Json;
+
+
+@Service
 public class OrderAndPaymentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentService.class);
@@ -55,19 +60,21 @@ public class OrderAndPaymentService {
 
 	}
 
-	public ResponseEntity<?> postRazorpayOrderCreateService(OrderPaymentEntity orderPaymentEntity) {
+	public ResponseEntity<?> postRazorpayOrderCreateService(OrderDetailsEntity orderDetailsEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.postRazorpayOrderCreateService()");
 
 		try {
 
 			RazorpayClient razorpayClient = new RazorpayClient("rzp_test_q5ch2uQXmBRynp", "AYotTQdNFtrVXwHSyskFCB2o");
 			JSONObject options = new JSONObject();
-			options.put("amount", 50);
+			
+			options.put("amount", orderDetailsEntity.getTotalAmount());
 			options.put("currency", "INR");
 			options.put("receipt", "RC" + getRandomString());
-			Order order = razorpayClient.Orders.create(options);
 
-			return ResponseEntity.ok(order);
+			Order order = razorpayClient.Orders.create(options);
+		
+			return ResponseEntity.ok(new Json(order.toString()));
 
 		} catch (RazorpayException e) {
 			throw new CustomException(e.getMessage());
