@@ -61,7 +61,7 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	Integer countByIsDeletedAndAdminStatus(Boolean isDeleted, String AdminStatus);
 	
-	Integer countByIsDeletedAndAdminStatusAndDesignerId(Boolean isDeleted, String AdminStatus,Long DesignerId);
+	Integer countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(Boolean isDeleted, String AdminStatus,Long DesignerId,Boolean isActive);
 	
 //	Integer countByIsDeletedAndAdminAdApproved(Boolean isDeleted, String AdminAdApproved);	
 	

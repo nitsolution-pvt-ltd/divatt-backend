@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,8 +46,24 @@ public class OrderAndPaymentService {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+	private Environment env;
 
 	protected String getRandomString() {
+//		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		StringBuilder salt = new StringBuilder();
+		Random rnd = new Random();
+		while (salt.length() < 16) {
+			int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+			salt.append(SALTCHARS.charAt(index));
+		}
+		String saltStr = salt.toString();
+		return saltStr;
+	}
+	
+	protected String getRandomNumber() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		String SALTCHARS = "1234567890";
 		StringBuilder salt = new StringBuilder();
@@ -64,8 +81,7 @@ public class OrderAndPaymentService {
 		LOGGER.info("Inside - OrderAndPaymentService.postRazorpayOrderCreateService()");
 
 		try {
-
-			RazorpayClient razorpayClient = new RazorpayClient("rzp_test_q5ch2uQXmBRynp", "AYotTQdNFtrVXwHSyskFCB2o");
+			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
 			JSONObject options = new JSONObject();
 			
 			options.put("amount", orderDetailsEntity.getTotalAmount());
@@ -87,7 +103,7 @@ public class OrderAndPaymentService {
 
 		try {
 
-			RazorpayClient razorpayClient = new RazorpayClient("rzp_test_q5ch2uQXmBRynp", "AYotTQdNFtrVXwHSyskFCB2o");
+			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
 //			JSONObject options = new JSONObject();
 //			options.put("amount", 50);
 //			options.put("currency", "INR");
@@ -98,7 +114,7 @@ public class OrderAndPaymentService {
 			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 
 			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
-			filterCatDetails.setOrderId("OR" + getRandomString());
+			filterCatDetails.setOrderId("OR" + getRandomNumber());
 			filterCatDetails.setPaymentMode(orderPaymentEntity.getPaymentMode());
 			filterCatDetails.setPaymentDetails(orderPaymentEntity.getPaymentDetails());
 			filterCatDetails.setPaymentResponse(orderPaymentEntity.getPaymentResponse());
