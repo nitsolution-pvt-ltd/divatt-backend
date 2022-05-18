@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,12 @@ import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
+<<<<<<< HEAD
+=======
+import springfox.documentation.spring.web.json.Json;
+
+
+>>>>>>> 1c762d2d9737900275949419083c7234623bf9dd
 @Service
 public class OrderAndPaymentService {
 
@@ -42,8 +49,24 @@ public class OrderAndPaymentService {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+	private Environment env;
 
 	protected String getRandomString() {
+//		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		StringBuilder salt = new StringBuilder();
+		Random rnd = new Random();
+		while (salt.length() < 16) {
+			int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+			salt.append(SALTCHARS.charAt(index));
+		}
+		String saltStr = salt.toString();
+		return saltStr;
+	}
+	
+	protected String getRandomNumber() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		String SALTCHARS = "1234567890";
 		StringBuilder salt = new StringBuilder();
@@ -57,19 +80,20 @@ public class OrderAndPaymentService {
 
 	}
 
-	public ResponseEntity<?> postRazorpayOrderCreateService(OrderPaymentEntity orderPaymentEntity) {
+	public ResponseEntity<?> postRazorpayOrderCreateService(OrderDetailsEntity orderDetailsEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.postRazorpayOrderCreateService()");
 
 		try {
-
-			RazorpayClient razorpayClient = new RazorpayClient("rzp_test_q5ch2uQXmBRynp", "AYotTQdNFtrVXwHSyskFCB2o");
+			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
 			JSONObject options = new JSONObject();
-			options.put("amount", 50);
+			
+			options.put("amount", orderDetailsEntity.getTotalAmount());
 			options.put("currency", "INR");
 			options.put("receipt", "RC" + getRandomString());
-			Order order = razorpayClient.Orders.create(options);
 
-			return ResponseEntity.ok(order);
+			Order order = razorpayClient.Orders.create(options);
+		
+			return ResponseEntity.ok(new Json(order.toString()));
 
 		} catch (RazorpayException e) {
 			throw new CustomException(e.getMessage());
@@ -82,7 +106,7 @@ public class OrderAndPaymentService {
 
 		try {
 
-			RazorpayClient razorpayClient = new RazorpayClient("rzp_test_q5ch2uQXmBRynp", "AYotTQdNFtrVXwHSyskFCB2o");
+			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
 //			JSONObject options = new JSONObject();
 //			options.put("amount", 50);
 //			options.put("currency", "INR");
@@ -93,7 +117,7 @@ public class OrderAndPaymentService {
 			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 
 			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
-			filterCatDetails.setOrderId("OR" + getRandomString());
+			filterCatDetails.setOrderId("OR" + getRandomNumber());
 			filterCatDetails.setPaymentMode(orderPaymentEntity.getPaymentMode());
 			filterCatDetails.setPaymentDetails(orderPaymentEntity.getPaymentDetails());
 			filterCatDetails.setPaymentResponse(orderPaymentEntity.getPaymentResponse());

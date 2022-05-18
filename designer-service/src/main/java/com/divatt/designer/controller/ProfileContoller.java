@@ -126,7 +126,7 @@ public class ProfileContoller {
 			DesignerLoginEntity designerLoginEntity = findById.get();
 			designerLoginEntity.setDesignerProfileEntity(
 					designerProfileRepo.findBydesignerId(Long.parseLong(designerLoginEntity.getdId().toString())).get());
-			designerLoginEntity.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerId(false, "Approved", Long.parseLong(designerLoginEntity.getdId().toString())));
+			designerLoginEntity.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false, "Approved", Long.parseLong(designerLoginEntity.getdId().toString()),true));
 			
 			
 			return ResponseEntity.ok(designerLoginEntity);
@@ -331,7 +331,7 @@ public class ProfileContoller {
 			
 						Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
 				try {
-					e.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerId(false,"Approved",e.getdId()));
+					e.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,"Approved",e.getdId(),true));
 					e.setDesignerProfileEntity(
 							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
 				} catch (Exception o) {

@@ -26,14 +26,11 @@ import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.OrderDetailsRepo;
-import com.divatt.user.repo.UserDesignerRepo;
-import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
-import com.divatt.user.services.UserService;
 
-@RestController
+@RequestMapping("/user")
 public class OrderAndPaymentContoller {
 	
 	
@@ -53,11 +50,11 @@ public class OrderAndPaymentContoller {
 	
 	
 	@PostMapping("/order/razorpay/create")
-	public ResponseEntity<?> postRazorpayOrderCreate(@Valid @RequestBody OrderPaymentEntity orderPaymentEntity) {
-		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
+	public ResponseEntity<?> postRazorpayOrderCreate(@Valid @RequestBody OrderDetailsEntity orderDetailsEntity) {
+		LOGGER.info("Inside - OrderAndPaymentContoller.postRazorpayOrderCreate()");
 
 		try {
-			return this.orderAndPaymentService.postRazorpayOrderCreateService(orderPaymentEntity);
+			return this.orderAndPaymentService.postRazorpayOrderCreateService(orderDetailsEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

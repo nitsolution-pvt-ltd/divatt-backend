@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "tbl_order_details")
 public class OrderDetailsEntity {
 	@Transient
-	public static final String SEQUENCE_NAME = "tbl_user_designers";
+	public static final String SEQUENCE_NAME = "tbl_order_details";
 	
 	@Id
 	private Integer id;
@@ -22,15 +22,15 @@ public class OrderDetailsEntity {
 	@Field(name = "order_id") 
 	private String orderId;
 	
-	@NotNull(message = "ShippingAddress is required!")
+	@NotNull(message = "Shipping address is required!")
 	@Field(name = "shipping_address") 
 	private Object shippingAddress;
 	
-	@NotNull(message = "BillingAddress is required!")
+	@NotNull(message = "Billing address is required!")
 	@Field(name = "billing_address") 
 	private Object billingAddress;
 	
-	@NotNull(message = "products is required!")
+	@NotNull(message = "product details is required!")
 	@Field(name = "products") 
 	private Object products;
 	
@@ -42,15 +42,15 @@ public class OrderDetailsEntity {
 	@Field(name = "discount") 
 	private Long discount;
 	
-	@NotNull(message = "NetPrice is required!")
+	@NotNull(message = "Net price is required!")
 	@Field(name = "net_price") 
 	private Long netPrice;
 	
-	@NotNull(message = "TaxAmount is required!")
+	@NotNull(message = "Tax amount is required!")
 	@Field(name = "tax_amount") 
 	private Long taxAmount;
 	
-	@NotNull(message = "TotalAmount is required!")
+	@NotNull(message = "Total amount is required!")
 	@Field(name = "total_amount") 
 	private Long totalAmount;
 	
