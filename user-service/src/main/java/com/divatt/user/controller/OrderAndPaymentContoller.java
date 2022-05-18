@@ -11,10 +11,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +32,7 @@ import com.divatt.user.services.SequenceGenerator;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/userOrder")
 public class OrderAndPaymentContoller {
 	
 	
@@ -54,7 +51,7 @@ public class OrderAndPaymentContoller {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 	
 	
-	@PostMapping("/order/razorpay/create")
+	@PostMapping("/razorpay/create")
 	public ResponseEntity<?> postRazorpayOrderCreate(@Valid @RequestBody OrderDetailsEntity orderDetailsEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postRazorpayOrderCreate()");
 
@@ -66,7 +63,7 @@ public class OrderAndPaymentContoller {
 
 	}
 	
-	@PostMapping("/order/payment/add")
+	@PostMapping("/payment/add")
 	public GlobalResponse postOrderPaymentDetails(@Valid @RequestBody OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
 
@@ -78,7 +75,7 @@ public class OrderAndPaymentContoller {
 
 	}
 	
-	@RequestMapping(value = { "/order/payment/list" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/payment/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getOrderPaymentDetails(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
@@ -94,7 +91,7 @@ public class OrderAndPaymentContoller {
 
 	}
 	
-	@PostMapping("/order")
+	@PostMapping("/add")
 	public ResponseEntity<?> addOrder(@RequestBody OrderDetailsEntity orderDetailsEntity){
 		LOGGER.info("Inside - OrderAndPaymentContoller.addOrder()");
 		try {
@@ -114,7 +111,7 @@ public class OrderAndPaymentContoller {
 		
 	}
 	
-	@RequestMapping(value = { "/order/list" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getOrderDetails(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
