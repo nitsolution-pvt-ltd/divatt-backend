@@ -1,7 +1,7 @@
 package com.divatt.user.controller;
 
 import java.text.SimpleDateFormat;
-import com.divatt.user.repo.*;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
@@ -26,10 +26,15 @@ import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.OrderDetailsRepo;
+import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
 
+
+
+
+@RestController
 @RequestMapping("/user")
 public class OrderAndPaymentContoller {
 	

@@ -430,6 +430,8 @@ public class UserController {
 		try {
 			Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
 			List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(findByEmail.get().getId());
+			if(findByUserId.size()<1)
+				throw new CustomException("No address added");
 			return ResponseEntity.ok(findByUserId);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
