@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.user.entity.OrederAndPaymentGlobalEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
@@ -92,9 +93,10 @@ public class OrderAndPaymentContoller {
 	}
 	
 	@PostMapping("/add")
-	public ResponseEntity<?> addOrder(@RequestBody OrderDetailsEntity orderDetailsEntity){
+	public ResponseEntity<?> addOrder(@RequestBody OrederAndPaymentGlobalEntity orederAndPaymentGlobalEntity){
 		LOGGER.info("Inside - OrderAndPaymentContoller.addOrder()");
 		try {
+			OrderDetailsEntity orderDetailsEntity = orederAndPaymentGlobalEntity.getOrderDetailsEntity();
 			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 			Date date = new Date();
 			String format = formatter.format(date);
@@ -103,7 +105,9 @@ public class OrderAndPaymentContoller {
 			orderDetailsEntity.setOrderId("OR"+System.currentTimeMillis());
 			orderDetailsEntity.setCreatedOn(format);
 			orderDetailsRepo.save(orderDetailsEntity);
-			//need to call payment method
+			OrderPaymentEntity orderPaymentEntity = orederAndPaymentGlobalEntity.getOrderPaymentEntity();
+			orderPaymentEntity.setOrderId(orderId);
+			postOrderPaymentDetails(orderPaymentEntity);
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Updated successfully", 200));
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
