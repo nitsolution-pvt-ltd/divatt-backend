@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
@@ -28,6 +29,7 @@ import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
+@Service
 public class OrderAndPaymentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentService.class);

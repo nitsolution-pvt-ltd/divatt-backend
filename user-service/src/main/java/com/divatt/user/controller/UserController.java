@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
@@ -39,6 +40,7 @@ import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.OrderDetailsRepo;
+import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.entity.wishlist.WishlistEntity;
@@ -58,6 +60,9 @@ public class UserController {
 
 	@Autowired
 	private OrderDetailsRepo orderDetailsRepo;
+	
+	@Autowired
+	private UserAddressRepo userAddressRepo;
 	
 	@Autowired
 	private Environment env;
@@ -419,7 +424,76 @@ public class UserController {
 
 	}
 
-
+	@GetMapping("/address")
+	public ResponseEntity<?> getAllAddress(@RequestHeader(name = "Authorization" , defaultValue = "Bearer ") String token){
+		LOGGER.info("Inside - UserController.getAllAddress()");
+		try {
+			Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
+			List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(findByEmail.get().getId());
+			return ResponseEntity.ok(findByUserId);
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
+		
+	}
+	
+	@PostMapping("/address")
+	public ResponseEntity<?> addAddress(@Valid @RequestBody() UserAddressEntity userAddressEntity){
+		LOGGER.info("Inside - UserController.addAddress()");
+		try {
+			List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(userAddressEntity.getUserId());
+			if(findByUserId.size()==0) {
+				userAddressEntity.setPrimary(true);
+			}else {
+				if(userAddressEntity.getPrimary()) {
+					List<UserAddressEntity> list = findByUserId.stream().map(e->{
+						e.setPrimary(false);
+						return e;
+					}).toList();
+					userAddressRepo.saveAll(list);
+				}
+			}
+			userAddressEntity.setId((long)sequenceGenerator.getNextSequence(UserAddressEntity.SEQUENCE_NAME));
+			userAddressEntity.setCreatedOn(new Date().toString());
+			userAddressRepo.save(userAddressEntity);
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Address added successfully", 200));
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@PutMapping("/address/{id}")
+	public ResponseEntity<?> updateAddress(@Valid @RequestBody() UserAddressEntity userAddressEntity, @PathVariable("id") Long id){
+		LOGGER.info("Inside - UserController.updateAddress()");
+		try {
+			Optional<UserAddressEntity> findById = userAddressRepo.findById(id);
+			List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(userAddressEntity.getUserId());
+			if(!findById.isPresent())
+				throw new CustomException("Id not found");
+//			if(findById.get().getPrimary())
+//				userAddressEntity.setPrimary(true);
+			userAddressEntity.setId(findById.get().getId());
+			userAddressEntity.setCreatedOn(findById.get().getCreatedOn());
+			userAddressRepo.save(userAddressEntity);
+				
+				
+			
+			
+//			if(userAddressEntity.getPrimary() && !findById.get().getPrimary()) {
+//				List<UserAddressEntity> list = findByUserId.stream().map(e->{
+//					if(e.getId()!=id)
+//						e.setPrimary(false);
+//					return e;
+//				}).toList();
+//				userAddressRepo.saveAll(findByUserId);
+//			}
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Address updated successfully", 200));
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 	
 	
 	

@@ -1,6 +1,7 @@
 package com.divatt.user.controller;
 
 import java.text.SimpleDateFormat;
+import com.divatt.user.repo.*;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
@@ -13,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
@@ -30,6 +33,7 @@ import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
 
+@RestController
 public class OrderAndPaymentContoller {
 	
 	
@@ -41,6 +45,9 @@ public class OrderAndPaymentContoller {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+	private UserAddressRepo userAddressRepo;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 	
@@ -120,5 +127,7 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
+	
+	
 	
 }
