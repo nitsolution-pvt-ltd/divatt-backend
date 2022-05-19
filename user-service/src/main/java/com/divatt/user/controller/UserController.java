@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -452,7 +453,7 @@ public class UserController {
 					List<UserAddressEntity> list = findByUserId.stream().map(e->{
 						e.setPrimary(false);
 						return e;
-					}).toList();
+					}).collect(Collectors.toList());
 					userAddressRepo.saveAll(list);
 				}
 			}
@@ -485,7 +486,7 @@ public class UserController {
 					if(e.getId()!=id)
 						e.setPrimary(false);
 					return e;
-				}).toList();
+				}).collect(Collectors.toList());
 				userAddressRepo.saveAll(list);
 			}
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Address updated successfully", 200));
