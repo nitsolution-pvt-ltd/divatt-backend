@@ -4,42 +4,40 @@ import java.util.List;
 
 public class ColourEntity {
 
-	private String color_name;
-	private String color_value;
-	private String is_active;
+	private String colorName;
+	private String colorValue;
+	private String isActive;
 	public ColourEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public ColourEntity(String color_name, String color_value, String is_active) {
+	public ColourEntity(String colorName, String colorValue, String isActive) {
 		super();
-		this.color_name = color_name;
-		this.color_value = color_value;
-		this.is_active = is_active;
+		this.colorName = colorName;
+		this.colorValue = colorValue;
+		this.isActive = isActive;
 	}
 	@Override
 	public String toString() {
-		return "ColourEntity [color_name=" + color_name + ", color_value=" + color_value + ", is_active=" + is_active
-				+ "]";
+		return "ColourEntity [colorName=" + colorName + ", colorValue=" + colorValue + ", isActive=" + isActive + "]";
 	}
-	public String getColor_name() {
-		return color_name;
+	public String getColorName() {
+		return colorName;
 	}
-	public void setColor_name(String color_name) {
-		this.color_name = color_name;
+	public void setColorName(String colorName) {
+		this.colorName = colorName;
 	}
-	public String getColor_value() {
-		return color_value;
+	public String getColorValue() {
+		return colorValue;
 	}
-	public void setColor_value(String color_value) {
-		this.color_value = color_value;
+	public void setColorValue(String colorValue) {
+		this.colorValue = colorValue;
 	}
-	public String getIs_active() {
-		return is_active;
+	public String getIsActive() {
+		return isActive;
 	}
-	public void setIs_active(String is_active) {
-		this.is_active = is_active;
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
 	}
-
 	
 }
