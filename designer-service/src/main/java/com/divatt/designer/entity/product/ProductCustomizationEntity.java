@@ -2,17 +2,16 @@ package com.divatt.designer.entity.product;
 
 import java.util.Arrays;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import nonapi.io.github.classgraph.json.Id;
 
 @Document(collection = "tbl_designer_chart_list")
 public class ProductCustomizationEntity {
 
 	@Id
-	@Field(name = "_id")
 	private Integer productChartId;
 	
 	@Transient
