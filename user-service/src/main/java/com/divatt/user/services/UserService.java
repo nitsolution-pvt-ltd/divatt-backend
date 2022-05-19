@@ -517,8 +517,6 @@ public class UserService {
 			if (!userId.equals("")) {
 				try {
 
-					List<Object> l1 = new ArrayList<>();
-
 					JsonNode jn = new JsonNode(exchange.getBody().toString());
 					JSONObject object = jn.getObject();
 					UserCartEntity cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId)
@@ -533,9 +531,8 @@ public class UserService {
 					JsonNode cartJN = new JsonNode(writeValueAsString);
 					JSONObject cartObject = cartJN.getObject();
 					object.put("cartData", cartObject);
-					l1.add(object);
 
-					return ResponseEntity.ok(new Json(l1.toString()));
+					return ResponseEntity.ok(new Json(jn.toString()));
 				} catch (Exception e2) {
 					return ResponseEntity.ok(e2.getMessage());
 				}
