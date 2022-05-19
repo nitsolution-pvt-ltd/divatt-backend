@@ -475,7 +475,7 @@ public class UserController {
 			if(!findById.isPresent())
 				throw new CustomException("Id not found");
 			if(findById.get().getPrimary())
-				userAddressEntity.setPrimary(true);
+			userAddressEntity.setPrimary(true);
 			userAddressEntity.setId(findById.get().getId());
 			userAddressEntity.setCreatedOn(findById.get().getCreatedOn());
 			userAddressRepo.save(userAddressEntity);
