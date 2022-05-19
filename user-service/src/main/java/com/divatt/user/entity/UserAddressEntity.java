@@ -7,6 +7,9 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+
 @Document(collection = "tbl_user_addresses")
 public class UserAddressEntity {
 	
@@ -23,30 +26,39 @@ public class UserAddressEntity {
 	@NotNull(message = "FullName is required!")
 	@Field(name = "full_name") private String fullName;
 	
-	@NotNull(message = "mobile is required!")
-	@Field(name = "mobile") private String mobile;
+	@NotNull(message = "Email is required!")
+	@Field(name = "email") private String email;
 	
-	@NotNull(message = "address1 is required!")
+	@NotNull(message = "Postal code is required!")
+	@Field(name = "postalCode") private int postalCode;
+	
+	@NotNull(message = "Mobile is required!")
+	@Field(name = "mobile") private String mobile;
+		
+	@Field(name = "addressType") private String addressType;
+	
+	@NotNull(message = "Address1 is required!")
 	@Field(name = "address1") private String address1;
 	
-	@NotNull(message = "address2 is required!")
+	@NotNull(message = "Address2 is required!")
 	@Field(name = "address2") private String address2;
 	
-	@NotNull(message = "landmark is required!")
+	@NotNull(message = "Landmark is required!")
 	@Field(name = "landmark") private String landmark;
 	
-	@NotNull(message = "city is required!")
+	@NotNull(message = "City is required!")
 	@Field(name = "city") private String city;
 	
-	@NotNull(message = "state is required!")
+	@NotNull(message = "State is required!")
 	@Field(name = "state") private String state;
 	
-	@NotNull(message = "country is required!")
+	@NotNull(message = "Country is required!")
 	@Field(name = "country") private String country;
 	
-	@NotNull(message = "primary is required!")
+	@NotNull(message = "Primary is required!")
 	@Field(name = "primary") private Boolean primary;
 
+	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd HH:mm:ss")
 	@Field(name = "created_on") private String createdOn;
 
 	public UserAddressEntity() {
@@ -56,17 +68,23 @@ public class UserAddressEntity {
 
 	public UserAddressEntity(Long id, @NotNull(message = "Username is required!") Long userId,
 			@NotNull(message = "FullName is required!") String fullName,
-			@NotNull(message = "mobile is required!") String mobile,
-			@NotNull(message = "address1 is required!") String address1,
-			@NotNull(message = "address2 is required!") String address2,
-			@NotNull(message = "landmark is required!") String landmark,
-			@NotNull(message = "city is required!") String city, @NotNull(message = "state is required!") String state,
-			@NotNull(message = "country is required!") String country, Boolean primary, String createdOn) {
+			@NotNull(message = "Email is required!") String email,
+			@NotNull(message = "Postal code is required!") int postalCode,
+			@NotNull(message = "Mobile is required!") String mobile, String addressType,
+			@NotNull(message = "Address1 is required!") String address1,
+			@NotNull(message = "Address2 is required!") String address2,
+			@NotNull(message = "Landmark is required!") String landmark,
+			@NotNull(message = "City is required!") String city, @NotNull(message = "State is required!") String state,
+			@NotNull(message = "Country is required!") String country,
+			@NotNull(message = "Primary is required!") Boolean primary, String createdOn) {
 		super();
 		this.id = id;
 		this.userId = userId;
 		this.fullName = fullName;
+		this.email = email;
+		this.postalCode = postalCode;
 		this.mobile = mobile;
+		this.addressType = addressType;
 		this.address1 = address1;
 		this.address2 = address2;
 		this.landmark = landmark;
@@ -79,10 +97,10 @@ public class UserAddressEntity {
 
 	@Override
 	public String toString() {
-		return "UserAddressEntity [id=" + id + ", userId=" + userId + ", fullName=" + fullName + ", mobile=" + mobile
-				+ ", address1=" + address1 + ", address2=" + address2 + ", landmark=" + landmark + ", city=" + city
-				+ ", state=" + state + ", country=" + country + ", primary=" + primary + ", createdOn=" + createdOn
-				+ "]";
+		return "UserAddressEntity [id=" + id + ", userId=" + userId + ", fullName=" + fullName + ", email=" + email
+				+ ", postalCode=" + postalCode + ", mobile=" + mobile + ", addressType=" + addressType + ", address1="
+				+ address1 + ", address2=" + address2 + ", landmark=" + landmark + ", city=" + city + ", state=" + state
+				+ ", country=" + country + ", primary=" + primary + ", createdOn=" + createdOn + "]";
 	}
 
 	public Long getId() {
@@ -109,12 +127,36 @@ public class UserAddressEntity {
 		this.fullName = fullName;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public int getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(int postalCode) {
+		this.postalCode = postalCode;
+	}
+
 	public String getMobile() {
 		return mobile;
 	}
 
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}
+
+	public String getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(String addressType) {
+		this.addressType = addressType;
 	}
 
 	public String getAddress1() {
@@ -181,11 +223,5 @@ public class UserAddressEntity {
 		this.createdOn = createdOn;
 	}
 
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
 	
-	
-	
-
 }
