@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
 import javax.validation.Valid;
 
 import org.json.JSONArray;
@@ -37,12 +36,13 @@ import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.repo.pCommentRepo.ProductCommentRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-
 
 import springfox.documentation.spring.web.json.Json;
 
@@ -71,8 +71,6 @@ public class UserService {
 	@Autowired
 	private OrderDetailsRepo orderDetailsRepo;
 
-	
-
 	public GlobalResponse postWishlistService(ArrayList<WishlistEntity> wishlistEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
 
@@ -85,7 +83,8 @@ public class UserService {
 				if (wishlistEntity.size() <= 1 && findByCategoryName.isPresent()) {
 					throw new CustomException("Wishlist already exist");
 				}
-				if (!findByCategoryName.isPresent() && !getRow.getUserId().equals(null) && !getRow.getProductId().equals(null) ) {
+				if (!findByCategoryName.isPresent() && !getRow.getUserId().equals(null)
+						&& !getRow.getProductId().equals(null)) {
 					filterCatDetails.setId(sequenceGenerator.getNextSequence(WishlistEntity.SEQUENCE_NAME));
 					filterCatDetails.setUserId(getRow.getUserId());
 					filterCatDetails.setProductId(getRow.getProductId());
@@ -208,7 +207,8 @@ public class UserService {
 				if (userCartEntity.size() <= 1 && findByCat.isPresent()) {
 					throw new CustomException("Product already added to the cart.");
 				} else {
-					if (!findByCat.isPresent() && !getRow.getUserId().equals(null) && !getRow.getProductId().equals(null)) {
+					if (!findByCat.isPresent() && !getRow.getUserId().equals(null)
+							&& !getRow.getProductId().equals(null)) {
 						filterCatDetails.setId(sequenceGenerator.getNextSequence(UserCartEntity.SEQUENCE_NAME));
 						filterCatDetails.setUserId(getRow.getUserId());
 						filterCatDetails.setProductId(getRow.getProductId());
@@ -290,7 +290,7 @@ public class UserService {
 			cartObj.addProperty("productId", productIds.toString());
 			cartObj.addProperty("limit", limit);
 			cartObj.addProperty("page", page);
-			
+
 			Map<String, Object> map = new HashMap<>();
 			map.put("reason", "ERROR");
 			map.put("message", "Product not found");
@@ -312,9 +312,19 @@ public class UserService {
 				array.forEach(e -> {
 					JsonNode jn = new JsonNode(e.toString());
 					JSONObject object = jn.getObject();
-
-					object.put("cartData", userCartRepo.findByUserIdAndProductId(userId,
-							Integer.parseInt(object.get("productId").toString())));
+					UserCartEntity cart = userCartRepo
+							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
+							.get();
+					ObjectMapper obj = new ObjectMapper();
+					String writeValueAsString = null;
+					try {
+						writeValueAsString = obj.writeValueAsString(cart);
+					} catch (JsonProcessingException e1) {
+						e1.printStackTrace();
+					}
+					JsonNode cartJN = new JsonNode(writeValueAsString);
+					JSONObject cartObject = cartJN.getObject();
+					object.put("cartData", cartObject);
 					l1.add(object);
 				});
 
@@ -496,14 +506,42 @@ public class UserService {
 		}
 	}
 
-	public ResponseEntity<?> productDetails(Integer productId) {
+	public ResponseEntity<?> productDetails(Integer productId, String userId) {
 		try {
 
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<String> exchange = restTemplate.exchange(
 					"http://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null, String.class);
 			Json js = new Json(exchange.getBody());
+
+			if (!userId.equals("")) {
+				try {
+
+					List<Object> l1 = new ArrayList<>();
+
+					JsonNode jn = new JsonNode(exchange.getBody().toString());
+					JSONObject object = jn.getObject();
+					UserCartEntity cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId)
+							.get();
+					ObjectMapper obj = new ObjectMapper();
+					String writeValueAsString = null;
+					try {
+						writeValueAsString = obj.writeValueAsString(cart);
+					} catch (JsonProcessingException e1) {
+						e1.printStackTrace();
+					}
+					JsonNode cartJN = new JsonNode(writeValueAsString);
+					JSONObject cartObject = cartJN.getObject();
+					object.put("cartData", cartObject);
+					l1.add(object);
+
+					return ResponseEntity.ok(new Json(l1.toString()));
+				} catch (Exception e2) {
+					return ResponseEntity.ok(e2.getMessage());
+				}
+			}
 			return ResponseEntity.ok(js);
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -565,10 +603,5 @@ public class UserService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
-	
-	
-
-	
 
 }

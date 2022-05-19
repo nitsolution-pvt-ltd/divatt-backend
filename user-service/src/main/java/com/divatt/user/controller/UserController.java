@@ -376,10 +376,10 @@ public class UserController {
 	}
 
 	@GetMapping("/view/{productId}")
-	public ResponseEntity<?> viewProductDetails(@PathVariable Integer productId) {
+	public ResponseEntity<?> viewProductDetails(@PathVariable Integer productId,@RequestParam(defaultValue = "") String userId) {
 		LOGGER.info("Inside- UserController.viewProductDetails()");
 		try {
-			return userService.productDetails(productId);
+			return userService.productDetails(productId,userId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
