@@ -74,7 +74,7 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 
-	}
+	} 
 	
 	@RequestMapping(value = { "/payment/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getOrderPaymentDetails(@RequestParam(defaultValue = "0") int page,

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -376,10 +377,10 @@ public class UserController {
 	}
 
 	@GetMapping("/view/{productId}")
-	public ResponseEntity<?> viewProductDetails(@PathVariable Integer productId) {
+	public ResponseEntity<?> viewProductDetails(@PathVariable Integer productId,@RequestParam(defaultValue = "") String userId) {
 		LOGGER.info("Inside- UserController.viewProductDetails()");
 		try {
-			return userService.productDetails(productId);
+			return userService.productDetails(productId,userId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -452,7 +453,7 @@ public class UserController {
 					List<UserAddressEntity> list = findByUserId.stream().map(e->{
 						e.setPrimary(false);
 						return e;
-					}).toList();
+					}).collect(Collectors.toList());
 					userAddressRepo.saveAll(list);
 				}
 			}
@@ -474,7 +475,7 @@ public class UserController {
 			if(!findById.isPresent())
 				throw new CustomException("Id not found");
 			if(findById.get().getPrimary())
-				userAddressEntity.setPrimary(true);
+			userAddressEntity.setPrimary(true);
 			userAddressEntity.setId(findById.get().getId());
 			userAddressEntity.setCreatedOn(findById.get().getCreatedOn());
 			userAddressRepo.save(userAddressEntity);
@@ -485,7 +486,7 @@ public class UserController {
 					if(e.getId()!=id)
 						e.setPrimary(false);
 					return e;
-				}).toList();
+				}).collect(Collectors.toList());
 				userAddressRepo.saveAll(list);
 			}
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Address updated successfully", 200));
