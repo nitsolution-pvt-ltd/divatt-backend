@@ -101,9 +101,9 @@ public class CustomFunction {
 			filterProductEntity.setGiftWrap(productData.getGiftWrap());
 			filterProductEntity.setImages(productData.getImages());
 			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
-			filterProductEntity.setIsDeleted(false);
+			filterProductEntity.setIsDeleted(productRepo.findById(productId).get().getIsDeleted());
 			filterProductEntity.setIsActive(productRepo.findById(productId).get().getIsActive());
-			filterProductEntity.setAdminStatus(productData.getAdminStatus());
+			filterProductEntity.setAdminStatus("Pending");
 			filterProductEntity.setPrice(productData.getPrice());
 			filterProductEntity.setPriceType(productData.getPriceType());
 			filterProductEntity.setProductDescription(productData.getProductDescription());

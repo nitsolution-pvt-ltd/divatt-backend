@@ -711,4 +711,16 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	public GlobalResponce adminApproval(Integer productId, ProductMasterEntity masterEntity) {
+		try {
+			masterEntity.setProductId(productId);
+			productRepo.save(masterEntity);
+			return new GlobalResponce("Successfull", "Product approved", 200);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
