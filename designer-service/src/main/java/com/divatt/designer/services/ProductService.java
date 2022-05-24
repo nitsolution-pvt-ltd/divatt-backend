@@ -711,8 +711,7 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
+
 	public ResponseEntity<?> ProductListByIdService(List<Integer> productIdList) {
 		try {
 //			System.out.println(productIdList);
@@ -735,4 +734,41 @@ public class ProductService {
 	}
 	
 	
+
+	public GlobalResponce adminApproval(Integer productId, ProductMasterEntity masterEntity) {
+		try {
+			masterEntity.setProductId(productId);
+			productRepo.save(masterEntity);
+			return new GlobalResponce("Successfull", "Product approved", 200);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public GlobalResponce multiDelete(List<Integer> productIdList) {
+		try {
+			List<ProductMasterEntity> productList=new ArrayList<ProductMasterEntity>();
+			for(int i=0;i<productIdList.size();i++)
+			{
+				ProductMasterEntity productData=productRepo.findById(productIdList.get(i)).get();
+				productList.add(productData);
+			}
+			List<ProductMasterEntity> collect = productList.stream().filter(e->e.getIsDeleted().equals(false)).collect(Collectors.toList());
+			for(int i=0;i<collect.size();i++)
+			{
+				collect.get(i).setIsDeleted(true);
+				collect.get(i).setIsActive(false);
+			}
+			productRepo.saveAll(collect);
+			//System.out.println(collect);
+			return new GlobalResponce("Success", "The products are deleted successfully", 200);
+			
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }

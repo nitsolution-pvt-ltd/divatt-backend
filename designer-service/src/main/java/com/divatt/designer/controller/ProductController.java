@@ -289,7 +289,7 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@PostMapping("/getProductListById")
 	public ResponseEntity<?> getProductListById(@RequestBody List<Integer> productIdList) {
 		try {
@@ -312,7 +312,32 @@ public class ProductController implements ProductServiceImp {
 			return productService.ProductListByIdService(productIdList);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
+			
+		}
+
+}
+	@PutMapping("/approval/{productId}")
+	public GlobalResponce approvaladmin(@PathVariable Integer productId,@RequestBody ProductMasterEntity masterEntity)
+	{
+		try {
+			return this.productService.adminApproval(productId,masterEntity);
+		}
+		catch(Exception e)
+		{
+			throw new CustomException(e.getMessage());
 		}
 	}
 	
+
+	@PutMapping("/multipleDelete")
+	public GlobalResponce multipleDelete(@RequestBody List<Integer> productIdList)
+	{
+		try {
+			return this.productService.multiDelete(productIdList);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }
