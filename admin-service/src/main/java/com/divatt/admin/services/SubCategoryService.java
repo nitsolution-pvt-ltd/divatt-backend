@@ -40,12 +40,9 @@ public class SubCategoryService {
 		LOGGER.info("Inside - SubCategoryService.postSubCategoryDetails()");
 
 		try {
-
-//			subCategoryRepo.findByCategoryName(subCategoryEntity.getCategoryName()).orElseThrow(null) 
-
-			Optional<SubCategoryEntity> findBySubCategoryName = subCategoryRepo
+			List<SubCategoryEntity> findBySubCategoryName = subCategoryRepo
 					.findByCategoryNameAndIsDeleted(subCategoryEntity.getCategoryName(),false);
-			if (findBySubCategoryName.isPresent()) {
+			if (findBySubCategoryName.size() >= 1) {
 				throw new CustomException("Subcategory already exist!");
 			} else {
 				SubCategoryEntity filterSubCatDetails = new SubCategoryEntity();
