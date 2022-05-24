@@ -606,4 +606,19 @@ public class UserService {
 		}
 	}
 
+	public GlobalResponse multipleDelete(Integer userId) {
+		try {
+			List<UserCartEntity> allData=userCartRepo.findByUserId(userId);
+			if(allData.isEmpty())
+			{
+				return new GlobalResponse("Error!!", "No product found", 400);
+			}
+			userCartRepo.deleteByUserId(userId);
+			return new GlobalResponse("Success", "Cart data deleted successfully", 200);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }
