@@ -73,6 +73,8 @@ public class AdminLoginEntity {
 	@Field(name = "profile_pic")
 	private String profilePic;
 	
+	private String type;
+	
 	private Json logins;
 	
 	public AdminLoginEntity() {
@@ -81,10 +83,20 @@ public class AdminLoginEntity {
 	}
 
 
+	
+
+
+	
+
+
+
+
+
+
 	public AdminLoginEntity(Object uid, String firstName, String lastName, String email, String password,
 			String mobileNo, String dob, boolean isActive, boolean isDeleted, String role, String roleName,
 			String gender, String authToken, String createdBy, String createdOn, String modifiedBy, String modifiedOn,
-			String profilePic, Json logins) {
+			String profilePic, String type, Json logins) {
 		super();
 		this.uid = uid;
 		this.firstName = firstName;
@@ -104,11 +116,36 @@ public class AdminLoginEntity {
 		this.modifiedBy = modifiedBy;
 		this.modifiedOn = modifiedOn;
 		this.profilePic = profilePic;
+		this.type = type;
 		this.logins = logins;
 	}
 
 
-	
+
+	public String getType() {
+		return type;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+
+
+
+
+
 
 
 
@@ -121,9 +158,19 @@ public class AdminLoginEntity {
 				+ email + ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", isActive="
 				+ isActive + ", isDeleted=" + isDeleted + ", role=" + role + ", roleName=" + roleName + ", gender="
 				+ gender + ", authToken=" + authToken + ", createdBy=" + createdBy + ", createdOn=" + createdOn
-				+ ", modifiedBy=" + modifiedBy + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic
-				+ ", logins=" + logins + "]";
+				+ ", modifiedBy=" + modifiedBy + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic + ", type="
+				+ type + ", logins=" + logins + "]";
 	}
+
+
+
+
+
+
+
+
+
+
 
 
 	public String getGender() {
