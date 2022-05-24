@@ -300,4 +300,15 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@PutMapping("/multipleDelete")
+	public GlobalResponce multipleDelete(@RequestBody List<Integer> productIdList)
+	{
+		try {
+			return this.productService.multiDelete(productIdList);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
