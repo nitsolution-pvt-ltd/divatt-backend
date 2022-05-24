@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +32,6 @@ import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
 
 
-
-
 @RestController
 @RequestMapping("/userOrder")
 public class OrderAndPaymentContoller {
@@ -45,9 +45,6 @@ public class OrderAndPaymentContoller {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
-	
-	@Autowired
-	private UserAddressRepo userAddressRepo;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 	
@@ -65,11 +62,11 @@ public class OrderAndPaymentContoller {
 	}
 	
 	@PostMapping("/payment/add")
-	public GlobalResponse postOrderPaymentDetails(@Valid @RequestBody OrderPaymentEntity orderPaymentEntity) {
+	public void postOrderPaymentDetails(@Valid @RequestBody OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
 
 		try {
-			return this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
+			this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -93,22 +90,34 @@ public class OrderAndPaymentContoller {
 	}
 	
 	@PostMapping("/add")
-	public ResponseEntity<?> addOrder(@RequestBody OrederAndPaymentGlobalEntity orederAndPaymentGlobalEntity){
+	public ResponseEntity<?> addOrder(@RequestBody OrederAndPaymentGlobalEntity orderAndPaymentGlobalEntity){
 		LOGGER.info("Inside - OrderAndPaymentContoller.addOrder()");
 		try {
-			OrderDetailsEntity orderDetailsEntity = orederAndPaymentGlobalEntity.getOrderDetailsEntity();
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			OrderDetailsEntity orderDetailsEntity = orderAndPaymentGlobalEntity.getOrderDetailsEntity();
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			Date date = new Date();
-			String format = formatter.format(date);
-			String orderId = "OR"+System.currentTimeMillis();
+			String format = formatter.format(date);						
+			
 			orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
 			orderDetailsEntity.setOrderId("OR"+System.currentTimeMillis());
+			orderDetailsEntity.setBillingAddress(orderDetailsEntity.getBillingAddress());
+			orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());
+			orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());
+			orderDetailsEntity.setNetPrice(orderDetailsEntity.getNetPrice());
+			orderDetailsEntity.setProducts(orderDetailsEntity.getProducts());
+			orderDetailsEntity.setUserId(orderDetailsEntity.getUserId());
+			orderDetailsEntity.setShippingAddress(orderDetailsEntity.getShippingAddress());
+			orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());
+			orderDetailsEntity.setTotalAmount(orderDetailsEntity.getTotalAmount());
 			orderDetailsEntity.setCreatedOn(format);
-			orderDetailsRepo.save(orderDetailsEntity);
-			OrderPaymentEntity orderPaymentEntity = orederAndPaymentGlobalEntity.getOrderPaymentEntity();
-			orderPaymentEntity.setOrderId(orderId);
+			OrderDetailsEntity OrderData =orderDetailsRepo.save(orderDetailsEntity);
+			
+			OrderPaymentEntity orderPaymentEntity = orderAndPaymentGlobalEntity.getOrderPaymentEntity();
+			orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
+			orderPaymentEntity.setOrderId(OrderData.getOrderId());
+			orderPaymentEntity.setCreatedOn(new Date());
 			postOrderPaymentDetails(orderPaymentEntity);
-			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Updated successfully", 200));
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Order placed successfully", 200));
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -132,5 +141,31 @@ public class OrderAndPaymentContoller {
 	}
 	
 	
+	@GetMapping("/getOrder/{orderId}")
+	public ResponseEntity<?> getOrderDetails(@PathVariable() String orderId) {
+	
+		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()");
+
+		try {			
+			return this.orderAndPaymentService.getOrderDetailsService(orderId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@GetMapping("/getUserOrder/{userId}")
+	public ResponseEntity<?> getOrderDetailsByuserId(@PathVariable() Integer userId) {
+	
+		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetailsByuserId()");
+
+		try {			
+			return this.orderAndPaymentService.getUserOrderDetailsService(userId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
 	
 }

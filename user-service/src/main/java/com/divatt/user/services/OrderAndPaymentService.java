@@ -1,5 +1,6 @@
 package com.divatt.user.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,13 @@ import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.response.GlobalResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 import com.razorpay.Order;
 import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
@@ -39,7 +48,9 @@ import springfox.documentation.spring.web.json.Json;
 public class OrderAndPaymentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentService.class);
-
+	
+	HttpResponse<String>  response = null;
+	
 	@Autowired
 	private UserOrderPaymentRepo userOrderPaymentRepo;
 
@@ -100,31 +111,27 @@ public class OrderAndPaymentService {
 
 	}
 
-	public GlobalResponse postOrderPaymentService(OrderPaymentEntity orderPaymentEntity) {
+	public void postOrderPaymentService(OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderPaymentService()");
 
 		try {
 
 			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
-//			JSONObject options = new JSONObject();
-//			options.put("amount", 50);
-//			options.put("currency", "INR");
-//			options.put("receipt", "RC" + getRandomString());
-//			Order order = razorpayClient.Orders.create(options);
-//
+
 //			List<Payment> payments = razorpayClient.Payments.fetchAll();
 			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 
 			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
-			filterCatDetails.setOrderId("OR" + getRandomNumber());
+			filterCatDetails.setOrderId(orderPaymentEntity.getOrderId());
 			filterCatDetails.setPaymentMode(orderPaymentEntity.getPaymentMode());
 			filterCatDetails.setPaymentDetails(orderPaymentEntity.getPaymentDetails());
 			filterCatDetails.setPaymentResponse(orderPaymentEntity.getPaymentResponse());
 			filterCatDetails.setPaymentStatus(orderPaymentEntity.getPaymentStatus());
+			filterCatDetails.setUserId(orderPaymentEntity.getUserId());
 			filterCatDetails.setCreatedOn(new Date());
 
-//			userOrderPaymentRepo.save(filterCatDetails);
-			return new GlobalResponse("SUCCESS", "Order placed succesfully", 200);
+			userOrderPaymentRepo.save(filterCatDetails);
+//			return new GlobalResponse("SUCCESS", "Order placed succesfully", 200);
 
 		} catch (RazorpayException e) {
 			throw new CustomException(e.getMessage());
@@ -223,6 +230,107 @@ public class OrderAndPaymentService {
 			} else {
 				return response;
 			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public ResponseEntity<?> getOrderDetailsService(String orderId) {
+		try {
+			Optional<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
+			Optional<OrderDetailsEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(orderId);
+			
+//			Map<String, Object> map = new HashMap<>();
+			
+//			map.put("order", findById);
+//			map.put("payment", OrderPaymentRow);
+			
+			List<Object> products = findById.get().getProducts();
+			List<Integer> productId = new ArrayList<>();
+			products.forEach(e->{
+//				System.out.println(e.toString());
+				ObjectMapper obj = new ObjectMapper();
+				String writeValueAsString = null;
+				try {
+					writeValueAsString = obj.writeValueAsString(e);
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
+				}
+//				System.out.println(writeValueAsString);
+				JsonNode cartJN = new JsonNode(writeValueAsString);
+				JSONObject object = cartJN.getObject();
+				productId.add(Integer.parseInt(object.get("productId").toString()));
+				
+				
+			});
+			
+			
+
+			if (productId != null) {
+				Unirest.setTimeouts(0, 0);
+				response = Unirest.post("http://localhost:8083/dev/designerProduct/getProductListById")
+						.header("Content-Type", "application/json").body(productId.toString()).asString();
+			}
+			
+//			try {
+
+//				JSONArray array = response.getBody().getArray();
+//
+			
+				List<Object> l1 = new ArrayList<>();
+				products.forEach(e -> {
+					ObjectMapper obj = new ObjectMapper();
+					String writeValueAsString = null;
+					System.out.println("products*********** "+e.toString());
+					try {
+						writeValueAsString = obj.writeValueAsString(e);
+					} catch (JsonProcessingException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					JsonNode jn = new JsonNode(writeValueAsString);
+					JSONObject object = jn.getObject();
+					
+					JSONArray jsonArray = new JSONArray(response.getBody());
+//					try {
+//						System.out.println("products*********** "+response.getBody());
+//						writeValueAsString = obj.writeValueAsString(response.getBody());
+//					} catch (JsonProcessingException e1) {
+//						e1.printStackTrace();
+//					}
+//					System.out.println();
+//					JsonNode cartJN = new JsonNode(writeValueAsString);
+//					JSONObject cartObject = cartJN.getObject();
+					object.put("cartData", jsonArray);
+					l1.add(object);
+				});
+				System.out.println(l1.toString());
+//				return ResponseEntity.ok(new Json(l1.toString()));
+//			} catch (Exception e2) {
+//				return ResponseEntity.ok(e2.getMessage());
+//			}
+			
+			
+			if (!(findById.isPresent())) {
+				throw new CustomException("Order not found!");
+			} else {
+				return ResponseEntity.ok(new Json(response.getBody()));
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	public ResponseEntity<?> getUserOrderDetailsService(Integer userId) {
+		try {
+			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByUserId(userId);
+			if (findById.size() <= 1) {
+				throw new CustomException("User order not found!");
+			} else {
+				return ResponseEntity.ok(findById);
+			}
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

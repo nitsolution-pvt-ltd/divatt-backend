@@ -180,7 +180,7 @@ public class UserService {
 			wishlistObj.addProperty("productId", productIds.toString());
 			wishlistObj.addProperty("limit", limit);
 			wishlistObj.addProperty("page", page);
-			System.out.println(wishlistObj);
+			
 			HttpResponse<JsonNode> response = null;
 			if (productIds != null) {
 				Unirest.setTimeouts(0, 0);
@@ -515,12 +515,16 @@ public class UserService {
 			Json js = new Json(exchange.getBody());
 
 			if (!userId.equals("")) {
+			Optional<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
+				
+				if(!cart.isEmpty()) {
+					
+				
 				try {
 
 					JsonNode jn = new JsonNode(exchange.getBody().toString());
 					JSONObject object = jn.getObject();
-					UserCartEntity cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId)
-							.get();
+					
 					ObjectMapper obj = new ObjectMapper();
 					String writeValueAsString = null;
 					try {
@@ -536,6 +540,7 @@ public class UserService {
 				} catch (Exception e2) {
 					return ResponseEntity.ok(e2.getMessage());
 				}
+			}
 			}
 			return ResponseEntity.ok(js);
 

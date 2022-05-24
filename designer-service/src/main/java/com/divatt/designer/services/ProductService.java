@@ -711,4 +711,28 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
+	public ResponseEntity<?> ProductListByIdService(List<Integer> productIdList) {
+		try {
+//			System.out.println(productIdList);
+			LOGGER.info("Inside-ProductService.ProductListByIdService()");
+			if (productIdList.isEmpty()) {
+				throw new CustomException("Product not found!");
+			} else {
+				List<ProductMasterEntity> list = productRepo.findByProductIdIn(productIdList);
+
+				
+				if (list.size() <= 0) {
+					throw new CustomException("Product not found!");
+				} else {
+					return ResponseEntity.ok(list);
+				}
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
 }
