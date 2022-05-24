@@ -409,5 +409,4 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 }

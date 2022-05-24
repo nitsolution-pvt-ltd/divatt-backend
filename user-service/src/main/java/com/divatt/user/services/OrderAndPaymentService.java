@@ -1,5 +1,6 @@
 package com.divatt.user.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,20 +27,26 @@ import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.response.GlobalResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 import com.razorpay.Order;
 import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
-
 import springfox.documentation.spring.web.json.Json;
-
-
 
 @Service
 public class OrderAndPaymentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentService.class);
+
+	HttpResponse<String> response = null;
 
 	@Autowired
 	private UserOrderPaymentRepo userOrderPaymentRepo;
@@ -48,7 +56,7 @@ public class OrderAndPaymentService {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
-	
+
 	@Autowired
 	private Environment env;
 
@@ -64,7 +72,7 @@ public class OrderAndPaymentService {
 		String saltStr = salt.toString();
 		return saltStr;
 	}
-	
+
 	protected String getRandomNumber() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		String SALTCHARS = "1234567890";
@@ -85,13 +93,13 @@ public class OrderAndPaymentService {
 		try {
 			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
 			JSONObject options = new JSONObject();
-			
+
 			options.put("amount", orderDetailsEntity.getTotalAmount());
 			options.put("currency", "INR");
 			options.put("receipt", "RC" + getRandomString());
 
 			Order order = razorpayClient.Orders.create(options);
-		
+
 			return ResponseEntity.ok(new Json(order.toString()));
 
 		} catch (RazorpayException e) {
@@ -100,31 +108,26 @@ public class OrderAndPaymentService {
 
 	}
 
-	public GlobalResponse postOrderPaymentService(OrderPaymentEntity orderPaymentEntity) {
+	public void postOrderPaymentService(OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderPaymentService()");
 
 		try {
 
 			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
-//			JSONObject options = new JSONObject();
-//			options.put("amount", 50);
-//			options.put("currency", "INR");
-//			options.put("receipt", "RC" + getRandomString());
-//			Order order = razorpayClient.Orders.create(options);
-//
+
 //			List<Payment> payments = razorpayClient.Payments.fetchAll();
 			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 
 			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
-			filterCatDetails.setOrderId("OR" + getRandomNumber());
+			filterCatDetails.setOrderId(orderPaymentEntity.getOrderId());
 			filterCatDetails.setPaymentMode(orderPaymentEntity.getPaymentMode());
 			filterCatDetails.setPaymentDetails(orderPaymentEntity.getPaymentDetails());
 			filterCatDetails.setPaymentResponse(orderPaymentEntity.getPaymentResponse());
 			filterCatDetails.setPaymentStatus(orderPaymentEntity.getPaymentStatus());
+			filterCatDetails.setUserId(orderPaymentEntity.getUserId());
 			filterCatDetails.setCreatedOn(new Date());
 
-//			userOrderPaymentRepo.save(filterCatDetails);
-			return new GlobalResponse("SUCCESS", "Order placed succesfully", 200);
+			userOrderPaymentRepo.save(filterCatDetails);
 
 		} catch (RazorpayException e) {
 			throw new CustomException(e.getMessage());
@@ -223,6 +226,97 @@ public class OrderAndPaymentService {
 			} else {
 				return response;
 			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public ResponseEntity<?> getOrderDetailsService(String orderId) {
+		try {
+			Optional<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
+			Optional<OrderDetailsEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(orderId);
+
+			List<Object> products = findById.get().getProducts();
+			List<Integer> productId = new ArrayList<>();
+
+			products.forEach(e -> {
+				ObjectMapper obj = new ObjectMapper();
+				String productIdFilter = null;
+				try {
+					productIdFilter = obj.writeValueAsString(e);
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
+				}
+
+				JsonNode cartJN = new JsonNode(productIdFilter);
+				JSONObject object = cartJN.getObject();
+				productId.add(Integer.parseInt(object.get("productId").toString()));
+
+			});
+
+			try {
+
+				if (productId != null) {
+					Unirest.setTimeouts(0, 0);
+					response = Unirest.post("http://localhost:8083/dev/designerProduct/getProductListById")
+							.header("Content-Type", "application/json").body(productId.toString()).asString();
+				}
+			} catch (Exception e2) {
+				throw new CustomException("Product id not found");
+			}
+
+			try {
+
+				List<Object> l1 = new ArrayList<>();
+				int index = 0;
+				products.forEach(e -> {
+					ObjectMapper obj = new ObjectMapper();
+					String productRowAppend = null;
+
+					try {
+						productRowAppend = obj.writeValueAsString(e);
+					} catch (JsonProcessingException e2) {
+						e2.printStackTrace();
+					}
+					JsonNode jn = new JsonNode(productRowAppend);
+					JSONObject object = jn.getObject();
+
+					JSONArray jsonArray = new JSONArray(response.getBody());
+
+					ObjectMapper obj1 = new ObjectMapper();
+					String writeValueAsString1 = null;
+
+					try {
+						writeValueAsString1 = obj1.writeValueAsString(OrderPaymentRow.get());
+					} catch (JsonProcessingException e1) {
+						e1.printStackTrace();
+					}
+					JsonNode cartJN = new JsonNode(writeValueAsString1);
+					JSONObject cartObject = cartJN.getObject();
+					object.put("productData", jsonArray.get(index));
+					object.put("paymentData", cartObject);
+					l1.add(object);
+				});
+
+				return ResponseEntity.ok(new Json(l1.toString()));
+			} catch (Exception e2) {
+				return ResponseEntity.ok(e2.getMessage());
+			}
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public ResponseEntity<?> getUserOrderDetailsService(Integer userId) {
+		try {
+			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByUserId(userId);
+			if (findById.size() <= 1) {
+				throw new CustomException("User order not found!");
+			} else {
+				return ResponseEntity.ok(findById);
+			}
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

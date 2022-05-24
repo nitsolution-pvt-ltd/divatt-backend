@@ -238,7 +238,18 @@ public class UserController {
 		}
 
 	}
-
+	
+	@DeleteMapping("/cart/multipleDelete/{userId}")
+	public GlobalResponse multipleDelete(@PathVariable Integer userId)
+	{
+		try {
+			return this.userService.multipleDelete(userId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 	@RequestMapping(value = { "/cart/getUserCart" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getUserCartRestDetails(@RequestParam(defaultValue = "0") Integer page,
 			@RequestParam(defaultValue = "10") Integer limit,

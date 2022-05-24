@@ -1,5 +1,7 @@
 package com.divatt.user.entity.order;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
@@ -32,7 +34,7 @@ public class OrderDetailsEntity {
 	
 	@NotNull(message = "product details is required!")
 	@Field(name = "products") 
-	private Object products;
+	private List<Object> products;
 	
 	@NotNull(message = "mrp is required!")
 	@Field(name = "mrp") 
@@ -66,7 +68,7 @@ public class OrderDetailsEntity {
 			@NotNull(message = "OrderId is required!") String orderId,
 			@NotNull(message = "ShippingAddress is required!") Object shippingAddress,
 			@NotNull(message = "BillingAddress is required!") Object billingAddress,
-			@NotNull(message = "products is required!") Object products,
+			@NotNull(message = "products is required!") List<Object> products,
 			@NotNull(message = "mrp is required!") Long mrp, @NotNull(message = "discount is required!") Long discount,
 			@NotNull(message = "NetPrice is required!") Long netPrice,
 			@NotNull(message = "TaxAmount is required!") Long taxAmount,
@@ -135,11 +137,11 @@ public class OrderDetailsEntity {
 		this.billingAddress = billingAddress;
 	}
 
-	public Object getProducts() {
+	public List<Object> getProducts() {
 		return products;
 	}
 
-	public void setProducts(Object products) {
+	public void setProducts(List<Object> products) {
 		this.products = products;
 	}
 

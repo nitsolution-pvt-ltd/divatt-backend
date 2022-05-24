@@ -289,6 +289,33 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	@PostMapping("/getProductListById")
+	public ResponseEntity<?> getProductListById(@RequestBody List<Integer> productIdList) {
+		try {
+			LOGGER.info("Inside-ProductController.getProductListById()");
+//			String productId = productIdList.get("productId").toString();
+			
+//			JSONParser jsonParser = new JSONParser();
+//			Object object = (Object) jsonParser.parse(productId);
+//			JSONArray jsonArray = (JSONArray) object;
+//		
+//
+//			List<Integer> list = new ArrayList<Integer>();
+//			for (int i = 0; i < jsonArray.size(); i++) {
+//				Object object2 = jsonArray.get(i);
+//				int a = Integer.parseInt(object2.toString());
+//				list.add(a);
+//			}
+			
+			System.out.println(productIdList);
+			return productService.ProductListByIdService(productIdList);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+			
+		}
+
+}
 	@PutMapping("/approval/{productId}")
 	public GlobalResponce approvaladmin(@PathVariable Integer productId,@RequestBody ProductMasterEntity masterEntity)
 	{
@@ -300,4 +327,17 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+
+	@PutMapping("/multipleDelete")
+	public GlobalResponce multipleDelete(@RequestBody List<Integer> productIdList)
+	{
+		try {
+			return this.productService.multiDelete(productIdList);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }

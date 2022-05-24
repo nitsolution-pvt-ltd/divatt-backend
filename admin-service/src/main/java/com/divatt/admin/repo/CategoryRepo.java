@@ -17,7 +17,7 @@ import com.divatt.admin.entity.category.CategoryEntity;
 @Repository
 public interface CategoryRepo extends MongoRepository<CategoryEntity, Integer>{
 
-	Optional<CategoryEntity> findByCategoryNameAndIsDeleted(String categoryName,Boolean IsDeleted);	
+	List<CategoryEntity> findByCategoryNameAndIsDeleted(String categoryName,Boolean IsDeleted);	
 	
 	Optional<CategoryEntity> findByIsDeletedAndParentId(Boolean falses, Integer ParentId);	
 	

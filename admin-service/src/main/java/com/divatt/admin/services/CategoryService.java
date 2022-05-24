@@ -47,9 +47,9 @@ public class CategoryService {
 
 		try {
 
-			Optional<CategoryEntity> findByCategoryName = categoryRepo
+			List<CategoryEntity> findByCategoryName = categoryRepo
 					.findByCategoryNameAndIsDeleted(categoryEntity.getCategoryName(),false);
-			if (findByCategoryName.isPresent()) {
+			if (findByCategoryName.size() >= 1) {
 				throw new CustomException("Category already exist!");
 			} else { 
 				CategoryEntity filterCatDetails = new CategoryEntity();

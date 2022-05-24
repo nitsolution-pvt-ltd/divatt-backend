@@ -26,6 +26,9 @@ public class OrderPaymentEntity {
 	@Field(value = "order_id")
 	private String orderId;
 	
+	@NotNull(message = "Username is required!")
+	@Field(name = "user_id") 
+	private Long userId;
 	
 	@NotNull(message = "Payment mode is required!")
 	@Field(value = "payment_mode")
@@ -56,7 +59,7 @@ public class OrderPaymentEntity {
 	}
 
 
-	public OrderPaymentEntity(Integer id, String orderId,
+	public OrderPaymentEntity(Integer id, String orderId, @NotNull(message = "Username is required!") Long userId,
 			@NotNull(message = "Payment mode is required!") String paymentMode,
 			@NotNull(message = "Payment details is required!") Object paymentDetails,
 			@NotNull(message = "Payment response is required!") Object paymentResponse,
@@ -64,6 +67,7 @@ public class OrderPaymentEntity {
 		super();
 		this.id = id;
 		this.orderId = orderId;
+		this.userId = userId;
 		this.paymentMode = paymentMode;
 		this.paymentDetails = paymentDetails;
 		this.paymentResponse = paymentResponse;
@@ -74,9 +78,9 @@ public class OrderPaymentEntity {
 
 	@Override
 	public String toString() {
-		return "OrderPaymentEntity [id=" + id + ", orderId=" + orderId + ", paymentMode=" + paymentMode
-				+ ", paymentDetails=" + paymentDetails + ", paymentResponse=" + paymentResponse + ", paymentStatus="
-				+ paymentStatus + ", createdOn=" + createdOn + "]";
+		return "OrderPaymentEntity [id=" + id + ", orderId=" + orderId + ", userId=" + userId + ", paymentMode="
+				+ paymentMode + ", paymentDetails=" + paymentDetails + ", paymentResponse=" + paymentResponse
+				+ ", paymentStatus=" + paymentStatus + ", createdOn=" + createdOn + "]";
 	}
 
 
@@ -97,6 +101,16 @@ public class OrderPaymentEntity {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
+	}
+
+
+	public Long getUserId() {
+		return userId;
+	}
+
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 
@@ -149,12 +163,6 @@ public class OrderPaymentEntity {
 		this.createdOn = createdOn;
 	}
 
-
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
-
-
 	
-
+	
 }
