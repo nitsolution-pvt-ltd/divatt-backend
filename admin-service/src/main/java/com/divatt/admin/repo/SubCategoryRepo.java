@@ -18,7 +18,7 @@ import com.divatt.admin.entity.category.SubCategoryEntity;
 @Repository
 public interface SubCategoryRepo extends MongoRepository<SubCategoryEntity,Integer> {
 
-	Optional<SubCategoryEntity> findByCategoryNameAndIsDeleted(String categoryName,Boolean IsDeleted);
+	List<SubCategoryEntity> findByCategoryNameAndIsDeleted(String categoryName,Boolean IsDeleted);
 	
 //	Page<SubCategoryEntity> findByIsDeleted(Boolean isDeleted,Pageable pagingSort);
 	Page<SubCategoryEntity> findByIsDeletedAndParentIdNot(Boolean isDeleted,String parentId,Pageable pagingSort);
