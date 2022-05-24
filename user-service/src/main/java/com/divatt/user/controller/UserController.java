@@ -393,9 +393,9 @@ public class UserController {
 			Long userId = 0l;
 			try {
 				Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
-				if(!findByEmail.isPresent())
-					throw new CustomException("User not valid");
-				userId = findByEmail.get().getId();
+				if(findByEmail.isPresent())
+					userId = findByEmail.get().getId();
+				
 			}catch(Exception e) {
 				
 			}
