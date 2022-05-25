@@ -491,7 +491,7 @@ public class UserController {
 			userAddressEntity.setCreatedOn(findById.get().getCreatedOn());
 			userAddressRepo.save(userAddressEntity);
 			
-			
+			findByUserId = userAddressRepo.findByUserId(userAddressEntity.getUserId());
 			if(userAddressEntity.getPrimary()) {
 				
 				List<UserAddressEntity> list = findByUserId.stream().map(e->{
