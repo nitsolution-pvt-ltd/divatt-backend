@@ -3,6 +3,7 @@ package com.divatt.user.controller;
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -117,7 +118,13 @@ public class OrderAndPaymentContoller {
 			orderPaymentEntity.setOrderId(OrderData.getOrderId());
 			orderPaymentEntity.setCreatedOn(new Date());
 			postOrderPaymentDetails(orderPaymentEntity);
-			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Order placed successfully", 200));
+			Map<String, Object> map= new HashMap<>();
+			map.put("orderId",OrderData.getOrderId());
+			map.put("status",200);
+			map.put("message","Order placed successfully");
+			
+			
+			return ResponseEntity.ok(map);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
