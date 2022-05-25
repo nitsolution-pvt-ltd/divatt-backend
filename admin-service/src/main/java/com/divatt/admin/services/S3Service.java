@@ -74,7 +74,16 @@ public class S3Service {
            throw new CustomException(e.getMessage());
         } catch (IOException e) {
         	 throw new CustomException(e.getMessage());
-        }
+        }finally {
+        	try {
+        		iofs.close();
+        		file.delete();
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
     }
 

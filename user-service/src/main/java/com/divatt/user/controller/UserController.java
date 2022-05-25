@@ -486,16 +486,23 @@ public class UserController {
 			if(!findById.isPresent())
 				throw new CustomException("Id not found");
 			if(findById.get().getPrimary())
-			userAddressEntity.setPrimary(true);
+				userAddressEntity.setPrimary(true);
 			userAddressEntity.setId(findById.get().getId());
 			userAddressEntity.setCreatedOn(findById.get().getCreatedOn());
 			userAddressRepo.save(userAddressEntity);
 			
 			
-			if(userAddressEntity.getPrimary() && !findById.get().getPrimary()) {
+			if(userAddressEntity.getPrimary()) {
+				
 				List<UserAddressEntity> list = findByUserId.stream().map(e->{
-					if(e.getId()!=id)
+					if(e.getId()!=id) {
+						System.out.println("e.getId() " + e.getId() + " / id " + id);
 						e.setPrimary(false);
+					}else {
+						System.out.println("---e.getId() " + e.getId() + " / id " + id);
+						e.setPrimary(true);
+					}
+						
 					return e;
 				}).collect(Collectors.toList());
 				userAddressRepo.saveAll(list);
@@ -519,7 +526,7 @@ public class UserController {
 			else
 				e.setPrimary(false);
 			return e;
-		}).toList();
+		}).collect(Collectors.toList());
 		userAddressRepo.saveAll(list);
 		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "This address has been set as primary", 200));
 	}

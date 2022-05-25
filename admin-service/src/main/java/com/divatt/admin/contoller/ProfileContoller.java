@@ -242,7 +242,7 @@ public class ProfileContoller {
 			loginEntity.setUid(findById.getUid());
 			loginEntity.setActive(findById.isActive());
 			loginEntity.setDeleted(findById.isDeleted());
-			loginEntity.setCreatedOn(findById.toString());
+			loginEntity.setCreatedOn(findById.getCreatedOn());
 			loginEntity.setModifiedOn(date.toString());
 			loginEntity.setRole(loginEntity.getRole());
 			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName().toUpperCase());
