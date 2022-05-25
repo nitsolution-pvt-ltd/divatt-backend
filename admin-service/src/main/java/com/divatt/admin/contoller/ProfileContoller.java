@@ -96,7 +96,8 @@ public class ProfileContoller {
 	private JwtUtil JwtUtil;
 
 	Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
-//eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyYW1AZ21haWwuY29tIiwiZXhwIjoxNjUzMzcyODY2LCJpYXQiOjE2NTIwNzY4NjZ9.fL7EuQfCtBsn3rGRh8mcDQJd_GyLyZkrI69ID7G8LYU
+
+	
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getAll(@RequestHeader("Authorization") String token,@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,

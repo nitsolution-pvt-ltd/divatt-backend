@@ -21,6 +21,6 @@ public interface AdminModulesRepo extends MongoRepository<AdminModules, Long>{
 	
 	public Page<AdminModules> findByIsDeleted(Boolean isDeleted,Pageable pagingSort);
 	
-	@Query(value = "{ $or: [ { 'metaKey' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
+	@Query(value = "{ $or: [ { 'roleName' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }]}")
 	public Page<AdminModules> Search(String sortKey, Boolean isDeleted,Pageable pageable);
 }
