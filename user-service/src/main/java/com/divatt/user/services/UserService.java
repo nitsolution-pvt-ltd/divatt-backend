@@ -314,7 +314,7 @@ public class UserService {
 					JSONObject object = jn.getObject();
 					UserCartEntity cart = userCartRepo
 							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
-							.get();
+							.get(0);
 					ObjectMapper obj = new ObjectMapper();
 					String writeValueAsString = null;
 					try {
@@ -515,7 +515,7 @@ public class UserService {
 			Json js = new Json(exchange.getBody());
 
 			if (!userId.equals("")) {
-			Optional<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
+			List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
 				
 				if(!cart.isEmpty()) {
 					
@@ -577,11 +577,18 @@ public class UserService {
 			JSONObject object = jn.getObject();
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
-			System.out.println(userDesignerRepo.findByUserId(userId).get());
-			if (userId != 0l) {
-				UserDesignerEntity userDesignerEntity = userDesignerRepo.findByUserId(userId).get();
-				object.put("isFollowing", userDesignerEntity.getIsFollowing());
-				object.put("rating", userDesignerEntity.getRaiting());
+		System.out.println(userId);
+			if (userId != 0) {
+				 Optional<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
+				 if(findByUserId.isPresent()) {
+					 object.put("isFollowing", findByUserId.get().getIsFollowing());
+						object.put("rating", findByUserId.get().getRaiting());
+				 }else {
+					 object.put("isFollowing", false);
+						object.put("rating", 0);
+
+				 }
+				
 			}
 
 			return ResponseEntity.ok(new Json(object.toString()));
