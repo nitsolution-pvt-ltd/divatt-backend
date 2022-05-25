@@ -519,7 +519,7 @@ public class UserController {
 			else
 				e.setPrimary(false);
 			return e;
-		}).toList();
+		}).collect(Collectors.toList());
 		userAddressRepo.saveAll(list);
 		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "This address has been set as primary", 200));
 	}
