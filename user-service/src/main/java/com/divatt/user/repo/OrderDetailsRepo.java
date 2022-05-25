@@ -16,9 +16,9 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 	Page<OrderDetailsEntity> Search(String sortKey, Pageable pageable);
 	
 	
-	Optional<OrderDetailsEntity> findByOrderId(String orderId);
+	List<OrderDetailsEntity> findByOrderId(String orderId);	
 	
-	List<OrderDetailsEntity> findByUserId(Integer orderId);
+	List<OrderDetailsEntity> findByUserId(Integer UserId);
 	
 	
 	
