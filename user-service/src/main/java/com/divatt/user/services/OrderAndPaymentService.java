@@ -234,7 +234,6 @@ public class OrderAndPaymentService {
 	public ResponseEntity<?> getOrderDetailsService(String orderId) {
 		try {
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
-			Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(orderId);
 
 			List<Object> productId = new ArrayList<>();
 
@@ -247,10 +246,20 @@ public class OrderAndPaymentService {
 					e1.printStackTrace();
 				}
 
+				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+
+				String writeValueAsString = null;
+				try {
+					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
+				}
+				JsonNode paymentJson = new JsonNode(writeValueAsString);
+
 				JsonNode cartJN = new JsonNode(productIdFilter);
-				JSONObject object = cartJN.getObject();
-				object.put("paymentData", OrderPaymentRow);
-				productId.add(object);
+				JSONObject objects = cartJN.getObject();
+				objects.put("paymentData", paymentJson.getObject());
+				productId.add(objects);
 
 			});
 
@@ -265,7 +274,7 @@ public class OrderAndPaymentService {
 
 		try {
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByUserId(userId);
-			
+
 			List<Object> productId = new ArrayList<>();
 
 			findById.forEach(e -> {
@@ -279,21 +288,20 @@ public class OrderAndPaymentService {
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
-				
-				String writeValueAsString=null;
+
+				String writeValueAsString = null;
 				try {
 					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
 				JsonNode paymentJson = new JsonNode(writeValueAsString);
-				
+
 				object.put("paymentData", paymentJson.getObject());
 				productId.add(object);
 
 			});
 			return ResponseEntity.ok(new Json(productId.toString()));
-
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

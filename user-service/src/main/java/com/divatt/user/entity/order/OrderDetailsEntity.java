@@ -193,10 +193,6 @@ public class OrderDetailsEntity {
 		this.createdOn = createdOn;
 	}
 
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
-	
 	
 	
 
