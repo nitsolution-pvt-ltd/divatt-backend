@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.entity.ListProduct;
+import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 
@@ -21,7 +22,7 @@ public interface ProductServiceImp {
 	
 	GlobalResponce add(ProductMasterEntity productEntity);
 	
-	ProductMasterEntity viewProductDetails(Integer productId);
+	ProductEntity viewProductDetails(Integer productId);
 	
 	public GlobalResponce changeStatus(Integer productId);
 	
