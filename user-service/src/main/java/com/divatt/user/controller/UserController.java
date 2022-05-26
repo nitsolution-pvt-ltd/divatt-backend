@@ -452,6 +452,43 @@ public class UserController {
 		
 	}
 	
+	@GetMapping("/address/{id}")
+	public ResponseEntity<?> getAddressById(@RequestHeader(name = "Authorization") String token, @PathVariable("id") Long id){
+		LOGGER.info("Inside - UserController.getAddressById()");
+		try {
+			Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
+			if(!findByEmail.isPresent())
+				throw new CustomException("User not found");
+			Optional<UserAddressEntity> findById = userAddressRepo.findById(id);
+			if(!findById.isPresent())
+				throw new CustomException("No address found");
+			return ResponseEntity.ok(findById.get());
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}	
+	}
+	
+	
+	@DeleteMapping("/address/{id}")
+	public ResponseEntity<?> deleteAddressById(@RequestHeader(name = "Authorization") String token, @PathVariable("id") Long id){
+		LOGGER.info("Inside - UserController.deleteAddressById()");
+		try {
+			Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
+			if(!findByEmail.isPresent())
+				throw new CustomException("User not found");
+			Optional<UserAddressEntity> findById = userAddressRepo.findById(id);
+			if(!findById.isPresent())
+				throw new CustomException("No address found");
+			
+			userAddressRepo.deleteById(id);
+			
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Address deleted successfully", 200));
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}	
+	}
+	
+	
 	@PostMapping("/address")
 	public ResponseEntity<?> addAddress(@Valid @RequestBody() UserAddressEntity userAddressEntity){
 		LOGGER.info("Inside - UserController.addAddress()");
