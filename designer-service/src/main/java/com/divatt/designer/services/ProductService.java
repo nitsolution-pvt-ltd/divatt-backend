@@ -505,7 +505,7 @@ public class ProductService {
 
 				if (status.equals("all")) {
 
-					findAll = productRepo.findByIsDeleted(isDeleted, pagingSort);
+					findAll = productRepo.SearchAndfindByIsDeleted(keyword, isDeleted,pagingSort);	
 
 				} else if (status.equals("pending")) {
 
