@@ -20,9 +20,9 @@ public interface UserOrderPaymentRepo extends MongoRepository<OrderPaymentEntity
 	@Query(value = "{ $or: [ { 'order_id' : {$regex:?0,$options:'i'} }, { 'user_id' : {$regex:?0,$options:'i'} } ]}")
 	Page<OrderPaymentEntity> Search(String sortKey, Pageable pageable);
 	
-	List<OrderDetailsEntity> findByOrderId(String orderId);
+	Optional<OrderPaymentEntity> findByOrderId(String orderId);
 	
-	List<OrderDetailsEntity> findByUserId(Integer userId);
+	Optional<OrderPaymentEntity> findByUserId(Integer userId);
 	
 	
 }

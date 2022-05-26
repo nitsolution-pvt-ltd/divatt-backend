@@ -234,7 +234,7 @@ public class OrderAndPaymentService {
 	public ResponseEntity<?> getOrderDetailsService(String orderId) {
 		try {
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
-			List<OrderDetailsEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(orderId);
+			Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(orderId);
 
 			List<Object> productId = new ArrayList<>();
 
@@ -254,7 +254,7 @@ public class OrderAndPaymentService {
 
 			});
 
-			return ResponseEntity.ok(new Json(productId.toString()));
+			return ResponseEntity.ok(new Json(productId.get(0).toString()));
 		} catch (Exception e2) {
 			return ResponseEntity.ok(e2.getMessage());
 		}
@@ -265,12 +265,10 @@ public class OrderAndPaymentService {
 
 		try {
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByUserId(userId);
-			List<OrderDetailsEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByUserId(userId);
+			
+			List<Object> productId = new ArrayList<>();
 
-			List<Object> products = findById.get(0).getProducts();
-			List<Integer> productId = new ArrayList<>();
-
-			products.forEach(e -> {
+			findById.forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
 				String productIdFilter = null;
 				try {
@@ -278,61 +276,24 @@ public class OrderAndPaymentService {
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
-
-				JsonNode cartJN = new JsonNode(productIdFilter);
-				JSONObject object = cartJN.getObject();
-				productId.add(Integer.parseInt(object.get("productId").toString()));
+				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+				JsonNode pJN = new JsonNode(productIdFilter);
+				JSONObject object = pJN.getObject();
+				
+				String writeValueAsString=null;
+				try {
+					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
+				}
+				JsonNode paymentJson = new JsonNode(writeValueAsString);
+				
+				object.put("paymentData", paymentJson.getObject());
+				productId.add(object);
 
 			});
+			return ResponseEntity.ok(new Json(productId.toString()));
 
-			try {
-
-				if (productId != null) {
-					Unirest.setTimeouts(0, 0);
-					response = Unirest.post("http://localhost:8083/dev/designerProduct/getProductListById")
-							.header("Content-Type", "application/json").body(productId.toString()).asString();
-				}
-			} catch (Exception e2) {
-				throw new CustomException("Product id not found");
-			}
-
-			try {
-
-				List<Object> l1 = new ArrayList<>();
-				int index = 0;
-				products.forEach(e -> {
-					ObjectMapper obj = new ObjectMapper();
-					String productRowAppend = null;
-
-					try {
-						productRowAppend = obj.writeValueAsString(e);
-					} catch (JsonProcessingException e2) {
-						e2.printStackTrace();
-					}
-					JsonNode jn = new JsonNode(productRowAppend);
-					JSONObject object = jn.getObject();
-
-					JSONArray jsonArray = new JSONArray(response.getBody());
-
-					ObjectMapper obj1 = new ObjectMapper();
-					String writeValueAsString1 = null;
-
-					try {
-						writeValueAsString1 = obj1.writeValueAsString(OrderPaymentRow.get(0));
-					} catch (JsonProcessingException e1) {
-						e1.printStackTrace();
-					}
-					JsonNode cartJN = new JsonNode(writeValueAsString1);
-					JSONObject cartObject = cartJN.getObject();
-					object.put("productData", jsonArray.get(index));
-					object.put("paymentData", cartObject);
-					l1.add(object);
-				});
-
-				return ResponseEntity.ok(new Json(l1.toString()));
-			} catch (Exception e2) {
-				return ResponseEntity.ok(e2.getMessage());
-			}
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
