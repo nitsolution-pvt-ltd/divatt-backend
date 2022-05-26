@@ -120,19 +120,29 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		//*****  WE ARE CHECKING IN THREE TABLE ADMIN DESIGNER AND USER  *****//
 			//** IF IT IS A ADMIN START **//
 			
-			
-			Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(vendor.getUsername());
-			if (findByUserName.isPresent()) {  
-				if (!findByUserName.get().isActive())
-					throw new CustomException("This account has been deactive");
-				return ResponseEntity
-						.ok(new LoginAdminData(token, findByUserName.get().getUid(), findByUserName.get().getEmail(),
-								findByUserName.get().getPassword(), "Login successful", 200, "ADMIN"));
+			if(loginEntity.getType().equals("ADMIN")) {
+				Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(vendor.getUsername());
+				if (findByUserName.isPresent()) {  
+					if (!findByUserName.get().isActive())
+						throw new CustomException("This account has been deactive");
+					return ResponseEntity
+							.ok(new LoginAdminData(token, findByUserName.get().getUid(), findByUserName.get().getEmail(),
+									findByUserName.get().getPassword(), "Login successful", 200, "ADMIN"));
+				}
+			}
+//			Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(vendor.getUsername());
+//			if (findByUserName.isPresent()) {  
+//				if (!findByUserName.get().isActive())
+//					throw new CustomException("This account has been deactive");
+//				return ResponseEntity
+//						.ok(new LoginAdminData(token, findByUserName.get().getUid(), findByUserName.get().getEmail(),
+//								findByUserName.get().getPassword(), "Login successful", 200, "ADMIN"));
 			
 			//**  ADMIN END **//
 				
 			//** IF IT IS A DESIGNER START **//	
-			} else {
+//			} else {
+			if(loginEntity.getType().equals("DESIGNER")) {
 				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo
 						.findByEmail(vendor.getUsername());
 				if (findByUserNameDesigner.isPresent()) {
@@ -157,13 +167,11 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							findByUserNameDesigner.get().getProfileStatus(), token, "DESIGNER");
 
 					return new ResponseEntity<>(loginDesignerData, HttpStatus.OK);
-					
-			//**  DESIGNER END **//
-					
-			//** IF IT IS A USER START **//	
-					
-				} else {
-
+			}else {
+				throw new CustomException("Email not found");
+			}
+			}
+				if(loginEntity.getType().equals("USER")) {
 					Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(vendor.getUsername());
 					if (findByEmail.isPresent()) {
 						if (findByEmail.get().getIsActive() == false)
@@ -174,11 +182,55 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					} else {
 						throw new CustomException("Email not found");
 					}
-
 				}
+				
+				throw new CustomException("No data found");
+//				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo
+//						.findByEmail(vendor.getUsername());
+//				if (findByUserNameDesigner.isPresent()) {
+//					if (findByUserNameDesigner.get().getProfileStatus().equals("INACTIVE"))
+//						throw new CustomException("Please active your account");
+//					if (findByUserNameDesigner.get().getProfileStatus().equals("ACTIVE"))
+//						throw new CustomException("Waiting for admin approve");
+//					try {
+//						if (!findByUserNameDesigner.get().getAccountStatus().equals("ACTIVE"))
+//							throw new CustomException("This account has been deactive");
+//					} catch (Exception e) {
+//					}
+//
+//					DesignerLoginEntity designerLoginEntity = findByUserNameDesigner.get();
+//					designerLoginEntity.setAuthToken(token);
+//					designerLoginRepo.save(designerLoginEntity);
+//					LoginDesignerData loginDesignerData = new LoginDesignerData(findByUserNameDesigner.get().getUid(),
+//							findByUserNameDesigner.get().getEmail(), findByUserNameDesigner.get().getPassword(),
+//							"Login successful",
+//							Stream.of("DESIGNER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()), 200,
+//							findByUserNameDesigner.get().getAdminComment(),
+//							findByUserNameDesigner.get().getProfileStatus(), token, "DESIGNER");
+//
+//					return new ResponseEntity<>(loginDesignerData, HttpStatus.OK);
+					
+			//**  DESIGNER END **//
+					
+			//** IF IT IS A USER START **//	
+					
+//				} else {
+//
+//					Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(vendor.getUsername());
+//					if (findByEmail.isPresent()) {
+//						if (findByEmail.get().getIsActive() == false)
+//							throw new CustomException("Please active your account");
+//						return ResponseEntity.ok(new LoginUserData(token, findByEmail.get().getuId(),
+//								findByEmail.get().getEmail(), findByEmail.get().getPassword(), "Login Successfully",
+//								Stream.of("USER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()), 200));
+//					} else {
+//						throw new CustomException("Email not found");
+//					}
+//
+//				}
 			//**  USER END **//
 
-			}
+			
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

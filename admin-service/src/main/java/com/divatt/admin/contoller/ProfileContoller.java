@@ -96,7 +96,8 @@ public class ProfileContoller {
 	private JwtUtil JwtUtil;
 
 	Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
-//eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyYW1AZ21haWwuY29tIiwiZXhwIjoxNjUzMzcyODY2LCJpYXQiOjE2NTIwNzY4NjZ9.fL7EuQfCtBsn3rGRh8mcDQJd_GyLyZkrI69ID7G8LYU
+
+	
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getAll(@RequestHeader("Authorization") String token,@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
@@ -241,7 +242,7 @@ public class ProfileContoller {
 			loginEntity.setUid(findById.getUid());
 			loginEntity.setActive(findById.isActive());
 			loginEntity.setDeleted(findById.isDeleted());
-			loginEntity.setCreatedOn(findById.toString());
+			loginEntity.setCreatedOn(findById.getCreatedOn());
 			loginEntity.setModifiedOn(date.toString());
 			loginEntity.setRole(loginEntity.getRole());
 			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName().toUpperCase());

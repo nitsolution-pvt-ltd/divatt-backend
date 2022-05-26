@@ -38,13 +38,13 @@ import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
-import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
@@ -404,9 +404,9 @@ public class UserController {
 			Long userId = 0l;
 			try {
 				Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
-				if(!findByEmail.isPresent())
-					throw new CustomException("User not valid");
-				userId = findByEmail.get().getId();
+				if(findByEmail.isPresent())
+					userId = findByEmail.get().getId();
+				
 			}catch(Exception e) {
 				
 			}
@@ -452,6 +452,44 @@ public class UserController {
 		
 	}
 	
+	@GetMapping("/address/{id}")
+	public ResponseEntity<?> getAddressById(@RequestHeader(name = "Authorization") String token, @PathVariable("id") Long id){
+		LOGGER.info("Inside - UserController.getAddressById()");
+		try {
+			Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
+			if(!findByEmail.isPresent())
+				throw new CustomException("User not found");
+			Optional<UserAddressEntity> findById = userAddressRepo.findById(id);
+			if(!findById.isPresent() || (findById.get().getUserId() != findByEmail.get().getId()))
+				throw new CustomException("No address found");
+			return ResponseEntity.ok(findById.get());
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}	
+	}
+	
+	
+	@DeleteMapping("/address/{id}")
+	public ResponseEntity<?> deleteAddressById(@RequestHeader(name = "Authorization") String token, @PathVariable("id") Long id){
+		LOGGER.info("Inside - UserController.deleteAddressById()");
+		try {
+			Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
+			if(!findByEmail.isPresent())
+				throw new CustomException("User not found");
+			Optional<UserAddressEntity> findById = userAddressRepo.findById(id);
+			if(!findById.isPresent() || (findById.get().getUserId() != findByEmail.get().getId()))
+				throw new CustomException("No address found");
+			if(findById.get().getPrimary())
+				throw new CustomException("Primary address can't delete");
+			userAddressRepo.deleteById(id);
+			
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Address deleted successfully", 200));
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}	
+	}
+	
+	
 	@PostMapping("/address")
 	public ResponseEntity<?> addAddress(@Valid @RequestBody() UserAddressEntity userAddressEntity){
 		LOGGER.info("Inside - UserController.addAddress()");
@@ -486,16 +524,23 @@ public class UserController {
 			if(!findById.isPresent())
 				throw new CustomException("Id not found");
 			if(findById.get().getPrimary())
-			userAddressEntity.setPrimary(true);
+				userAddressEntity.setPrimary(true);
 			userAddressEntity.setId(findById.get().getId());
 			userAddressEntity.setCreatedOn(findById.get().getCreatedOn());
 			userAddressRepo.save(userAddressEntity);
 			
-			
-			if(userAddressEntity.getPrimary() && !findById.get().getPrimary()) {
+			findByUserId = userAddressRepo.findByUserId(userAddressEntity.getUserId());
+			if(userAddressEntity.getPrimary()) {
+				
 				List<UserAddressEntity> list = findByUserId.stream().map(e->{
-					if(e.getId()!=id)
+					if(e.getId()!=id) {
+						System.out.println("e.getId() " + e.getId() + " / id " + id);
 						e.setPrimary(false);
+					}else {
+						System.out.println("---e.getId() " + e.getId() + " / id " + id);
+						e.setPrimary(true);
+					}
+						
 					return e;
 				}).collect(Collectors.toList());
 				userAddressRepo.saveAll(list);
@@ -519,7 +564,7 @@ public class UserController {
 			else
 				e.setPrimary(false);
 			return e;
-		}).toList();
+		}).collect(Collectors.toList());
 		userAddressRepo.saveAll(list);
 		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "This address has been set as primary", 200));
 	}

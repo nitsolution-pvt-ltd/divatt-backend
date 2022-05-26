@@ -1,5 +1,6 @@
 package com.divatt.user.repo.orderPaymenRepo;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -19,5 +20,9 @@ public interface UserOrderPaymentRepo extends MongoRepository<OrderPaymentEntity
 	@Query(value = "{ $or: [ { 'order_id' : {$regex:?0,$options:'i'} }, { 'user_id' : {$regex:?0,$options:'i'} } ]}")
 	Page<OrderPaymentEntity> Search(String sortKey, Pageable pageable);
 	
-	Optional<OrderDetailsEntity> findByOrderId(String orderId);
+	Optional<OrderPaymentEntity> findByOrderId(String orderId);
+	
+	Optional<OrderPaymentEntity> findByUserId(Integer userId);
+	
+	
 }
