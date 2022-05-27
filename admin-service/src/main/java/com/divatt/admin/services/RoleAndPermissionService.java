@@ -22,7 +22,7 @@ public class RoleAndPermissionService {
 	private LoginRepository loginRepository;
 	
 	public Boolean checkPermission(String token ,String moduleName , String access) {
-		System.out.println(token);
+		
 		String extractUsername = JwtUtil.extractUsername(token.substring(7));
 		Long role = loginRepository.findByEmail(extractUsername).get().getRole();
 		ArrayList<AdminModule> modules = adminModulesRepo.findById(role).get().getModules();

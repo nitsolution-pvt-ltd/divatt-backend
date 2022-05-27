@@ -1,5 +1,7 @@
 package com.divatt.admin.contoller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.admin.entity.CommentEntity;
@@ -29,19 +32,20 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 	@Autowired
-    private MongoTemplate mongoTemplate;
-
+	private MongoTemplate mongoTemplate;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
+	
 	@PutMapping("/changeProductApprovalStatus")
 	public GlobalResponse changeProductApprovalStatus(@RequestBody CommentEntity comment) {
 		try {
-			int productId=comment.getProductId();
-			int designerId=comment.getDesignerId();
-			String adminStatus=comment.getAdminStatus();
-			String commString=comment.getComments();
-			String ApprovedBy=comment.getApprovedBy();
-						
-			return this.productService.productApproval(productId, designerId, commString,ApprovedBy,adminStatus);
-			
+			int productId = comment.getProductId();
+			int designerId = comment.getDesignerId();
+			String adminStatus = comment.getAdminStatus();
+			String commString = comment.getComments();
+			String ApprovedBy = comment.getApprovedBy();
+
+			return this.productService.productApproval(productId, designerId, commString, ApprovedBy, adminStatus);
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -49,14 +53,24 @@ public class ProductController {
 
 	@GetMapping("/getP")
 	public void lookupOperation() {
-		LookupOperation lookupOperation = LookupOperation.newLookup().
-				from("tbl_categories").
-				localField("_id")
-				.foreignField("categoryId").
-				as("inventory_docs");
+		LookupOperation lookupOperation = LookupOperation.newLookup().from("tbl_categories").localField("_id")
+				.foreignField("categoryId").as("inventory_docs");
 		Aggregation aggregation = Aggregation.newAggregation(lookupOperation);
-		ResponseEntity
-		.ok(mongoTemplate.aggregate(aggregation, ProductEntity.class, String.class)
-				.getMappedResults());
+		ResponseEntity.ok(mongoTemplate.aggregate(aggregation, ProductEntity.class, String.class).getMappedResults());
 	}
+
+//	@GetMapping("/designerOrderList")
+//	public ResponseEntity<?> designerOrderList(@RequestParam(defaultValue = "0") Integer page,
+//			@RequestParam(defaultValue = "10") Integer limit,@RequestParam(defaultValue = "0") String keyword) {
+//
+//		LOGGER.info("Inside - ProductController.designerOrderList()");
+//
+//		try {
+//			return this.productService.designerOrderListService(page, limit,keyword);
+//		} catch (Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//
+//	}
+
 }
