@@ -175,11 +175,11 @@ public class ProductService {
 				 RestTemplate restTemplate= new RestTemplate();
 				 ResponseEntity<Object> categoryEntity=restTemplate.getForEntity("http://localhost:8084/dev/category/view/"+masterEntity.getCategoryId(), Object.class);
 				 ResponseEntity<Object> subCategoryEntity=restTemplate.getForEntity("http://localhost:8084/dev/subcategory/view/"+masterEntity.getSubCategoryId(), Object.class);
-				 ProductEntity productEntity = new ProductEntity();
-				 productEntity.setProductMasterEntity(masterEntity);
-				 productEntity.setCategoryObject(categoryEntity.getBody());
-				 productEntity.setSubCategoryObject(subCategoryEntity.getBody());
-				 return productEntity;
+				 ProductEntity productData=customFunction.productFilter(masterEntity);
+				 productData.setCategoryObject(categoryEntity.getBody());
+				 productData.setSubCategoryObject(subCategoryEntity.getBody());
+				 return productData;
+				 
 			} else {
 				throw new CustomException("Product not found");
 			}

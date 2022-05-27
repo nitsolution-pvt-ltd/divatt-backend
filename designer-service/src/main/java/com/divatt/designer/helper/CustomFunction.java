@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.exception.*;
 import com.divatt.designer.repo.ProductRepository;
@@ -121,6 +122,52 @@ public class CustomFunction {
 		}
 		catch(Exception e)
 		{
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	public ProductEntity productFilter(ProductMasterEntity productData)
+	{
+		try {
+			ProductEntity filterProductEntity= new ProductEntity();
+			filterProductEntity.setProductId(productData.getProductId());
+			filterProductEntity.setSKQCode(productData.getSKQCode());
+			filterProductEntity.setAge(productData.getAge());
+			filterProductEntity.setDesignerName(productData.getDesignerName());
+			//filterProductEntity.setApprovedBy(productData.getApprovedBy());
+			filterProductEntity.setComments(productData.getComments());
+			filterProductEntity.setCategoryId(productData.getCategoryId());
+			filterProductEntity.setCod(productData.getCod());
+			filterProductEntity.setCreatedBy(productData.getCreatedBy());
+			filterProductEntity.setCreatedOn(new Date());
+			filterProductEntity.setCustomization(productData.getCustomization());
+			filterProductEntity.setCustomizationSOH(productData.getCustomizationSOH());
+			filterProductEntity.setDesignerId(productData.getDesignerId());
+			filterProductEntity.setExtraSpecifications(productData.getExtraSpecifications());
+			filterProductEntity.setGender(productData.getGender());
+			filterProductEntity.setGiftWrapAmount(productData.getGiftWrapAmount());
+			filterProductEntity.setGiftWrap(productData.getGiftWrap());
+			filterProductEntity.setImages(productData.getImages());
+			filterProductEntity.setTaxPercentage(productData.getTaxPercentage());
+			filterProductEntity.setIsDeleted(productData.getIsDeleted());
+			filterProductEntity.setIsActive(productData.getIsActive());
+			filterProductEntity.setAdminStatus("Pending");
+			filterProductEntity.setPrice(productData.getPrice());
+			filterProductEntity.setPriceType(productData.getPriceType());
+			filterProductEntity.setProductDescription(productData.getProductDescription());
+			filterProductEntity.setProductName(productData.getProductName());
+			filterProductEntity.setPurchaseQuantity(productData.getPurchaseQuantity());
+			filterProductEntity.setSpecifications(productData.getSpecifications());
+			filterProductEntity.setStanderedSOH(productData.getStanderedSOH());
+			filterProductEntity.setSubCategoryId(productData.getSubCategoryId());
+			filterProductEntity.setAdminStatusOn(productData.getAdminStatusOn());
+			filterProductEntity.setTaxInclusive(productData.getTaxInclusive());
+			filterProductEntity.setApprovedBy(productData.getApprovedBy());
+			filterProductEntity.setApprovedOn(productData.getApprovedOn());
+			filterProductEntity.setComments(productData.getComments());
+			return filterProductEntity;
+		}
+		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

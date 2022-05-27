@@ -2,12 +2,18 @@ package com.divatt.admin.services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -54,10 +60,10 @@ public class SpecificationService {
 	}
 
 
-	public List<SpecificationEntity> listOfSpecification(Integer categoryId) {
+	public List<SpecificationEntity> listOfSpecification(String categoryName) {
 		try
 		{
-			String categoryName=categoryRepo.findById(categoryId).get().getCategoryName();
+			//String categoryName=categoryRepo.findById(categoryId).get().getCategoryName();
 			if(categoryName.toLowerCase().contains("women"))
 			{
 				categoryName="women";
@@ -133,5 +139,54 @@ public class SpecificationService {
 		{
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+
+	public Map<String, Object> getAllSpec(int page, int limit, String sort, String sortName, Boolean isDeleted,
+			String keyword, Optional<String> sortBy) {
+		try {
+			int CountData = (int) specRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<SpecificationEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = specRepo.findByIsDeleted(isDeleted, pagingSort);
+			} else {
+				findAll = specRepo.Search(keyword, isDeleted, pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Product not found!");
+			} else {
+				return response;
+			}
+		}
+		 catch(Exception e) {
+			 throw new CustomException(e.getMessage());
+		 }
 	}
 }
