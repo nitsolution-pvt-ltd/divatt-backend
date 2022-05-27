@@ -12,7 +12,9 @@ import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 
 public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Long>{
-	@Query(value = "{ $or: [ { 'order_id' : {$regex:?0,$options:'i'} }, { 'user_id' : {$regex:?0,$options:'i'} } ]}")
+	
+	@Query(value = "{ $or: [ { 'order_id' : {$regex:?0,$options:'i'}}, { 'user_id' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} }]}")
+//	 @Query(value = "{ 'products.productName' : {$all : [?0] }}")
 	Page<OrderDetailsEntity> Search(String sortKey, Pageable pageable);
 	
 	
@@ -20,6 +22,9 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 	
 	List<OrderDetailsEntity> findByUserId(Integer UserId);
 	
+	@Query(value = "{ 'products': { $elemMatch: { 'designerId' : ?0 } }}")
+	Page<OrderDetailsEntity> findDesigner(Integer designerId, Pageable pagingSort);
+
 	
 	
 }

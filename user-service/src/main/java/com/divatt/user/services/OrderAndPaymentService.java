@@ -1,12 +1,14 @@
 package com.divatt.user.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,6 +20,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +53,8 @@ public class OrderAndPaymentService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentService.class);
 
 	HttpResponse<String> response = null;
-
+	@Autowired
+	private MongoTemplate mongoTemplate;
 	@Autowired
 	private UserOrderPaymentRepo userOrderPaymentRepo;
 
@@ -208,21 +215,49 @@ public class OrderAndPaymentService {
 
 			}
 
+			List<Object> productId = new ArrayList<>();
+
+			findAll.forEach(e -> {
+				ObjectMapper obj = new ObjectMapper();
+				String productIdFilter = null;
+				try {
+					productIdFilter = obj.writeValueAsString(e);
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
+				}
+
+				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+
+				String writeValueAsString = null;
+				try {
+					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
+				}
+				JsonNode paymentJson = new JsonNode(writeValueAsString);
+
+				JsonNode cartJN = new JsonNode(productIdFilter);
+				JSONObject objects = cartJN.getObject();
+				objects.put("paymentData", paymentJson.getObject());
+				productId.add(objects);
+
+			});
+
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
 			}
 
 			Map<String, Object> response = new HashMap<>();
-			response.put("data", findAll.getContent());
+			response.put("data", new Json(productId.toString()));
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
 
-			if (findAll.getSize() <= 1) {
-				throw new CustomException("Payment not found!");
+			if (productId.size() <= 0) {
+				throw new CustomException("Order not found!");
 			} else {
 				return response;
 			}
@@ -307,5 +342,92 @@ public class OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
+			String keyword, Optional<String> sortBy) {
+		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
+		try {
+			int CountData = (int) orderDetailsRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<OrderDetailsEntity> findAll = null;
+			List<OrderDetailsEntity> findAlls = null;
+
+			if (keyword.isEmpty()) {
+
+				findAll = orderDetailsRepo.findDesigner(designerId, pagingSort);
+
+				Query query = new Query();
+				query.addCriteria(Criteria.where("products").elemMatch(Criteria.where("designerId").is(designerId)));
+
+				query.fields().include("products.$");
+
+				findAlls = mongoTemplate.find(query, OrderDetailsEntity.class);
+
+			} else {
+				findAll = orderDetailsRepo.Search(keyword, pagingSort);
+
+			}
+
+			List<Object> productId = new ArrayList<>();
+
+			findAll.forEach(e -> {
+				ObjectMapper obj = new ObjectMapper();
+				String productIdFilter = null;
+				try {
+					productIdFilter = obj.writeValueAsString(e);
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
+				}
+
+				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+
+				String writeValueAsString = null;
+				try {
+					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
+				}
+				JsonNode paymentJson = new JsonNode(writeValueAsString);
+
+				JsonNode cartJN = new JsonNode(productIdFilter);
+				JSONObject objects = cartJN.getObject();
+				objects.put("paymentData", paymentJson.getObject());
+				productId.add(objects);
+
+			});
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAlls);
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (productId.size() <= 0) {
+				throw new CustomException("Order not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 
 }
