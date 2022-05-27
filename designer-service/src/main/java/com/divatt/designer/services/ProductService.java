@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.entity.ListProduct;
+import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
@@ -165,12 +166,20 @@ public class ProductService {
 		}
 	}
 
-	public ProductMasterEntity productDetails(Integer productId) {
+	public ProductEntity productDetails(Integer productId) {
 		try {
 			LOGGER.info("Inside-ProductService.productDetails()");
 			if (productRepo.existsById(productId)) {
 				LOGGER.info("Inside - ProductService.productDetails()");
-				return productRepo.findById(productId).get();
+				 ProductMasterEntity masterEntity= productRepo.findById(productId).get();
+				 RestTemplate restTemplate= new RestTemplate();
+				 ResponseEntity<Object> categoryEntity=restTemplate.getForEntity("http://localhost:8084/dev/category/view/"+masterEntity.getCategoryId(), Object.class);
+				 ResponseEntity<Object> subCategoryEntity=restTemplate.getForEntity("http://localhost:8084/dev/subcategory/view/"+masterEntity.getSubCategoryId(), Object.class);
+				 ProductEntity productEntity = new ProductEntity();
+				 productEntity.setProductMasterEntity(masterEntity);
+				 productEntity.setCategoryObject(categoryEntity.getBody());
+				 productEntity.setSubCategoryObject(subCategoryEntity.getBody());
+				 return productEntity;
 			} else {
 				throw new CustomException("Product not found");
 			}

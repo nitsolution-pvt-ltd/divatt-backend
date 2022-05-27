@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.designer.entity.ListProduct;
+import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
@@ -66,7 +67,7 @@ public class ProductController implements ProductServiceImp {
 	}
 
 	@GetMapping("/view/{productId}")
-	public ProductMasterEntity viewProductDetails(@PathVariable Integer productId) {
+	public ProductEntity viewProductDetails(@PathVariable Integer productId) {
 		try {
 			LOGGER.info("Inside- ProductController.viewProductDetails()");
 			return productService.productDetails(productId);

@@ -38,13 +38,13 @@ import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
-import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
@@ -460,7 +460,7 @@ public class UserController {
 			if(!findByEmail.isPresent())
 				throw new CustomException("User not found");
 			Optional<UserAddressEntity> findById = userAddressRepo.findById(id);
-			if(!findById.isPresent())
+			if(!findById.isPresent() || (findById.get().getUserId() != findByEmail.get().getId()))
 				throw new CustomException("No address found");
 			return ResponseEntity.ok(findById.get());
 		}catch(Exception e) {
@@ -477,9 +477,10 @@ public class UserController {
 			if(!findByEmail.isPresent())
 				throw new CustomException("User not found");
 			Optional<UserAddressEntity> findById = userAddressRepo.findById(id);
-			if(!findById.isPresent())
+			if(!findById.isPresent() || (findById.get().getUserId() != findByEmail.get().getId()))
 				throw new CustomException("No address found");
-			
+			if(findById.get().getPrimary())
+				throw new CustomException("Primary address can't delete");
 			userAddressRepo.deleteById(id);
 			
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Address deleted successfully", 200));
