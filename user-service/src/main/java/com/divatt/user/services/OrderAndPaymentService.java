@@ -1,16 +1,13 @@
 package com.divatt.user.services;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
@@ -32,16 +28,11 @@ import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
-import com.divatt.user.response.GlobalResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
 import com.razorpay.Order;
-import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
@@ -308,7 +299,7 @@ public class OrderAndPaymentService {
 	public ResponseEntity<?> getUserOrderDetailsService(Integer userId) {
 
 		try {
-			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByUserId(userId);
+			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByUserIdOrderByIdDesc(userId);
 
 			List<Object> productId = new ArrayList<>();
 
@@ -367,10 +358,10 @@ public class OrderAndPaymentService {
 				findAll = orderDetailsRepo.findDesigner(designerId, pagingSort);
 
 				Query query = new Query();
+				
 				query.addCriteria(Criteria.where("products").elemMatch(Criteria.where("designerId").is(designerId)));
-
-				query.fields().include("products.$");
-
+				query.fields().include("order_id").include("products.$");
+				
 				findAlls = mongoTemplate.find(query, OrderDetailsEntity.class);
 
 			} else {

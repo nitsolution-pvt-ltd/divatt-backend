@@ -20,7 +20,7 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 	
 	List<OrderDetailsEntity> findByOrderId(String orderId);	
 	
-	List<OrderDetailsEntity> findByUserId(Integer UserId);
+	List<OrderDetailsEntity> findByUserIdOrderByIdDesc(Integer UserId);
 	
 	@Query(value = "{ 'products': { $elemMatch: { 'designerId' : ?0 } }}")
 	Page<OrderDetailsEntity> findDesigner(Integer designerId, Pageable pagingSort);
