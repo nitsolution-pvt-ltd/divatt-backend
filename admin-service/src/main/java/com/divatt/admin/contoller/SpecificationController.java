@@ -43,11 +43,11 @@ public class SpecificationController {
 		}
 	}
 	@GetMapping("/listOfSpecification/{categoryId}")
-	public List<SpecificationEntity>listOfSpecification(@PathVariable String categoryName)
+	public List<SpecificationEntity>listOfSpecification(@PathVariable Integer categoryId)
 	{
 		try
 		{
-			return this.specificationService.listOfSpecification(categoryName);
+			return this.specificationService.listOfSpecification(categoryId);
 		}
 		catch(Exception e)
 		{
@@ -89,6 +89,17 @@ public class SpecificationController {
 			@RequestParam Optional<String> sortBy){
 		try {
 			return this.specificationService.getAllSpec(page,limit,sort,sortName,isDeleted,keyword,sortBy);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@PutMapping("/activeSpec/{specId}")
+	public GlobalResponse activeSpec(@PathVariable Integer specId)
+	{
+		try {
+			return this.specificationService.activeSpecification(specId);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

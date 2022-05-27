@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
@@ -47,7 +48,7 @@ public class SpecificationService {
 		try
 		{
 				specificationEntity.setId(sequenceGenerator.getNextSequence(SpecificationEntity.SEQUENCE_NAME));
-				specificationEntity.setIsActive(true);
+				specificationEntity.setIsActive(false);
 				specificationEntity.setIsDeleted(false);
 				specificationEntity.setAddonDate(new Date());
 				specRepo.save(specificationEntity);
@@ -60,17 +61,17 @@ public class SpecificationService {
 	}
 
 
-	public List<SpecificationEntity> listOfSpecification(String categoryName) {
+	public List<SpecificationEntity> listOfSpecification(Integer categoryId) {
 		try
 		{
-			//String categoryName=categoryRepo.findById(categoryId).get().getCategoryName();
+			String categoryName=categoryRepo.findById(categoryId).get().getCategoryName();
 			if(categoryName.toLowerCase().contains("women"))
 			{
 				categoryName="women";
 			}
 			else if(categoryName.toLowerCase().contains("men"))
 			{
-				System.out.println("Hiii");
+				//System.out.println("Hiii");
 				categoryName="men";
 			}
 			else if(categoryName.toLowerCase().contains("kid"))
@@ -188,5 +189,31 @@ public class SpecificationService {
 		 catch(Exception e) {
 			 throw new CustomException(e.getMessage());
 		 }
+	}
+
+
+	public GlobalResponse activeSpecification(Integer specId) {
+		try {
+			SpecificationEntity specificationEntity= specRepo.findById(specId).get();
+			if(specificationEntity.equals(null))
+			{
+				if(specificationEntity.getIsActive().equals(false)) {
+					specificationEntity.setIsActive(true);
+					specRepo.save(specificationEntity);
+					return new GlobalResponse("Success", "Specification actived successfully", 200);
+				}
+				else {
+					specificationEntity.setIsActive(false);
+					specRepo.save(specificationEntity);
+					return new GlobalResponse("Success", "Specification deactived successfully", 200);
+				}
+			}
+			else {
+				return new GlobalResponse("Error!!", "Specification Id does not exist", 400);
+			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 }
