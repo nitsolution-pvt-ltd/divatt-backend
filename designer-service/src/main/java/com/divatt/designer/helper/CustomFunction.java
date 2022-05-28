@@ -80,6 +80,7 @@ public class CustomFunction {
 	{
 		try
 		{
+			System.out.println(productData);
 			ProductMasterEntity productEntity=productRepo.findById(productId).get();
 			//System.out.println(productEntity);
 			ProductMasterEntity filterProductEntity= new ProductMasterEntity();

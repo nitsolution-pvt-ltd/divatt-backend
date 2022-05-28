@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,6 +101,17 @@ public class SpecificationController {
 	{
 		try {
 			return this.specificationService.activeSpecification(specId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/view/{specId}")
+	public ResponseEntity<SpecificationEntity> view (@PathVariable Integer specId)
+	{
+		try {
+			return this.specificationService.view(specId);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

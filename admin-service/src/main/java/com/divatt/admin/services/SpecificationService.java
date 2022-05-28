@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -210,6 +211,22 @@ public class SpecificationService {
 			}
 			else {
 				return new GlobalResponse("Error!!", "Specification Id does not exist", 400);
+			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+
+	public ResponseEntity<SpecificationEntity> view(Integer specId) {
+		try {
+			if(specRepo.existsById(specId))
+			{
+				return ResponseEntity.ok(specRepo.findById(specId).get());
+			}
+			else {
+				return ResponseEntity.ok(null);
 			}
 		}
 		catch(Exception e) {
