@@ -260,7 +260,9 @@ public class OrderAndPaymentService {
 	public ResponseEntity<?> getOrderDetailsService(String orderId) {
 		try {
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
-
+			if (findById.size() <= 0) {
+				throw new CustomException("Order not found");
+			}
 			List<Object> productId = new ArrayList<>();
 
 			findById.forEach(e -> {
@@ -300,7 +302,9 @@ public class OrderAndPaymentService {
 
 		try {
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByUserIdOrderByIdDesc(userId);
-
+			if (findById.size() <= 0) {
+				throw new CustomException("Order not found");
+			}
 			List<Object> productId = new ArrayList<>();
 
 			findById.forEach(e -> {
@@ -358,10 +362,10 @@ public class OrderAndPaymentService {
 				findAll = orderDetailsRepo.findDesigner(designerId, pagingSort);
 
 				Query query = new Query();
-				
+
 				query.addCriteria(Criteria.where("products").elemMatch(Criteria.where("designerId").is(designerId)));
 				query.fields().include("order_id").include("products.$");
-				
+
 				findAlls = mongoTemplate.find(query, OrderDetailsEntity.class);
 
 			} else {
@@ -419,6 +423,5 @@ public class OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 
 }
