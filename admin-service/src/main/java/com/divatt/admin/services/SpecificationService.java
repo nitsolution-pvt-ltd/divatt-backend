@@ -49,7 +49,7 @@ public class SpecificationService {
 		try
 		{
 				specificationEntity.setId(sequenceGenerator.getNextSequence(SpecificationEntity.SEQUENCE_NAME));
-				specificationEntity.setIsActive(false);
+				specificationEntity.setIsActive(true);
 				specificationEntity.setIsDeleted(false);
 				specificationEntity.setAddonDate(new Date());
 				specRepo.save(specificationEntity);
@@ -107,6 +107,8 @@ public class SpecificationService {
 			if(specRepo.existsById(specId))
 			{
 				specificationData.setId(specId);
+				specificationData.setIsActive(specRepo.findById(specId).get().getIsActive());
+				specificationData.setIsDeleted(specRepo.findById(specId).get().getIsDeleted());
 				specificationData.setAddonDate(new Date());
 				specRepo.save(specificationData);
 				return new GlobalResponse("Success!!", "Specification Updated", 200);
@@ -182,7 +184,7 @@ public class SpecificationService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException("Category specification not found");
 			} else {
 				return response;
 			}
@@ -196,7 +198,7 @@ public class SpecificationService {
 	public GlobalResponse activeSpecification(Integer specId) {
 		try {
 			SpecificationEntity specificationEntity= specRepo.findById(specId).get();
-			if(specificationEntity.equals(null))
+			if(specificationEntity!=null)
 			{
 				if(specificationEntity.getIsActive().equals(false)) {
 					specificationEntity.setIsActive(true);
