@@ -84,6 +84,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //				.antMatchers("/**").hasIpAddress("192.168.29.23")
 				.antMatchers(HttpMethod.GET,"/auth/admin/testapi").permitAll()
 				.antMatchers(HttpMethod.POST,"/auth/sendMail").permitAll()
+				.antMatchers(HttpMethod.POST,"/auth/sendEmailWithAttachment").permitAll()
 				.antMatchers(HttpMethod.GET,"/auth/admin/testapi").permitAll()
 				.antMatchers(HttpMethod.GET,"/auth/info/{role}/{id}").permitAll()
 				.antMatchers(HttpMethod.POST,"/auth/login").permitAll()

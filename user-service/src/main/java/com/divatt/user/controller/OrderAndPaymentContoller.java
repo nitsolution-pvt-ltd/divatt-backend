@@ -7,12 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,10 +37,64 @@ import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
+import com.google.gson.JsonObject;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.codec.Base64.InputStream;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+
+import springfox.documentation.spring.web.json.Json;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamSource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+
+
+
+
 
 @RestController
 @RequestMapping("/userOrder")
 public class OrderAndPaymentContoller {
+	
+	@Autowired
+	JavaMailSender mailSender;
+	
 	@Autowired
 	private JwtUtil JwtUtil;
 
@@ -160,7 +217,18 @@ public class OrderAndPaymentContoller {
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
+				
+				
+				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
+				sendEmailWithAttachment("soumendolui077@gmail.com","Invoice file", "Hi " + extractUsername + ""
+						+ ",\n                           "
+						+ " Your order created successfully. ",false,createPdfSupplier);
+				
+				createPdfSupplier.delete();
 			}
+			
+			
+			
 			return ResponseEntity.ok(map);
 
 		} catch (Exception e) {
@@ -209,6 +277,8 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
+	
+	
 
 	@RequestMapping(value = { "/list/{designerId}" }, method = RequestMethod.GET)
 	public Map<String, Object> getOrderByDesigner(@PathVariable int designerId,
@@ -236,4 +306,128 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
+	
+	@PostMapping("/genpdf/order")
+//	HttpEntity<byte[]> createPdfSupplier(@RequestBody Json supplierInvoiceStraching) throws IOException {
+	File createPdfSupplier(@RequestBody OrderDetailsEntity orderDetailsEntity) throws IOException {
+		System.out.println("ok");
+
+		/* first, get and initialize an engine */
+		VelocityEngine ve = new VelocityEngine();
+		
+
+		/* next, get the Template */
+		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+		ve.setProperty("classpath.resource.loader.class",
+				ClasspathResourceLoader.class.getName());
+		ve.init();
+		Template t = ve.getTemplate("templates/invoice.vm");
+		/* create a context and add data */
+		VelocityContext context = new VelocityContext();
+		context.put("orderDetailsEntity", orderDetailsEntity);
+//		context.put("genDateTime", LocalDateTime.now().toString());
+		/* now render the template into a StringWriter */
+		StringWriter writer = new StringWriter();
+		t.merge(context, writer);
+		/* show the World */
+		System.out.println(writer.toString());
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		
+		
+		
+
+		baos = generatePdf(writer.toString());
+		
+		
+		try(OutputStream outputStream = new FileOutputStream("invoice.pdf")) {
+			baos.writeTo(outputStream);
+			
+		}
+		
+		return new File("invoice.pdf");
+
+//		HttpHeaders header = new HttpHeaders();
+//	    header.setContentType(MediaType.APPLICATION_PDF);
+//	    header.set(HttpHeaders.CONTENT_DISPOSITION,
+//	                   "attachment; filename=" + "soumen");
+//	    header.setContentLength(baos.toByteArray().length);
+
+//	    return new HttpEntity<byte[]>(baos.toByteArray(), header);
+
+	}
+
+	
+	
+	
+	public ByteArrayOutputStream generatePdf(String html) {
+
+		String pdfFilePath = "";
+		PdfWriter pdfWriter=null;
+
+		// create a new document
+		Document document = new Document();
+		try {
+
+			document = new Document();
+			// document header attributes
+			document.addAuthor("Kinns");
+			document.addAuthor("Kinns123");
+			document.addCreationDate();
+			document.addProducer();
+			document.addCreator("kinns123.github.io");
+			document.addTitle("HTML to PDF using itext");
+			document.setPageSize(PageSize.LETTER);
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PdfWriter.getInstance(document, baos);
+
+			// open document
+			document.open();
+
+			XMLWorkerHelper xmlWorkerHelper = XMLWorkerHelper.getInstance();
+			xmlWorkerHelper.getDefaultCssResolver(true);
+			StringReader stringReader = new StringReader(html);
+			xmlWorkerHelper.parseXHtml(pdfWriter, document, stringReader);
+			// close the document
+			document.close();
+			System.out.println("PDF generated successfully");
+
+			return baos;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+	
+	
+	
+	public void sendEmailWithAttachment(String to, String subject, String body,Boolean enableHtml,File file) {
+
+//		SimpleMailMessage message = new SimpleMailMessage();
+//
+//		message.setFrom("ulearn@co.in");
+//		message.setTo(to);
+//		message.setSubject(subject);
+//		message.setText(body);
+//		mailSender.send(message);
+		try {
+
+			MimeMessage message = mailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message,true);
+			helper.setSubject(subject);
+			helper.setFrom("soumen.dolui@nitsolution.in");
+			helper.setTo(to);
+			helper.setText(body, enableHtml);
+			helper.addAttachment("Invoice", file);
+			mailSender.send(message);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
 }

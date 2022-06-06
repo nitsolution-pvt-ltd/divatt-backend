@@ -1,5 +1,7 @@
 package com.divatt.user;
 
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -49,5 +53,26 @@ public class UserApplication implements CommandLineRunner{
 		LOGGER.info("servers: "+myConfig.getServers());
 		LOGGER.info("-------------------------------------");
 	}
+	
+	@Bean
+    public JavaMailSender javaMailSender() {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost("smtp.hostinger.in");
+		mailSender.setPort(587);
+		mailSender.setUsername("soumen.dolui@nitsolution.in");//ahadul@nitsolution.in
+		mailSender.setPassword("Soumen@1234");
+		 
+		Properties properties = new Properties();
+		properties.setProperty("mail.smtp.auth", "true");
+		properties.setProperty("mail.smtp.starttls.enable", "true");
+		//spring.mail.properties.mail.smtp.starttls.required=true
+		properties.setProperty("mail.smtp.ssl.enable", "false");
+		properties.setProperty("mail.smtps.quitwait", "false");
+		
+		
+		 
+		mailSender.setJavaMailProperties(properties);
+        return mailSender;
+    }
 
 }
