@@ -345,7 +345,7 @@ public class ProductController implements ProductServiceImp {
 	}
 
 	@PutMapping("/stockClearence")
-	public GlobalResponce stocjCjearence(@RequestBody List<OrderEntity> jsonObject)
+	public GlobalResponce stockClearence(@RequestBody List<OrderEntity> jsonObject)
 	{
 		try {
 			return this.productService.stockClearenceService(jsonObject);

@@ -775,47 +775,39 @@ public class ProductService {
 		}
 	}
 
-	public GlobalResponce stockClearenceService(List<OrderEntity> jsonObject) {
+
+	public GlobalResponce stockClearenceService(List<OrderEntity> orderEntities)
+	{
 		try {
-			List<ProductMasterEntity> updatedProductList= new ArrayList<ProductMasterEntity>();
-			if(jsonObject.size()!=0) {
-				for(int i=0;i<jsonObject.size();i++) {
-					String size=jsonObject.get(i).getSize();
-					int unit=jsonObject.get(i).getUnits();
-					StandardSOH standardSOH= new StandardSOH();
-					List<StandardSOH> standeredSOH = productRepo.findById(jsonObject.get(i).getProductId()).get().getStanderedSOH();
-					for(int a=0;a<standeredSOH.size();a++)
-					{
-						if(standeredSOH.get(i).getSizeType().equals(size)) {
-							if(standeredSOH.get(i).getSoh()>=unit) {
-								ProductMasterEntity masterEntity=  productRepo.findById(jsonObject.get(i).getProductId()).get();
-								standardSOH.setSoh(standeredSOH.get(i).getSoh()-unit);
-								masterEntity.setProductId(jsonObject.get(i).getProductId());
-								masterEntity.setStanderedSOH(standeredSOH);
-								System.out.println(masterEntity);
-								updatedProductList.add(masterEntity);
-								//return new GlobalResponce("Suucess!!", "Stock cleared", 200);
-							}
-							else {
-								return new GlobalResponce("Bad Request", "Product out of stock", 400);
-							}
-						}
-						else {
-							return new GlobalResponce("Bad Requst", "Product size not available", 400);
-						}
+			for (int i=0;i<orderEntities.size();i++) {
+				int productId=orderEntities.get(i).getProductId();
+				int productQty=orderEntities.get(i).getUnits();
+				String productSize=orderEntities.get(i).getSize();
+				List<StandardSOH> updatedSOH=new ArrayList<StandardSOH>();
+				ProductMasterEntity productMasterEntity= productRepo.findById(productId).get();
+				List<StandardSOH> standardSOHs=productMasterEntity.getStanderedSOH();
+				for(int a=0;a<standardSOHs.size();a++)
+				{
+					StandardSOH standardSOH=new StandardSOH();
+					//System.out.println(standardSOHs.get(a));
+					//System.out.println(productQty);
+					if(standardSOHs.get(a).getSizeType().equals(productSize)) {
+						standardSOH.setSoh(standardSOHs.get(a).getSoh().intValue()-productQty);
+						standardSOH.setOos(standardSOHs.get(a).getOos());
+						standardSOH.setSizeType(productSize);
+						standardSOH.setNotify(standardSOHs.get(a).getNotify());
+						updatedSOH.add(standardSOH);
 					}
 				}
-				productRepo.saveAll(updatedProductList);
-				return new GlobalResponce("Suucess!!", "Stock cleared", 200);
+				ProductMasterEntity masterEntity= productRepo.findById(productId).get();
+				masterEntity.setStanderedSOH(updatedSOH);
+				System.out.println(masterEntity);
+				productRepo.save(masterEntity);
 			}
-			else {
-				return new GlobalResponce("Error!!", "Product Not Found", 400);
-			}
+			return new GlobalResponce("Success", "Stock cleared successfully",200);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		//return null;
 	}
-
 }

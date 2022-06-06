@@ -53,7 +53,7 @@ public class SpecificationService {
 				specificationEntity.setIsDeleted(false);
 				specificationEntity.setAddonDate(new Date());
 				specRepo.save(specificationEntity);
-				return new GlobalResponse("Success!!", "Data saved Successfully", 200);
+				return new GlobalResponse("Success!!", "Specification added sucessfully", 200);
 		}
 		catch(Exception e)
 		{
@@ -66,22 +66,23 @@ public class SpecificationService {
 		try
 		{
 			String categoryName=categoryRepo.findById(categoryId).get().getCategoryName();
+			System.out.println(categoryName);
 			if(categoryName.toLowerCase().contains("women"))
 			{
-				categoryName="women";
+				categoryName="Women";
 			}
 			else if(categoryName.toLowerCase().contains("men"))
 			{
 				//System.out.println("Hiii");
-				categoryName="men";
+				categoryName="Men";
 			}
 			else if(categoryName.toLowerCase().contains("kid"))
 			{
-				categoryName="kid";
+				categoryName="Kid";
 			}
 			else
 			{
-				throw new CustomException("Invalid category name");
+				throw new CustomException("Invalid Id");
 			}
 			Query query= new Query();
 			query.addCriteria(Criteria.where("categoryName").is(categoryName).and("isActive").is(true));
