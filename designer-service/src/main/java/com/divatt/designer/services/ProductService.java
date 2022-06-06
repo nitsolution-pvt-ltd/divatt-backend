@@ -1,40 +1,35 @@
 package com.divatt.designer.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Collation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.entity.ListProduct;
+import com.divatt.designer.entity.OrderEntity;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
-import com.divatt.designer.entity.profile.DesignerLogEntity;
+import com.divatt.designer.entity.product.StandardSOH;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
@@ -778,6 +773,49 @@ public class ProductService {
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	public GlobalResponce stockClearenceService(List<OrderEntity> jsonObject) {
+		try {
+			List<ProductMasterEntity> updatedProductList= new ArrayList<ProductMasterEntity>();
+			if(jsonObject.size()!=0) {
+				for(int i=0;i<jsonObject.size();i++) {
+					String size=jsonObject.get(i).getSize();
+					int unit=jsonObject.get(i).getUnits();
+					StandardSOH standardSOH= new StandardSOH();
+					List<StandardSOH> standeredSOH = productRepo.findById(jsonObject.get(i).getProductId()).get().getStanderedSOH();
+					for(int a=0;a<standeredSOH.size();a++)
+					{
+						if(standeredSOH.get(i).getSizeType().equals(size)) {
+							if(standeredSOH.get(i).getSoh()>=unit) {
+								ProductMasterEntity masterEntity=  productRepo.findById(jsonObject.get(i).getProductId()).get();
+								standardSOH.setSoh(standeredSOH.get(i).getSoh()-unit);
+								masterEntity.setProductId(jsonObject.get(i).getProductId());
+								masterEntity.setStanderedSOH(standeredSOH);
+								System.out.println(masterEntity);
+								updatedProductList.add(masterEntity);
+								//return new GlobalResponce("Suucess!!", "Stock cleared", 200);
+							}
+							else {
+								return new GlobalResponce("Bad Request", "Product out of stock", 400);
+							}
+						}
+						else {
+							return new GlobalResponce("Bad Requst", "Product size not available", 400);
+						}
+					}
+				}
+				productRepo.saveAll(updatedProductList);
+				return new GlobalResponce("Suucess!!", "Stock cleared", 200);
+			}
+			else {
+				return new GlobalResponce("Error!!", "Product Not Found", 400);
+			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		//return null;
 	}
 
 }

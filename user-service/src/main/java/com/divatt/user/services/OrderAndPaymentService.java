@@ -1,5 +1,7 @@
 package com.divatt.user.services;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,24 +14,36 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import com.divatt.user.entity.InvoiceEntity;
+import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
+import com.divatt.user.helper.PDFRunner;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
+import com.divatt.user.response.GlobalResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lowagie.text.DocumentException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.razorpay.Order;
@@ -39,7 +53,7 @@ import com.razorpay.RazorpayException;
 import springfox.documentation.spring.web.json.Json;
 
 @Service
-public class OrderAndPaymentService {
+public class OrderAndPaymentService{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentService.class);
 
@@ -56,8 +70,15 @@ public class OrderAndPaymentService {
 	private SequenceGenerator sequenceGenerator;
 
 	@Autowired
+	private MongoOperations mongoOperations;
+	
+	@Autowired
 	private Environment env;
 
+
+	@Value("${pdf.directory}")
+	private String pdfDirectory;
+	
 	protected String getRandomString() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -424,4 +445,29 @@ public class OrderAndPaymentService {
 		}
 	}
 
+	public GlobalResponse invoiceGenarator(String orderId) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("order_id").is(orderId));
+			OrderDetailsEntity detailsEntity= mongoOperations.findOne(query, OrderDetailsEntity.class);
+			if(detailsEntity!=null) {
+				 RestTemplate restTemplate= new RestTemplate();
+				// ResponseEntity<UserLoginEntity> userLoginEntity=restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+detailsEntity.getUserId(), UserLoginEntity.class);
+				//ResponseEntity<UserLoginEntity> userLoginEntity=null;
+				// System.out.println(userLoginEntity.getBody());
+				 InvoiceEntity invoiceEntity= new InvoiceEntity();
+				 invoiceEntity.setOrderDetailsEntity(detailsEntity);
+				// invoiceEntity.setUserEntity(userLoginEntity.getBody());
+				 PDFRunner pdfRunner= new PDFRunner(invoiceEntity);
+				 pdfRunner.fun1();
+				 return pdfRunner.pdfPath(orderId);
+			}
+			else {
+				return new GlobalResponse("Error!!", "Order not found", 400);
+			}
+			}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

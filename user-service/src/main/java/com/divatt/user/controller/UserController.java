@@ -568,8 +568,5 @@ public class UserController {
 		userAddressRepo.saveAll(list);
 		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "This address has been set as primary", 200));
 	}
-	
-	
-	
 
 }

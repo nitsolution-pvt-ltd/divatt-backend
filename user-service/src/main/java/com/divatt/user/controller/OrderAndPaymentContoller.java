@@ -226,4 +226,14 @@ public class OrderAndPaymentContoller {
 
 	}
 
+	@GetMapping("/invoice/{orderId}")
+	public GlobalResponse invoiceGenarater(@PathVariable String orderId)
+	{
+		try {
+			return this.orderAndPaymentService.invoiceGenarator(orderId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
