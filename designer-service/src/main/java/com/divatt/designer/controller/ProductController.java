@@ -354,4 +354,18 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/orderedProduct/{orderId}")
+	public Map<String, Object> orderedProduct(@PathVariable String orderId,
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy){
+		try {
+			return this.productService.getOderedProductDetails(orderId,page,limit,sort,sortName,isDeleted,keyword,sortBy);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

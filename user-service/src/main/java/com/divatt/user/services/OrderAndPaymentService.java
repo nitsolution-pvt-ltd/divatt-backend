@@ -470,4 +470,68 @@ public class OrderAndPaymentService{
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	public OrderDetailsEntity getOrderDetails(String orderId) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("order_id").is(orderId));
+			OrderDetailsEntity orderDetailsEntity= mongoOperations.findOne(query, OrderDetailsEntity.class);
+			return orderDetailsEntity;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public Map<String, Object> getProductDetails(String orderId, int page, int limit, String sort, String sortName,
+			String keyword, Optional<String> sortBy) {
+		try {
+			try {
+				Query query= new Query();
+				query.addCriteria(Criteria.where("order_id").is(orderId));
+				OrderDetailsEntity orderDetailsEntity= mongoTemplate.findOne(query, OrderDetailsEntity.class);
+				int CountData =orderDetailsEntity.getProducts().size();
+				Pageable pagingSort = null;
+				if (limit == 0) {
+					limit = CountData;
+				}
+
+				if (sort.equals("ASC")) {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+				} else {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+				}
+
+				Page<OrderDetailsEntity> findAll = null;
+
+				if (keyword.isEmpty()) {
+					findAll = orderDetailsRepo.findByOrderId(orderId,pagingSort);
+				}
+				int totalPage = findAll.getTotalPages() - 1;
+				if (totalPage < 0) {
+					totalPage = 0;
+				}
+
+				Map<String, Object> response = new HashMap<>();
+				response.put("data", findAll.getContent());
+				response.put("currentPage", findAll.getNumber());
+				response.put("total", findAll.getTotalElements());
+				response.put("totalPage", totalPage);
+				response.put("perPage", findAll.getSize());
+				response.put("perPageElement", findAll.getNumberOfElements());
+
+				if (findAll.getSize() <= 1) {
+					throw new CustomException("Payment not found!");
+				} else {
+					return response;
+				}
+			} catch (Exception e) {
+				throw new CustomException(e.getMessage());
+			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 }

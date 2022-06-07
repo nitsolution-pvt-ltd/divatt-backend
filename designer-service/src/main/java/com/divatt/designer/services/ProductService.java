@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.entity.ListProduct;
+import com.divatt.designer.entity.OrderDetailsEntity;
 import com.divatt.designer.entity.OrderEntity;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
@@ -798,6 +798,9 @@ public class ProductService {
 						standardSOH.setNotify(standardSOHs.get(a).getNotify());
 						updatedSOH.add(standardSOH);
 					}
+					else{
+						updatedSOH.add(standardSOHs.get(i));
+					}
 				}
 				ProductMasterEntity masterEntity= productRepo.findById(productId).get();
 				masterEntity.setStanderedSOH(updatedSOH);
@@ -807,6 +810,53 @@ public class ProductService {
 			return new GlobalResponce("Success", "Stock cleared successfully",200);
 		}
 		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public Map<String, Object> getOderedProductDetails(String orderId, Integer page, Integer limit, String sort,
+			String sortName, Boolean isDeleted, String keyword, Optional<String> sortBy) {
+		try {
+			RestTemplate restTemplate= new RestTemplate();
+			List<ProductMasterEntity> productDetails= new ArrayList<ProductMasterEntity>();
+			ResponseEntity<OrderDetailsEntity>serviceResponce=restTemplate.getForEntity("http://localhost:8082/dev/userOrder/orderProductDetails/"+orderId, OrderDetailsEntity.class);
+			OrderDetailsEntity orderResponce=serviceResponce.getBody();
+			for(int i=0;i<orderResponce.getProducts().size();i++) {
+				productDetails.add(orderResponce.getProducts().get(i));
+			}
+			//System.out.println(productDetails);
+			int CountData = orderResponce.getProducts().size();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<ProductMasterEntity> findAll = (Page<ProductMasterEntity>) productDetails;
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Product not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

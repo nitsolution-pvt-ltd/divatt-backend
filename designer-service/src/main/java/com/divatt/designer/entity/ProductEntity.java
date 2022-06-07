@@ -2,7 +2,7 @@ package com.divatt.designer.entity;
 
 import java.util.Arrays;
 import java.util.Date;
-
+import java.util.List;
 
 import com.divatt.designer.entity.product.AgeEntity;
 import com.divatt.designer.entity.product.GiftEntity;
@@ -35,7 +35,7 @@ public class ProductEntity {
 	private GiftEntity giftWrapAmount;
 	private PriceEntity price;
 	private ImagesEntity images[];
-	private StandardSOH standeredSOH[];
+	private List<StandardSOH> standeredSOH;
 	private Integer customizationSOH;
 	private Object extraSpecifications;
 	private Specification specifications;
@@ -65,7 +65,7 @@ public class ProductEntity {
 			Integer subCategoryId, String gender, String productName, String productDescription, AgeEntity age,
 			Boolean cod, Boolean customization, PurchaseEntity purchaseQuantity, String priceType, Float taxPercentage,
 			Boolean taxInclusive, Boolean giftWrap, GiftEntity giftWrapAmount, PriceEntity price, ImagesEntity[] images,
-			StandardSOH[] standeredSOH, Integer customizationSOH, Object extraSpecifications,
+			List<StandardSOH> standeredSOH, Integer customizationSOH, Object extraSpecifications,
 			Specification specifications, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			Date adminStatusOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String sKQCode,
 			String comments, String adminStatus, Object categoryObject, Object subCategoryObject) {
@@ -107,6 +107,22 @@ public class ProductEntity {
 		this.adminStatus = adminStatus;
 		this.categoryObject = categoryObject;
 		this.subCategoryObject = subCategoryObject;
+	}
+	@Override
+	public String toString() {
+		return "ProductEntity [productId=" + productId + ", designerName=" + designerName + ", designerId=" + designerId
+				+ ", categoryId=" + categoryId + ", subCategoryId=" + subCategoryId + ", gender=" + gender
+				+ ", productName=" + productName + ", productDescription=" + productDescription + ", age=" + age
+				+ ", cod=" + cod + ", customization=" + customization + ", purchaseQuantity=" + purchaseQuantity
+				+ ", priceType=" + priceType + ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive
+				+ ", giftWrap=" + giftWrap + ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images="
+				+ Arrays.toString(images) + ", standeredSOH=" + standeredSOH + ", customizationSOH=" + customizationSOH
+				+ ", extraSpecifications=" + extraSpecifications + ", specifications=" + specifications + ", isActive="
+				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
+				+ ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
+				+ ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn + ", SKQCode=" + SKQCode + ", comments="
+				+ comments + ", adminStatus=" + adminStatus + ", categoryObject=" + categoryObject
+				+ ", subCategoryObject=" + subCategoryObject + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -222,10 +238,10 @@ public class ProductEntity {
 	public void setImages(ImagesEntity[] images) {
 		this.images = images;
 	}
-	public StandardSOH[] getStanderedSOH() {
+	public List<StandardSOH> getStanderedSOH() {
 		return standeredSOH;
 	}
-	public void setStanderedSOH(StandardSOH[] standeredSOH) {
+	public void setStanderedSOH(List<StandardSOH> standeredSOH) {
 		this.standeredSOH = standeredSOH;
 	}
 	public Integer getCustomizationSOH() {
@@ -330,22 +346,5 @@ public class ProductEntity {
 	public void setSubCategoryObject(Object subCategoryObject) {
 		this.subCategoryObject = subCategoryObject;
 	}
-	@Override
-	public String toString() {
-		return "ProductEntity [productId=" + productId + ", designerName=" + designerName + ", designerId=" + designerId
-				+ ", categoryId=" + categoryId + ", subCategoryId=" + subCategoryId + ", gender=" + gender
-				+ ", productName=" + productName + ", productDescription=" + productDescription + ", age=" + age
-				+ ", cod=" + cod + ", customization=" + customization + ", purchaseQuantity=" + purchaseQuantity
-				+ ", priceType=" + priceType + ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive
-				+ ", giftWrap=" + giftWrap + ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images="
-				+ Arrays.toString(images) + ", standeredSOH=" + Arrays.toString(standeredSOH) + ", customizationSOH="
-				+ customizationSOH + ", extraSpecifications=" + extraSpecifications + ", specifications="
-				+ specifications + ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn
-				+ ", createdBy=" + createdBy + ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy
-				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", SKQCode=" + SKQCode + ", comments=" + comments + ", adminStatus=" + adminStatus
-				+ ", categoryObject=" + categoryObject + ", subCategoryObject=" + subCategoryObject + "]";
-	}
-	
 	
 }

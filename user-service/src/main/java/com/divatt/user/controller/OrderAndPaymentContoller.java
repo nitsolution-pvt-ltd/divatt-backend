@@ -307,8 +307,6 @@ public class OrderAndPaymentContoller {
 		}
 	}
 	
-	
-	
 	@PostMapping("/genpdf/order")
 //	HttpEntity<byte[]> createPdfSupplier(@RequestBody Json supplierInvoiceStraching) throws IOException {
 	File createPdfSupplier(@RequestBody OrderDetailsEntity orderDetailsEntity) throws IOException {
@@ -430,4 +428,17 @@ public class OrderAndPaymentContoller {
 
 	}
 	
+	@GetMapping("/orderProductDetails/{orderId}")
+	public Map<String, Object> getOrderproductDetails(@PathVariable String orderId,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy)
+	{
+		try {
+			return this.orderAndPaymentService.getProductDetails(orderId,page,limit,sort,sortName,keyword,sortBy);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

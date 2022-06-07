@@ -25,7 +25,6 @@ public class ProductEntity {
 	private Boolean giftWrap;
 	private Object giftWrapAmount;
 	private Object price;
-	private Object images[];
 	private Object standeredSOH[];
 	private Integer customizationSOH;
 	private Object extraSpecifications;
@@ -54,11 +53,10 @@ public class ProductEntity {
 	public ProductEntity(Integer productId, Integer designerId, Integer categoryId, Integer subCategoryId,
 			String gender, String productName, String productDescription, Object age, Boolean cod,
 			Boolean customization, Object purchaseQuantity, String priceType, Float taxPercentage, Boolean taxInclusive,
-			Boolean giftWrap, Object giftWrapAmount, Object price, Object[] images, Object[] standeredSOH,
-			Integer customizationSOH, Object extraSpecifications, Object specifications, Boolean isActive,
-			Boolean isDeleted, Date createdOn, String createdBy, String submittedBy, Date adminStatusOn,
-			String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String comments, String sKQCode,
-			String adminStatus) {
+			Boolean giftWrap, Object giftWrapAmount, Object price, Object[] standeredSOH, Integer customizationSOH,
+			Object extraSpecifications, Object specifications, Boolean isActive, Boolean isDeleted, Date createdOn,
+			String createdBy, String submittedBy, Date adminStatusOn, String updatedBy, Date updatedOn,
+			String approvedBy, Date approvedOn, String comments, String sKQCode, String adminStatus) {
 		super();
 		this.productId = productId;
 		this.designerId = designerId;
@@ -77,7 +75,6 @@ public class ProductEntity {
 		this.giftWrap = giftWrap;
 		this.giftWrapAmount = giftWrapAmount;
 		this.price = price;
-		this.images = images;
 		this.standeredSOH = standeredSOH;
 		this.customizationSOH = customizationSOH;
 		this.extraSpecifications = extraSpecifications;
@@ -103,13 +100,13 @@ public class ProductEntity {
 				+ ", productDescription=" + productDescription + ", age=" + age + ", cod=" + cod + ", customization="
 				+ customization + ", purchaseQuantity=" + purchaseQuantity + ", priceType=" + priceType
 				+ ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive + ", giftWrap=" + giftWrap
-				+ ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images=" + Arrays.toString(images)
-				+ ", standeredSOH=" + Arrays.toString(standeredSOH) + ", customizationSOH=" + customizationSOH
-				+ ", extraSpecifications=" + extraSpecifications + ", specifications=" + specifications + ", isActive="
-				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
-				+ ", submittedBy=" + submittedBy + ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy
-				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
-				+ ", comments=" + comments + ", SKQCode=" + SKQCode + ", adminStatus=" + adminStatus + "]";
+				+ ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", standeredSOH="
+				+ Arrays.toString(standeredSOH) + ", customizationSOH=" + customizationSOH + ", extraSpecifications="
+				+ extraSpecifications + ", specifications=" + specifications + ", isActive=" + isActive + ", isDeleted="
+				+ isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", submittedBy=" + submittedBy
+				+ ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
+				+ ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn + ", comments=" + comments + ", SKQCode="
+				+ SKQCode + ", adminStatus=" + adminStatus + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -212,12 +209,6 @@ public class ProductEntity {
 	}
 	public void setPrice(Object price) {
 		this.price = price;
-	}
-	public Object[] getImages() {
-		return images;
-	}
-	public void setImages(Object[] images) {
-		this.images = images;
 	}
 	public Object[] getStanderedSOH() {
 		return standeredSOH;
