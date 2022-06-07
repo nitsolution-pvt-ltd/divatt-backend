@@ -25,9 +25,9 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 	@Query(value = "{ 'products': { $elemMatch: { 'designerId' : ?0 } }}")
 	Page<OrderDetailsEntity> findDesigner(Integer designerId, Pageable pagingSort);
 
-
+	
 	Page<OrderDetailsEntity> findByOrderId(String orderId, Pageable pagingSort);
 
-	
-	
+	@Query(value = "{ $or: [ { 'user_id' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} }],$and: [ {  'order_id' : ?1}]}")
+	Page<OrderDetailsEntity> SearchByOrderId( String keyword, String orderId, Pageable pagingSort);
 }

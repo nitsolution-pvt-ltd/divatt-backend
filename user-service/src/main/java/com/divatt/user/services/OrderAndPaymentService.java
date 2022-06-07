@@ -507,6 +507,9 @@ public class OrderAndPaymentService{
 				if (keyword.isEmpty()) {
 					findAll = orderDetailsRepo.findByOrderId(orderId,pagingSort);
 				}
+//				else {
+//					findAll = orderDetailsRepo.SearchByOrderId(keyword,orderId,pagingSort);
+//				}
 				int totalPage = findAll.getTotalPages() - 1;
 				if (totalPage < 0) {
 					totalPage = 0;
