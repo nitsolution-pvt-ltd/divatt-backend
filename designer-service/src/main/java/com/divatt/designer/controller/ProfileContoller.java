@@ -22,6 +22,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.util.Streamable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -117,23 +119,25 @@ public class ProfileContoller {
 	@GetMapping("/user/{id}")
 	public ResponseEntity<?> getUserDesigner(@PathVariable Long id) {
 		try {
+			DesignerLoginEntity designerLoginEntity= new DesignerLoginEntity();
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
 			if (!findById.isPresent())
 				throw new CustomException("This designer profile is not completed");
 			if(!findById.get().getProfileStatus().equals("COMPLETED"))
-				throw new CustomException("This designer profile is not completed");
-			
-			DesignerLoginEntity designerLoginEntity = findById.get();
+			{
+				designerLoginEntity = findById.get();
 			designerLoginEntity.setDesignerProfileEntity(
 					designerProfileRepo.findBydesignerId(Long.parseLong(designerLoginEntity.getdId().toString())).get());
 			designerLoginEntity.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false, "Approved", Long.parseLong(designerLoginEntity.getdId().toString()),true));
 			
 			
+			
+		} 
 			return ResponseEntity.ok(designerLoginEntity);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-
 	}
 
 	@PostMapping("/add")
