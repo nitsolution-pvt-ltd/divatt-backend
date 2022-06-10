@@ -320,8 +320,19 @@ public class OrderAndPaymentContoller {
 		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		ve.setProperty("classpath.resource.loader.class",
 				ClasspathResourceLoader.class.getName());
-		ve.init();
-		Template t = ve.getTemplate("templates/invoice.vm");
+		try {
+			ve.init();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Template t = null;
+		try {
+			t = ve.getTemplate("templates/invoice.vm");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		/* create a context and add data */
 		VelocityContext context = new VelocityContext();
 		context.put("orderDetailsEntity", orderDetailsEntity);
