@@ -53,7 +53,7 @@
           
             <tr>
                 <td>
-                   <div style="padding: 8px 0 10px 0;">Bill To : $orderDetailsEntity.getBillingAddress().fullName</div>
+                   <div>Bill To : $orderDetailsEntity.getBillingAddress().fullName</div>
                    <div style="padding: 0px 0 0px 55px;"> $orderDetailsEntity.getBillingAddress().address1</div>
                    
                 </td>
