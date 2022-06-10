@@ -83,18 +83,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-
-
-
-
-
 @RestController
 @RequestMapping("/userOrder")
 public class OrderAndPaymentContoller {
-	
+
 	@Autowired
 	JavaMailSender mailSender;
-	
+
 	@Autowired
 	private JwtUtil JwtUtil;
 
@@ -118,12 +113,12 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postRazorpayOrderCreate()");
 
 		try {
-				String extractUsername = null;
-				try {
-					extractUsername = JwtUtil.extractUsername(token.substring(7));
-				} catch (Exception e) {
-					throw new CustomException("Unauthorized");
-				}
+			String extractUsername = null;
+			try {
+				extractUsername = JwtUtil.extractUsername(token.substring(7));
+			} catch (Exception e) {
+				throw new CustomException("Unauthorized");
+			}
 
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
 				throw new CustomException("Unauthorized");
@@ -217,18 +212,16 @@ public class OrderAndPaymentContoller {
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
-				
-				
+
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-				sendEmailWithAttachment("soumendolui077@gmail.com","Invoice file", "Hi " + extractUsername + ""
-						+ ",\n                           "
-						+ " Your order created successfully. ",false,createPdfSupplier);
-				
+				sendEmailWithAttachment(
+						extractUsername, "Order summary", "Hi " + extractUsername + ""
+								+ ",\n                           " + " Your order created successfully. ",
+						false, createPdfSupplier);
+
 				createPdfSupplier.delete();
 			}
-			
-			
-			
+
 			return ResponseEntity.ok(map);
 
 		} catch (Exception e) {
@@ -277,8 +270,6 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
-	
-	
 
 	@RequestMapping(value = { "/list/{designerId}" }, method = RequestMethod.GET)
 	public Map<String, Object> getOrderByDesigner(@PathVariable int designerId,
@@ -297,16 +288,14 @@ public class OrderAndPaymentContoller {
 	}
 
 	@GetMapping("/invoice/{orderId}")
-	public GlobalResponse invoiceGenarater(@PathVariable String orderId)
-	{
+	public GlobalResponse invoiceGenarater(@PathVariable String orderId) {
 		try {
 			return this.orderAndPaymentService.invoiceGenarator(orderId);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@PostMapping("/genpdf/order")
 //	HttpEntity<byte[]> createPdfSupplier(@RequestBody Json supplierInvoiceStraching) throws IOException {
 	File createPdfSupplier(@RequestBody OrderDetailsEntity orderDetailsEntity) throws IOException {
@@ -314,12 +303,10 @@ public class OrderAndPaymentContoller {
 
 		/* first, get and initialize an engine */
 		VelocityEngine ve = new VelocityEngine();
-		
 
 		/* next, get the Template */
 		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-		ve.setProperty("classpath.resource.loader.class",
-				ClasspathResourceLoader.class.getName());
+		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
 		try {
 			ve.init();
 		} catch (Exception e) {
@@ -342,20 +329,16 @@ public class OrderAndPaymentContoller {
 		t.merge(context, writer);
 		/* show the World */
 		System.out.println(writer.toString());
-		
+
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
-		
-		
 
 		baos = generatePdf(writer.toString());
-		
-		
-		try(OutputStream outputStream = new FileOutputStream("invoice.pdf")) {
+
+		try (OutputStream outputStream = new FileOutputStream("invoice.pdf")) {
 			baos.writeTo(outputStream);
-			
+
 		}
-		
+
 		return new File("invoice.pdf");
 
 //		HttpHeaders header = new HttpHeaders();
@@ -368,13 +351,10 @@ public class OrderAndPaymentContoller {
 
 	}
 
-	
-	
-	
 	public ByteArrayOutputStream generatePdf(String html) {
 
 		String pdfFilePath = "";
-		PdfWriter pdfWriter=null;
+		PdfWriter pdfWriter = null;
 
 		// create a new document
 		Document document = new Document();
@@ -411,10 +391,8 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
-	
-	
-	
-	public void sendEmailWithAttachment(String to, String subject, String body,Boolean enableHtml,File file) {
+
+	public void sendEmailWithAttachment(String to, String subject, String body, Boolean enableHtml, File file) {
 
 //		SimpleMailMessage message = new SimpleMailMessage();
 //
@@ -426,7 +404,7 @@ public class OrderAndPaymentContoller {
 		try {
 
 			MimeMessage message = mailSender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(message,true);
+			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setSubject(subject);
 			helper.setFrom("soumen.dolui@nitsolution.in");
 			helper.setTo(to);
@@ -438,17 +416,15 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
-	
+
 	@GetMapping("/orderProductDetails/{orderId}")
 	public Map<String, Object> getOrderproductDetails(@PathVariable String orderId,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
-			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy)
-	{
+			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
 		try {
-			return this.orderAndPaymentService.getProductDetails(orderId,page,limit,sort,sortName,keyword,sortBy);
-		}
-		catch(Exception e) {
+			return this.orderAndPaymentService.getProductDetails(orderId, page, limit, sort, sortName, keyword, sortBy);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
