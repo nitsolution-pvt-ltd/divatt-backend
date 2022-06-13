@@ -310,45 +310,31 @@ public class OrderAndPaymentContoller {
 		try {
 			ve.init();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Template t = null;
 		try {
 			t = ve.getTemplate("templates/invoice.vm");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		/* create a context and add data */
+
 		VelocityContext context = new VelocityContext();
 		context.put("orderDetailsEntity", orderDetailsEntity);
-//		context.put("genDateTime", LocalDateTime.now().toString());
-		/* now render the template into a StringWriter */
 		StringWriter writer = new StringWriter();
 		t.merge(context, writer);
-		/* show the World */
 		System.out.println(writer.toString());
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
 		baos = generatePdf(writer.toString());
 
-		try (OutputStream outputStream = new FileOutputStream("invoice.pdf")) {
+		try (OutputStream outputStream = new FileOutputStream("order-summary.pdf")) {
 			baos.writeTo(outputStream);
 
 		}
 
-		return new File("invoice.pdf");
-
-//		HttpHeaders header = new HttpHeaders();
-//	    header.setContentType(MediaType.APPLICATION_PDF);
-//	    header.set(HttpHeaders.CONTENT_DISPOSITION,
-//	                   "attachment; filename=" + "soumen");
-//	    header.setContentLength(baos.toByteArray().length);
-
-//	    return new HttpEntity<byte[]>(baos.toByteArray(), header);
-
+		return new File("order-summary.pdf");
 	}
 
 	public ByteArrayOutputStream generatePdf(String html) {
@@ -360,14 +346,12 @@ public class OrderAndPaymentContoller {
 		Document document = new Document();
 		try {
 
-			document = new Document();
-			// document header attributes
-			document.addAuthor("Kinns");
-			document.addAuthor("Kinns123");
+			document = new Document();			
+			document.addAuthor("Divatt");
 			document.addCreationDate();
 			document.addProducer();
-			document.addCreator("kinns123.github.io");
-			document.addTitle("HTML to PDF using itext");
+			document.addCreator("Divatt");
+			document.addTitle("Divatt");
 			document.setPageSize(PageSize.LETTER);
 
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -394,13 +378,6 @@ public class OrderAndPaymentContoller {
 
 	public void sendEmailWithAttachment(String to, String subject, String body, Boolean enableHtml, File file) {
 
-//		SimpleMailMessage message = new SimpleMailMessage();
-//
-//		message.setFrom("ulearn@co.in");
-//		message.setTo(to);
-//		message.setSubject(subject);
-//		message.setText(body);
-//		mailSender.send(message);
 		try {
 
 			MimeMessage message = mailSender.createMimeMessage();
