@@ -313,7 +313,7 @@ public class OrderAndPaymentContoller {
 		}
 		Template t = null;
 		try {
-			t = ve.getTemplate("templates/invoice.vm");
+			t = ve.getTemplate("templates/orderSummary.vm");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -384,7 +384,7 @@ public class OrderAndPaymentContoller {
 			helper.setFrom("soumen.dolui@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
-			helper.addAttachment("Invoice", file);
+			helper.addAttachment("order-summary", file);
 			mailSender.send(message);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

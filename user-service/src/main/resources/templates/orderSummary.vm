@@ -33,7 +33,7 @@
             <tr>
                
                 <td>
-                    <div>Total Net Amount : Double $orderDetailsEntity.getNetPrice()</div>
+                    <div>Total Net Amount : $orderDetailsEntity.getNetPrice()</div>
                  </td>
             </tr>
 			<tr>
@@ -54,7 +54,7 @@
             <tr>
                 <td>
                    <div>Bill To : $orderDetailsEntity.getBillingAddress().fullName</div>
-                   <div style="padding: 0px 0 0px 60px;"> $orderDetailsEntity.getBillingAddress().address1</div>
+                   <div style="padding: 0px 0 0px 57px;"> $orderDetailsEntity.getBillingAddress().address1</div>
                    
                 </td>
             </tr>
@@ -67,7 +67,7 @@
                 <th style="padding: 0;margin: 0;border-right: .1px solid #ccc;border-bottom: 1px solid #ccc; color: rgb(48, 46, 46);font-family: sans-serif;padding: 4px 13px;font-weight: bold;font-size: 17px;letter-spacing: .2px;">DESCRIPTION</th>
                 <th style="padding: 0;margin: 0;border-right: .1px solid #ccc;border-bottom: 1px solid #ccc; color: #000;font-family: sans-serif;padding: 4px 13px;font-weight: bold;font-size: 17px;letter-spacing: .2px;">QTY(UNIT)</th>
                 <th style="padding: 0;margin: 0;border-right: .1px solid #ccc;border-bottom: 1px solid #ccc; color: #000;font-family: sans-serif;padding: 4px 13px;font-weight: bold;font-size: 17px;letter-spacing: .2px;">PRICE</th>
-                <th style="padding: 0;margin: 0;border-right: .1px solid #ccc;border-bottom: 1px solid #ccc; color: #000;font-family: sans-serif;padding: 4px 13px;font-weight: bold;font-size: 17px;letter-spacing: .2px;">TAX</th>
+                <th style="padding: 0;margin: 0;border-right: .1px solid #ccc;border-bottom: 1px solid #ccc; color: #000;font-family: sans-serif;padding: 4px 13px;font-weight: bold;font-size: 17px;letter-spacing: .2px;">GST</th>
                 <th style="padding: 0;margin: 0;border-bottom: 1px solid #ccc; ;color: #000;font-family: sans-serif;padding: 4px 13px;font-weight: bold;font-size: 17px;letter-spacing: .2px;">AMOUNT</th>
                 </tr>
                  #foreach( $product in $orderDetailsEntity.products )
