@@ -297,7 +297,6 @@ public class OrderAndPaymentContoller {
 	}
 
 	@PostMapping("/genpdf/order")
-//	HttpEntity<byte[]> createPdfSupplier(@RequestBody Json supplierInvoiceStraching) throws IOException {
 	File createPdfSupplier(@RequestBody OrderDetailsEntity orderDetailsEntity) throws IOException {
 		System.out.println("ok");
 
@@ -323,7 +322,6 @@ public class OrderAndPaymentContoller {
 		context.put("orderDetailsEntity", orderDetailsEntity);
 		StringWriter writer = new StringWriter();
 		t.merge(context, writer);
-		System.out.println(writer.toString());
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
