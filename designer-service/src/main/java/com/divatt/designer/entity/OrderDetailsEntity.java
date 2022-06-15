@@ -2,7 +2,6 @@ package com.divatt.designer.entity;
 
 import java.util.List;
 
-import com.divatt.designer.entity.product.ProductMasterEntity;
 
 public class OrderDetailsEntity {
 	private Integer id;
