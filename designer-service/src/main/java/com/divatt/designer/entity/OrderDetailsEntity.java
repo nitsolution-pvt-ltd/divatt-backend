@@ -10,7 +10,7 @@ public class OrderDetailsEntity {
 	private String orderId;
 	private Object shippingAddress;
 	private Object billingAddress;	
-	private List<ProductMasterEntity> products;
+	private List<Object> products;
 	private Long mrp;
 	private Long discount;
 	private Long netPrice;
@@ -18,13 +18,14 @@ public class OrderDetailsEntity {
 	private Long totalAmount;
 	private String createdOn;
 	private String userInv;
+	private String orderStatus;
 	public OrderDetailsEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public OrderDetailsEntity(Integer id, Long userId, String orderId, Object shippingAddress, Object billingAddress,
-			List<ProductMasterEntity> products, Long mrp, Long discount, Long netPrice, Long taxAmount,
-			Long totalAmount, String createdOn, String userInv) {
+			List<Object> products, Long mrp, Long discount, Long netPrice, Long taxAmount,
+			Long totalAmount, String createdOn, String userInv, String orderStatus) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -39,13 +40,15 @@ public class OrderDetailsEntity {
 		this.totalAmount = totalAmount;
 		this.createdOn = createdOn;
 		this.userInv = userInv;
+		this.orderStatus = orderStatus;
 	}
 	@Override
 	public String toString() {
 		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", shippingAddress="
 				+ shippingAddress + ", billingAddress=" + billingAddress + ", products=" + products + ", mrp=" + mrp
 				+ ", discount=" + discount + ", netPrice=" + netPrice + ", taxAmount=" + taxAmount + ", totalAmount="
-				+ totalAmount + ", createdOn=" + createdOn + ", userInv=" + userInv + "]";
+				+ totalAmount + ", createdOn=" + createdOn + ", userInv=" + userInv + ", orderStatus=" + orderStatus
+				+ "]";
 	}
 	public Integer getId() {
 		return id;
@@ -77,10 +80,10 @@ public class OrderDetailsEntity {
 	public void setBillingAddress(Object billingAddress) {
 		this.billingAddress = billingAddress;
 	}
-	public List<ProductMasterEntity> getProducts() {
+	public List<Object> getProducts() {
 		return products;
 	}
-	public void setProducts(List<ProductMasterEntity> products) {
+	public void setProducts(List<Object> products) {
 		this.products = products;
 	}
 	public Long getMrp() {
@@ -124,6 +127,12 @@ public class OrderDetailsEntity {
 	}
 	public void setUserInv(String userInv) {
 		this.userInv = userInv;
+	}
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
 	}
 	
 }

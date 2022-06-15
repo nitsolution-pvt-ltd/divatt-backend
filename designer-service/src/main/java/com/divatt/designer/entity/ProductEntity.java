@@ -34,7 +34,7 @@ public class ProductEntity {
 	private Boolean giftWrap;
 	private GiftEntity giftWrapAmount;
 	private PriceEntity price;
-	private ImagesEntity images[];
+	private Object images[];
 	private List<StandardSOH> standeredSOH;
 	private Integer customizationSOH;
 	private Object extraSpecifications;
@@ -232,7 +232,7 @@ public class ProductEntity {
 	public void setPrice(PriceEntity price) {
 		this.price = price;
 	}
-	public ImagesEntity[] getImages() {
+	public Object[] getImages() {
 		return images;
 	}
 	public void setImages(ImagesEntity[] images) {

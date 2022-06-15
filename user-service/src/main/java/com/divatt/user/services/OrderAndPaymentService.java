@@ -536,5 +536,29 @@ public class OrderAndPaymentService{
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	public GlobalResponse orderUpdateService(OrderDetailsEntity orderDetailsEntity, String orderId) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("order_id").is(orderId));
+			OrderDetailsEntity orderDetailsEntity2=mongoOperations.findOne(query, OrderDetailsEntity.class);
+			System.out.println(orderDetailsEntity2);
+			if(!orderDetailsEntity2.equals(null))
+			{
+				System.out.println(orderDetailsEntity);
+				OrderDetailsEntity orderDetailsEntity1=orderDetailsRepo.findByOrderId(orderId).get(0);
+				orderDetailsEntity1.setOrderId(orderDetailsRepo.findByOrderId(orderId).get(0).getOrderId());
+				orderDetailsEntity1.setOrderStatus(orderDetailsEntity.getOrderStatus());
+				orderDetailsRepo.save(orderDetailsEntity1);
+				return new GlobalResponse("Success!!", "Order status updated", 200);
+			}
+			else {
+				return new GlobalResponse("Error!!", "Order not found", 400);
+			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 	
 }

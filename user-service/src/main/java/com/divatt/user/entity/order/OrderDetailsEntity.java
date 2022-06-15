@@ -62,6 +62,9 @@ public class OrderDetailsEntity {
 	@Field(name="user_inv")
 	private String userInv;
 
+	@Field(name= "order_status")
+	private String orderStatus;
+
 	public OrderDetailsEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -74,7 +77,8 @@ public class OrderDetailsEntity {
 			@NotNull(message = "mrp is required!") Long mrp, @NotNull(message = "discount is required!") Long discount,
 			@NotNull(message = "Net price is required!") Long netPrice,
 			@NotNull(message = "Tax amount is required!") Long taxAmount,
-			@NotNull(message = "Total amount is required!") Long totalAmount, String createdOn, String userInv) {
+			@NotNull(message = "Total amount is required!") Long totalAmount, String createdOn, String userInv,
+			String orderStatus) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -89,6 +93,7 @@ public class OrderDetailsEntity {
 		this.totalAmount = totalAmount;
 		this.createdOn = createdOn;
 		this.userInv = userInv;
+		this.orderStatus = orderStatus;
 	}
 
 	@Override
@@ -96,7 +101,8 @@ public class OrderDetailsEntity {
 		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", shippingAddress="
 				+ shippingAddress + ", billingAddress=" + billingAddress + ", products=" + products + ", mrp=" + mrp
 				+ ", discount=" + discount + ", netPrice=" + netPrice + ", taxAmount=" + taxAmount + ", totalAmount="
-				+ totalAmount + ", createdOn=" + createdOn + ", userInv=" + userInv + "]";
+				+ totalAmount + ", createdOn=" + createdOn + ", userInv=" + userInv + ", orderStatus=" + orderStatus
+				+ "]";
 	}
 
 	public Integer getId() {
@@ -203,10 +209,16 @@ public class OrderDetailsEntity {
 		this.userInv = userInv;
 	}
 
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
-	
 
 }

@@ -19,6 +19,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -205,6 +206,7 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setShippingAddress(orderDetailsEntity.getShippingAddress());
 				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());
 				orderDetailsEntity.setTotalAmount(orderDetailsEntity.getTotalAmount());
+				orderDetailsEntity.setOrderStatus("Pending");
 				orderDetailsEntity.setCreatedOn(format);
 				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderDetailsEntity);
 
@@ -278,7 +280,16 @@ public class OrderAndPaymentContoller {
 
 	}
 	
-	
+	@PutMapping("/updateOrder/{orderId}")
+	public GlobalResponse updateOrder(@RequestBody OrderDetailsEntity orderDetailsEntity,@PathVariable String orderId)
+	{
+		try {
+			return this.orderAndPaymentService.orderUpdateService(orderDetailsEntity,orderId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
 	@RequestMapping(value = { "/list/{designerId}" }, method = RequestMethod.GET)
 	public Map<String, Object> getOrderByDesigner(@PathVariable int designerId,
