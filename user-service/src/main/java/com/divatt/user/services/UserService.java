@@ -672,9 +672,9 @@ public class UserService {
 			Page<UserLoginEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = userLoginRepo.findAll(pagingSort);
+				findAll = userLoginRepo.findByIsDeleted(isDeleted,pagingSort);
 			} else {
-				//findAll = userLoginRepo.Search(keyword, pagingSort);
+				findAll = userLoginRepo.Search(keyword,isDeleted,pagingSort);
 
 			}
 
