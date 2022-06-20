@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.user.entity.OrederAndPaymentGlobalEntity;
+import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
@@ -71,6 +72,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.json.JSONObject;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
@@ -214,10 +216,10 @@ public class OrderAndPaymentContoller {
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
-
+				UserAddressEntity userAddressEntity= (UserAddressEntity) orderDetailsEntity.getShippingAddress();
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 				sendEmailWithAttachment(
-						extractUsername, "Order summary", "Hi " + extractUsername + ""
+						extractUsername, "Order summary", "Hi " + userAddressEntity.getFullName() + ""
 								+ ",\n                           " + " Your order created successfully. ",
 						false, createPdfSupplier);
 
