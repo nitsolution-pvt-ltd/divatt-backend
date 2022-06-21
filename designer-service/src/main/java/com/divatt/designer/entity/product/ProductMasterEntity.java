@@ -55,7 +55,7 @@ public class ProductMasterEntity {
 	//@NotEmpty(message = "Product Images Required")
 	private ImagesEntity images[];
 	//@NotEmpty(message = "Stock On Hand Required")
-	private List<StandardSOH> standeredSOH;
+	private StandardSOH standeredSOH[];
 	private Integer customizationSOH;
 	private Object extraSpecifications;
 	//@NotEmpty(message = "Product Specification Required")
@@ -88,7 +88,7 @@ public class ProductMasterEntity {
 			Boolean customization, PurchaseEntity purchaseQuantity,
 			@NotEmpty(message = "Price Type Required") String priceType, Float taxPercentage, Boolean taxInclusive,
 			Boolean giftWrap, GiftEntity giftWrapAmount, PriceEntity price, ImagesEntity[] images,
-			List<StandardSOH> standeredSOH, Integer customizationSOH, Object extraSpecifications,
+			StandardSOH[] standeredSOH, Integer customizationSOH, Object extraSpecifications,
 			Specification specifications, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			Date adminStatusOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String sKQCode,
 			String comments, String adminStatus) {
@@ -137,12 +137,12 @@ public class ProductMasterEntity {
 				+ ", cod=" + cod + ", customization=" + customization + ", purchaseQuantity=" + purchaseQuantity
 				+ ", priceType=" + priceType + ", taxPercentage=" + taxPercentage + ", taxInclusive=" + taxInclusive
 				+ ", giftWrap=" + giftWrap + ", giftWrapAmount=" + giftWrapAmount + ", price=" + price + ", images="
-				+ Arrays.toString(images) + ", standeredSOH=" + standeredSOH + ", customizationSOH=" + customizationSOH
-				+ ", extraSpecifications=" + extraSpecifications + ", specifications=" + specifications + ", isActive="
-				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
-				+ ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
-				+ ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn + ", SKQCode=" + SKQCode + ", comments="
-				+ comments + ", adminStatus=" + adminStatus + "]";
+				+ Arrays.toString(images) + ", standeredSOH=" + Arrays.toString(standeredSOH) + ", customizationSOH="
+				+ customizationSOH + ", extraSpecifications=" + extraSpecifications + ", specifications="
+				+ specifications + ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn
+				+ ", createdBy=" + createdBy + ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy
+				+ ", updatedOn=" + updatedOn + ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn
+				+ ", SKQCode=" + SKQCode + ", comments=" + comments + ", adminStatus=" + adminStatus + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -258,10 +258,10 @@ public class ProductMasterEntity {
 	public void setImages(ImagesEntity[] images) {
 		this.images = images;
 	}
-	public List<StandardSOH> getStanderedSOH() {
+	public StandardSOH[] getStanderedSOH() {
 		return standeredSOH;
 	}
-	public void setStanderedSOH(List<StandardSOH> standeredSOH) {
+	public void setStanderedSOH(StandardSOH[] standeredSOH) {
 		this.standeredSOH = standeredSOH;
 	}
 	public Integer getCustomizationSOH() {
