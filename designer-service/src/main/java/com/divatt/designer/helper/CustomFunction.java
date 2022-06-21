@@ -159,6 +159,7 @@ public class CustomFunction {
 			filterProductEntity.setProductName(productData.getProductName());
 			filterProductEntity.setPurchaseQuantity(productData.getPurchaseQuantity());
 			filterProductEntity.setSpecifications(productData.getSpecifications());
+			filterProductEntity.setStanderedSOH(productData.getStanderedSOH());
 //			filterProductEntity.setStanderedSOH(productData.getStanderedSOH());
 			filterProductEntity.setSubCategoryId(productData.getSubCategoryId());
 			filterProductEntity.setAdminStatusOn(productData.getAdminStatusOn());
