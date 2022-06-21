@@ -803,7 +803,7 @@ public class ProductService {
 					}
 				}
 				ProductMasterEntity masterEntity= productRepo.findById(productId).get();
-				masterEntity.setStanderedSOH(updatedSOH);
+				masterEntity.setStanderedSOH(standardSOHs);
 				System.out.println(masterEntity);
 				productRepo.save(masterEntity);
 			}
