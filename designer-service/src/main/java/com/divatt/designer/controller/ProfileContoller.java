@@ -158,7 +158,7 @@ public class ProfileContoller {
 			designerLoginEntity.setPassword(
 					bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 			designerLoginEntity.setIsDeleted(false);
-			designerLoginEntity.setProfileStatus("INACTIVE");
+			designerLoginEntity.setAccountStatus("INACTIVE");
 			if (designerLoginRepo.save(designerLoginEntity) != null) {
 				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
 				designerProfileEntity
