@@ -310,7 +310,7 @@ public class ProfileContoller {
 			Random rd = new Random();
 			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
 			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false,"COMPLETED","ACTIVE");
-
+			List<Integer> lst = new ArrayList<>();
 			if (findAll.size() <= 15) {
 				designerLoginEntity=findAll;
 				
@@ -322,7 +322,8 @@ public class ProfileContoller {
 					int nextInt = rd.nextInt((int) count);
 					for (DesignerLoginEntity obj : findAll) {
 						
-						if (obj.getdId() == nextInt) {
+						if (obj.getdId() == nextInt && !lst.contains(nextInt)) {
+							lst.add(nextInt);
 							designerLoginEntity.add(obj);					  
 
 						}
