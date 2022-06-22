@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -167,6 +170,26 @@ public class ProductMeasurementService {
 					measurementRepo.save(productMeasurementEntity);
 					return new GlobalResponse("Suucess", "Measurement recover succesfully", 200);
 				}
+			}
+			else {
+				return new GlobalResponse("Error!!", "Measurement Id does not exist", 400);
+			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	public GlobalResponse MeasurementUpdateService(@Valid ProductMeasurementEntity productMeasurementEntity,Integer measurementId) {
+		try {
+			if(measurementRepo.existsById(measurementId))
+			{
+				ProductMeasurementEntity measurementData=measurementRepo.findById(measurementId).get();
+				productMeasurementEntity.setId(measurementId);
+				productMeasurementEntity.setIsActive(measurementData.getIsActive());
+				productMeasurementEntity.setIsDelete(measurementData.getIsDelete());
+				productMeasurementEntity.setMetaKey(measurementData.getMetaKey());
+				measurementRepo.save(productMeasurementEntity);
+				return new GlobalResponse("Success", "Measurement updated", 200);
 			}
 			else {
 				return new GlobalResponse("Error!!", "Measurement Id does not exist", 400);

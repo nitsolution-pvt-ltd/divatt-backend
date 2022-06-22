@@ -366,13 +366,16 @@ public class OrderAndPaymentService{
 			int CountData = (int) orderDetailsRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
+				System.out.println(limit);
 				limit = CountData;
 			}
 
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
+				//System.out.println(limit);
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+				System.out.println(pagingSort);
 			}
 
 			Page<OrderDetailsEntity> findAll = null;
@@ -381,7 +384,7 @@ public class OrderAndPaymentService{
 			if (keyword.isEmpty()) {
 
 				findAll = orderDetailsRepo.findDesigner(designerId, pagingSort);
-
+				System.out.println(findAll);
 				Query query = new Query();
 
 				query.addCriteria(Criteria.where("products").elemMatch(Criteria.where("designerId").is(designerId)));
@@ -391,6 +394,7 @@ public class OrderAndPaymentService{
 
 			} else {
 				findAll = orderDetailsRepo.Search(keyword, pagingSort);
+				//
 
 			}
 

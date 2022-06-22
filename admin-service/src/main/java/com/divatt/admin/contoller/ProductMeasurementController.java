@@ -87,4 +87,14 @@ public class ProductMeasurementController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	@PutMapping("/update/{measurementId}")
+	public GlobalResponse MeasurementUpdate(@Valid @RequestBody ProductMeasurementEntity productMeasurementEntity,@PathVariable Integer measurementId)
+	{
+		try {
+			return this.productMeasurementService.MeasurementUpdateService(productMeasurementEntity ,measurementId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
