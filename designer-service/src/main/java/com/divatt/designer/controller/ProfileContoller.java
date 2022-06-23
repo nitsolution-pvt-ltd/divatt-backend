@@ -294,8 +294,8 @@ public class ProfileContoller {
 				.findByEmail(new String(Base64.getDecoder().decode(email)));
 		if (findByEmail.isPresent()) {
 			DesignerLoginEntity designerLoginEntity = findByEmail.get();
-			if(designerLoginEntity.getProfileStatus().equals("INACTIVE"))
-				designerLoginEntity.setProfileStatus("ACTIVE");
+			if(designerLoginEntity.getAccountStatus().equals("INACTIVE"))
+				designerLoginEntity.setAccountStatus("ACTIVE");
 			designerLoginRepo.save(designerLoginEntity);
 		}
 
