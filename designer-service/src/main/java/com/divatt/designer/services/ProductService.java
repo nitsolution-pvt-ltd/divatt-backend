@@ -658,7 +658,7 @@ public class ProductService {
 	public List<ProductMasterEntity> UserDesignerProductList(Integer Id) {
 		try {
 			Query query = new Query();
-			query.addCriteria(Criteria.where("designerId").is(Id).and("isActive").is(true));
+			query.addCriteria(Criteria.where("designerId").is(Id).and("isActive").is(true).and("adminStatus").is("Approved"));
 			List<ProductMasterEntity> productList = mongoOperations.find(query, ProductMasterEntity.class);
 
 			if (productList.isEmpty()) {
