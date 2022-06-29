@@ -177,6 +177,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.addOrder()");
 
 		try {
+			//System.out.println(orderAndPaymentGlobalEntity);
 			Map<String, Object> map = new HashMap<>();
 			String extractUsername = null;
 			try {
@@ -186,8 +187,9 @@ public class OrderAndPaymentContoller {
 			}
 
 			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
-
+				//System.out.println()
 				OrderDetailsEntity orderDetailsEntity = orderAndPaymentGlobalEntity.getOrderDetailsEntity();
+				System.out.println(orderDetailsEntity);
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 				Date date = new Date();
 				String format = formatter.format(date);
@@ -205,6 +207,7 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setTotalAmount(orderDetailsEntity.getTotalAmount());
 				orderDetailsEntity.setOrderStatus("Pending");
 				orderDetailsEntity.setCreatedOn(format);
+				//System.out.println(orderDetailsEntity);
 				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderDetailsEntity);
 
 				OrderPaymentEntity orderPaymentEntity = orderAndPaymentGlobalEntity.getOrderPaymentEntity();
@@ -216,16 +219,17 @@ public class OrderAndPaymentContoller {
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
-				UserAddressEntity userAddressEntity= (UserAddressEntity) orderDetailsEntity.getShippingAddress();
+				//System.out.println(map);
+				//UserAddressEntity userAddressEntity= (UserAddressEntity) orderDetailsEntity.getShippingAddress();
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 				sendEmailWithAttachment(
-						extractUsername, "Order summary", "Hi " + userAddressEntity.getFullName() + ""
+						extractUsername, "Order summary", "Hi " +extractUsername + ""
 								+ ",\n                           " + " Your order created successfully. ",
 						false, createPdfSupplier);
 
 				createPdfSupplier.delete();
 			}
-
+		//	System.out.println(map);
 			return ResponseEntity.ok(map);
 
 		} catch (Exception e) {
