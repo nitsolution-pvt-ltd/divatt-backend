@@ -455,7 +455,7 @@ public class OrderAndPaymentService{
 			query.addCriteria(Criteria.where("order_id").is(orderId));
 			OrderDetailsEntity detailsEntity= mongoOperations.findOne(query, OrderDetailsEntity.class);
 			if(detailsEntity!=null) {
-				 RestTemplate restTemplate= new RestTemplate();
+				// RestTemplate restTemplate= new RestTemplate();
 				// ResponseEntity<UserLoginEntity> userLoginEntity=restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+detailsEntity.getUserId(), UserLoginEntity.class);
 				//ResponseEntity<UserLoginEntity> userLoginEntity=null;
 				// System.out.println(userLoginEntity.getBody());

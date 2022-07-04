@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.user.entity.OrederAndPaymentGlobalEntity;
 import com.divatt.user.entity.UserAddressEntity;
+import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
@@ -76,6 +77,9 @@ import org.json.JSONObject;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -108,6 +112,8 @@ public class OrderAndPaymentContoller {
 	@Autowired
 	private UserLoginRepo userLoginRepo;
 
+	@Autowired
+	private MongoOperations mongoOperations;
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 
 	@PostMapping("/razorpay/create")
@@ -207,9 +213,13 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setTotalAmount(orderDetailsEntity.getTotalAmount());
 				orderDetailsEntity.setOrderStatus("Pending");
 				orderDetailsEntity.setCreatedOn(format);
+				Query query= new Query();
+				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
+				UserLoginEntity userLoginEntity=mongoOperations.findOne(query, UserLoginEntity.class);
+			//	System.out.println(userLoginEntity.getFirstName());
 				//System.out.println(orderDetailsEntity);
 				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderDetailsEntity);
-
+				
 				OrderPaymentEntity orderPaymentEntity = orderAndPaymentGlobalEntity.getOrderPaymentEntity();
 				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
 				orderPaymentEntity.setOrderId(OrderData.getOrderId());
@@ -223,7 +233,7 @@ public class OrderAndPaymentContoller {
 				//UserAddressEntity userAddressEntity= (UserAddressEntity) orderDetailsEntity.getShippingAddress();
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 				sendEmailWithAttachment(
-						extractUsername, "Order summary", "Hi " +extractUsername + ""
+						extractUsername, "Order summary", "Hi " +userLoginEntity.getFirstName() + ""
 								+ ",\n                           " + " Your order created successfully. ",
 						false, createPdfSupplier);
 
@@ -306,14 +316,14 @@ public class OrderAndPaymentContoller {
 
 	}
 
-	@GetMapping("/invoice/{orderId}")
-	public GlobalResponse invoiceGenarater(@PathVariable String orderId) {
-		try {
-			return this.orderAndPaymentService.invoiceGenarator(orderId);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
+//	@GetMapping("/invoice/{orderId}")
+//	public GlobalResponse invoiceGenarater(@PathVariable String orderId) {
+//		try {
+//			return this.orderAndPaymentService.invoiceGenarator(orderId);
+//		} catch (Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
 
 	@PostMapping("/genpdf/order")
 	File createPdfSupplier(@RequestBody OrderDetailsEntity orderDetailsEntity) throws IOException {
@@ -421,5 +431,46 @@ public class OrderAndPaymentContoller {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+	
+	@GetMapping("/invoice/{orderId1}")
+	File invGenarator(@PathVariable String orderId1) throws IOException {
+		System.out.println("ok");
+		Query query= new Query();
+		query.addCriteria(Criteria.where("orderId").is(orderId1));
+		OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
+		/* first, get and initialize an engine */
+		VelocityEngine ve = new VelocityEngine();
+
+		/* next, get the Template */
+		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		try {
+			ve.init();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Template t = null;
+		try {
+			t = ve.getTemplate("templates/orderSummary.vm");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		VelocityContext context = new VelocityContext();
+		context.put("orderDetailsEntity", orderDetailsEntity);
+		StringWriter writer = new StringWriter();
+		t.merge(context, writer);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		baos =generatePdf (writer.toString());
+
+		try (OutputStream outputStream = new FileOutputStream("order-summary.pdf")) {
+			baos.writeTo(outputStream);
+
+		}
+
+		return new File("order-summary.pdf");
 	}
 }

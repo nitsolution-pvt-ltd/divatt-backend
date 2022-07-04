@@ -53,14 +53,19 @@ public class PDFRunner {
 		InvoiceEntity thisInvoiceEntity=this.invoiceEntity;
 		HashMap<String, Object> data= new HashMap<String, Object>();
 		data.put("OrderDetails", thisInvoiceEntity.getOrderDetailsEntity());
+		//System.out.println(data);
 		//data.put("UserDetails", thisInvoiceEntity.getUserEntity());
 		generatePdfFile("invoice", data, "invoice.pdf");
 	}
 	 public String generatePdfFile(String templateName, Map<String, Object> data, String pdfFileName) {
+		
 	        Context context = new Context();
 	        context.setVariables(data);	
 	        String htmlContent = templateEngine.process(templateName, context);
+	        System.out.println(htmlContent);
+	        //System.out.println(htmlContent);
 	        try {
+	        	 System.out.println("hi");
 	            FileOutputStream fileOutputStream = new FileOutputStream(pdfDirectory + pdfFileName);
 	            ITextRenderer renderer = new ITextRenderer();
 	            renderer.setDocumentFromString(htmlContent);
@@ -69,6 +74,7 @@ public class PDFRunner {
 	            renderer.finishPDF();
 	            OrderDetailsEntity orderDetailsEntity= new OrderDetailsEntity();
 	            orderDetailsEntity.setUserInv(pdfDirectory + pdfFileName);
+	            System.out.println(pdfDirectory + pdfFileName);
 	            detailsRepo.save(orderDetailsEntity);
 	            return pdfDirectory + pdfFileName;
 	        } catch (FileNotFoundException e) {
