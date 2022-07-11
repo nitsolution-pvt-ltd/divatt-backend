@@ -24,10 +24,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.OrderDetailsEntity;
 import com.divatt.designer.entity.OrderEntity;
 import com.divatt.designer.entity.ProductEntity;
+import com.divatt.designer.entity.UserResponseEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.StandardSOH;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
@@ -808,6 +810,39 @@ public class ProductService {
 				productRepo.save(masterEntity);
 			}
 			return new GlobalResponce("Success", "Stock cleared successfully",200);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public List<ProductMasterEntity> productListCategorySubcategory(String categoryName,
+			String subcategoryName) {
+		try {
+		RestTemplate restTemplate= new RestTemplate();
+		ResponseEntity<CategoryEntity> categoryEntity= restTemplate.getForEntity("http://localhost:8085/dev/category/", CategoryEntity.class);
+		return null;	
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public List<ProductMasterEntity> viewProductByCategorySubcategoryService(String categoryName,
+			String subCategoryName) {
+		try {
+			RestTemplate restTemplate= new RestTemplate();
+			ResponseEntity<UserResponseEntity> userResponseEntity= restTemplate.getForEntity("http://localhost:8085/dev/category/viewByName/"+categoryName+"/"+subCategoryName, UserResponseEntity.class);
+			//System.out.println(userResponseEntity.getBody());
+			int categoryIdvalue=userResponseEntity.getBody().getCategoryEntity().getId();
+			int subcategoryIdvalue= userResponseEntity.getBody().getSubCategoryEntity().getId();
+			Query query= new Query();
+			query.addCriteria(Criteria.where("categoryId").is(categoryIdvalue)
+					.and("subCategoryId").is(subcategoryIdvalue)
+					.and("isDeleted").is(false).and("isActive").is(true)
+					.and("adminStatus").is("Approved"));
+			List<ProductMasterEntity> productMasterEntities=mongoOperations.find(query, ProductMasterEntity.class);
+			return productMasterEntities;
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

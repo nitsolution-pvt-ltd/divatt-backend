@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.user.designerProductEntity.ProductMasterEntity;
 import com.divatt.user.entity.ProductEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
@@ -227,6 +228,7 @@ public class UserService {
 						filterCatDetails.setProductId(getRow.getProductId());
 						filterCatDetails.setQty(getRow.getQty());
 						filterCatDetails.setAddedOn(new Date());
+						
 						userCartRepo.save(filterCatDetails);
 					}
 				}
@@ -243,21 +245,37 @@ public class UserService {
 		LOGGER.info("Inside - UserService.putCartDetailsService()");
 
 		try {
-
+			Map<String, Object> map = new HashMap<>();
+			RestTemplate restTemplate= new RestTemplate();
+			ResponseEntity<ProductMasterEntity>response= restTemplate.getForEntity("http://localhost:8085/dev/designerProduct/view/"+userCartEntity.getProductId(), ProductMasterEntity.class);
+			System.out.println(response.getBody());
+			System.out.println();
+			int purchaseQuantity=userCartEntity.getQty();
+			System.out.println("0k");
 			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(userCartEntity.getProductId(),
 					userCartEntity.getUserId());
 
 			if (!findByCat.isPresent()) {
 				throw new CustomException("Product not found in the cart.");
 			} else {
+				
+
 				UserCartEntity RowsDetails = findByCat.get();
 				RowsDetails.setUserId(userCartEntity.getUserId());
 				RowsDetails.setProductId(userCartEntity.getProductId());
 				RowsDetails.setQty(userCartEntity.getQty());
 				RowsDetails.setAddedOn(new Date());
+//				if(maxLimit<=purchaseQuantity)
+//				{
+//					map.put("reason", "Error");
+//					map.put("message", "Product Qty not allowed");
+//					map.put("status", 400);
+//					map.put("qty",purchaseQuantity);
+//					return ResponseEntity.ok(map);
+//				}
 				UserCartEntity getdata = userCartRepo.save(RowsDetails);
 
-				Map<String, Object> map = new HashMap<>();
+				
 				map.put("reason", "SUCCESS");
 				map.put("message", "Cart updated succesfully");
 				map.put("status", 200);

@@ -37,6 +37,8 @@ public class ProductController implements ProductServiceImp {
 
 	@Autowired
 	private ProductService productService;
+	
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
 
 	@GetMapping("/allList")
@@ -349,5 +351,23 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+	@GetMapping("/productList/{categoryName}/{subCategoryName}")
+	public List<ProductMasterEntity> productList(@PathVariable String  categoryName,@PathVariable String subcategoryName)
+	{
+		try {
+			return this.productService.productListCategorySubcategory(categoryName, subcategoryName);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@GetMapping("/viewProductByCategorySubcategory/{categoryName}/{subCategoryName}")
+	public List<ProductMasterEntity> viewProductByCategorySubcategory(@PathVariable String categoryName, @PathVariable String subCategoryName){
+		try {
+			return this.productService.viewProductByCategorySubcategoryService(categoryName,subCategoryName);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.UserCategoryResponse;
+import com.divatt.admin.entity.UserResponseEntity;
 import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
@@ -177,5 +179,23 @@ public class CategoryController {
 		{
 			throw new CustomException(e.getMessage());
 		}
+	}
+	@GetMapping("/viewByCategoryName")
+	public List<UserCategoryResponse> viewByCategoryName() {
+		try {
+			return this.categoryService.viewByCategoryNameService();
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@GetMapping("/viewByName/{categoryName}/{subCategoryName}")
+	public UserResponseEntity viewByCategoryName(@PathVariable String categoryName,@PathVariable String subCategoryName) {
+		try {
+			return this.categoryService.viewByCategoryName(categoryName,subCategoryName);
+		}
+		 catch(Exception e) {
+			 throw new CustomException(e.getMessage());
+		 }
 	}
 }

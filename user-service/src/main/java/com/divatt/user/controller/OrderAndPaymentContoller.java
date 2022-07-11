@@ -441,7 +441,7 @@ public class OrderAndPaymentContoller {
 		OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
 		/* first, get and initialize an engine */
 		VelocityEngine ve = new VelocityEngine();
-
+ 
 		/* next, get the Template */
 		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
