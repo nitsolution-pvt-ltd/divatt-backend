@@ -73,7 +73,7 @@ spring:
       username: dbuser 
  
 server: 
-  port: 8084
+  port: 8090
   servlet: 
     contextPath: /dev
 name: dev-yml
