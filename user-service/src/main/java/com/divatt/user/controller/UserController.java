@@ -596,4 +596,16 @@ public class UserController {
 		}
 
 	}
+	
+	@GetMapping("/followedUserList/{designerIdvalue}")
+	public List<UserDesignerEntity> followedUserList(@PathVariable Integer designerIdvalue)
+	{
+		try {
+			return this.userService.followedUserListService(designerIdvalue);
+		}
+		catch(Exception e) {
+			
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

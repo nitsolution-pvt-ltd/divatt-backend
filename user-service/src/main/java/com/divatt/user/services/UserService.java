@@ -721,4 +721,16 @@ public class UserService {
 		}
 	}
 
+	public List<UserDesignerEntity> followedUserListService(Integer designerIdvalue) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("designerId").is(designerIdvalue));
+			List<UserDesignerEntity> userData= mongoOperations.find(query, UserDesignerEntity.class);
+			return userData;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }
