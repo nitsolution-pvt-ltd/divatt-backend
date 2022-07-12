@@ -58,22 +58,27 @@ public class OrderDetailsEntity {
 	
 	@Field(name = "created_on") 
 	private String createdOn;
+	
+	@Field(name="user_inv")
+	private String userInv;
+
+	@Field(name= "order_status")
+	private String orderStatus;
 
 	public OrderDetailsEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public OrderDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId,
-			@NotNull(message = "OrderId is required!") String orderId,
-			@NotNull(message = "ShippingAddress is required!") Object shippingAddress,
-			@NotNull(message = "BillingAddress is required!") Object billingAddress,
-			@NotNull(message = "products is required!") List<Object> products,
+	public OrderDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
+			@NotNull(message = "Shipping address is required!") Object shippingAddress,
+			@NotNull(message = "Billing address is required!") Object billingAddress,
+			@NotNull(message = "product details is required!") List<Object> products,
 			@NotNull(message = "mrp is required!") Long mrp, @NotNull(message = "discount is required!") Long discount,
-			@NotNull(message = "NetPrice is required!") Long netPrice,
-			@NotNull(message = "TaxAmount is required!") Long taxAmount,
-			@NotNull(message = "TotalAmount is required!") Long totalAmount,
-			String createdOn) {
+			@NotNull(message = "Net price is required!") Long netPrice,
+			@NotNull(message = "Tax amount is required!") Long taxAmount,
+			@NotNull(message = "Total amount is required!") Long totalAmount, String createdOn, String userInv,
+			String orderStatus) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -87,6 +92,8 @@ public class OrderDetailsEntity {
 		this.taxAmount = taxAmount;
 		this.totalAmount = totalAmount;
 		this.createdOn = createdOn;
+		this.userInv = userInv;
+		this.orderStatus = orderStatus;
 	}
 
 	@Override
@@ -94,7 +101,8 @@ public class OrderDetailsEntity {
 		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", shippingAddress="
 				+ shippingAddress + ", billingAddress=" + billingAddress + ", products=" + products + ", mrp=" + mrp
 				+ ", discount=" + discount + ", netPrice=" + netPrice + ", taxAmount=" + taxAmount + ", totalAmount="
-				+ totalAmount + ", createdOn=" + createdOn + "]";
+				+ totalAmount + ", createdOn=" + createdOn + ", userInv=" + userInv + ", orderStatus=" + orderStatus
+				+ "]";
 	}
 
 	public Integer getId() {
@@ -193,7 +201,24 @@ public class OrderDetailsEntity {
 		this.createdOn = createdOn;
 	}
 
-	
-	
+	public String getUserInv() {
+		return userInv;
+	}
+
+	public void setUserInv(String userInv) {
+		this.userInv = userInv;
+	}
+
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
+	}
 
 }

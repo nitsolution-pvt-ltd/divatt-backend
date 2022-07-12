@@ -17,11 +17,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.UserCategoryResponse;
+import com.divatt.admin.entity.UserResponseEntity;
 import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
@@ -41,6 +46,9 @@ public class CategoryService {
 	
 	@Autowired
 	private SubCategoryRepo subCategoryRepo;
+	
+	@Autowired
+	private MongoOperations mongoOperations;
 
 	public GlobalResponse postCategoryDetails(@RequestBody CategoryEntity categoryEntity) {
 		LOGGER.info("Inside - CategoryService.postCategoryDetails()");
@@ -317,5 +325,58 @@ public class CategoryService {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	public List<UserCategoryResponse> viewByCategoryNameService() {
+		try {
+			
+			List<UserCategoryResponse> categoryList= new ArrayList<UserCategoryResponse>();
+			List<CategoryEntity> listOfCategory=categoryRepo.findByIsDeletedAndIsActiveAndParentId(false, true, "0");
+			//System.out.println(listOfCategory);
+			for(int i=0;i<listOfCategory.size();i++)
+			{
+				UserCategoryResponse categoryResponse= new UserCategoryResponse();
+				categoryResponse.setId(listOfCategory.get(i).getId());
+				//System.out.println(listOfCategory.get(i).getId());
+				categoryResponse.setCategoryDescription(listOfCategory.get(i).getCategoryDescription());
+				categoryResponse.setCategoryImage(listOfCategory.get(i).getCategoryImage());
+				categoryResponse.setCategoryName(listOfCategory.get(i).getCategoryName());
+				categoryResponse.setSubCategoryEntities(categoryRepo.findByIsDeletedAndIsActiveAndParentId(false, true,listOfCategory.get(i).getId().toString()));
+				categoryList.add(categoryResponse);
+				//categoryIdList.add(listOfCategory.get(i).getId());
+			}
+			
+			return categoryList;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public UserResponseEntity viewByCategoryName(String categoryName, String subCategoryName) {
+	try {
+		Query query= new Query();
+		Query query1= new Query();
+	//	CategoryEntity categoryEntity= new CategoryEntity();
+		UserResponseEntity responseEntity= new UserResponseEntity();
+		query.addCriteria(Criteria.where("categoryName").is(categoryName));
+		CategoryEntity categoryEntity=mongoOperations.findOne(query, CategoryEntity.class);
+		
+		if(subCategoryName.equals("All"))
+		{
+			SubCategoryEntity subCategoryEntity=mongoOperations.findOne(query, SubCategoryEntity.class);
+			responseEntity.setCategoryEntity(categoryEntity);
+			responseEntity.setSubCategoryEntity(subCategoryEntity);
+			return responseEntity;
+		}
+		query1.addCriteria(Criteria.where("categoryName").is(subCategoryName).and("parentId").is(categoryEntity.getId().toString()));
+		SubCategoryEntity subCategoryEntity=mongoOperations.findOne(query1, SubCategoryEntity.class);
+		responseEntity.setCategoryEntity(categoryEntity);
+		responseEntity.setSubCategoryEntity(subCategoryEntity);
+		return responseEntity;
+	}
+	catch(Exception e) {
+		throw new CustomException(e.getMessage());
+	}
 	}
 }

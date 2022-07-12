@@ -1,5 +1,6 @@
 package com.divatt.auth.controller;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Calendar;
@@ -9,10 +10,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+//import org.apache.tomcat.jni.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -146,12 +149,12 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo
 						.findByEmail(vendor.getUsername());
 				if (findByUserNameDesigner.isPresent()) {
-					if (findByUserNameDesigner.get().getProfileStatus().equals("INACTIVE"))
+					if (findByUserNameDesigner.get().getAccountStatus().equals("INACTIVE"))
 						throw new CustomException("Please active your account");
-					if (findByUserNameDesigner.get().getProfileStatus().equals("ACTIVE"))
+					if (findByUserNameDesigner.get().getProfileStatus().equals("waitForApprove"))
 						throw new CustomException("Waiting for admin approve");
 					try {
-						if (!findByUserNameDesigner.get().getAccountStatus().equals("ACTIVE"))
+						if (!findByUserNameDesigner.get().getAccountStatus().equals("INACTIVE"))
 							throw new CustomException("This account has been deactive");
 					} catch (Exception e) {
 					}
@@ -245,6 +248,24 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		try {
 			mailService.sendEmail(senderMailId.getSenderMailId(), senderMailId.getSubject(), senderMailId.getBody(),
 					senderMailId.isEnableHtml());
+			return new ResponseEntity<>("Mail sent successfully", HttpStatus.OK);
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
+	@PostMapping("/sendEmailWithAttachment")
+	@Description(value = "This API is responsible for send the mail with attachment")
+	public ResponseEntity<String> sendEmailWithAttachment(@RequestBody() SendMail senderMailId) {
+		LOGGER.info("Inside - EcomAuthController.sendMail()");
+
+		try {
+//			ClassPathResource file = new ClassPathResource("D:\\Daivatt\\code\\divatt-backend\\login-service\\invoice.pdf");
+			File file = new File("invoice.pdf");
+			mailService.sendEmailWithAttachment(senderMailId.getSenderMailId(), senderMailId.getSubject(), senderMailId.getBody(),
+					senderMailId.isEnableHtml(),file);
 			return new ResponseEntity<>("Mail sent successfully", HttpStatus.OK);
 
 		} catch (Exception e) {

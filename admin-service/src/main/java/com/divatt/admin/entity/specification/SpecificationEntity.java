@@ -26,6 +26,8 @@ public class SpecificationEntity {
 	private  Boolean required;
 	@NotNull(message = "category name required")
 	private String categoryName;
+	@NotNull(message = "Category Id required")
+	private Integer categoryId;
 	@NotNull(message = "Specification name required")
 	private String name;
 	@NotNull(message = "Type is required")
@@ -41,6 +43,7 @@ public class SpecificationEntity {
 	}
 	public SpecificationEntity(Integer id, @NotNull(message = "Required entity requred") Boolean required,
 			@NotNull(message = "category name required") String categoryName,
+			@NotNull(message = "Category Id required") Integer categoryId,
 			@NotNull(message = "Specification name required") String name,
 			@NotNull(message = "Type is required") String type, Object[] option, Boolean isActive, Boolean isDeleted,
 			Date addonDate) {
@@ -48,6 +51,7 @@ public class SpecificationEntity {
 		this.id = id;
 		this.required = required;
 		this.categoryName = categoryName;
+		this.categoryId = categoryId;
 		this.name = name;
 		this.type = type;
 		this.option = option;
@@ -57,9 +61,10 @@ public class SpecificationEntity {
 	}
 	@Override
 	public String toString() {
-		return "SpecificationEntity [id=" + id + ", required=" + required + ", categoryName=" + categoryName + ", name="
-				+ name + ", type=" + type + ", option=" + Arrays.toString(option) + ", isActive=" + isActive
-				+ ", isDeleted=" + isDeleted + ", addonDate=" + addonDate + "]";
+		return "SpecificationEntity [id=" + id + ", required=" + required + ", categoryName=" + categoryName
+				+ ", categoryId=" + categoryId + ", name=" + name + ", type=" + type + ", option="
+				+ Arrays.toString(option) + ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", addonDate="
+				+ addonDate + "]";
 	}
 	public Integer getId() {
 		return id;
@@ -78,6 +83,12 @@ public class SpecificationEntity {
 	}
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
+	}
+	public Integer getCategoryId() {
+		return categoryId;
+	}
+	public void setCategoryId(Integer categoryId) {
+		this.categoryId = categoryId;
 	}
 	public String getName() {
 		return name;

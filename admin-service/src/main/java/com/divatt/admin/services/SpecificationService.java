@@ -49,11 +49,11 @@ public class SpecificationService {
 		try
 		{
 				specificationEntity.setId(sequenceGenerator.getNextSequence(SpecificationEntity.SEQUENCE_NAME));
-				specificationEntity.setIsActive(false);
+				specificationEntity.setIsActive(true);
 				specificationEntity.setIsDeleted(false);
 				specificationEntity.setAddonDate(new Date());
 				specRepo.save(specificationEntity);
-				return new GlobalResponse("Success!!", "Data saved Successfully", 200);
+				return new GlobalResponse("Success!!", "Specification added sucessfully", 200);
 		}
 		catch(Exception e)
 		{
@@ -66,22 +66,23 @@ public class SpecificationService {
 		try
 		{
 			String categoryName=categoryRepo.findById(categoryId).get().getCategoryName();
+			System.out.println(categoryName);
 			if(categoryName.toLowerCase().contains("women"))
 			{
-				categoryName="women";
+				categoryName="Women";
 			}
 			else if(categoryName.toLowerCase().contains("men"))
 			{
 				//System.out.println("Hiii");
-				categoryName="men";
+				categoryName="Men";
 			}
 			else if(categoryName.toLowerCase().contains("kid"))
 			{
-				categoryName="kid";
+				categoryName="Kid";
 			}
 			else
 			{
-				throw new CustomException("Invalid category name");
+				throw new CustomException("Invalid Id");
 			}
 			Query query= new Query();
 			query.addCriteria(Criteria.where("categoryName").is(categoryName).and("isActive").is(true));
@@ -107,6 +108,8 @@ public class SpecificationService {
 			if(specRepo.existsById(specId))
 			{
 				specificationData.setId(specId);
+				specificationData.setIsActive(specRepo.findById(specId).get().getIsActive());
+				specificationData.setIsDeleted(specRepo.findById(specId).get().getIsDeleted());
 				specificationData.setAddonDate(new Date());
 				specRepo.save(specificationData);
 				return new GlobalResponse("Success!!", "Specification Updated", 200);
@@ -182,7 +185,7 @@ public class SpecificationService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException("Category specification not found");
 			} else {
 				return response;
 			}
@@ -196,7 +199,7 @@ public class SpecificationService {
 	public GlobalResponse activeSpecification(Integer specId) {
 		try {
 			SpecificationEntity specificationEntity= specRepo.findById(specId).get();
-			if(specificationEntity.equals(null))
+			if(specificationEntity!=null)
 			{
 				if(specificationEntity.getIsActive().equals(false)) {
 					specificationEntity.setIsActive(true);

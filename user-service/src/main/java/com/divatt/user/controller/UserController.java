@@ -38,6 +38,7 @@ import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
@@ -568,8 +569,43 @@ public class UserController {
 		userAddressRepo.saveAll(list);
 		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "This address has been set as primary", 200));
 	}
-	
-	
-	
 
+	@GetMapping("/viewProductByOrderId/{orderId}")
+	public List<Integer> viewproductByOrderId(@PathVariable String orderId) {
+		try {
+			return this.userService.viewProductService(orderId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/getUserList")
+	public Map<String, Object> getPerDesignerProductDetails(
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		LOGGER.info("Inside - UserController.getPerDesignerProductDetails()");
+
+		try {
+			return this.userService.getUserListService(page, limit, sort, sortName, isDeleted, keyword,
+					sortBy);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@GetMapping("/followedUserList/{designerIdvalue}")
+	public List<UserDesignerEntity> followedUserList(@PathVariable Integer designerIdvalue)
+	{
+		try {
+			return this.userService.followedUserListService(designerIdvalue);
+		}
+		catch(Exception e) {
+			
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

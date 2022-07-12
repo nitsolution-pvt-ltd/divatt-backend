@@ -47,7 +47,7 @@ public class ProductService {
 				productdata.setIsActive(true);
 				productdata.setAdminStatus(adminStatus);
 				productdata.setAdminStatusOn(new Date());
-
+				
 				String status = null;
 				if (adminStatus.equals("Approved")) {
 					status = "approved";

@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,11 +22,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.divatt.designer.entity.ListProduct;
+//import org.json.JSONObject;
+import com.divatt.designer.entity.OrderEntity;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
-import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.ProductService;
@@ -39,6 +37,8 @@ public class ProductController implements ProductServiceImp {
 
 	@Autowired
 	private ProductService productService;
+	
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
 
 	@GetMapping("/allList")
@@ -341,4 +341,33 @@ public class ProductController implements ProductServiceImp {
 		}
 	}
 
+	@PutMapping("/stockClearence")
+	public GlobalResponce stockClearence(@RequestBody List<OrderEntity> jsonObject)
+	{
+		try {
+			return this.productService.stockClearenceService(jsonObject);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@GetMapping("/productList/{categoryName}/{subCategoryName}")
+	public List<ProductMasterEntity> productList(@PathVariable String  categoryName,@PathVariable String subcategoryName)
+	{
+		try {
+			return this.productService.productListCategorySubcategory(categoryName, subcategoryName);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@GetMapping("/viewProductByCategorySubcategory/{categoryName}/{subCategoryName}")
+	public List<ProductMasterEntity> viewProductByCategorySubcategory(@PathVariable String categoryName, @PathVariable String subCategoryName){
+		try {
+			return this.productService.viewProductByCategorySubcategoryService(categoryName,subCategoryName);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

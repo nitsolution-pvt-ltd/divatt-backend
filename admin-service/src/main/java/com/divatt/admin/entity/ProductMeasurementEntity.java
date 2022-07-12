@@ -31,13 +31,17 @@ public class ProductMeasurementEntity {
 	
 	private String imageString;
 
+	private Boolean isActive;
+	
+	private Boolean isDelete;
+
 	public ProductMeasurementEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public ProductMeasurementEntity(Integer id, String metaKey, String categoryName, String subCategoryName,
-			Object measurementKey, String imageString) {
+			Object measurementKey, String imageString, Boolean isActive, Boolean isDelete) {
 		super();
 		this.id = id;
 		this.metaKey = metaKey;
@@ -45,13 +49,15 @@ public class ProductMeasurementEntity {
 		this.subCategoryName = subCategoryName;
 		this.measurementKey = measurementKey;
 		this.imageString = imageString;
+		this.isActive = isActive;
+		this.isDelete = isDelete;
 	}
 
 	@Override
 	public String toString() {
 		return "ProductMeasurementEntity [id=" + id + ", metaKey=" + metaKey + ", categoryName=" + categoryName
 				+ ", subCategoryName=" + subCategoryName + ", measurementKey=" + measurementKey + ", imageString="
-				+ imageString + "]";
+				+ imageString + ", isActive=" + isActive + ", isDelete=" + isDelete + "]";
 	}
 
 	public Integer getId() {
@@ -102,9 +108,24 @@ public class ProductMeasurementEntity {
 		this.imageString = imageString;
 	}
 
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public Boolean getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(Boolean isDelete) {
+		this.isDelete = isDelete;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-
-
+	
 }

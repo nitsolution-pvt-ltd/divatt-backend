@@ -22,6 +22,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.util.Streamable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -117,23 +119,25 @@ public class ProfileContoller {
 	@GetMapping("/user/{id}")
 	public ResponseEntity<?> getUserDesigner(@PathVariable Long id) {
 		try {
+			DesignerLoginEntity designerLoginEntity= new DesignerLoginEntity();
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
 			if (!findById.isPresent())
 				throw new CustomException("This designer profile is not completed");
-			if(!findById.get().getProfileStatus().equals("COMPLETED"))
-				throw new CustomException("This designer profile is not completed");
-			
-			DesignerLoginEntity designerLoginEntity = findById.get();
+			if(findById.get().getProfileStatus().equals("COMPLETED"))
+			{
+				designerLoginEntity = findById.get();
 			designerLoginEntity.setDesignerProfileEntity(
 					designerProfileRepo.findBydesignerId(Long.parseLong(designerLoginEntity.getdId().toString())).get());
 			designerLoginEntity.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false, "Approved", Long.parseLong(designerLoginEntity.getdId().toString()),true));
 			
 			
+			
+		}
 			return ResponseEntity.ok(designerLoginEntity);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-
 	}
 
 	@PostMapping("/add")
@@ -154,7 +158,8 @@ public class ProfileContoller {
 			designerLoginEntity.setPassword(
 					bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 			designerLoginEntity.setIsDeleted(false);
-			designerLoginEntity.setProfileStatus("INACTIVE");
+			designerLoginEntity.setAccountStatus("INACTIVE");
+			designerLoginEntity.setProfileStatus("waitForApprove");
 			if (designerLoginRepo.save(designerLoginEntity) != null) {
 				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
 				designerProfileEntity
@@ -289,8 +294,8 @@ public class ProfileContoller {
 				.findByEmail(new String(Base64.getDecoder().decode(email)));
 		if (findByEmail.isPresent()) {
 			DesignerLoginEntity designerLoginEntity = findByEmail.get();
-			if(designerLoginEntity.getProfileStatus().equals("INACTIVE"))
-				designerLoginEntity.setProfileStatus("ACTIVE");
+			if(designerLoginEntity.getAccountStatus().equals("INACTIVE"))
+				designerLoginEntity.setAccountStatus("ACTIVE");
 			designerLoginRepo.save(designerLoginEntity);
 		}
 
@@ -305,7 +310,7 @@ public class ProfileContoller {
 			Random rd = new Random();
 			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
 			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false,"COMPLETED","ACTIVE");
-
+			List<Integer> lst = new ArrayList<>();
 			if (findAll.size() <= 15) {
 				designerLoginEntity=findAll;
 				
@@ -317,7 +322,8 @@ public class ProfileContoller {
 					int nextInt = rd.nextInt((int) count);
 					for (DesignerLoginEntity obj : findAll) {
 						
-						if (obj.getdId() == nextInt) {
+						if (obj.getdId() == nextInt && !lst.contains(nextInt)) {
+							lst.add(nextInt);
 							designerLoginEntity.add(obj);					  
 
 						}

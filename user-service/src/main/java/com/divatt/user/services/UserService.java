@@ -19,18 +19,26 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.user.designerProductEntity.ProductMasterEntity;
+import com.divatt.user.entity.ProductEntity;
 import com.divatt.user.entity.UserDesignerEntity;
+import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserDesignerRepo;
+import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.repo.cart.UserCartRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.repo.pCommentRepo.ProductCommentRepo;
@@ -70,6 +78,12 @@ public class UserService {
 
 	@Autowired
 	private OrderDetailsRepo orderDetailsRepo;
+	
+	@Autowired
+	private MongoOperations mongoOperations;
+	
+	@Autowired
+	private UserLoginRepo userLoginRepo;
 
 	public GlobalResponse postWishlistService(ArrayList<WishlistEntity> wishlistEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
@@ -214,6 +228,7 @@ public class UserService {
 						filterCatDetails.setProductId(getRow.getProductId());
 						filterCatDetails.setQty(getRow.getQty());
 						filterCatDetails.setAddedOn(new Date());
+						
 						userCartRepo.save(filterCatDetails);
 					}
 				}
@@ -230,21 +245,37 @@ public class UserService {
 		LOGGER.info("Inside - UserService.putCartDetailsService()");
 
 		try {
-
+			Map<String, Object> map = new HashMap<>();
+			RestTemplate restTemplate= new RestTemplate();
+			ResponseEntity<ProductMasterEntity>response= restTemplate.getForEntity("http://localhost:8085/dev/designerProduct/view/"+userCartEntity.getProductId(), ProductMasterEntity.class);
+			System.out.println(response.getBody());
+			System.out.println();
+			int purchaseQuantity=userCartEntity.getQty();
+			System.out.println("0k");
 			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(userCartEntity.getProductId(),
 					userCartEntity.getUserId());
 
 			if (!findByCat.isPresent()) {
 				throw new CustomException("Product not found in the cart.");
 			} else {
+				
+
 				UserCartEntity RowsDetails = findByCat.get();
 				RowsDetails.setUserId(userCartEntity.getUserId());
 				RowsDetails.setProductId(userCartEntity.getProductId());
 				RowsDetails.setQty(userCartEntity.getQty());
 				RowsDetails.setAddedOn(new Date());
+//				if(maxLimit<=purchaseQuantity)
+//				{
+//					map.put("reason", "Error");
+//					map.put("message", "Product Qty not allowed");
+//					map.put("status", 400);
+//					map.put("qty",purchaseQuantity);
+//					return ResponseEntity.ok(map);
+//				}
 				UserCartEntity getdata = userCartRepo.save(RowsDetails);
 
-				Map<String, Object> map = new HashMap<>();
+				
 				map.put("reason", "SUCCESS");
 				map.put("message", "Cart updated succesfully");
 				map.put("status", 200);
@@ -575,6 +606,7 @@ public class UserService {
 					.getForEntity("http://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();
 			JsonNode jn = new JsonNode(body);
 			JSONObject object = jn.getObject();
+			System.out.println(object);
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
 		System.out.println(userId);
@@ -622,6 +654,79 @@ public class UserService {
 			}
 			userCartRepo.deleteByUserId(userId);
 			return new GlobalResponse("Success", "Cart data deleted successfully", 200);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public List<Integer> viewProductService(String orderId) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("order_id").is(orderId));
+			OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
+			//List<ProductEntity> productList=orderDetailsEntity.getProducts();
+			return null;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public Map<String, Object> getUserListService(int page, int limit, String sort, String sortName, Boolean isDeleted,
+			String keyword, Optional<String> sortBy) {
+		try {
+			int CountData = (int) userLoginRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<UserLoginEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = userLoginRepo.findByIsDeleted(isDeleted,pagingSort);
+			} else {
+				findAll = userLoginRepo.Search(keyword,isDeleted,pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Wishlist not found!");
+			} else {
+				return response;
+			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public List<UserDesignerEntity> followedUserListService(Integer designerIdvalue) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("designerId").is(designerIdvalue));
+			List<UserDesignerEntity> userData= mongoOperations.find(query, UserDesignerEntity.class);
+			return userData;
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

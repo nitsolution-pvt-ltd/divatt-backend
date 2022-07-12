@@ -1,11 +1,28 @@
 package com.divatt.auth.entity;
 
+import java.io.File;
+
 public class SendMail {
 	
 	String senderMailId;
 	String subject;
 	String body;
 	boolean enableHtml;
+	File file;
+	public File getFile() {
+		return file;
+	}
+	public void setFile(File file) {
+		this.file = file;
+	}
+	public SendMail(String senderMailId, String subject, String body, boolean enableHtml, File file) {
+		super();
+		this.senderMailId = senderMailId;
+		this.subject = subject;
+		this.body = body;
+		this.enableHtml = enableHtml;
+		this.file = file;
+	}
 	public String getSenderMailId() {
 		return senderMailId;
 	}
@@ -33,7 +50,7 @@ public class SendMail {
 	@Override
 	public String toString() {
 		return "SendMail [senderMailId=" + senderMailId + ", subject=" + subject + ", body=" + body + ", enableHtml="
-				+ enableHtml + "]";
+				+ enableHtml + ", file=" + file + "]";
 	}
 	public SendMail(String senderMailId, String subject, String body, boolean enableHtml) {
 		super();
