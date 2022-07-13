@@ -357,9 +357,18 @@ public class CategoryService {
 	try {
 		Query query= new Query();
 		Query query1= new Query();
+	//	CategoryEntity categoryEntity= new CategoryEntity();
 		UserResponseEntity responseEntity= new UserResponseEntity();
 		query.addCriteria(Criteria.where("categoryName").is(categoryName));
 		CategoryEntity categoryEntity=mongoOperations.findOne(query, CategoryEntity.class);
+		
+		if(subCategoryName.equals("All"))
+		{
+			SubCategoryEntity subCategoryEntity=mongoOperations.findOne(query, SubCategoryEntity.class);
+			responseEntity.setCategoryEntity(categoryEntity);
+			responseEntity.setSubCategoryEntity(subCategoryEntity);
+			return responseEntity;
+		}
 		query1.addCriteria(Criteria.where("categoryName").is(subCategoryName).and("parentId").is(categoryEntity.getId().toString()));
 		SubCategoryEntity subCategoryEntity=mongoOperations.findOne(query1, SubCategoryEntity.class);
 		responseEntity.setCategoryEntity(categoryEntity);
