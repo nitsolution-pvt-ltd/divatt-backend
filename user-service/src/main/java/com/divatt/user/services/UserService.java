@@ -733,4 +733,14 @@ public class UserService {
 		}
 	}
 
+	public UserLoginEntity getUserById(Long userId) {
+		try {
+			UserLoginEntity userDetails=userLoginRepo.findById(userId).get();
+			return userDetails;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }

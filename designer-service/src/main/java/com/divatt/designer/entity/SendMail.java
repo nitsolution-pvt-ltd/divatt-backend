@@ -9,9 +9,11 @@ public class SendMail {
 	String body;
 	boolean enableHtml;
 	File file;
-	public SendMail() {
-		super();
-		// TODO Auto-generated constructor stub
+	public File getFile() {
+		return file;
+	}
+	public void setFile(File file) {
+		this.file = file;
 	}
 	public SendMail(String senderMailId, String subject, String body, boolean enableHtml, File file) {
 		super();
@@ -20,11 +22,6 @@ public class SendMail {
 		this.body = body;
 		this.enableHtml = enableHtml;
 		this.file = file;
-	}
-	@Override
-	public String toString() {
-		return "SendMail [senderMailId=" + senderMailId + ", subject=" + subject + ", body=" + body + ", enableHtml="
-				+ enableHtml + ", file=" + file + "]";
 	}
 	public String getSenderMailId() {
 		return senderMailId;
@@ -50,11 +47,21 @@ public class SendMail {
 	public void setEnableHtml(boolean enableHtml) {
 		this.enableHtml = enableHtml;
 	}
-	public File getFile() {
-		return file;
+	@Override
+	public String toString() {
+		return "SendMail [senderMailId=" + senderMailId + ", subject=" + subject + ", body=" + body + ", enableHtml="
+				+ enableHtml + ", file=" + file + "]";
 	}
-	public void setFile(File file) {
-		this.file = file;
+	public SendMail(String senderMailId, String subject, String body, boolean enableHtml) {
+		super();
+		this.senderMailId = senderMailId;
+		this.subject = subject;
+		this.body = body;
+		this.enableHtml = enableHtml;
+	}
+	public SendMail() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 	
 }

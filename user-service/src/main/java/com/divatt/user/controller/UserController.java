@@ -608,4 +608,14 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	@GetMapping("/getUserId/{userId}")
+	public UserLoginEntity getUserDetail(@PathVariable Long userId)
+	{
+		try {
+			return this.userService.getUserById(userId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

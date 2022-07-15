@@ -38,7 +38,7 @@ public class ProductMeasurementService {
 		try
 		{
 		Query query= new Query();
-		query.addCriteria(Criteria.where("subCategoryName").is(productMeasurementEntity.getSubCategoryName()));
+		query.addCriteria(Criteria.where("subCategoryName").is(productMeasurementEntity.getSubCategoryName()).and("categoryName").is(productMeasurementEntity.getCategoryName()));
 		List<ProductMeasurementEntity> listData=mongoOperations.find(query, ProductMeasurementEntity.class);
 			if(listData.isEmpty())
 			{
@@ -47,7 +47,9 @@ public class ProductMeasurementService {
 				productMeasurementEntity.setIsDelete(false);
 				measurementRepo.save(productMeasurementEntity);
 				return new GlobalResponse("Success", "Measurement Added Successfully", 200);
+				
 			}
+				
 			else
 			{
 				throw new CustomException("SubCategory name allready exists");
