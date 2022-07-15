@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -951,4 +953,59 @@ public class ProductService {
 //	    	
 //	    }
 //	}
+
+	public Map<String, Object> getProductReminderService(Integer page, Integer limit, Optional<String> sortBy,
+			String sort, String sortName, String keyword, Boolean isDeleted) {
+		try {
+			int CountData = (int) productRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<ProductMasterEntity> findAll = null;
+			List<ProductMasterEntity> findAlls = null;
+
+
+			if (keyword.isEmpty()) {
+
+				LocalDate date = LocalDate.now();
+
+				findAll = productRepo.findNotify(date,pagingSort);
+//				findAll = productRepo.findByStanderedSOHNotifySohGreaterThan(pagingSort);
+				
+			} else {
+				findAll = productRepo.DesignerSearchfindByIsDeletedAndAdminStatus(keyword, isDeleted,
+						"Approved", pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Product not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

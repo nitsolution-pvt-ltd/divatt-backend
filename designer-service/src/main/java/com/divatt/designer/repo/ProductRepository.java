@@ -1,5 +1,7 @@
 package com.divatt.designer.repo;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,5 +74,17 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.mrp' : {$regex:?0,$options:'i'} },{ 'designerName' : {$regex:?0,$options:'i'} },{ 'price.usPrice.mrp' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1}]}")
 	Page<ProductMasterEntity> SearchAndfindByIsDeleted(String keyword, Boolean isDeleted, Pageable pagingSort);
 	
+	
+//	@Query(value = "{ '$where': 'this.standeredSOH.notify==this.standeredSOH.soh' }")
+	@Query(value = "{ standeredSOH : { $gte: notify, $lte: soh}}")
+	
+//	@Query(value = "{ 'createdOn' : { '$gte': { $regex: ISODate ?0, $options:'i' }} }")
+	
+//	Page<ProductMasterEntity> findNotify(String currentDate,Pageable pagingSort);
+//	Page<ProductMasterEntity> DesignerSearchfindByIsDeletedAndAdminStatus(String keyword, Boolean isDeleted, String AdminStatus,Pageable pagingSort);
+
+	Page<ProductMasterEntity> findNotify(LocalDate date, Pageable pagingSort);
+
+//	Page<ProductMasterEntity> findByStanderedSOHNotifySohGreaterThan(Pageable pagingSort);
 
 }
