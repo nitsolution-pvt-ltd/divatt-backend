@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.core.io.Resource;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -87,6 +89,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -183,7 +186,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.addOrder()");
 
 		try {
-			//System.out.println(orderAndPaymentGlobalEntity);
+
 			Map<String, Object> map = new HashMap<>();
 			String extractUsername = null;
 			try {
@@ -193,7 +196,7 @@ public class OrderAndPaymentContoller {
 			}
 
 			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
-				//System.out.println()
+
 				OrderDetailsEntity orderDetailsEntity = orderAndPaymentGlobalEntity.getOrderDetailsEntity();
 				System.out.println(orderDetailsEntity);
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -213,11 +216,11 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setTotalAmount(orderDetailsEntity.getTotalAmount());
 				orderDetailsEntity.setOrderStatus("Pending");
 				orderDetailsEntity.setCreatedOn(format);
+				
 				Query query= new Query();
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity=mongoOperations.findOne(query, UserLoginEntity.class);
-			//	System.out.println(userLoginEntity.getFirstName());
-				//System.out.println(orderDetailsEntity);
+
 				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderDetailsEntity);
 				
 				OrderPaymentEntity orderPaymentEntity = orderAndPaymentGlobalEntity.getOrderPaymentEntity();
@@ -229,8 +232,7 @@ public class OrderAndPaymentContoller {
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
-				//System.out.println(map);
-				//UserAddressEntity userAddressEntity= (UserAddressEntity) orderDetailsEntity.getShippingAddress();
+
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 				sendEmailWithAttachment(
 						extractUsername, "Order summary", "Hi " +userLoginEntity.getFirstName() + ""
@@ -239,7 +241,7 @@ public class OrderAndPaymentContoller {
 
 				createPdfSupplier.delete();
 			}
-		//	System.out.println(map);
+
 			return ResponseEntity.ok(map);
 
 		} catch (Exception e) {
@@ -435,7 +437,7 @@ public class OrderAndPaymentContoller {
 	
 	@GetMapping("/invoice/{orderId1}")
 	File invGenarator(@PathVariable String orderId1) throws IOException {
-		System.out.println("ok");
+//		System.out.println("ok");
 		Query query= new Query();
 		query.addCriteria(Criteria.where("orderId").is(orderId1));
 		OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
@@ -473,4 +475,17 @@ public class OrderAndPaymentContoller {
 
 		return new File("order-summary.pdf");
 	}
+	
+	@GetMapping(value = "/api/files/system/{filename}", produces = "text/csv; charset=utf-8")
+	@ResponseStatus(HttpStatus.OK)
+	public Resource getFileFromFileSystem(@PathVariable String filename, HttpServletResponse response) {
+		return orderAndPaymentService.getFileSystem(filename, response);
+	}
+ 
+	@GetMapping(value = "/api/files/classpath/{filename}", produces = "text/csv; charset=utf-8")
+	@ResponseStatus(HttpStatus.OK)
+	public Resource getFileFromClasspath(@PathVariable String filename, HttpServletResponse response) {
+		return orderAndPaymentService.getClassPathFile(filename, response);
+	}
+	
 }

@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+import org.springframework.core.io.Resource;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -373,9 +378,7 @@ public class OrderAndPaymentService{
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
-				//System.out.println(limit);
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-				System.out.println(pagingSort);
 			}
 
 			Page<OrderDetailsEntity> findAll = null;
@@ -384,7 +387,6 @@ public class OrderAndPaymentService{
 			if (keyword.isEmpty()) {
 
 				findAll = orderDetailsRepo.findDesigner(designerId, pagingSort);
-				System.out.println(findAll);
 				Query query = new Query();
 
 				query.addCriteria(Criteria.where("products").elemMatch(Criteria.where("designerId").is(designerId)));
@@ -394,8 +396,6 @@ public class OrderAndPaymentService{
 
 			} else {
 				findAll = orderDetailsRepo.Search(keyword, pagingSort);
-				//
-
 			}
 
 			List<Object> productId = new ArrayList<>();
@@ -565,4 +565,37 @@ public class OrderAndPaymentService{
 		}
 	}
 	
+	private enum ResourceType {
+		FILE_SYSTEM,
+		CLASSPATH
+	}
+ 
+	private static final String FILE_DIRECTORY = "/var/files";
+ 
+
+	public Resource getFileSystem(String filename, HttpServletResponse response) {
+		return getResource(filename, response, ResourceType.FILE_SYSTEM);
+	}
+	
+	public Resource getClassPathFile(String filename, HttpServletResponse response) {
+		return getResource(filename, response, ResourceType.CLASSPATH);
+	}
+	
+	private Resource getResource(String filename, HttpServletResponse response, ResourceType resourceType) {
+		response.setContentType("text/csv; charset=utf-8");
+		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+		response.setHeader("filename", filename);
+ 
+		Resource resource = null;
+		switch (resourceType) {
+			case FILE_SYSTEM:
+				resource = new FileSystemResource(FILE_DIRECTORY + filename);
+				break;
+			case CLASSPATH:
+				resource = new ClassPathResource("data/" + filename);
+				break;
+		}
+ 
+		return resource;
+	}
 }

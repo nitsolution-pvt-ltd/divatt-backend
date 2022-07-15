@@ -309,7 +309,7 @@ public class ProductController implements ProductServiceImp {
 //				list.add(a);
 //			}
 			
-			System.out.println(productIdList);
+//			System.out.println(productIdList);
 			return productService.ProductListByIdService(productIdList);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -370,4 +370,23 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
+	@GetMapping("/getProductReminder")
+	public Map<String, Object> getProductReminder(
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		try {
+			LOGGER.info("Inside-ProductController.getProductReminder()");
+//return null;
+			return productService.getProductReminderService(page, limit, sortBy, sort, sortName, keyword,isDeleted);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
+	
 }
