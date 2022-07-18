@@ -20,11 +20,10 @@
          <tbody>
            <tr>
              <td style="width:10%; ">
-               <a href=""><img src="__ProductImage__" style="width:50px;" /></a>
-               <a href="__ProductLink__"></a>
+               <a href="__ProductLink__"><img src="__ProductImage__" style="width:50px;" /></a>
              </td>
-             <td style="width:20%;margin-left:10px;text-align: center;">__ProductName__
-             <a href="__ProductLink__"></a></td>
+             <td style="width:20%;margin-left:10px;text-align: center;">
+             <a href="__ProductLink__">__ProductName__</a></td>
              <td style="width:20%;padding: 10px; text-align:center;">__ProductDesc__</td>
              <td style="text-align: center;padding: 10px;">__ProductDiscount__%</td>
              <td style="width:30%; ;font-weight: bold;font-size: 14px;">

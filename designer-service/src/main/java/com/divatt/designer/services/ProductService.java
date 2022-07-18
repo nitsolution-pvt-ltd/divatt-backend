@@ -168,8 +168,8 @@ public class ProductService {
 					ResponseEntity<String> subcategoryResponse = restTemplate.getForEntity(
 							"http://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
 							String.class);
-					Query query3= new Query();
 					productRepo.save(customFunction.filterDataEntity(productData));
+					Query query3= new Query();
 					query3.addCriteria(Criteria.where("productName").is(productData.getProductName()));
 					ProductMasterEntity newProductData=mongoOperations.findOne(query3, ProductMasterEntity.class);
 					RestTemplate followerData= new RestTemplate();
@@ -181,9 +181,6 @@ public class ProductService {
 					//System.out.println(data);
 					JSONArray jsonArray= new JSONArray(data);
 					//System.out.println();
-					Query query4= new Query();
-					query4.addCriteria(Criteria.where("designer_name").is(productData.getProductName()));
-					ProductMasterEntity newProductMasterEntity=mongoOperations.findOne(query4, ProductMasterEntity.class);
 					for(int i=0;i<jsonArray.length();i++)
 					{
 						ObjectMapper objectMapper = new ObjectMapper();
@@ -206,6 +203,7 @@ public class ProductService {
 					String productLink="__ProductLink__";
 					//System.out.println(images[0].toString());
 					Path filePath= Path.of("D:\\packageservice\\projects\\Divatt\\divatt-backend-updated-4-05-2022\\divatt-backend\\designer-service\\src\\main\\resources\\templates\\emailTemplate.txt");
+				//	Path filePath= Path.of("templates/emailTemplate.vm");
 					String ETBody = Files.readString(filePath);
 				//	System.out.println(ETBody);
 					String ETreplace = ETBody.replace(productImage,image1);
@@ -213,8 +211,8 @@ public class ProductService {
 					String ETreplace2 = ETreplace1.replace(productDesc,productData.getProductDescription());
 					String ETreplace3 = ETreplace2.replace(productPrice,productData.getPrice().getIndPrice().getDealPrice().toString());
 					String ETreplace4 = ETreplace3.replace(productDiscount,productData.getPrice().getIndPrice().getDiscountValue().toString());
-					String ETreplace5 = ETreplace4.replace(productLink,"http://65.1.190.195/divatt/product-detail/"+newProductMasterEntity.getProductId().toString());
-					
+					String ETreplace5 = ETreplace4.replace(productLink,"http://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
+					System.out.println("http://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
 					//System.out.println(ETreplace4);
 					for(int i=0;i<userInfoList.size();i++)
 					{
