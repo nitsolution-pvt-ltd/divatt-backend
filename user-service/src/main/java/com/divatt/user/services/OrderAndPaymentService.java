@@ -132,7 +132,7 @@ public class OrderAndPaymentService{
 
 	}
 
-	public void postOrderPaymentService(OrderPaymentEntity orderPaymentEntity) {
+	public ResponseEntity<?> postOrderPaymentService(OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderPaymentService()");
 
 		try {
@@ -151,8 +151,8 @@ public class OrderAndPaymentService{
 			filterCatDetails.setUserId(orderPaymentEntity.getUserId());
 			filterCatDetails.setCreatedOn(new Date());
 
-			userOrderPaymentRepo.save(filterCatDetails);
-
+			OrderPaymentEntity data=userOrderPaymentRepo.save(filterCatDetails);
+			return ResponseEntity.ok(data);
 		} catch (RazorpayException e) {
 			throw new CustomException(e.getMessage());
 		}

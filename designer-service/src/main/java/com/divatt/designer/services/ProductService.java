@@ -190,6 +190,17 @@ public class ProductService {
 						//System.out.println(userInfo);
 						userInfoList.add(userInfo.getBody());
 					}
+<<<<<<< HEAD
+					emailThreadClass.emailThreadRun(userId);
+					System.out.println("Main Class");
+					for(int i=0;i<userId.size();i++)
+					{
+						ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+userId.get(i), UserProfileInfo.class);
+						
+					}
+					productRepo.save(customFunction.filterDataEntity(productData));
+=======
+>>>>>>> 64bb9867e7a171bf6f37e84cac862d09f02bf4fc
 					
 					//char emailData[];
 					ImagesEntity[] images=productData.getImages();
@@ -972,7 +983,7 @@ public class ProductService {
 
 
 			if (keyword.isEmpty()) {
-
+				
 				LocalDate date = LocalDate.now();
 
 				findAll = productRepo.findNotify(date,pagingSort);

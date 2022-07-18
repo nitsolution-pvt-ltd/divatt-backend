@@ -248,10 +248,9 @@ public class UserService {
 			Map<String, Object> map = new HashMap<>();
 			RestTemplate restTemplate= new RestTemplate();
 			ResponseEntity<ProductMasterEntity>response= restTemplate.getForEntity("http://localhost:8085/dev/designerProduct/view/"+userCartEntity.getProductId(), ProductMasterEntity.class);
-			System.out.println(response.getBody());
-			System.out.println();
+
 			int purchaseQuantity=userCartEntity.getQty();
-			System.out.println("0k");
+
 			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(userCartEntity.getProductId(),
 					userCartEntity.getUserId());
 
