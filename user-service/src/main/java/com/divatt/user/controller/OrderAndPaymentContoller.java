@@ -42,6 +42,7 @@ import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 
 import java.io.ByteArrayInputStream;
@@ -65,6 +66,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.codec.Base64.InputStream;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 
 import springfox.documentation.spring.web.json.Json;
@@ -75,6 +77,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
@@ -144,7 +147,7 @@ public class OrderAndPaymentContoller {
 	}
 
 	@PostMapping("/payment/add")
-	public void postOrderPaymentDetails(@RequestHeader("Authorization") String token,
+	public ResponseEntity<?> postOrderPaymentDetails(@RequestHeader("Authorization") String token,
 			@Valid @RequestBody OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
 
@@ -156,9 +159,10 @@ public class OrderAndPaymentContoller {
 				throw new CustomException("Unauthorized");
 			}
 
-			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
-				this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
-			}
+//			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
+				return this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
+//			}
+			
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -198,12 +202,19 @@ public class OrderAndPaymentContoller {
 			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
 
 				OrderDetailsEntity orderDetailsEntity = orderAndPaymentGlobalEntity.getOrderDetailsEntity();
-				System.out.println(orderDetailsEntity);
+				
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 				Date date = new Date();
 				String format = formatter.format(date);
 
+				OrderDetailsEntity OrderLastRow=orderDetailsRepo.findTopByOrderByIdDesc();
+ 
+			    String InvNumber = String.format("%014d", OrderLastRow.getId());   
+
+			    
 				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
+				orderDetailsEntity.setInvoiceId("IV"+InvNumber);
+				
 				orderDetailsEntity.setOrderId("OR" + System.currentTimeMillis());
 				orderDetailsEntity.setBillingAddress(orderDetailsEntity.getBillingAddress());
 				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());
@@ -227,9 +238,21 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
 				orderPaymentEntity.setOrderId(OrderData.getOrderId());
 				orderPaymentEntity.setCreatedOn(new Date());
-				postOrderPaymentDetails(token, orderPaymentEntity);
+				ResponseEntity<?> PaymentData=postOrderPaymentDetails(token, orderPaymentEntity);
+				
+//				JsonNode data= PaymentData.getBody();
+				
+				JsonNode jn = new JsonNode(PaymentData.getBody().toString());
+				JSONObject object = jn.getObject();
+				String payid= object.get("payment_details.razorpay_payment_id").toString();
+				
+				System.out.println(payid);
+//				JSONArray jsonArray= new JSONArray(data);
 
+				
+				
 				map.put("orderId", OrderData.getOrderId());
+				map.put("paymentId", payid);
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
 

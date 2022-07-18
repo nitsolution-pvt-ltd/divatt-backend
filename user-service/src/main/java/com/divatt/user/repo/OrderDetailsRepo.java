@@ -28,4 +28,7 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 
 	@Query(value = "{ $or: [ { 'user_id' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} }],$and: [ {  'order_id' : ?1}]}")
 	Page<OrderDetailsEntity> SearchByOrderId( String keyword, String orderId, Pageable pagingSort);
+
+
+	OrderDetailsEntity findTopByOrderByIdDesc();
 }

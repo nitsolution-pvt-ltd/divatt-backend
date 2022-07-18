@@ -24,6 +24,9 @@ public class OrderDetailsEntity {
 	@Field(name = "order_id") 
 	private String orderId;
 	
+	@Field(name = "invoice_id") 
+	private String invoiceId;
+	
 	@NotNull(message = "Shipping address is required!")
 	@Field(name = "shipping_address") 
 	private Object shippingAddress;
@@ -71,7 +74,7 @@ public class OrderDetailsEntity {
 	}
 
 	public OrderDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
-			@NotNull(message = "Shipping address is required!") Object shippingAddress,
+			String invoiceId, @NotNull(message = "Shipping address is required!") Object shippingAddress,
 			@NotNull(message = "Billing address is required!") Object billingAddress,
 			@NotNull(message = "product details is required!") List<Object> products,
 			@NotNull(message = "mrp is required!") Long mrp, @NotNull(message = "discount is required!") Long discount,
@@ -83,6 +86,7 @@ public class OrderDetailsEntity {
 		this.id = id;
 		this.userId = userId;
 		this.orderId = orderId;
+		this.invoiceId = invoiceId;
 		this.shippingAddress = shippingAddress;
 		this.billingAddress = billingAddress;
 		this.products = products;
@@ -98,11 +102,11 @@ public class OrderDetailsEntity {
 
 	@Override
 	public String toString() {
-		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", shippingAddress="
-				+ shippingAddress + ", billingAddress=" + billingAddress + ", products=" + products + ", mrp=" + mrp
-				+ ", discount=" + discount + ", netPrice=" + netPrice + ", taxAmount=" + taxAmount + ", totalAmount="
-				+ totalAmount + ", createdOn=" + createdOn + ", userInv=" + userInv + ", orderStatus=" + orderStatus
-				+ "]";
+		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", invoiceId="
+				+ invoiceId + ", shippingAddress=" + shippingAddress + ", billingAddress=" + billingAddress
+				+ ", products=" + products + ", mrp=" + mrp + ", discount=" + discount + ", netPrice=" + netPrice
+				+ ", taxAmount=" + taxAmount + ", totalAmount=" + totalAmount + ", createdOn=" + createdOn
+				+ ", userInv=" + userInv + ", orderStatus=" + orderStatus + "]";
 	}
 
 	public Integer getId() {
@@ -127,6 +131,14 @@ public class OrderDetailsEntity {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
+	}
+
+	public String getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(String invoiceId) {
+		this.invoiceId = invoiceId;
 	}
 
 	public Object getShippingAddress() {
@@ -220,5 +232,7 @@ public class OrderDetailsEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+
+	
 
 }

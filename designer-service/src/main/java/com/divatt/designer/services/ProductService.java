@@ -178,7 +178,7 @@ public class ProductService {
 					for(int i=0;i<userId.size();i++)
 					{
 						ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+userId.get(i), UserProfileInfo.class);
-						System.out.println(userProfileList.getBody());
+						
 					}
 					productRepo.save(customFunction.filterDataEntity(productData));
 					
@@ -925,7 +925,7 @@ public class ProductService {
 
 
 			if (keyword.isEmpty()) {
-
+				
 				LocalDate date = LocalDate.now();
 
 				findAll = productRepo.findNotify(date,pagingSort);
