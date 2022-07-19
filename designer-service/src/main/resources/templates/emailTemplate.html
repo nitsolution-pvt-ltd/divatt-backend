@@ -1,0 +1,82 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="container" style="width: 750px;margin:auto;padding:50px;font-family: sans-serif;">   
+    <div class="invoice-container" ref="document" id="html">
+       <table style="width:100%; height:auto;  text-align:center; " BORDER=0 CELLSPACING=0>
+         <thead style="background:#fafafa; padding:8px;">
+           <tr style="font-size: 20px;">
+             <td colspan="4" style="padding:20px 20px;text-align: center;"><img src="http://65.1.190.195/divatt/assets/images/logo.png" alt="" style="width: 100px;"></td>
+           </tr>
+         </thead>
+       </table>
+       <table style="margin-top: 20px;margin-bottom: 25px;width: 100%;">
+        <tr style=" color: #000;font-weight: bold; padding: 5px;">
+            <td style="text-align: center; line-height: 25px;
+        ">Hi __Username__, <br/> New Product Arrival From,</td>
+        </tr>
+        <tr style=" color: #000;font-weight: bold; padding: 5px;margin-top: 25px;">
+          <td>
+            <div style="text-align: center;padding: 10px;height: 150px;margin-top: 15px;
+        ">
+              <div>
+                <img src="__DesignerImage__" style="margin: auto;height: 85px;-o-object-fit: cover;object-fit: cover;
+              width: 85px;
+              border-radius: 100%;
+              cursor: pointer;">
+              <h3 style="font-size: 18px; margin: 20px 0 9px 0;">__ProductDesignerName__</h3>
+              </div>
+            </div>
+          </td>
+        </tr>
+       </table>
+       <table style="width:100%; height:auto; background-color:#fff; margin-top:0px;  padding:20px; font-size:12px; border: 1px solid #ebebeb;">
+         <thead>
+           <tr style=" color: #6c757d;font-weight: bold; padding: 5px;">
+             <td colspan="2" style="text-align: left;">PRODUCT INFORMATION</td>
+             <td style="text-align: center;">DESC</td>
+             <td style="padding: 10px;text-align:center;">DISCOUNT</td>
+             <td style="text-align: right;padding: 10px;">PRICE</td>
+           </tr>
+         </thead>
+         <tbody>
+           <tr>
+             <td style="width:10%; ">
+               <a href="__ProductLink__"><img src="__ProductImage__" style="width:50px;" /></a>
+             </td>
+             <td style="width:20%;margin-left:10px;text-align: left;">
+             <a href="__ProductLink__" style="text-decoration: none;color:#000000;">__ProductName__</a></td>
+             <td style="width:20%;padding: 10px; text-align:center;">__ProductDesc__</td>
+             <td style="text-align: center;padding: 10px;">__ProductDiscount__</td>
+             <td style="width:30%; ;font-weight: bold;font-size: 14px;">
+               <table style="width:100%;">
+                 <tr><td style="text-align:end;font-size:13px;"> <b>Rs.</b>__ProductPrice__</td></tr>
+               </table>
+             </td>
+           </tr>
+         </tbody>
+       </table>
+       
+         </td>
+        </tr>
+      </table>
+      <h1 style="font-family: 'Lato', sans-serif;text-transform: uppercase;font-size: 23px;font-weight: 800;
+      margin-bottom: 22px;margin-top: 4rem;letter-spacing: 1.5px;text-align: center;">Follow US</h1>
+      <div style="text-align: center;">
+        <a href="#" style="text-decoration: none;color: #000;text-align: center;margin-right: 10px;">
+            <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png" alt="" style="width: 40px;height:40px;">
+        </a>
+        <a href="#" style="text-decoration: none;color: #000;text-align: center;margin-right: 10px;">
+            <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg" alt="" style="width: 37px;height:37px;">
+        </a>
+        <a href="#" style="text-decoration: none;color: #000;text-align: center;margin-right: 10px;">
+            <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png" alt="" style="width: 40px;height:40px;">
+        </a>
+        <a href="#" style="text-decoration: none;color: #000;text-align: center;margin-right: 10px;">
+            <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png" alt="" style="width: 42px;height:42px;">
+        </a>
+        <a href="#" style="text-decoration: none;color: #000;text-align: center;">
+            <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png" alt="" style="width: 39px;height:37px;">
+        </a>
+      </div>
+    </div>
+  </div>
+</html>
