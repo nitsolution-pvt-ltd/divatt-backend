@@ -238,6 +238,7 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
 				orderPaymentEntity.setOrderId(OrderData.getOrderId());
 				orderPaymentEntity.setCreatedOn(new Date());
+//				System.out.println(orderPaymentEntity);
 				ResponseEntity<?> PaymentData=postOrderPaymentDetails(token, orderPaymentEntity);
 				
 //				JsonNode data= PaymentData.getBody();

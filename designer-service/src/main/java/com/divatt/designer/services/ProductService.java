@@ -51,6 +51,7 @@ import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
+import com.divatt.designer.helper.EmailSenderThread;
 import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepository;
@@ -81,9 +82,6 @@ public class ProductService {
 
 	@Autowired
 	private MongoOperations mongoOperations;
-	
-	@Autowired
-	private EmailThreadClass emailThreadClass;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
@@ -178,27 +176,21 @@ public class ProductService {
 					
 					ResponseEntity<String> forEntity = followerData.getForEntity("http://localhost:8082/dev/user/followedUserList/"+productData.getDesignerId(), String.class);
 					String data=forEntity.getBody();
-					//System.out.println(data);
 					JSONArray jsonArray= new JSONArray(data);
-					//System.out.println();
+					String designerImageData = designerProfileRepo.findBydesignerId(productData.getDesignerId().longValue()).get().getDesignerProfile().getProfilePic();
 					for(int i=0;i<jsonArray.length();i++)
 					{
 						ObjectMapper objectMapper = new ObjectMapper();
 						UserProfile readValue = objectMapper.readValue(jsonArray.get(i).toString(), UserProfile.class);
 						RestTemplate userResponse= new RestTemplate();
 						ResponseEntity<UserProfileInfo> userInfo= userResponse.getForEntity("http://localhost:8082/dev/user/getUserId/"+readValue.getUserId(), UserProfileInfo.class);
-						//System.out.println(userInfo);
 						userInfoList.add(userInfo.getBody());
 					}
-					emailThreadClass.emailThreadRun(userId);
-					System.out.println("Main Class");
 					for(int i=0;i<userId.size();i++)
 					{
 						ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+userId.get(i), UserProfileInfo.class);
 						
 					}
-					productRepo.save(customFunction.filterDataEntity(productData));
-					//char emailData[];
 					ImagesEntity[] images=productData.getImages();
 					String image1=images[0].getName();
 					System.out.println(images[0].getName());
@@ -208,34 +200,28 @@ public class ProductService {
 					String productPrice="__ProductPrice__";
 					String productDiscount="__ProductDiscount__";
 					String productLink="__ProductLink__";
-					//System.out.println(images[0].toString());
-					Path filePath= Path.of("D:\\packageservice\\projects\\Divatt\\divatt-backend-updated-4-05-2022\\divatt-backend\\designer-service\\src\\main\\resources\\templates\\emailTemplate.txt");
-				//	Path filePath= Path.of("templates/emailTemplate.vm");
+					String productDesignerName="__ProductDesignerName__";
+					String productUserName="__Username__";
+					String designerImage="__DesignerImage__";
+					Path filePath= Path.of("D:\\packageservice\\projects\\Divatt\\divatt-backend-updated-4-05-2022\\divatt-backend\\designer-service\\src\\main\\resources\\templates\\emailTemplate.html");
 					String ETBody = Files.readString(filePath);
-				//	System.out.println(ETBody);
 					String ETreplace = ETBody.replace(productImage,image1);
 					String ETreplace1 = ETreplace.replace(productName,productData.getProductName());
 					String ETreplace2 = ETreplace1.replace(productDesc,productData.getProductDescription());
 					String ETreplace3 = ETreplace2.replace(productPrice,productData.getPrice().getIndPrice().getDealPrice().toString());
 					String ETreplace4 = ETreplace3.replace(productDiscount,productData.getPrice().getIndPrice().getDiscountValue().toString());
 					String ETreplace5 = ETreplace4.replace(productLink,"http://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
+					String ETreplace6 = ETreplace5.replace(productDesignerName,productData.getDesignerName());
+					String ETreplace7 = ETreplace6.replace(designerImage,designerImageData);
+					//String ETreplace7 = ETreplace6.replace(productDesignerName,productData.getDesignerName());
 					System.out.println("http://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
-					//System.out.println(ETreplace4);
 					for(int i=0;i<userInfoList.size();i++)
 					{
+						String ETreplace8 = ETreplace7.replace(productUserName,userInfoList.get(i).getFirstName());
 						System.out.println(userInfoList.get(i).getEmail());
-						SendMail sendMail= new SendMail();
-						sendMail.setBody(ETreplace5);
-						sendMail.setSenderMailId(userInfoList.get(i).getEmail());
-						//System.out.println(userInfoList.get(i).getEmail());
-						sendMail.setSubject("New Product Available");
-						sendMail.setEnableHtml(true);
-						sendMail.setFile(null);
-						RestTemplate mailLink= new RestTemplate();
-						ResponseEntity<String> mailStatus=mailLink.postForEntity("http://65.1.190.195:8080/dev/auth/sendMail", sendMail, String.class);
-						System.out.println(mailStatus.getBody());
+						EmailSenderThread emailSenderThread= new EmailSenderThread(userInfoList.get(i).getEmail(), "New Product Available", ETreplace8, true, null);
+						emailSenderThread.start();
 					}
-					//productRepo.save(customFunction.filterDataEntity(productData));
 					return new GlobalResponce("Success!!", "Product added successfully", 200);
 				} else {
 					return new GlobalResponce("Error!!", "Product already added", 400);
@@ -906,7 +892,6 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 	public List<ProductMasterEntity> productListCategorySubcategory(String categoryName,
 			String subcategoryName) {
 		try {
