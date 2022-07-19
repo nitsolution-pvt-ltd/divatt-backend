@@ -404,7 +404,7 @@ public class ProfileContoller {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("waitingForApproval", designerLoginRepo.findByProfileStatus("ACTIVE").size());
+			response.put("waitingForApproval", designerLoginRepo.findByProfileStatus("waitForApprove").size());
 			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatus("APPROVE").size());
 			response.put("submitted", designerLoginRepo.findByProfileStatus("SUBMITTED").size());
 			response.put("completed", designerLoginRepo.findByProfileStatus("COMPLETED").size());

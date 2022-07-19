@@ -42,6 +42,7 @@ import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 
@@ -95,6 +96,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+
+import org.apache.commons.codec.binary.Base64;
+
 
 @RestController
 @RequestMapping("/userOrder")
@@ -242,17 +246,38 @@ public class OrderAndPaymentContoller {
 				
 //				JsonNode data= PaymentData.getBody();
 				
-				JsonNode jn = new JsonNode(PaymentData.getBody().toString());
-				JSONObject object = jn.getObject();
-				String payid= object.get("payment_details.razorpay_payment_id").toString();
+//				JsonNode jn = new JsonNode(PaymentData.getBody().toString());
+//				JSONObject object = jn.getObject();
 				
-				System.out.println(payid);
+//				ObjectMapper obj = new ObjectMapper();
+//				String writeValueAsString = null;
+//				try {
+//					writeValueAsString = obj.writeValueAsString(PaymentData.getBody());
+//				} catch (JsonProcessingException e1) {
+//					e1.printStackTrace();
+//				}
+//				JsonNode cartJN = new JsonNode(writeValueAsString);
+//				JSONObject cartObject = cartJN.getObject();
+//				object.put("cartData", cartObject);
+				
+				
+//				String payid1= cartObject.get("order_id").toString();
+//				System.out.println(payid1);
+//				String payid= cartObject.getJSONObject("payment_details.razorpay_payment_id").toString();
+				
+//				JsonNode jn1 = new JsonNode(payid.toString());
+//				JSONObject object1 = jn1.getObject();
+//				String payid1= object.get("payment_details").toString();
+//				
+				
+//				System.out.println(cartObject.toString());
 //				JSONArray jsonArray= new JSONArray(data);
 
 				
 				
 				map.put("orderId", OrderData.getOrderId());
-				map.put("paymentId", payid);
+//				map.put("payid", cartObject.toString());
+//				map.put("payid1", payid1);
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
 
@@ -510,5 +535,29 @@ public class OrderAndPaymentContoller {
 	public Resource getFileFromClasspath(@PathVariable String filename, HttpServletResponse response) {
 		return orderAndPaymentService.getClassPathFile(filename, response);
 	}
+	
+	@PostMapping("/imageEncode")
+	public ResponseEntity<?> ImageEncide(@RequestBody String ImageReq) throws Exception{
+		//encode image to Base64 String
+		String file = ImageReq.toString();
+		System.out.println(ImageReq.toString());
+
+//		JsonNode jn1 = new JsonNode(ImageReq.toString());
+//		JSONObject object = jn1.getObject();
+//		String file= object.get("image").toString();
+		
+		File f = new File("https://divatt-uat.s3.amazonaws.com/f1.avif"); 
+		FileInputStream fis = new FileInputStream(f);
+		byte byteArray[] = new byte[(int)f.length()];
+		fis.read(byteArray);
+		String imageString = Base64.encodeBase64String(byteArray);
+		//decode Base64 String to image
+//		FileOutputStream fos = new FileOutputStream("https://divatt-uat.s3.amazonaws.com/f1.avif"); //change path of image according to you
+//		byteArray = Base64.decodeBase64(imageString);
+//		fos.write(byteArray);
+		fis.close();
+//		fos.close();
+		return ResponseEntity.ok(imageString);
+		}
 	
 }

@@ -193,7 +193,7 @@ public class ProductService {
 						//System.out.println(userInfo);
 						userInfoList.add(userInfo.getBody());
 					}
-<<<<<<< HEAD
+
 					emailThreadClass.emailThreadRun(userId);
 					System.out.println("Main Class");
 					for(int i=0;i<userId.size();i++)
@@ -202,8 +202,7 @@ public class ProductService {
 						
 					}
 					productRepo.save(customFunction.filterDataEntity(productData));
-=======
->>>>>>> 64bb9867e7a171bf6f37e84cac862d09f02bf4fc
+
 					
 					//char emailData[];
 					ImagesEntity[] images=productData.getImages();
