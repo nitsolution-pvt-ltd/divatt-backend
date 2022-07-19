@@ -346,6 +346,13 @@ public class UserController {
 			userLoginEntity.setLastName(userLoginEntityParam.getLastName());
 			userLoginEntity.setMobileNo(userLoginEntityParam.getMobileNo());
 			userLoginEntity.setDob(userLoginEntityParam.getDob());
+			if(userLoginEntityParam.getProfilePic().isEmpty())
+			{
+				userLoginEntity.setProfilePic(findById.get().getProfilePic());
+				userLoginRepo.save(userLoginEntity);
+				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Updated successfully", 200));
+			}
+			userLoginEntity.setProfilePic(userLoginEntityParam.getProfilePic());
 			userLoginRepo.save(userLoginEntity);
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Updated successfully", 200));
 		} catch (Exception e) {
