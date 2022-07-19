@@ -191,6 +191,10 @@ public class ProductService {
 						ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+userId.get(i), UserProfileInfo.class);
 						
 					}
+					productRepo.save(customFunction.filterDataEntity(productData));
+
+					
+					//char emailData[];
 					ImagesEntity[] images=productData.getImages();
 					String image1=images[0].getName();
 					System.out.println(images[0].getName());
@@ -213,7 +217,6 @@ public class ProductService {
 					String ETreplace5 = ETreplace4.replace(productLink,"http://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
 					String ETreplace6 = ETreplace5.replace(productDesignerName,productData.getDesignerName());
 					String ETreplace7 = ETreplace6.replace(designerImage,designerImageData);
-					//String ETreplace7 = ETreplace6.replace(productDesignerName,productData.getDesignerName());
 					System.out.println("http://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
 					for(int i=0;i<userInfoList.size();i++)
 					{
