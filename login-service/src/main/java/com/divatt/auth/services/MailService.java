@@ -21,13 +21,6 @@ public class MailService {
 
 	public void sendEmail(String to, String subject, String body,Boolean enableHtml) {
 
-//		SimpleMailMessage message = new SimpleMailMessage();
-//
-//		message.setFrom("ulearn@co.in");
-//		message.setTo(to);
-//		message.setSubject(subject);
-//		message.setText(body);
-//		mailSender.send(message);
 		try {
 
 			MimeMessage message = mailSender.createMimeMessage();
@@ -47,13 +40,6 @@ public class MailService {
 	
 	public void sendEmailWithAttachment(String to, String subject, String body,Boolean enableHtml,File file) {
 
-//		SimpleMailMessage message = new SimpleMailMessage();
-//
-//		message.setFrom("ulearn@co.in");
-//		message.setTo(to);
-//		message.setSubject(subject);
-//		message.setText(body);
-//		mailSender.send(message);
 		try {
 
 			MimeMessage message = mailSender.createMimeMessage();
