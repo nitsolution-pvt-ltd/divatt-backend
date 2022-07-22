@@ -59,8 +59,8 @@ public class UserApplication implements CommandLineRunner{
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setHost("smtp.hostinger.in");
 		mailSender.setPort(587);
-		mailSender.setUsername("soumen.dolui@nitsolution.in");//ahadul@nitsolution.in
-		mailSender.setPassword("Soumen@1234");
+		mailSender.setUsername("no-reply@nitsolution.in");//ahadul@nitsolution.in
+		mailSender.setPassword("no-Reply@123");
 		 
 		Properties properties = new Properties();
 		properties.setProperty("mail.smtp.auth", "true");

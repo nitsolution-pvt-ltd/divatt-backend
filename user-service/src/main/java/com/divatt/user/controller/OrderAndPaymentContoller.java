@@ -461,7 +461,7 @@ public class OrderAndPaymentContoller {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setSubject(subject);
-			helper.setFrom("soumen.dolui@nitsolution.in");
+			helper.setFrom("no-reply@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 			helper.addAttachment("order-summary", file);
