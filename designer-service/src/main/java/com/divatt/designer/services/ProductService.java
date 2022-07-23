@@ -31,8 +31,13 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.ModelAndView;
+
 
 import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.ListProduct;
@@ -40,6 +45,7 @@ import com.divatt.designer.entity.OrderDetailsEntity;
 import com.divatt.designer.entity.OrderSKUDetailsEntity;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.SendMail;
+import com.divatt.designer.entity.StockEntity;
 import com.divatt.designer.entity.UserList;
 import com.divatt.designer.entity.UserProfile;
 import com.divatt.designer.entity.UserProfileInfo;
@@ -85,6 +91,8 @@ public class ProductService {
 
 	@Autowired
 	private MongoOperations mongoOperations;
+	
+	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
@@ -210,7 +218,8 @@ public class ProductService {
 					String productDesignerName="__ProductDesignerName__";
 					String productUserName="__Username__";
 					String designerImage="__DesignerImage__";
-					Path filePath= Path.of("D:\\packageservice\\projects\\Divatt\\divatt-backend-updated-4-05-2022\\divatt-backend\\designer-service\\src\\main\\resources\\templates\\emailTemplate.html");
+//					Path filePath= Path.of("D:\\packageservice\\projects\\Divatt\\divatt-backend-updated-4-05-2022\\divatt-backend\\designer-service\\src\\main\\resources\\templates\\emailTemplate.html");
+					Path filePath= null;
 					String ETBody = Files.readString(filePath);
 					String ETreplace = ETBody.replace(productImage,image1);
 					String ETreplace1 = ETreplace.replace(productName,productData.getProductName());
@@ -861,13 +870,13 @@ public class ProductService {
 	}
 
 
-	public GlobalResponce stockClearenceService(List<OrderSKUDetailsEntity> orderEntities)
+	public GlobalResponce stockClearenceService(List<OrderSKUDetailsEntity> orderSKUDetailsEntities)
 	{
 		try {
-			for (int i=0;i<orderEntities.size();i++) {
-				int productId=orderEntities.get(i).getProductId();
-				Long productQty=orderEntities.get(i).getUnits();
-				String productSize=orderEntities.get(i).getSize();
+			for (int i=0;i<orderSKUDetailsEntities.size();i++) {
+				int productId=orderSKUDetailsEntities.get(i).getProductId();
+				int productQty=orderSKUDetailsEntities.get(i).getUnits().intValue();
+				String productSize=orderSKUDetailsEntities.get(i).getSize();
 				List<StandardSOH> updatedSOH=new ArrayList<StandardSOH>();
 				ProductMasterEntity productMasterEntity= productRepo.findById(productId).get();
 				List<StandardSOH> standardSOHs=productMasterEntity.getStanderedSOH();
@@ -877,7 +886,7 @@ public class ProductService {
 					//System.out.println(standardSOHs.get(a));
 					//System.out.println(productQty);
 					if(standardSOHs.get(a).getSizeType().equals(productSize)) {
-						standardSOH.setSoh((int) (standardSOHs.get(a).getSoh().intValue()-productQty));
+						standardSOH.setSoh(standardSOHs.get(a).getSoh().intValue()-productQty);
 						standardSOH.setOos(standardSOHs.get(a).getOos());
 						standardSOH.setSizeType(productSize);
 						standardSOH.setNotify(standardSOHs.get(a).getNotify());
@@ -940,15 +949,6 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-//	public UserProfile userProfileConvert(Object obj) {
-//
-//	    if (obj instanceof UserProfile) {
-//
-//	    	UserProfile entity = (UserProfile) obj;
-//	        // use entity instance as you need..
-//	    	
-//	    }
-//	}
 
 	public Map<String, Object> getProductReminderService(Integer page, Integer limit, Optional<String> sortBy,
 			String sort, String sortName, String keyword, Boolean isDeleted) {
@@ -1001,6 +1001,68 @@ public class ProductService {
 				return response;
 			}
 		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
+	//@Scheduled(fixedDelay = 10000)
+	public String schData()
+	{
+		try {
+				List<DesignerProfileEntity> designerProfileEntities= designerProfileRepo.findAll();
+				HashMap<Integer, List<StockEntity>> data = new HashMap<Integer, List<StockEntity>>();
+				List<Integer> designerList= new ArrayList<Integer>();
+				for(int i=0;i<designerProfileEntities.size();i++)
+				{
+					designerList.add(designerProfileEntities.get(i).getDesignerId().intValue());
+				}
+				for(int i=0;i<designerList.size();i++) {
+					List<StockEntity> stockList= new ArrayList<StockEntity>();
+					List<ProductMasterEntity> productDataList=productRepo.findByDesignerIdAndIsDeletedAndAdminStatusAndIsActive(designerList.get(i), false, "Approved", true);
+					List<Integer> productList= new ArrayList<Integer>();
+					for(int a=0;a<productDataList.size();a++) {
+						List<StandardSOH> sohData=productDataList.get(a).getStanderedSOH();
+						for(int b=0;b<sohData.size();b++) {
+							if(sohData.get(b).getSoh()<sohData.get(b).getNotify())
+							{
+								productList.add(productDataList.get(a).getProductId());
+								ImagesEntity[] imagesEntities=productDataList.get(i).getImages();
+								String productImages=imagesEntities[0].getName().toString();
+								StockEntity stockEntity= new StockEntity();
+								stockEntity.setPrice(productDataList.get(a).getPrice().getIndPrice().getDealPrice().intValue());
+								stockEntity.setProductDescription(productDataList.get(a).getProductDescription());
+								stockEntity.setProductImage(productImages);
+								stockEntity.setSenderEmail(designerProfileRepo.findBydesignerId(designerList.get(i).longValue()).get().getDesignerProfile().getEmail());
+								stockEntity.setSize(sohData.get(b).getSizeType());
+								stockEntity.setStock(sohData.get(b).getNotify());
+								stockList.add(stockEntity); 
+							}
+						}
+					}
+					if(!productList.isEmpty()) {
+						
+						data.put(designerList.get(i), stockList);
+					}
+				}
+//				//System.out.println(data);
+//				Map<String, Object> data1= new HashMap<String, Object>();
+//				List<StockEntity> list= new ArrayList<StockEntity>();
+//				for(int i=0;i<data.size();i++)
+//				{
+//					Collection<List<StockEntity>> values = data.values();
+//				//	StockEntity[] stockData = null;
+//					List<List<StockEntity>> collect = values.stream().collect(Collectors.toList());
+//					for(int a=0;a<collect.size();a++)
+//					{
+//						list = collect.get(a);
+//					}
+//				}
+//				System.out.println(list);
+//				return null;
+				 return null;
+				}
+		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
