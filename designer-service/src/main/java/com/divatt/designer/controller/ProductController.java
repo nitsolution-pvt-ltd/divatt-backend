@@ -40,6 +40,12 @@ public class ProductController implements ProductServiceImp {
 	
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
+	
+	
+	@GetMapping("/test")
+	public String test() {
+		return "Hii";
+	}
 
 	@GetMapping("/allList")
 	public Map<String, Object> allProductList(@RequestParam(defaultValue = "0") int page,
