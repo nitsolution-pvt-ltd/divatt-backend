@@ -1,33 +1,27 @@
 package com.divatt.user.entity;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.divatt.user.entity.order.OrderDetailsEntity;
+import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 
-public class OrederAndPaymentGlobalEntity {
+public class OrderAndPaymentGlobalEntity {
 	
 	@Valid
 	private OrderPaymentEntity orderPaymentEntity;
 	
 	@Valid
 	private OrderDetailsEntity orderDetailsEntity;
+	 
+	@Valid
+	private List<OrderSKUDetailsEntity> orderSKUDetailsEntity;
 
-	public OrederAndPaymentGlobalEntity() {
+	public OrderAndPaymentGlobalEntity() {
 		super();
 		// TODO Auto-generated constructor stub
-	}
-
-	public OrederAndPaymentGlobalEntity(OrderPaymentEntity orderPaymentEntity, OrderDetailsEntity orderDetailsEntity) {
-		super();
-		this.orderPaymentEntity = orderPaymentEntity;
-		this.orderDetailsEntity = orderDetailsEntity;
-	}
-
-	@Override
-	public String toString() {
-		return "OrederAndPaymentGlobalEntity [orderPaymentEntity=" + orderPaymentEntity + ", orderDetailsEntity="
-				+ orderDetailsEntity + "]";
 	}
 
 	public OrderPaymentEntity getOrderPaymentEntity() {
@@ -45,6 +39,16 @@ public class OrederAndPaymentGlobalEntity {
 	public void setOrderDetailsEntity(OrderDetailsEntity orderDetailsEntity) {
 		this.orderDetailsEntity = orderDetailsEntity;
 	}
+
+	public List<OrderSKUDetailsEntity> getOrderSKUDetailsEntity() {
+		return orderSKUDetailsEntity;
+	}
+
+	public void setOrderSKUDetailsEntity(List<OrderSKUDetailsEntity> orderSKUDetailsEntity) {
+		this.orderSKUDetailsEntity = orderSKUDetailsEntity;
+	}
+
+	
 	
 	
 

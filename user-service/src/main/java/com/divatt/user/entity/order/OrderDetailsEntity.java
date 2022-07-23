@@ -9,10 +9,10 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "tbl_order_details")
+@Document(collection = "tbl_order_details_new")
 public class OrderDetailsEntity {
 	@Transient
-	public static final String SEQUENCE_NAME = "tbl_order_details";
+	public static final String SEQUENCE_NAME = "tbl_order_details_new";
 	
 	@Id
 	private Integer id;
@@ -35,38 +35,43 @@ public class OrderDetailsEntity {
 	@Field(name = "billing_address") 
 	private Object billingAddress;
 	
-	@NotNull(message = "product details is required!")
-	@Field(name = "products") 
-	private List<Object> products;
-	
-	@NotNull(message = "mrp is required!")
-	@Field(name = "mrp") 
-	private Long mrp;
-	
-	@NotNull(message = "discount is required!")
-	@Field(name = "discount") 
-	private Long discount;
-	
-	@NotNull(message = "Net price is required!")
-	@Field(name = "net_price") 
-	private Long netPrice;
-	
-	@NotNull(message = "Tax amount is required!")
-	@Field(name = "tax_amount") 
-	private Long taxAmount;
-	
 	@NotNull(message = "Total amount is required!")
 	@Field(name = "total_amount") 
-	private Long totalAmount;
+	private Double totalAmount;	
 	
-	@Field(name = "created_on") 
-	private String createdOn;
-	
-	@Field(name="user_inv")
-	private String userInv;
+	@Field(name = "order_date") 
+	private String orderDate;
 
 	@Field(name= "order_status")
 	private String orderStatus;
+	
+	@Field(name= "delivery_status")
+	private String deliveryStatus;
+	
+	@Field(name= "delivery_mode")
+	private String deliveryMode;
+	
+	@Field(name = "delivery_date") 
+	private String deliveryDate;
+	
+	@Field(name = "delivery_check_url") 
+	private String deliveryCheckUrl;
+	
+	@Field(name = "shipping_charges") 
+	private Double shippingCharges;
+	
+	@Field(name = "discount") 
+	private Double discount;
+	
+	@Field(name = "mrp") 
+	private Double mrp;
+
+	@Field(name = "tax_amount") 
+	private Double taxAmount;
+	
+	
+	@Field(name = "created_on") 
+	private String createdOn;
 
 	public OrderDetailsEntity() {
 		super();
@@ -76,12 +81,9 @@ public class OrderDetailsEntity {
 	public OrderDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
 			String invoiceId, @NotNull(message = "Shipping address is required!") Object shippingAddress,
 			@NotNull(message = "Billing address is required!") Object billingAddress,
-			@NotNull(message = "product details is required!") List<Object> products,
-			@NotNull(message = "mrp is required!") Long mrp, @NotNull(message = "discount is required!") Long discount,
-			@NotNull(message = "Net price is required!") Long netPrice,
-			@NotNull(message = "Tax amount is required!") Long taxAmount,
-			@NotNull(message = "Total amount is required!") Long totalAmount, String createdOn, String userInv,
-			String orderStatus) {
+			@NotNull(message = "Total amount is required!") Double totalAmount, String orderDate, String orderStatus,
+			String deliveryStatus, String deliveryMode, String deliveryDate, String deliveryCheckUrl,
+			Double shippingCharges, Double discount, Double mrp, Double taxAmount, String createdOn) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -89,24 +91,29 @@ public class OrderDetailsEntity {
 		this.invoiceId = invoiceId;
 		this.shippingAddress = shippingAddress;
 		this.billingAddress = billingAddress;
-		this.products = products;
-		this.mrp = mrp;
-		this.discount = discount;
-		this.netPrice = netPrice;
-		this.taxAmount = taxAmount;
 		this.totalAmount = totalAmount;
-		this.createdOn = createdOn;
-		this.userInv = userInv;
+		this.orderDate = orderDate;
 		this.orderStatus = orderStatus;
+		this.deliveryStatus = deliveryStatus;
+		this.deliveryMode = deliveryMode;
+		this.deliveryDate = deliveryDate;
+		this.deliveryCheckUrl = deliveryCheckUrl;
+		this.shippingCharges = shippingCharges;
+		this.discount = discount;
+		this.mrp = mrp;
+		this.taxAmount = taxAmount;
+		this.createdOn = createdOn;
 	}
 
 	@Override
 	public String toString() {
 		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", invoiceId="
 				+ invoiceId + ", shippingAddress=" + shippingAddress + ", billingAddress=" + billingAddress
-				+ ", products=" + products + ", mrp=" + mrp + ", discount=" + discount + ", netPrice=" + netPrice
-				+ ", taxAmount=" + taxAmount + ", totalAmount=" + totalAmount + ", createdOn=" + createdOn
-				+ ", userInv=" + userInv + ", orderStatus=" + orderStatus + "]";
+				+ ", totalAmount=" + totalAmount + ", orderDate=" + orderDate + ", orderStatus=" + orderStatus
+				+ ", deliveryStatus=" + deliveryStatus + ", deliveryMode=" + deliveryMode + ", deliveryDate="
+				+ deliveryDate + ", deliveryCheckUrl=" + deliveryCheckUrl + ", shippingCharges=" + shippingCharges
+				+ ", discount=" + discount + ", mrp=" + mrp + ", taxAmount=" + taxAmount + ", createdOn=" + createdOn
+				+ "]";
 	}
 
 	public Integer getId() {
@@ -157,68 +164,20 @@ public class OrderDetailsEntity {
 		this.billingAddress = billingAddress;
 	}
 
-	public List<Object> getProducts() {
-		return products;
-	}
-
-	public void setProducts(List<Object> products) {
-		this.products = products;
-	}
-
-	public Long getMrp() {
-		return mrp;
-	}
-
-	public void setMrp(Long mrp) {
-		this.mrp = mrp;
-	}
-
-	public Long getDiscount() {
-		return discount;
-	}
-
-	public void setDiscount(Long discount) {
-		this.discount = discount;
-	}
-
-	public Long getNetPrice() {
-		return netPrice;
-	}
-
-	public void setNetPrice(Long netPrice) {
-		this.netPrice = netPrice;
-	}
-
-	public Long getTaxAmount() {
-		return taxAmount;
-	}
-
-	public void setTaxAmount(Long taxAmount) {
-		this.taxAmount = taxAmount;
-	}
-
-	public Long getTotalAmount() {
+	public Double getTotalAmount() {
 		return totalAmount;
 	}
 
-	public void setTotalAmount(Long totalAmount) {
+	public void setTotalAmount(Double totalAmount) {
 		this.totalAmount = totalAmount;
 	}
 
-	public String getCreatedOn() {
-		return createdOn;
+	public String getOrderDate() {
+		return orderDate;
 	}
 
-	public void setCreatedOn(String createdOn) {
-		this.createdOn = createdOn;
-	}
-
-	public String getUserInv() {
-		return userInv;
-	}
-
-	public void setUserInv(String userInv) {
-		this.userInv = userInv;
+	public void setOrderDate(String orderDate) {
+		this.orderDate = orderDate;
 	}
 
 	public String getOrderStatus() {
@@ -229,10 +188,82 @@ public class OrderDetailsEntity {
 		this.orderStatus = orderStatus;
 	}
 
+	public String getDeliveryStatus() {
+		return deliveryStatus;
+	}
+
+	public void setDeliveryStatus(String deliveryStatus) {
+		this.deliveryStatus = deliveryStatus;
+	}
+
+	public String getDeliveryMode() {
+		return deliveryMode;
+	}
+
+	public void setDeliveryMode(String deliveryMode) {
+		this.deliveryMode = deliveryMode;
+	}
+
+	public String getDeliveryDate() {
+		return deliveryDate;
+	}
+
+	public void setDeliveryDate(String deliveryDate) {
+		this.deliveryDate = deliveryDate;
+	}
+
+	public String getDeliveryCheckUrl() {
+		return deliveryCheckUrl;
+	}
+
+	public void setDeliveryCheckUrl(String deliveryCheckUrl) {
+		this.deliveryCheckUrl = deliveryCheckUrl;
+	}
+
+	public Double getShippingCharges() {
+		return shippingCharges;
+	}
+
+	public void setShippingCharges(Double shippingCharges) {
+		this.shippingCharges = shippingCharges;
+	}
+
+	public Double getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(Double discount) {
+		this.discount = discount;
+	}
+
+	public Double getMrp() {
+		return mrp;
+	}
+
+	public void setMrp(Double mrp) {
+		this.mrp = mrp;
+	}
+
+	public Double getTaxAmount() {
+		return taxAmount;
+	}
+
+	public void setTaxAmount(Double taxAmount) {
+		this.taxAmount = taxAmount;
+	}
+
+	public String getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(String createdOn) {
+		this.createdOn = createdOn;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
 	
-
+	
 }

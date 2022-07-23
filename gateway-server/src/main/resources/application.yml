@@ -68,6 +68,17 @@ spring:
     name: ApiGatway
 server:
   port: '8085'
+#  ssl:
+##   key-store: C:\Users\Ahadul\Downloads\divatt.jks
+#   key-store: divatt.jks
+#   key-store-password: divatt
+#   key-store-type: JKS
+#   key-alias: divatt
+#   key-password: divatt
+
+
+
+
 eureka:
   client:
     serviceUrl:

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 //import org.json.JSONObject;
-import com.divatt.designer.entity.OrderEntity;
+import com.divatt.designer.entity.OrderSKUDetailsEntity;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.exception.CustomException;
@@ -342,7 +342,7 @@ public class ProductController implements ProductServiceImp {
 	}
 
 	@PutMapping("/stockClearence")
-	public GlobalResponce stockClearence(@RequestBody List<OrderEntity> jsonObject)
+	public GlobalResponce stockClearence(@RequestBody List<OrderSKUDetailsEntity> jsonObject)
 	{
 		try {
 			return this.productService.stockClearenceService(jsonObject);

@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
 import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.OrderDetailsEntity;
-import com.divatt.designer.entity.OrderEntity;
+import com.divatt.designer.entity.OrderSKUDetailsEntity;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.SendMail;
 import com.divatt.designer.entity.UserList;
@@ -858,13 +858,13 @@ public class ProductService {
 	}
 
 
-	public GlobalResponce stockClearenceService(List<OrderEntity> orderEntities)
+	public GlobalResponce stockClearenceService(List<OrderSKUDetailsEntity> orderSKUDetailsEntities)
 	{
 		try {
-			for (int i=0;i<orderEntities.size();i++) {
-				int productId=orderEntities.get(i).getProductId();
-				int productQty=orderEntities.get(i).getUnits();
-				String productSize=orderEntities.get(i).getSize();
+			for (int i=0;i<orderSKUDetailsEntities.size();i++) {
+				int productId=orderSKUDetailsEntities.get(i).getProductId();
+				int productQty=orderSKUDetailsEntities.get(i).getUnits().intValue();
+				String productSize=orderSKUDetailsEntities.get(i).getSize();
 				List<StandardSOH> updatedSOH=new ArrayList<StandardSOH>();
 				ProductMasterEntity productMasterEntity= productRepo.findById(productId).get();
 				List<StandardSOH> standardSOHs=productMasterEntity.getStanderedSOH();

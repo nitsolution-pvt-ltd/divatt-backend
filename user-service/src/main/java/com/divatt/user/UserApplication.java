@@ -59,17 +59,14 @@ public class UserApplication implements CommandLineRunner{
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setHost("smtp.hostinger.in");
 		mailSender.setPort(587);
-		mailSender.setUsername("soumen.dolui@nitsolution.in");//ahadul@nitsolution.in
-		mailSender.setPassword("Soumen@1234");
+		mailSender.setUsername("no-reply@nitsolution.in");
+		mailSender.setPassword("no-Reply@123");
 		 
 		Properties properties = new Properties();
 		properties.setProperty("mail.smtp.auth", "true");
 		properties.setProperty("mail.smtp.starttls.enable", "true");
-		//spring.mail.properties.mail.smtp.starttls.required=true
 		properties.setProperty("mail.smtp.ssl.enable", "false");
 		properties.setProperty("mail.smtps.quitwait", "false");
-		
-		
 		 
 		mailSender.setJavaMailProperties(properties);
         return mailSender;
