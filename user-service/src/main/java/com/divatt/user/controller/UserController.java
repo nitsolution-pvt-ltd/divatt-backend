@@ -122,7 +122,7 @@ public class UserController {
 
 	}
 
-//	@Scheduled(cron = "0 10 22 * * *") //this method will call at Twice per Day at 10AM & 10PM....
+	@Scheduled(cron = "0 10 22 * * *") //this method will call at Twice per Day at 10AM & 10PM....
 //	@Scheduled(cron = "* 1 * * * *")
 	@GetMapping("/notification")
 	public void sendNotification() {
