@@ -70,6 +70,9 @@ import springfox.documentation.spring.web.json.Json;
 
 @Service
 public class ProductService {
+	
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Autowired
 	private ProductRepository productRepo;
@@ -258,9 +261,9 @@ public class ProductService {
 			if (productRepo.existsById(productId)) {
 				LOGGER.info("Inside - ProductService.productDetails()");
 				 ProductMasterEntity masterEntity= productRepo.findById(productId).get();
-				 RestTemplate restTemplate= new RestTemplate();
-				 ResponseEntity<Object> categoryEntity=restTemplate.getForEntity("http://localhost:8084/dev/category/view/"+masterEntity.getCategoryId(), Object.class);
-				 ResponseEntity<Object> subCategoryEntity=restTemplate.getForEntity("http://localhost:8084/dev/subcategory/view/"+masterEntity.getSubCategoryId(), Object.class);
+//				 RestTemplate restTemplate= new RestTemplate();
+				 ResponseEntity<Object> categoryEntity=restTemplate.getForEntity("https://localhost:8084/dev/category/view/"+masterEntity.getCategoryId(), Object.class);
+				 ResponseEntity<Object> subCategoryEntity=restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+masterEntity.getSubCategoryId(), Object.class);
 				 ProductEntity productData=customFunction.productFilter(masterEntity);
 				 productData.setCategoryObject(categoryEntity.getBody());
 				 productData.setSubCategoryObject(subCategoryEntity.getBody());
