@@ -2,6 +2,7 @@ package com.divatt.user.services;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.Random;
 
 import org.springframework.core.io.Resource;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -40,10 +42,12 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import com.divatt.user.entity.InvoiceEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
+import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.PDFRunner;
 import com.divatt.user.repo.OrderDetailsRepo;
+import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -58,7 +62,7 @@ import com.razorpay.RazorpayException;
 import springfox.documentation.spring.web.json.Json;
 
 @Service
-public class OrderAndPaymentService{
+public class OrderAndPaymentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentService.class);
 
@@ -72,18 +76,20 @@ public class OrderAndPaymentService{
 	private OrderDetailsRepo orderDetailsRepo;
 
 	@Autowired
+	private OrderSKUDetailsRepo orderSKUDetailsRepo;
+
+	@Autowired
 	private SequenceGenerator sequenceGenerator;
 
 	@Autowired
 	private MongoOperations mongoOperations;
-	
+
 	@Autowired
 	private Environment env;
 
-
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
-	
+
 	protected String getRandomString() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -151,8 +157,54 @@ public class OrderAndPaymentService{
 			filterCatDetails.setUserId(orderPaymentEntity.getUserId());
 			filterCatDetails.setCreatedOn(new Date());
 
-			OrderPaymentEntity data=userOrderPaymentRepo.save(filterCatDetails);
+			OrderPaymentEntity data = userOrderPaymentRepo.save(filterCatDetails);
 			return ResponseEntity.ok(data);
+		} catch (RazorpayException e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	public ResponseEntity<?> postOrderSKUService(List<OrderSKUDetailsEntity> orderSKUDetailsEntity) {
+		LOGGER.info("Inside - OrderAndPaymentService.postOrderSKUService()");
+
+		try {
+
+			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
+
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			Date date = new Date();
+			String format = formatter.format(date);
+			
+			OrderSKUDetailsEntity filterCatDetails = new OrderSKUDetailsEntity();
+
+			for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
+				
+			
+			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
+			filterCatDetails.setOrderId(orderSKUDetailsEntityRow.getOrderId());
+			filterCatDetails.setColour(orderSKUDetailsEntityRow.getColour());
+			filterCatDetails.setDesignerId(orderSKUDetailsEntityRow.getDesignerId());
+			filterCatDetails.setMrp(orderSKUDetailsEntityRow.getMrp());
+			filterCatDetails.setDiscount(orderSKUDetailsEntityRow.getDiscount());
+			filterCatDetails.setUserId(orderSKUDetailsEntityRow.getUserId());
+			filterCatDetails.setImages(orderSKUDetailsEntityRow.getImages());
+			filterCatDetails.setOrderItemStatus(orderSKUDetailsEntityRow.getOrderItemStatus());
+			filterCatDetails.setProductId(orderSKUDetailsEntityRow.getProductId());
+			filterCatDetails.setProductName(orderSKUDetailsEntityRow.getProductName());
+			filterCatDetails.setUnits(orderSKUDetailsEntityRow.getUnits());
+			filterCatDetails.setProductSku(orderSKUDetailsEntityRow.getProductSku());
+			filterCatDetails.setReachedCentralHub(orderSKUDetailsEntityRow.getReachedCentralHub());
+			filterCatDetails.setSalesPrice(orderSKUDetailsEntityRow.getSalesPrice());
+			filterCatDetails.setTaxAmount(orderSKUDetailsEntityRow.getTaxAmount());
+			filterCatDetails.setTaxType(orderSKUDetailsEntityRow.getTaxType());
+			filterCatDetails.setUpdatedOn(orderSKUDetailsEntityRow.getUpdatedOn());
+			filterCatDetails.setCreatedOn(format);
+
+			OrderSKUDetailsEntity data = orderSKUDetailsRepo.save(filterCatDetails);
+			}
+			
+			return ResponseEntity.ok(null);
 		} catch (RazorpayException e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -245,6 +297,8 @@ public class OrderAndPaymentService{
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 
+				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
+
 				String writeValueAsString = null;
 				try {
 					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
@@ -253,9 +307,19 @@ public class OrderAndPaymentService{
 				}
 				JsonNode paymentJson = new JsonNode(writeValueAsString);
 
+				String OrderSKUD = null;
+				try {
+					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+				} catch (JsonProcessingException e2) {
+					e2.printStackTrace();
+				}
+
+				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
+
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
 				objects.put("paymentData", paymentJson.getObject());
+				objects.put("OrderSKUDetails", OrderSKUDJson.getArray());
 				productId.add(objects);
 
 			});
@@ -301,6 +365,7 @@ public class OrderAndPaymentService{
 				}
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 
 				String writeValueAsString = null;
 				try {
@@ -308,11 +373,21 @@ public class OrderAndPaymentService{
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
+				
+				String OrderSKUD = null;
+				try {
+					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+				} catch (JsonProcessingException e2) {
+					e2.printStackTrace();
+				}
 				JsonNode paymentJson = new JsonNode(writeValueAsString);
 
+				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
+				
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
 				objects.put("paymentData", paymentJson.getObject());
+				objects.put("OrderSKUDetails", OrderSKUDJson.getArray());
 				productId.add(objects);
 
 			});
@@ -342,6 +417,8 @@ public class OrderAndPaymentService{
 					e1.printStackTrace();
 				}
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
+				
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
 
@@ -351,9 +428,19 @@ public class OrderAndPaymentService{
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
+				
+				String OrderSKUD = null;
+				try {
+					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+				} catch (JsonProcessingException e2) {
+					e2.printStackTrace();
+				}
+				
 				JsonNode paymentJson = new JsonNode(writeValueAsString);
+				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
 
 				object.put("paymentData", paymentJson.getObject());
+				object.put("OrderSKUDetails", OrderSKUDJson.getArray());
 				productId.add(object);
 
 			});
@@ -451,38 +538,37 @@ public class OrderAndPaymentService{
 
 	public GlobalResponse invoiceGenarator(String orderId) {
 		try {
-			Query query= new Query();
+			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(orderId));
-			OrderDetailsEntity detailsEntity= mongoOperations.findOne(query, OrderDetailsEntity.class);
-			if(detailsEntity!=null) {
+			OrderDetailsEntity detailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
+			if (detailsEntity != null) {
 				// RestTemplate restTemplate= new RestTemplate();
-				// ResponseEntity<UserLoginEntity> userLoginEntity=restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+detailsEntity.getUserId(), UserLoginEntity.class);
-				//ResponseEntity<UserLoginEntity> userLoginEntity=null;
+				// ResponseEntity<UserLoginEntity>
+				// userLoginEntity=restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+detailsEntity.getUserId(),
+				// UserLoginEntity.class);
+				// ResponseEntity<UserLoginEntity> userLoginEntity=null;
 				// System.out.println(userLoginEntity.getBody());
-				 InvoiceEntity invoiceEntity= new InvoiceEntity();
-				 invoiceEntity.setOrderDetailsEntity(detailsEntity);
+				InvoiceEntity invoiceEntity = new InvoiceEntity();
+				invoiceEntity.setOrderDetailsEntity(detailsEntity);
 				// invoiceEntity.setUserEntity(userLoginEntity.getBody());
-				 PDFRunner pdfRunner= new PDFRunner(invoiceEntity);
-				 pdfRunner.fun1();
-				 return pdfRunner.pdfPath(orderId);
-			}
-			else {
+				PDFRunner pdfRunner = new PDFRunner(invoiceEntity);
+				pdfRunner.fun1();
+				return pdfRunner.pdfPath(orderId);
+			} else {
 				return new GlobalResponse("Error!!", "Order not found", 400);
 			}
-			}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public OrderDetailsEntity getOrderDetails(String orderId) {
 		try {
-			Query query= new Query();
+			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(orderId));
-			OrderDetailsEntity orderDetailsEntity= mongoOperations.findOne(query, OrderDetailsEntity.class);
+			OrderDetailsEntity orderDetailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
 			return orderDetailsEntity;
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -491,14 +577,14 @@ public class OrderAndPaymentService{
 			String keyword, Optional<String> sortBy) {
 		try {
 			try {
-				Query query= new Query();
+				Query query = new Query();
 				query.addCriteria(Criteria.where("order_id").is(orderId));
-				OrderDetailsEntity orderDetailsEntity= mongoTemplate.findOne(query, OrderDetailsEntity.class);
-				int CountData =orderDetailsEntity.getProducts().size();
+				OrderDetailsEntity orderDetailsEntity = mongoTemplate.findOne(query, OrderDetailsEntity.class);
+//				int CountData =orderDetailsEntity.getProducts().size();
 				Pageable pagingSort = null;
-				if (limit == 0) {
-					limit = CountData;
-				}
+//				if (limit == 0) {
+//					limit = CountData;
+//				}
 
 				if (sort.equals("ASC")) {
 					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
@@ -509,7 +595,7 @@ public class OrderAndPaymentService{
 				Page<OrderDetailsEntity> findAll = null;
 
 				if (keyword.isEmpty()) {
-					findAll = orderDetailsRepo.findByOrderId(orderId,pagingSort);
+					findAll = orderDetailsRepo.findByOrderId(orderId, pagingSort);
 				}
 //				else {
 //					findAll = orderDetailsRepo.SearchByOrderId(keyword,orderId,pagingSort);
@@ -535,67 +621,61 @@ public class OrderAndPaymentService{
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
 			}
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public GlobalResponse orderUpdateService(OrderDetailsEntity orderDetailsEntity, String orderId) {
 		try {
-			Query query= new Query();
+			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(orderId));
-			OrderDetailsEntity orderDetailsEntity2=mongoOperations.findOne(query, OrderDetailsEntity.class);
+			OrderDetailsEntity orderDetailsEntity2 = mongoOperations.findOne(query, OrderDetailsEntity.class);
 			System.out.println(orderDetailsEntity2);
-			if(!orderDetailsEntity2.equals(null))
-			{
+			if (!orderDetailsEntity2.equals(null)) {
 				System.out.println(orderDetailsEntity);
-				OrderDetailsEntity orderDetailsEntity1=orderDetailsRepo.findByOrderId(orderId).get(0);
+				OrderDetailsEntity orderDetailsEntity1 = orderDetailsRepo.findByOrderId(orderId).get(0);
 				orderDetailsEntity1.setOrderId(orderDetailsRepo.findByOrderId(orderId).get(0).getOrderId());
 				orderDetailsEntity1.setOrderStatus(orderDetailsEntity.getOrderStatus());
 				orderDetailsRepo.save(orderDetailsEntity1);
 				return new GlobalResponse("Success!!", "Order status updated", 200);
-			}
-			else {
+			} else {
 				return new GlobalResponse("Error!!", "Order not found", 400);
 			}
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	private enum ResourceType {
-		FILE_SYSTEM,
-		CLASSPATH
+		FILE_SYSTEM, CLASSPATH
 	}
- 
+
 	private static final String FILE_DIRECTORY = "/var/files";
- 
 
 	public Resource getFileSystem(String filename, HttpServletResponse response) {
 		return getResource(filename, response, ResourceType.FILE_SYSTEM);
 	}
-	
+
 	public Resource getClassPathFile(String filename, HttpServletResponse response) {
 		return getResource(filename, response, ResourceType.CLASSPATH);
 	}
-	
+
 	private Resource getResource(String filename, HttpServletResponse response, ResourceType resourceType) {
 		response.setContentType("text/csv; charset=utf-8");
 		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 		response.setHeader("filename", filename);
- 
+
 		Resource resource = null;
 		switch (resourceType) {
-			case FILE_SYSTEM:
-				resource = new FileSystemResource(FILE_DIRECTORY + filename);
-				break;
-			case CLASSPATH:
-				resource = new ClassPathResource("data/" + filename);
-				break;
+		case FILE_SYSTEM:
+			resource = new FileSystemResource(FILE_DIRECTORY + filename);
+			break;
+		case CLASSPATH:
+			resource = new ClassPathResource("data/" + filename);
+			break;
 		}
- 
+
 		return resource;
 	}
 }

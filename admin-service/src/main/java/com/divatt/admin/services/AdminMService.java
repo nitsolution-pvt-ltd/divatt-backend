@@ -1,6 +1,7 @@
 package com.divatt.admin.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,71 +17,71 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.divatt.admin.entity.BannerEntity;
 import com.divatt.admin.entity.ColourEntity;
 import com.divatt.admin.entity.ColourMetaEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
+import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminMDataRepo;
+import com.divatt.admin.repo.BannerRepo;
 
 @Service
 public class AdminMService {
 
 	@Autowired
 	private MongoOperations mongoOperations;
-	
+
 	@Autowired
 	private AdminMDataRepo adminMDataRepo;
-	
+
+	@Autowired
+	private BannerRepo bannerRepo;
+
+	@Autowired
+	private SequenceGenerator sequenceGenerator;
+
 	public List<ColourEntity> getColour() {
-		try
-		{
-			Query query= new Query();
+		try {
+			Query query = new Query();
 			query.addCriteria(Criteria.where("metaKey").is("colors"));
-			 ColourMetaEntity coloreData = mongoOperations.findOne(query, ColourMetaEntity.class);
-			 List<ColourEntity> coloreEntity=coloreData.getColors();
-			 List<ColourEntity>filterColour=new ArrayList<ColourEntity>();
-			 for(int i=0;i<coloreEntity.size();i++)
-			 {
-				 if(coloreEntity.get(i).getIsActive().equals("true"))
-				 {
-					 filterColour.add(coloreEntity.get(i));
-				 }
-			 }
+			ColourMetaEntity coloreData = mongoOperations.findOne(query, ColourMetaEntity.class);
+			List<ColourEntity> coloreEntity = coloreData.getColors();
+			List<ColourEntity> filterColour = new ArrayList<ColourEntity>();
+			for (int i = 0; i < coloreEntity.size(); i++) {
+				if (coloreEntity.get(i).getIsActive().equals("true")) {
+					filterColour.add(coloreEntity.get(i));
+				}
+			}
 			return filterColour;
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public GlobalResponse addColour(ColourEntity colourEntity) {
-		try
-		{
-			Query query= new Query();
+		try {
+			Query query = new Query();
 			query.addCriteria(Criteria.where("meta_key").is("colors"));
 			ColourMetaEntity colour = mongoOperations.findOne(query, ColourMetaEntity.class);
-			List<ColourEntity> colourEntities= new ArrayList<ColourEntity>();
+			List<ColourEntity> colourEntities = new ArrayList<ColourEntity>();
 			colourEntities.addAll(colour.getColors());
 			colourEntities.add(colourEntity);
-			ColourMetaEntity coloEntity= new ColourMetaEntity();
+			ColourMetaEntity coloEntity = new ColourMetaEntity();
 			coloEntity.setId(colour.getId());
 			coloEntity.setMetaKey(colour.getMetaKey());
 			coloEntity.setColors(colourEntities);
 			adminMDataRepo.save(coloEntity);
 			return new GlobalResponse("Success!!", "Colore Added Successfully", 200);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public Map<String, Object> tblList(int page, String metakey, String keyword, int limit, String sort,
 			Optional<String> sortBy, String sortName) {
-		try
-		{
+		try {
 			int CountData = (int) adminMDataRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
@@ -96,9 +97,9 @@ public class AdminMService {
 			Page<ColourMetaEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = adminMDataRepo.findByMetaKey(metakey,"0", pagingSort);
+				findAll = adminMDataRepo.findByMetaKey(metakey, "0", pagingSort);
 			} else {
-				findAll = adminMDataRepo.Search(keyword,"0", pagingSort);
+				findAll = adminMDataRepo.Search(keyword, "0", pagingSort);
 
 			}
 
@@ -119,13 +120,39 @@ public class AdminMService {
 				throw new CustomException("Colour Not Found!");
 			} else {
 				return response;
-		}
-		}
-		catch(Exception e)
-		{
+			}
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
-	
+	public GlobalResponse addBanner(BannerEntity bannerEntity) {
+		try {
+			Query query = new Query();
+			query.addCriteria(Criteria.where("title").is(bannerEntity.getTitle()));
+			List<BannerEntity> findByBannerName = mongoOperations.find(query, BannerEntity.class);
+
+			if (findByBannerName.size() >= 1) {
+				throw new CustomException("Banner title already exist!");
+			} else {
+
+				BannerEntity banEntity = new BannerEntity();
+				banEntity.setId((long) sequenceGenerator.getNextSequence(BannerEntity.SEQUENCE_NAME));
+				banEntity.setTitle(bannerEntity.getTitle());
+				banEntity.setDescription(bannerEntity.getDescription());
+				banEntity.setImage(bannerEntity.getImage());
+				banEntity.setIsActive(bannerEntity.getIsActive());
+				banEntity.setIsDeleted(bannerEntity.getIsDeleted());
+				banEntity.setStartDate(bannerEntity.getStartDate());
+				banEntity.setEndDate(bannerEntity.getEndDate());
+				banEntity.setCreatedOn(new Date());
+
+				bannerRepo.save(banEntity);
+				return new GlobalResponse("Success", "Banner added successfully", 200);
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }

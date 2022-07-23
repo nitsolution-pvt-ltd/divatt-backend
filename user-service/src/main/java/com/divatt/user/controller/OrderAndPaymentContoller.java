@@ -29,10 +29,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.divatt.user.entity.OrederAndPaymentGlobalEntity;
+import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
+import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
@@ -42,6 +43,7 @@ import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 
@@ -95,6 +97,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+
+import org.apache.commons.codec.binary.Base64;
+
 
 @RestController
 @RequestMapping("/userOrder")
@@ -168,6 +173,23 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
+	@PostMapping("/orderSKUDetails/add")
+	public ResponseEntity<?> postOrderSKUDetails(@RequestHeader("Authorization") String token, @Valid @RequestBody List<OrderSKUDetailsEntity> orderSKUDetailsEntity) {
+		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderSKUDetails()");
+
+		try {
+			String extractUsername = null;
+			try {
+				extractUsername = JwtUtil.extractUsername(token.substring(7));
+			} catch (Exception e) {
+				throw new CustomException("Unauthorized");
+			}
+				return this.orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
 
 	@RequestMapping(value = { "/payment/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getOrderPaymentDetails(@RequestParam(defaultValue = "0") int page,
@@ -186,7 +208,7 @@ public class OrderAndPaymentContoller {
 
 	@PostMapping("/add")
 	public ResponseEntity<?> addOrder(@RequestHeader("Authorization") String token,
-			@RequestBody OrederAndPaymentGlobalEntity orderAndPaymentGlobalEntity) {
+			@RequestBody OrderAndPaymentGlobalEntity orderAndPaymentGlobalEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.addOrder()");
 
 		try {
@@ -204,8 +226,10 @@ public class OrderAndPaymentContoller {
 				OrderDetailsEntity orderDetailsEntity = orderAndPaymentGlobalEntity.getOrderDetailsEntity();
 				
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+				SimpleDateFormat formatters = new SimpleDateFormat("dd/MM/yyyy");
 				Date date = new Date();
 				String format = formatter.format(date);
+				String formatDate = formatters.format(date);
 
 				OrderDetailsEntity OrderLastRow=orderDetailsRepo.findTopByOrderByIdDesc();
  
@@ -213,20 +237,20 @@ public class OrderAndPaymentContoller {
 
 			    
 				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
-				orderDetailsEntity.setInvoiceId("IV"+InvNumber);
-				
+//				orderDetailsEntity.setInvoiceId("IV"+InvNumber);				
 				orderDetailsEntity.setOrderId("OR" + System.currentTimeMillis());
 				orderDetailsEntity.setBillingAddress(orderDetailsEntity.getBillingAddress());
-				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());
-				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());
-				orderDetailsEntity.setNetPrice(orderDetailsEntity.getNetPrice());
-				orderDetailsEntity.setProducts(orderDetailsEntity.getProducts());
+				orderDetailsEntity.setOrderDate(formatDate);
+				orderDetailsEntity.setOrderStatus(orderDetailsEntity.getOrderStatus());
+				orderDetailsEntity.setDeliveryStatus(orderDetailsEntity.getDeliveryStatus());
 				orderDetailsEntity.setUserId(orderDetailsEntity.getUserId());
 				orderDetailsEntity.setShippingAddress(orderDetailsEntity.getShippingAddress());
-				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());
-				orderDetailsEntity.setTotalAmount(orderDetailsEntity.getTotalAmount());
-				orderDetailsEntity.setOrderStatus("Pending");
-				orderDetailsEntity.setCreatedOn(format);
+				orderDetailsEntity.setDeliveryMode(orderDetailsEntity.getDeliveryMode());
+				orderDetailsEntity.setDeliveryCheckUrl(orderDetailsEntity.getDeliveryCheckUrl());
+				orderDetailsEntity.setShippingCharges(orderDetailsEntity.getShippingCharges());	
+				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());	
+				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());	
+				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());	
 				
 				Query query= new Query();
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
@@ -238,21 +262,20 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
 				orderPaymentEntity.setOrderId(OrderData.getOrderId());
 				orderPaymentEntity.setCreatedOn(new Date());
-				ResponseEntity<?> PaymentData=postOrderPaymentDetails(token, orderPaymentEntity);
-				
-//				JsonNode data= PaymentData.getBody();
-				
-				JsonNode jn = new JsonNode(PaymentData.getBody().toString());
-				JSONObject object = jn.getObject();
-				String payid= object.get("payment_details.razorpay_payment_id").toString();
-				
-				System.out.println(payid);
-//				JSONArray jsonArray= new JSONArray(data);
 
+				postOrderPaymentDetails(token, orderPaymentEntity);
 				
+				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity.getOrderSKUDetailsEntity();
+				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
+				
+					orderSKUDetailsEntityRow.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
+					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
+					orderSKUDetailsEntityRow.setCreatedOn(format);
+
+				postOrderSKUDetails(token,orderSKUDetailsEntity);
+				}
 				
 				map.put("orderId", OrderData.getOrderId());
-				map.put("paymentId", payid);
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
 
@@ -435,7 +458,7 @@ public class OrderAndPaymentContoller {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setSubject(subject);
-			helper.setFrom("soumen.dolui@nitsolution.in");
+			helper.setFrom("no-reply@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 			helper.addAttachment("order-summary", file);
@@ -510,5 +533,29 @@ public class OrderAndPaymentContoller {
 	public Resource getFileFromClasspath(@PathVariable String filename, HttpServletResponse response) {
 		return orderAndPaymentService.getClassPathFile(filename, response);
 	}
+	
+	@PostMapping("/imageEncode")
+	public ResponseEntity<?> ImageEncide(@RequestBody String ImageReq) throws Exception{
+		//encode image to Base64 String
+		String file = ImageReq.toString();
+		System.out.println(ImageReq.toString());
+
+//		JsonNode jn1 = new JsonNode(ImageReq.toString());
+//		JSONObject object = jn1.getObject();
+//		String file= object.get("image").toString();
+		
+		File f = new File("https://divatt-uat.s3.amazonaws.com/f1.avif"); 
+		FileInputStream fis = new FileInputStream(f);
+		byte byteArray[] = new byte[(int)f.length()];
+		fis.read(byteArray);
+		String imageString = Base64.encodeBase64String(byteArray);
+		//decode Base64 String to image
+//		FileOutputStream fos = new FileOutputStream("https://divatt-uat.s3.amazonaws.com/f1.avif"); //change path of image according to you
+//		byteArray = Base64.decodeBase64(imageString);
+//		fos.write(byteArray);
+		fis.close();
+//		fos.close();
+		return ResponseEntity.ok(imageString);
+		}
 	
 }

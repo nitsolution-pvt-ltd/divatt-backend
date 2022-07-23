@@ -85,6 +85,8 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 
 	Page<ProductMasterEntity> findNotify(LocalDate date, Pageable pagingSort);
 
+	List<ProductMasterEntity> findByDesignerId(Integer integer);
+
 //	Page<ProductMasterEntity> findByStanderedSOHNotifySohGreaterThan(Pageable pagingSort);
 
 }

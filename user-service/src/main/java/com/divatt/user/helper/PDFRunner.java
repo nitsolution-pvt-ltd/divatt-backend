@@ -62,10 +62,10 @@ public class PDFRunner {
 	        Context context = new Context();
 	        context.setVariables(data);	
 	        String htmlContent = templateEngine.process(templateName, context);
-	        System.out.println(htmlContent);
+//	        System.out.println(htmlContent);
 	        //System.out.println(htmlContent);
 	        try {
-	        	 System.out.println("hi");
+//	        	 System.out.println("hi");
 	            FileOutputStream fileOutputStream = new FileOutputStream(pdfDirectory + pdfFileName);
 	            ITextRenderer renderer = new ITextRenderer();
 	            renderer.setDocumentFromString(htmlContent);
@@ -73,8 +73,8 @@ public class PDFRunner {
 	            renderer.createPDF(fileOutputStream, false);
 	            renderer.finishPDF();
 	            OrderDetailsEntity orderDetailsEntity= new OrderDetailsEntity();
-	            orderDetailsEntity.setUserInv(pdfDirectory + pdfFileName);
-	            System.out.println(pdfDirectory + pdfFileName);
+//	            orderDetailsEntity.setUserInv(pdfDirectory + pdfFileName);
+//	            System.out.println(pdfDirectory + pdfFileName);
 	            detailsRepo.save(orderDetailsEntity);
 	            return pdfDirectory + pdfFileName;
 	        } catch (FileNotFoundException e) {
@@ -91,7 +91,7 @@ public class PDFRunner {
 			 Query query= new Query();
 			 query.addCriteria(Criteria.where("order_id").is(orderId));
 			 OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
-			 return new GlobalResponse("Success!!", orderDetailsEntity.getUserInv() , 200);
+			 return new GlobalResponse("Success!!", orderDetailsEntity.getOrderId() , 200);
 		 }
 		 catch(Exception e) {
 			 throw new CustomException(e.getMessage());
