@@ -18,17 +18,17 @@ public class EmailThreadClass extends Thread{
 	}
 	public void emailThreadRun(List<Long> userListIdList)
 	{
-		EmailThreadClass emailThreadClass= new EmailThreadClass();
+//		EmailThreadClass emailThreadClass= new EmailThreadClass();
 		System.out.println("Ok");
-		emailThreadClass.start();
+//		emailThreadClass.start();
 	}
 	public void EmailService(List<Long> userIdList)
 	{
-		RestTemplate restTemplate= new RestTemplate();
-		for(int i=0;i<userIdList.size();i++)
-		{
-			ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+userIdList.get(i), UserProfileInfo.class);
-			System.out.println(userProfileList.getBody());
-		}
+//		RestTemplate restTemplate= new RestTemplate();
+//		for(int i=0;i<userIdList.size();i++)
+//		{
+//			ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+userIdList.get(i), UserProfileInfo.class);
+//			System.out.println(userProfileList.getBody());
+//		}
 	}
 }

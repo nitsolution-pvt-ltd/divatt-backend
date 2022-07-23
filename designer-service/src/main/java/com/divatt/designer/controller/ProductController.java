@@ -1,10 +1,6 @@
 package com.divatt.designer.controller;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,21 +22,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-
 //import org.json.JSONObject;
 import com.divatt.designer.entity.OrderSKUDetailsEntity;
 import com.divatt.designer.entity.ProductEntity;
-import com.divatt.designer.entity.StockEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.ProductService;
 import com.divatt.designer.services.ProductServiceImp;
 
-@Controller
+@RestController
 @RequestMapping("/designerProduct")
 public class ProductController implements ProductServiceImp {
 
@@ -50,9 +39,6 @@ public class ProductController implements ProductServiceImp {
 	private ProductService productService;
 	
 	
-	@Autowired
-	private TemplateEngine templateEngine;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
 
 	@GetMapping("/allList")
@@ -401,31 +387,6 @@ public class ProductController implements ProductServiceImp {
 		}
 	}
 	
-	@GetMapping("/service")
-	public String schData(Model model)
-	{
-		try {
-			return productService.schData();
-			//return modelAndView;
-		}
-		catch(Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
 	
-	@GetMapping("/tstHtml")
-	public ModelAndView test() throws IOException
-	{
-		ModelAndView modelAndView= new ModelAndView("lowStock");
-		List<StockEntity>stockList= new ArrayList<StockEntity>();
-		for(int i=0;i<=3;i++)
-		{
-			StockEntity entity= new StockEntity();
-			entity.setProductDescription(""+i);
-			stockList.add(entity);
-		}
-		modelAndView.addObject("data", stockList);
-		
-		return modelAndView;
-	}
+	
 }
