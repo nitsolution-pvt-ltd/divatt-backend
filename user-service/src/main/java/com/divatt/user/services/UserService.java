@@ -207,9 +207,10 @@ public class UserService {
 			HttpResponse<JsonNode> response = null;
 			if (productIds != null) {
 				Unirest.setTimeouts(0, 0);
-				response = Unirest.post("http://localhost:8083/dev/designerProduct/getWishlistProductList")
+				response = Unirest.post("https://localhost:8083/dev/designerProduct/getWishlistProductList")
 						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
 			}
+			
 			return ResponseEntity.ok(new Json(response.getBody().toString()));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
