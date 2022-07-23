@@ -68,6 +68,11 @@ spring:
     name: ApiGatway
 server:
   port: '8085'
+  ssl:
+    key-store: classpath:gateway-server.jks
+    key-store-type: JKS
+    key-alias: gateway-server
+    key-password: Dapp@1234
 eureka:
   client:
     serviceUrl:

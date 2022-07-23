@@ -4,6 +4,7 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,6 +48,7 @@ import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
+import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
@@ -59,6 +62,9 @@ import com.mashape.unirest.http.Unirest;
 public class UserController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+	
+	@Autowired
+	private WishlistRepo wishlistRepo;
 
 	@Autowired
 	private OrderDetailsRepo orderDetailsRepo;
@@ -99,6 +105,64 @@ public class UserController {
 
 	}
 
+	@Scheduled(cron = "0 10,22 * * *") //this method will call at Twice per Day at 10AM & 10PM....
+	public void sendNotification() {
+		
+		LOGGER.info("Inside - UserService.sendNotification()");
+		
+		
+		try {
+//			SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+//			Date date = new Date();
+//			String format = formatter.format(date);
+//			
+//			Calendar calObjOfCurDate = Calendar.getInstance();
+//			calObjOfCurDate.setTime(date);
+//			calObjOfCurDate.add(Calendar.DATE, -6);
+//			
+//			Date currentDate=new SimpleDateFormat("yyyy/MM/dd").parse(calObjOfCurDate.get(Calendar.YEAR) + "/"+calObjOfCurDate.get(Calendar.MONTH) + "/"+ calObjOfCurDate.get(Calendar.DATE));
+			List<WishlistEntity> findByAddedOn = wishlistRepo.findAll();
+			findByAddedOn.forEach(e->{
+				
+				Date date = new Date();
+				Calendar calObjOfCurDate = Calendar.getInstance();
+				calObjOfCurDate.setTime(date);
+				
+				Calendar calObj = Calendar.getInstance();
+				calObj.setTime(e.getAddedOn());
+				
+				int addedOnInt = calObj.get(Calendar.DATE);
+				int calObjOfCurDateInt = calObjOfCurDate.get(Calendar.DATE);
+				
+				if(calObjOfCurDateInt%addedOnInt == 7) {
+					Optional<UserLoginEntity> findById = userLoginRepo.findById((long)e.getId());
+					
+					JsonObject jo = new JsonObject();
+					jo.addProperty("senderMailId", findById.get().getEmail());
+					jo.addProperty("subject", "Successfully Registration");
+					jo.addProperty("body", "Hii " + findById.get().getEmail() + ""
+							+ ",\n                           "
+							+ " Your wishlist/cart hasbeen saved for a long time "
+							);
+					jo.addProperty("enableHtml", false);
+					try {
+						Unirest.setTimeouts(0, 0);
+						HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
+								.header("Content-Type", "application/json").body(jo.toString()).asString();
+					} catch (Exception Z) {
+						System.out.println(Z.getMessage());
+					}
+				}
+				
+				
+			});
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
+		
+	}
+	
 	@RequestMapping(value = { "/wishlist/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getWishlistDetails(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,

@@ -24,7 +24,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.designerProductEntity.ProductMasterEntity;
@@ -102,7 +104,10 @@ public class UserService {
 					filterCatDetails.setId(sequenceGenerator.getNextSequence(WishlistEntity.SEQUENCE_NAME));
 					filterCatDetails.setUserId(getRow.getUserId());
 					filterCatDetails.setProductId(getRow.getProductId());
-					filterCatDetails.setAddedOn(new Date());
+					SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+					Date date = new Date();
+					String format = formatter.format(date);
+					filterCatDetails.setAddedOn(new SimpleDateFormat("yyyy/MM/dd").parse(format));
 					wishlistRepo.save(filterCatDetails);
 				}
 			}
@@ -178,6 +183,10 @@ public class UserService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+
+	
+	
 
 	public ResponseEntity<?> getUserWishlistDetails(Integer userId, Integer page, Integer limit)
 			throws UnirestException {
