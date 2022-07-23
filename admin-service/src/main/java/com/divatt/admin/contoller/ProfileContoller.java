@@ -97,6 +97,11 @@ public class ProfileContoller {
 
 	Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
 
+	@GetMapping("/test")
+	public String test() {
+		return "Https is working";
+	}
+	
 	
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getAll(@RequestHeader("Authorization") String token,@RequestParam(defaultValue = "0") int page,

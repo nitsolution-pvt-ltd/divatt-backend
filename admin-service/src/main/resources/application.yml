@@ -76,6 +76,15 @@ server:
   port: 8084
   servlet: 
     contextPath: /dev
+  ssl:
+    key-store: classpath:gateway-server.jks
+    key-store-type: JKS
+    key-store-password: Dapp@1234
+    key-alias: gateway-server
+    key-password: Dapp@1234
+    enabled: true
+    protocol: TLS
+    enabled-protocols: TLSv1.2
 name: dev-yml
 environment: dev
 enabled: true

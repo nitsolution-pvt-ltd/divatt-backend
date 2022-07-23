@@ -1,60 +1,63 @@
 spring:
   cloud:
     gateway:
+      httpclient:
+        ssl:
+          useInsecureTrustManager: true
       routes[0]:
-        uri: http://localhost:8080/dev/auth
+        uri: https://localhost:8080/dev/auth
         id: LoginService
         predicates[0]: Path=/dev/auth/**
       routes[1]:
         id: Admin
         predicates[0]: Path=/dev/category/**
-        uri: http://localhost:8084/dev/category
+        uri: https://localhost:8084/dev/category
       routes[2]:
         id: Admin
-        uri: http://localhost:8084/dev/admin/profile
+        uri: https://localhost:8084/dev/admin/profile
         predicates[0]: Path=/dev/admin/profile/**
       routes[3]:
         predicates[0]: Path=/dev/admin/**
         id: Admin
-        uri: http://localhost:8084/dev/admin
+        uri: https://localhost:8084/dev/admin
       routes[4]:
-        uri: http://localhost:8084/dev/subcategory
+        uri: https://localhost:8084/dev/subcategory
         id: Admin
         predicates[0]: Path=/dev/subcategory/**
       routes[5]:
-        uri: http://localhost:8084/dev/specification
+        uri: https://localhost:8084/dev/specification
         id: Admin
         predicates[0]: Path=/dev/specification/**
       routes[6]:
-        uri: http://localhost:8084/dev/productMeasurement
+        uri: https://localhost:8084/dev/productMeasurement
         id: Admin
         predicates[0]: Path=/dev/productMeasurement/**
       routes[7]:
-        uri: http://localhost:8084/dev/product
+        uri: https://localhost:8084/dev/product
         id: Admin
         predicates[0]: Path=/dev/product/**
       routes[8]:
-        uri: http://localhost:8084/dev/adminMData
+        uri: https://localhost:8084/dev/adminMData
         id: Admin
         predicates[0]: Path=/dev/adminMData/**
       routes[9]:
-        uri: http://localhost:8083/dev/designerProduct
+        uri: https://localhost:8083/dev/designerProduct
         id: Designer
         predicates[0]: Path=/dev/designerProduct/**
       routes[10]:
-        uri: http://localhost:8083/dev/designer
+        uri: https://localhost:8083/dev/designer
         id: Designer
         predicates[0]: Path=/dev/designer/**
       routes[11]:
-        uri: http://localhost:8083/dev/orderStatus
+        uri: https://localhost:8083/dev/orderStatus
         id: Designer
         predicates[0]: Path=/dev/orderStatus/**
       routes[12]:
-        uri: http://localhost:8082/dev/user
+        uri: https://localhost:8082/dev/user
         id: User
         predicates[0]: Path=/dev/user/**
       routes[13]:
-        uri: http://localhost:8082/dev/userOrder
+        uri: https://localhost:8082/dev/userOrder
         id: User
         predicates[0]: Path=/dev/userOrder/**
       globalcors:
@@ -73,6 +76,10 @@ server:
     key-store-type: JKS
     key-alias: gateway-server
     key-password: Dapp@1234
+    key-store-password: Dapp@1234
+    enabled: true
+    protocol: TLS
+    enabled-protocols: TLSv1.2
 #  ssl:
 ##   key-store: C:\Users\Ahadul\Downloads\divatt.jks
 #   key-store: divatt.jks
