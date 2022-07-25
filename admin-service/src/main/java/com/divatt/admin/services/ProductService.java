@@ -30,13 +30,15 @@ public class ProductService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 
 	public GlobalResponse productApproval(Integer productId, Integer designerId, String comment, String ApprovedBy,
 			String adminStatus) {
 		try {
-			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<ProductEntity> exchange = restTemplate.exchange(
-					"http://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null,
+					"https://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null,
 					ProductEntity.class);
 			ProductEntity productdata = exchange.getBody();
 			if (productdata.getDesignerId().equals(designerId)) {
@@ -57,9 +59,9 @@ public class ProductService {
 					status = "pending";
 				}
 				// System.out.println(productdata);
-				restTemplate.put("Http://localhost:8083/dev/designerProduct/approval/" + productId, productdata,
+				restTemplate.put("https://localhost:8083/dev/designerProduct/approval/" + productId, productdata,
 						String.class);
-				System.out.println(productdata);
+				
 				return new GlobalResponse("Status Updated", "Product " + status + " successfully", 200);
 			} else {
 				return new GlobalResponse("Bad Request", "ProductID and designerId are mismatched", 400);

@@ -170,22 +170,22 @@ public class ProductService {
 				List<UserProfile>userProfiles= new ArrayList<UserProfile>();
 				List<ProductMasterEntity> productInfo = mongoOperations.find(query1, ProductMasterEntity.class);
 				if (productInfo.isEmpty()) {
-					RestTemplate restTemplate = new RestTemplate();
+//					RestTemplate restTemplate = new RestTemplate();
 					ResponseEntity<String> categoryResponse = restTemplate.getForEntity(
-							"http://localhost:8084/dev/category/view/" + productData.getCategoryId(), String.class);
+							"https://localhost:8084/dev/category/view/" + productData.getCategoryId(), String.class);
 
 					ResponseEntity<String> subcategoryResponse = restTemplate.getForEntity(
-							"http://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
+							"https://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
 							String.class);
 					productRepo.save(customFunction.filterDataEntity(productData));
 					Query query3= new Query();
 					query3.addCriteria(Criteria.where("productName").is(productData.getProductName()));
 					ProductMasterEntity newProductData=mongoOperations.findOne(query3, ProductMasterEntity.class);
-					RestTemplate followerData= new RestTemplate();
+//					RestTemplate followerData= new RestTemplate();
 					List<UserProfileInfo> userInfoList= new ArrayList<UserProfileInfo>();
 					List<Long>userId= new ArrayList<Long>();
 					
-					ResponseEntity<String> forEntity = followerData.getForEntity("http://localhost:8082/dev/user/followedUserList/"+productData.getDesignerId(), String.class);
+					ResponseEntity<String> forEntity = restTemplate.getForEntity("https://localhost:8082/dev/user/followedUserList/"+productData.getDesignerId(), String.class);
 					String data=forEntity.getBody();
 					JSONArray jsonArray= new JSONArray(data);
 					String designerImageData = designerProfileRepo.findBydesignerId(productData.getDesignerId().longValue()).get().getDesignerProfile().getProfilePic();
@@ -193,13 +193,13 @@ public class ProductService {
 					{
 						ObjectMapper objectMapper = new ObjectMapper();
 						UserProfile readValue = objectMapper.readValue(jsonArray.get(i).toString(), UserProfile.class);
-						RestTemplate userResponse= new RestTemplate();
-						ResponseEntity<UserProfileInfo> userInfo= userResponse.getForEntity("http://localhost:8082/dev/user/getUserId/"+readValue.getUserId(), UserProfileInfo.class);
+//						RestTemplate userResponse= new RestTemplate();
+						ResponseEntity<UserProfileInfo> userInfo= restTemplate.getForEntity("https://localhost:8082/dev/user/getUserId/"+readValue.getUserId(), UserProfileInfo.class);
 						userInfoList.add(userInfo.getBody());
 					}
 					for(int i=0;i<userId.size();i++)
 					{
-						ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+userId.get(i), UserProfileInfo.class);
+						ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("https://localhost:8080/dev/auth/info/USER/"+userId.get(i), UserProfileInfo.class);
 						
 					}
 					productRepo.save(customFunction.filterDataEntity(productData));
@@ -233,7 +233,7 @@ public class ProductService {
 					for(int i=0;i<userInfoList.size();i++)
 					{
 						String ETreplace8 = ETreplace7.replace(productUserName,userInfoList.get(i).getFirstName());
-						System.out.println(userInfoList.get(i).getEmail());
+//						System.out.println(userInfoList.get(i).getEmail());
 						EmailSenderThread emailSenderThread= new EmailSenderThread(userInfoList.get(i).getEmail(), "New Product Available", ETreplace8, true, null);
 						emailSenderThread.start();
 					}
@@ -910,8 +910,8 @@ public class ProductService {
 	public List<ProductMasterEntity> productListCategorySubcategory(String categoryName,
 			String subcategoryName) {
 		try {
-		RestTemplate restTemplate= new RestTemplate();
-		ResponseEntity<CategoryEntity> categoryEntity= restTemplate.getForEntity("http://localhost:8085/dev/category/", CategoryEntity.class);
+//		RestTemplate restTemplate= new RestTemplate();
+		ResponseEntity<CategoryEntity> categoryEntity= restTemplate.getForEntity("https://localhost:8085/dev/category/", CategoryEntity.class);
 		return null;	
 		}
 		catch(Exception e) {
@@ -923,8 +923,8 @@ public class ProductService {
 			String subCategoryName) {
 		try {
 			
-			RestTemplate restTemplate= new RestTemplate();
-			ResponseEntity<UserResponseEntity> userResponseEntity= restTemplate.getForEntity("http://localhost:8085/dev/category/viewByName/"+categoryName+"/"+subCategoryName, UserResponseEntity.class);
+//			RestTemplate restTemplate= new RestTemplate();
+			ResponseEntity<UserResponseEntity> userResponseEntity= restTemplate.getForEntity("https://localhost:8085/dev/category/viewByName/"+categoryName+"/"+subCategoryName, UserResponseEntity.class);
 			System.out.println(userResponseEntity.getBody());
 			int categoryIdvalue=userResponseEntity.getBody().getCategoryEntity().getId();
 			if(userResponseEntity.getBody().getSubCategoryEntity().getParentId().equals("0"))

@@ -2,6 +2,7 @@ package com.divatt.designer.services;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,6 +12,9 @@ import com.divatt.designer.entity.UserProfileInfo;
 @Service
 public class EmailThreadClass extends Thread{
 
+	@Autowired
+	private RestTemplate restTemplate;
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub

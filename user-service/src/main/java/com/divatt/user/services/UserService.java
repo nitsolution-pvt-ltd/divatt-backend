@@ -62,6 +62,9 @@ public class UserService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 	@Autowired
 	private WishlistRepo wishlistRepo;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
@@ -207,7 +210,7 @@ public class UserService {
 			HttpResponse<JsonNode> response = null;
 			if (productIds != null) {
 				Unirest.setTimeouts(0, 0);
-				response = Unirest.post("http://localhost:8083/dev/designerProduct/getWishlistProductList")
+				response = Unirest.post("https://localhost:8083/dev/designerProduct/getWishlistProductList")
 						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
 			}
 			return ResponseEntity.ok(new Json(response.getBody().toString()));
@@ -255,8 +258,8 @@ public class UserService {
 
 		try {
 			Map<String, Object> map = new HashMap<>();
-			RestTemplate restTemplate= new RestTemplate();
-			ResponseEntity<ProductMasterEntity>response= restTemplate.getForEntity("http://localhost:8085/dev/designerProduct/view/"+userCartEntity.getProductId(), ProductMasterEntity.class);
+//			RestTemplate restTemplate= new RestTemplate();
+			ResponseEntity<ProductMasterEntity>response= restTemplate.getForEntity("https://localhost:8085/dev/designerProduct/view/"+userCartEntity.getProductId(), ProductMasterEntity.class);
 
 			int purchaseQuantity=userCartEntity.getQty();
 
@@ -342,7 +345,7 @@ public class UserService {
 			try {
 				Unirest.setTimeouts(0, 0);
 				HttpResponse<JsonNode> response = Unirest
-						.post("http://localhost:8083/dev/designerProduct/getCartProductList")
+						.post("https://localhost:8083/dev/designerProduct/getCartProductList")
 						.header("Content-Type", "application/json").body(cartObj.toString()).asJson();
 
 				JSONArray array = response.getBody().getArray();
@@ -493,10 +496,10 @@ public class UserService {
 	public ResponseEntity<?> getProductUser() {
 		try {
 
-			RestTemplate restTemplate = new RestTemplate();
+//			RestTemplate restTemplate = new RestTemplate();
 
 			String body = restTemplate
-					.getForEntity("http://localhost:8083/dev/designerProduct/userProductList", String.class).getBody();
+					.getForEntity("https://localhost:8083/dev/designerProduct/userProductList", String.class).getBody();
 
 			Json js = new Json(body);
 			return ResponseEntity.ok(js);
@@ -533,9 +536,9 @@ public class UserService {
 	public ResponseEntity<?> getDesignerDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
-			RestTemplate restTemplate = new RestTemplate();
+//			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<?> Response = restTemplate
-					.getForEntity("http://localhost:8083/dev/designerProduct/getDesignerProductListUser?page=" + page
+					.getForEntity("https://localhost:8083/dev/designerProduct/getDesignerProductListUser?page=" + page
 							+ "&limit=" + limit + "&", String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
@@ -548,9 +551,9 @@ public class UserService {
 	public ResponseEntity<?> productDetails(Integer productId, String userId) {
 		try {
 
-			RestTemplate restTemplate = new RestTemplate();
+//			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<String> exchange = restTemplate.exchange(
-					"http://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null, String.class);
+					"https://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null, String.class);
 			Json js = new Json(exchange.getBody());
 
 			if (!userId.equals("")) {
@@ -592,9 +595,7 @@ public class UserService {
 	public ResponseEntity<?> getDesignerUser() {
 		try {
 
-			RestTemplate restTemplate = new RestTemplate();
-
-			String body = restTemplate.getForEntity("http://localhost:8083/dev/designer/userDesignerList", String.class)
+			String body = restTemplate.getForEntity("https://localhost:8083/dev/designer/userDesignerList", String.class)
 					.getBody();
 
 			Json js = new Json(body);
@@ -608,16 +609,16 @@ public class UserService {
 	public ResponseEntity<?> getDesignerProfileDetailsService(Integer designerId, Long userId) {
 		try {
 
-			RestTemplate restTemplate = new RestTemplate();
+//			RestTemplate restTemplate = new RestTemplate();
 
 			String body = restTemplate
-					.getForEntity("http://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();
+					.getForEntity("https://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();
 			JsonNode jn = new JsonNode(body);
 			JSONObject object = jn.getObject();
 			System.out.println(object);
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
-		System.out.println(userId);
+//		System.out.println(userId);
 			if (userId != 0) {
 				 Optional<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
 				 if(findByUserId.isPresent()) {
@@ -641,9 +642,9 @@ public class UserService {
 	public ResponseEntity<?> getPerDesignerProductListService(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, String keyword, Optional<String> sortBy, Integer designerId) {
 		try {
-			RestTemplate restTemplate = new RestTemplate();
+//			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<?> Response = restTemplate
-					.getForEntity("http://localhost:8083/dev/designerProduct/getPerDesignerProductUser/" + designerId
+					.getForEntity("https://localhost:8083/dev/designerProduct/getPerDesignerProductUser/" + designerId
 							+ "?page=" + page + "&limit=" + limit + "&", String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
