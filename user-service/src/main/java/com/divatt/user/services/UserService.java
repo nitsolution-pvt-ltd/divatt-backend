@@ -12,6 +12,7 @@ import javax.validation.Valid;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -206,14 +210,36 @@ public class UserService {
 			wishlistObj.addProperty("productId", productIds.toString());
 			wishlistObj.addProperty("limit", limit);
 			wishlistObj.addProperty("page", page);
+			 Map<String, Object> map = new HashMap<>();
+		        map.put("productId",productIds.toString());
+		        map.put("limit",limit);
+		        map.put("page",page);
+		        
 			
 			HttpResponse<JsonNode> response = null;
+			ResponseEntity<String> response1=null;
 			if (productIds != null) {
-				Unirest.setTimeouts(0, 0);
-				response = Unirest.post("https://localhost:8083/dev/designerProduct/getWishlistProductList")
-						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
+				HttpHeaders headers = new HttpHeaders();
+		        // set `content-type` header
+		        headers.setContentType(MediaType.APPLICATION_JSON);
+		        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+
+				
+//				response= restTemplate.exchange("url", HttpMethod.POST, entity.toString(), 
+				         response1 = restTemplate.postForEntity("https://localhost:8083/dev/designerProduct/getWishlistProductList", entity, String.class);
+
+//						JsonNode.class);
+//				Unirest.setTimeouts(0, 0);
+//				response = Unirest.post("https://localhost:8083/dev/designerProduct/getWishlistProductList")
+//						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
 			}
-			return ResponseEntity.ok(new Json(response.getBody().toString()));
+			JSONObject jsonObject=null;
+			JSONParser parser=new JSONParser();
+            jsonObject=(JSONObject) parser.parse(response1.getBody());
+            
+            JSONObject jsonObj = new JSONObject(response1.getBody().toString());
+
+			return ResponseEntity.ok((jsonObj));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

@@ -14,7 +14,7 @@ public class OrderSKUDetailsEntity {
 	
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_order_sku_details_new";
-	
+	 
 	@Id
 	private Integer id;
 	
