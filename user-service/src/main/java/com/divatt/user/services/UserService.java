@@ -2,6 +2,7 @@ package com.divatt.user.services;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,6 @@ import javax.validation.Valid;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,7 @@ public class UserService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 	@Autowired
 	private WishlistRepo wishlistRepo;
-	
+
 	@Autowired
 	private RestTemplate restTemplate;
 
@@ -87,10 +87,10 @@ public class UserService {
 
 	@Autowired
 	private OrderDetailsRepo orderDetailsRepo;
-	
+
 	@Autowired
 	private MongoOperations mongoOperations;
-	
+
 	@Autowired
 	private UserLoginRepo userLoginRepo;
 
@@ -190,10 +190,6 @@ public class UserService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-
-	
-	
 
 	public ResponseEntity<?> getUserWishlistDetails(Integer userId, Integer page, Integer limit)
 			throws UnirestException {
@@ -205,41 +201,32 @@ public class UserService {
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
-			JsonObject wishlistObj = new JsonObject();
+//			JsonObject wishlistObj = new JsonObject();
+//
+//			wishlistObj.addProperty("productId", productIds.toString());
+//			wishlistObj.addProperty("limit", limit);
+//			wishlistObj.addProperty("page", page);
 
-			wishlistObj.addProperty("productId", productIds.toString());
-			wishlistObj.addProperty("limit", limit);
-			wishlistObj.addProperty("page", page);
-			 Map<String, Object> map = new HashMap<>();
-		        map.put("productId",productIds.toString());
-		        map.put("limit",limit);
-		        map.put("page",page);
-		        
-			
-			HttpResponse<JsonNode> response = null;
-			ResponseEntity<String> response1=null;
+			Map<String, Object> map = new HashMap<>();
+			map.put("productId", productIds.toString());
+			map.put("limit", limit);
+			map.put("page", page);
+
+//			HttpResponse<JsonNode> response = null;
+			ResponseEntity<String> response1 = null;
 			if (productIds != null) {
 				HttpHeaders headers = new HttpHeaders();
-		        // set `content-type` header
-		        headers.setContentType(MediaType.APPLICATION_JSON);
-		        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
-				
-//				response= restTemplate.exchange("url", HttpMethod.POST, entity.toString(), 
-				         response1 = restTemplate.postForEntity("https://localhost:8083/dev/designerProduct/getWishlistProductList", entity, String.class);
+				response1 = restTemplate.postForEntity(
+						"https://localhost:8083/dev/designerProduct/getWishlistProductList", entity, String.class);
 
-//						JsonNode.class);
 //				Unirest.setTimeouts(0, 0);
 //				response = Unirest.post("https://localhost:8083/dev/designerProduct/getWishlistProductList")
 //						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
 			}
-			JSONObject jsonObject=null;
-			JSONParser parser=new JSONParser();
-            jsonObject=(JSONObject) parser.parse(response1.getBody());
-            
-            JSONObject jsonObj = new JSONObject(response1.getBody().toString());
-
-			return ResponseEntity.ok((jsonObj));
+			return ResponseEntity.ok(new Json(response1.getBody()));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -266,7 +253,7 @@ public class UserService {
 						filterCatDetails.setProductId(getRow.getProductId());
 						filterCatDetails.setQty(getRow.getQty());
 						filterCatDetails.setAddedOn(new Date());
-						
+
 						userCartRepo.save(filterCatDetails);
 					}
 				}
@@ -285,9 +272,11 @@ public class UserService {
 		try {
 			Map<String, Object> map = new HashMap<>();
 //			RestTemplate restTemplate= new RestTemplate();
-			ResponseEntity<ProductMasterEntity>response= restTemplate.getForEntity("https://localhost:8085/dev/designerProduct/view/"+userCartEntity.getProductId(), ProductMasterEntity.class);
+			ResponseEntity<ProductMasterEntity> response = restTemplate.getForEntity(
+					"https://localhost:8085/dev/designerProduct/view/" + userCartEntity.getProductId(),
+					ProductMasterEntity.class);
 
-			int purchaseQuantity=userCartEntity.getQty();
+			int purchaseQuantity = userCartEntity.getQty();
 
 			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(userCartEntity.getProductId(),
 					userCartEntity.getUserId());
@@ -295,7 +284,6 @@ public class UserService {
 			if (!findByCat.isPresent()) {
 				throw new CustomException("Product not found in the cart.");
 			} else {
-				
 
 				UserCartEntity RowsDetails = findByCat.get();
 				RowsDetails.setUserId(userCartEntity.getUserId());
@@ -312,7 +300,6 @@ public class UserService {
 //				}
 				UserCartEntity getdata = userCartRepo.save(RowsDetails);
 
-				
 				map.put("reason", "SUCCESS");
 				map.put("message", "Cart updated succesfully");
 				map.put("status", 200);
@@ -353,11 +340,15 @@ public class UserService {
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
-			JsonObject cartObj = new JsonObject();
+//			JsonObject cartObj = new JsonObject();
+//			cartObj.addProperty("productId", productIds.toString());
+//			cartObj.addProperty("limit", limit);
+//			cartObj.addProperty("page", page);
 
-			cartObj.addProperty("productId", productIds.toString());
-			cartObj.addProperty("limit", limit);
-			cartObj.addProperty("page", page);
+			Map<String, Object> maps = new HashMap<>();
+			maps.put("productId", productIds.toString());
+			maps.put("limit", limit);
+			maps.put("page", page);
 
 			Map<String, Object> map = new HashMap<>();
 			map.put("reason", "ERROR");
@@ -369,17 +360,31 @@ public class UserService {
 			}
 
 			try {
-				Unirest.setTimeouts(0, 0);
-				HttpResponse<JsonNode> response = Unirest
-						.post("https://localhost:8083/dev/designerProduct/getCartProductList")
-						.header("Content-Type", "application/json").body(cartObj.toString()).asJson();
+				ResponseEntity<String> response1 = null;
+//				Unirest.setTimeouts(0, 0);
+//				HttpResponse<JsonNode> response = Unirest
+//						.post("https://localhost:8083/dev/designerProduct/getCartProductList")
+//						.header("Content-Type", "application/json").body(cartObj.toString()).asJson();
+//				
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(maps, headers);
 
-				JSONArray array = response.getBody().getArray();
+				response1 = restTemplate.postForEntity("https://localhost:8083/dev/designerProduct/getCartProductList",
+						entity, String.class);
+
+				String body = response1.getBody();
+				List<Object> cp = Arrays.asList(body);
+
+				JsonNode jn1 = new JsonNode(body);
+				JSONArray object1 = jn1.getArray();
 
 				List<Object> l1 = new ArrayList<>();
-				array.forEach(e -> {
+				object1.forEach(e -> {
+
 					JsonNode jn = new JsonNode(e.toString());
 					JSONObject object = jn.getObject();
+
 					UserCartEntity cart = userCartRepo
 							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
 							.get(0);
@@ -583,32 +588,31 @@ public class UserService {
 			Json js = new Json(exchange.getBody());
 
 			if (!userId.equals("")) {
-			List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
-				
-				if(!cart.isEmpty()) {
-					
-				
-				try {
+				List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
 
-					JsonNode jn = new JsonNode(exchange.getBody().toString());
-					JSONObject object = jn.getObject();
-					
-					ObjectMapper obj = new ObjectMapper();
-					String writeValueAsString = null;
+				if (!cart.isEmpty()) {
+
 					try {
-						writeValueAsString = obj.writeValueAsString(cart);
-					} catch (JsonProcessingException e1) {
-						e1.printStackTrace();
-					}
-					JsonNode cartJN = new JsonNode(writeValueAsString);
-					JSONObject cartObject = cartJN.getObject();
-					object.put("cartData", cartObject);
 
-					return ResponseEntity.ok(new Json(jn.toString()));
-				} catch (Exception e2) {
-					return ResponseEntity.ok(e2.getMessage());
+						JsonNode jn = new JsonNode(exchange.getBody().toString());
+						JSONObject object = jn.getObject();
+
+						ObjectMapper obj = new ObjectMapper();
+						String writeValueAsString = null;
+						try {
+							writeValueAsString = obj.writeValueAsString(cart);
+						} catch (JsonProcessingException e1) {
+							e1.printStackTrace();
+						}
+						JsonNode cartJN = new JsonNode(writeValueAsString);
+						JSONObject cartObject = cartJN.getObject();
+						object.put("cartData", cartObject);
+
+						return ResponseEntity.ok(new Json(jn.toString()));
+					} catch (Exception e2) {
+						return ResponseEntity.ok(e2.getMessage());
+					}
 				}
-			}
 			}
 			return ResponseEntity.ok(js);
 
@@ -621,8 +625,8 @@ public class UserService {
 	public ResponseEntity<?> getDesignerUser() {
 		try {
 
-			String body = restTemplate.getForEntity("https://localhost:8083/dev/designer/userDesignerList", String.class)
-					.getBody();
+			String body = restTemplate
+					.getForEntity("https://localhost:8083/dev/designer/userDesignerList", String.class).getBody();
 
 			Json js = new Json(body);
 			return ResponseEntity.ok(js);
@@ -646,16 +650,16 @@ public class UserService {
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
 //		System.out.println(userId);
 			if (userId != 0) {
-				 Optional<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
-				 if(findByUserId.isPresent()) {
-					 object.put("isFollowing", findByUserId.get().getIsFollowing());
-						object.put("rating", findByUserId.get().getRaiting());
-				 }else {
-					 object.put("isFollowing", false);
-						object.put("rating", 0);
+				Optional<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
+				if (findByUserId.isPresent()) {
+					object.put("isFollowing", findByUserId.get().getIsFollowing());
+					object.put("rating", findByUserId.get().getRaiting());
+				} else {
+					object.put("isFollowing", false);
+					object.put("rating", 0);
 
-				 }
-				
+				}
+
 			}
 
 			return ResponseEntity.ok(new Json(object.toString()));
@@ -682,28 +686,25 @@ public class UserService {
 
 	public GlobalResponse multipleDelete(Integer userId) {
 		try {
-			List<UserCartEntity> allData=userCartRepo.findByUserId(userId);
-			if(allData.isEmpty())
-			{
+			List<UserCartEntity> allData = userCartRepo.findByUserId(userId);
+			if (allData.isEmpty()) {
 				return new GlobalResponse("Error!!", "No product found", 400);
 			}
 			userCartRepo.deleteByUserId(userId);
 			return new GlobalResponse("Success", "Cart data deleted successfully", 200);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public List<Integer> viewProductService(String orderId) {
 		try {
-			Query query= new Query();
+			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(orderId));
-			OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
-			//List<ProductEntity> productList=orderDetailsEntity.getProducts();
+			OrderDetailsEntity orderDetailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
+			// List<ProductEntity> productList=orderDetailsEntity.getProducts();
 			return null;
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -726,9 +727,9 @@ public class UserService {
 			Page<UserLoginEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = userLoginRepo.findByIsDeleted(isDeleted,pagingSort);
+				findAll = userLoginRepo.findByIsDeleted(isDeleted, pagingSort);
 			} else {
-				findAll = userLoginRepo.Search(keyword,isDeleted,pagingSort);
+				findAll = userLoginRepo.Search(keyword, isDeleted, pagingSort);
 
 			}
 
@@ -750,30 +751,27 @@ public class UserService {
 			} else {
 				return response;
 			}
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public List<UserDesignerEntity> followedUserListService(Integer designerIdvalue) {
 		try {
-			Query query= new Query();
+			Query query = new Query();
 			query.addCriteria(Criteria.where("designerId").is(designerIdvalue));
-			List<UserDesignerEntity> userData= mongoOperations.find(query, UserDesignerEntity.class);
+			List<UserDesignerEntity> userData = mongoOperations.find(query, UserDesignerEntity.class);
 			return userData;
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public UserLoginEntity getUserById(Long userId) {
 		try {
-			UserLoginEntity userDetails=userLoginRepo.findById(userId).get();
+			UserLoginEntity userDetails = userLoginRepo.findById(userId).get();
 			return userDetails;
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
