@@ -27,7 +27,7 @@ public class MailService {
 			MimeMessageHelper helper = new MimeMessageHelper(message);
 
 			helper.setSubject(subject);
-			helper.setFrom("no-reply@nitsolution.in");
+			helper.setFrom("soumen.dolui@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 //			helper.addAttachment(body, null);
@@ -45,7 +45,7 @@ public class MailService {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message,true);
 			helper.setSubject(subject);
-			helper.setFrom("no-reply@nitsolution.in");
+			helper.setFrom("soumen.dolui@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 			helper.addAttachment("Invoice", file);

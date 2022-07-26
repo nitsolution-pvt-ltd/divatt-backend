@@ -68,7 +68,7 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setHost("smtp.hostinger.in");
 		mailSender.setPort(587);
-		mailSender.setUsername("no-reply@nitsolution.in");//ahadul@nitsolution.in
+		mailSender.setUsername("no-reply@nitsolution.in");
 		mailSender.setPassword("no-Reply@123");
 		 
 		Properties properties = new Properties();
@@ -76,7 +76,6 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 		properties.setProperty("mail.smtp.starttls.enable", "true");
 		properties.setProperty("mail.smtp.ssl.enable", "false");
 		properties.setProperty("mail.smtps.quitwait", "false");
-//		properties.setProperty("mail.debug", "true");
 		
 		
 		 

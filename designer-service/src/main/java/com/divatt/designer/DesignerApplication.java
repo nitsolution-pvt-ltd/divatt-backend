@@ -7,6 +7,7 @@ import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -16,6 +17,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.ssl.TrustStrategy;
 import org.slf4j.Logger;
@@ -88,10 +90,20 @@ public class DesignerApplication implements CommandLineRunner{
 	    Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
 	            .register("https", sslsf).register("http", new PlainConnectionSocketFactory()).build();
 
-	    BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(
-	            socketFactoryRegistry);
-	    CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
-	            .setConnectionManager(connectionManager).build();
+//	    BasicHttpClientConnectionManager connectionManagers = new BasicHttpClientConnectionManager(socketFactoryRegistry);
+	    
+	    PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+	     connectionManager.setMaxTotal(30);
+	     connectionManager.setDefaultMaxPerRoute(50);
+	     
+	    RequestConfig config = RequestConfig.custom().setConnectTimeout(100000).build();
+	    
+	    CloseableHttpClient httpClient = HttpClients
+	    		.custom()
+	    		.setSSLSocketFactory(sslsf)
+	            .setConnectionManager(connectionManager)
+	            .setDefaultRequestConfig(config)
+	            .build();
 
 	    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
