@@ -893,7 +893,7 @@ public class ProductService {
 						updatedSOH.add(standardSOH);
 					}
 					else{
-						updatedSOH.add(standardSOHs.get(i));
+						updatedSOH.add(standardSOHs.get(a));
 					}
 				}
 				ProductMasterEntity masterEntity= productRepo.findById(productId).get();
