@@ -1,7 +1,9 @@
 package com.divatt.designer.services;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +26,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +41,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
-
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.ListProduct;
@@ -91,6 +96,9 @@ public class ProductService {
 
 	@Autowired
 	private MongoOperations mongoOperations;
+	
+	@Autowired
+	private TemplateEngine templateEngine;
 	
 	
 
@@ -178,65 +186,6 @@ public class ProductService {
 							"https://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
 							String.class);
 					productRepo.save(customFunction.filterDataEntity(productData));
-					Query query3= new Query();
-					query3.addCriteria(Criteria.where("productName").is(productData.getProductName()));
-					ProductMasterEntity newProductData=mongoOperations.findOne(query3, ProductMasterEntity.class);
-//					RestTemplate followerData= new RestTemplate();
-					List<UserProfileInfo> userInfoList= new ArrayList<UserProfileInfo>();
-					List<Long>userId= new ArrayList<Long>();
-					
-					ResponseEntity<String> forEntity = restTemplate.getForEntity("https://localhost:8082/dev/user/followedUserList/"+productData.getDesignerId(), String.class);
-					String data=forEntity.getBody();
-					JSONArray jsonArray= new JSONArray(data);
-					String designerImageData = designerProfileRepo.findBydesignerId(productData.getDesignerId().longValue()).get().getDesignerProfile().getProfilePic();
-					for(int i=0;i<jsonArray.length();i++)
-					{
-						ObjectMapper objectMapper = new ObjectMapper();
-						UserProfile readValue = objectMapper.readValue(jsonArray.get(i).toString(), UserProfile.class);
-//						RestTemplate userResponse= new RestTemplate();
-						ResponseEntity<UserProfileInfo> userInfo= restTemplate.getForEntity("https://localhost:8082/dev/user/getUserId/"+readValue.getUserId(), UserProfileInfo.class);
-						userInfoList.add(userInfo.getBody());
-					}
-					for(int i=0;i<userId.size();i++)
-					{
-						ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("https://localhost:8080/dev/auth/info/USER/"+userId.get(i), UserProfileInfo.class);
-						
-					}
-					productRepo.save(customFunction.filterDataEntity(productData));
-
-					
-					//char emailData[];
-					ImagesEntity[] images=productData.getImages();
-					String image1=images[0].getName();
-					System.out.println(images[0].getName());
-					String productImage="__ProductImage__";
-					String productName="__ProductName__";
-					String productDesc="__ProductDesc__";
-					String productPrice="__ProductPrice__";
-					String productDiscount="__ProductDiscount__";
-					String productLink="__ProductLink__";
-					String productDesignerName="__ProductDesignerName__";
-					String productUserName="__Username__";
-					String designerImage="__DesignerImage__";
-//					Path filePath= Path.of("D:\\packageservice\\projects\\Divatt\\divatt-backend-updated-4-05-2022\\divatt-backend\\designer-service\\src\\main\\resources\\templates\\emailTemplate.html");
-					Path filePath= null;
-					String ETBody = Files.readString(filePath);
-					String ETreplace = ETBody.replace(productImage,image1);
-					String ETreplace1 = ETreplace.replace(productName,productData.getProductName());
-					String ETreplace2 = ETreplace1.replace(productDesc,productData.getProductDescription());
-					String ETreplace3 = ETreplace2.replace(productPrice,productData.getPrice().getIndPrice().getDealPrice().toString());
-					String ETreplace4 = ETreplace3.replace(productDiscount,productData.getPrice().getIndPrice().getDiscountValue().toString());
-					String ETreplace5 = ETreplace4.replace(productLink,"http://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
-					String ETreplace6 = ETreplace5.replace(productDesignerName,productData.getDesignerName());
-					String ETreplace7 = ETreplace6.replace(designerImage,designerImageData);
-					System.out.println("http://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
-					for(int i=0;i<userInfoList.size();i++)
-					{
-						String ETreplace8 = ETreplace7.replace(productUserName,userInfoList.get(i).getFirstName());
-//						System.out.println(userInfoList.get(i).getEmail());
-						EmailSenderThread emailSenderThread= new EmailSenderThread(userInfoList.get(i).getEmail(), "New Product Available", ETreplace8, true, null);
-						emailSenderThread.start();
-					}
 					return new GlobalResponce("Success!!", "Product added successfully", 200);
 				} else {
 					return new GlobalResponce("Error!!", "Product already added", 400);
@@ -833,10 +782,73 @@ public class ProductService {
 	
 	
 
-	public GlobalResponce adminApproval(Integer productId, ProductMasterEntity masterEntity) {
+	public GlobalResponce adminApproval(Integer productId, ProductMasterEntity productData) throws IOException{
 		try {
-			masterEntity.setProductId(productId);
-			productRepo.save(masterEntity);
+			productData.setProductId(productId);
+			productRepo.save(productData);
+			Query query3= new Query();
+			query3.addCriteria(Criteria.where("productName").is(productData.getProductName()));
+			ProductMasterEntity newProductData=mongoOperations.findOne(query3, ProductMasterEntity.class);
+//			RestTemplate followerData= new RestTemplate();
+			List<UserProfileInfo> userInfoList= new ArrayList<UserProfileInfo>();
+			List<Long>userId= new ArrayList<Long>();
+			
+			ResponseEntity<String> forEntity = restTemplate.getForEntity("https://localhost:8082/dev/user/followedUserList/"+productData.getDesignerId(), String.class);
+			String data=forEntity.getBody();
+			JSONArray jsonArray= new JSONArray(data);
+			String designerImageData = designerProfileRepo.findBydesignerId(productData.getDesignerId().longValue()).get().getDesignerProfile().getProfilePic();
+			for(int i=0;i<jsonArray.length();i++)
+			{
+				ObjectMapper objectMapper = new ObjectMapper();
+				UserProfile readValue = objectMapper.readValue(jsonArray.get(i).toString(), UserProfile.class);
+//				RestTemplate userResponse= new RestTemplate();
+				ResponseEntity<UserProfileInfo> userInfo= restTemplate.getForEntity("https://localhost:8082/dev/user/getUserId/"+readValue.getUserId(), UserProfileInfo.class);
+				userInfoList.add(userInfo.getBody());
+			}
+			for(int i=0;i<userId.size();i++)
+			{
+				ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("https://localhost:8080/dev/auth/info/USER/"+userId.get(i), UserProfileInfo.class);
+				
+			}
+			//productRepo.save(customFunction.filterDataEntity(productData));
+
+			
+			//char emailData[];
+			ProductMasterEntity productMasterEntity= productRepo.findById(productData.getProductId()).get();
+			ImagesEntity[] images=productMasterEntity.getImages();
+			String image1=images[0].getName();
+			System.out.println(images[0].getName());
+			String productImage="__ProductImage__";
+			String productName="__ProductName__";
+			String productDesc="__ProductDesc__";
+			String productPrice="__ProductPrice__";
+			String productDiscount="__ProductDiscount__";
+			String productLink="__ProductLink__";
+			String productDesignerName="__ProductDesignerName__";
+			String productUserName="__Username__";
+			String designerImage="__DesignerImage__";
+			Path filePath= Path.of("D:\\packageservice\\projects\\Divatt\\divatt-backend-updated-4-05-2022\\divatt-backend\\designer-service\\src\\main\\resources\\templates\\emailTemplate.html");
+//			Path filePath= null;
+//			File resource = new ClassPathResource("emailTemplate.html"). getFile();
+//			String ETBody = new String(Files.readAllBytes(resource.toPath()));
+			String ETBody = Files.readString(filePath);
+			String ETreplace = ETBody.replace(productImage,image1);
+			String ETreplace1 = ETreplace.replace(productName,productMasterEntity.getProductName());
+			String ETreplace2 = ETreplace1.replace(productDesc,productMasterEntity.getProductDescription());
+			String ETreplace3 = ETreplace2.replace(productPrice,productMasterEntity.getPrice().getIndPrice().getDealPrice().toString());
+			//String ETreplace4 = ETreplace3.replace(productDiscount,productMasterEntity.getPrice().getIndPrice().getDiscountValue().toString());
+			String ETreplace5 = ETreplace3.replace(productLink,"https://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
+			String ETreplace6 = ETreplace5.replace(productDesignerName,productMasterEntity.getDesignerName());
+			String ETreplace7 = ETreplace6.replace(designerImage,designerImageData);
+			System.out.println("https://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
+			for(int i=0;i<userInfoList.size();i++)
+			{
+				String ETreplace8 = ETreplace7.replace(productUserName,userInfoList.get(i).getFirstName());
+//				System.out.println(userInfoList.get(i).getEmail());
+				EmailSenderThread emailSenderThread= new EmailSenderThread(userInfoList.get(i).getEmail(), "New Product Available", ETreplace8, true, null);
+				emailSenderThread.start();
+			}
+			//productRepo.save(productData);
 			return new GlobalResponce("Successfull", "Product approved", 200);
 		}
 		catch(Exception e)
@@ -1007,63 +1019,76 @@ public class ProductService {
 	
 	
 	//@Scheduled(fixedDelay = 10000)
-	public String schData()
+	public GlobalResponce designerNotification()
 	{
 		try {
 				List<DesignerProfileEntity> designerProfileEntities= designerProfileRepo.findAll();
-				HashMap<Integer, List<StockEntity>> data = new HashMap<Integer, List<StockEntity>>();
+				HashMap<String, List<StockEntity>> data = new HashMap<String, List<StockEntity>>();
 				List<Integer> designerList= new ArrayList<Integer>();
+				List<String> emails= new ArrayList<String>();
 				for(int i=0;i<designerProfileEntities.size();i++)
 				{
 					designerList.add(designerProfileEntities.get(i).getDesignerId().intValue());
+					emails.add(designerProfileEntities.get(i).getDesignerProfile().getEmail());
 				}
 				for(int i=0;i<designerList.size();i++) {
 					List<StockEntity> stockList= new ArrayList<StockEntity>();
 					List<ProductMasterEntity> productDataList=productRepo.findByDesignerIdAndIsDeletedAndAdminStatusAndIsActive(designerList.get(i), false, "Approved", true);
 					List<Integer> productList= new ArrayList<Integer>();
 					for(int a=0;a<productDataList.size();a++) {
+						ImagesEntity[] imagesEntities=productDataList.get(a).getImages();
+						String productImages=imagesEntities[0].getName().toString();
 						List<StandardSOH> sohData=productDataList.get(a).getStanderedSOH();
 						for(int b=0;b<sohData.size();b++) {
 							if(sohData.get(b).getSoh()<sohData.get(b).getNotify())
 							{
 								productList.add(productDataList.get(a).getProductId());
-								ImagesEntity[] imagesEntities=productDataList.get(i).getImages();
-								String productImages=imagesEntities[0].getName().toString();
 								StockEntity stockEntity= new StockEntity();
 								stockEntity.setPrice(productDataList.get(a).getPrice().getIndPrice().getDealPrice().intValue());
 								stockEntity.setProductDescription(productDataList.get(a).getProductDescription());
 								stockEntity.setProductImage(productImages);
-								stockEntity.setSenderEmail(designerProfileRepo.findBydesignerId(designerList.get(i).longValue()).get().getDesignerProfile().getEmail());
 								stockEntity.setSize(sohData.get(b).getSizeType());
 								stockEntity.setStock(sohData.get(b).getNotify());
+								stockEntity.setProductLink(productDataList.get(a).getProductId().toString());
 								stockList.add(stockEntity); 
 							}
 						}
 					}
 					if(!productList.isEmpty()) {
 						
-						data.put(designerList.get(i), stockList);
+						data.put(designerProfileRepo.findBydesignerId(designerList.get(i).longValue()).get().getDesignerProfile().getEmail(), stockList);
 					}
 				}
-//				//System.out.println(data);
-//				Map<String, Object> data1= new HashMap<String, Object>();
-//				List<StockEntity> list= new ArrayList<StockEntity>();
-//				for(int i=0;i<data.size();i++)
-//				{
-//					Collection<List<StockEntity>> values = data.values();
-//				//	StockEntity[] stockData = null;
-//					List<List<StockEntity>> collect = values.stream().collect(Collectors.toList());
-//					for(int a=0;a<collect.size();a++)
-//					{
-//						list = collect.get(a);
-//					}
-//				}
-//				System.out.println(list);
-//				return null;
-				 return null;
+				Map<String, Object> data2= new HashMap<String, Object>();
+				for(int i=0;i<emails.size();i++) {
+					if(data.containsKey(emails.get(i))) {
+						List<StockEntity> productDetails= data.get(emails.get(i));
+						data2.put("data", productDetails);
+						Context context= new Context();
+						context.setVariables(data2);
+						String htmlContent=templateEngine.process("lowStock", context);
+						EmailSenderThread emailSenderThread= new EmailSenderThread(emails.get(i), "Product out of stock", htmlContent, true, null);
+						emailSenderThread.start();
+					}
+				}
+					return new GlobalResponce("Success", "Designer informed successfully", 200);
 				}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+//	public GlobalResponce stockRecovereService(OrderSKUDetailsEntity orderDetails) {
+//		try {
+//			ProductMasterEntity productMasterEntity= productRepo.findById(orderDetails.getProductId()).get();
+//			List<StandardSOH> standeredSOH = productMasterEntity.getStanderedSOH();
+//			for(int i=0;i<standeredSOH.size();i++) {
+//				
+//			}
+//			//return null;
+//		}
+//		catch(Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
 }

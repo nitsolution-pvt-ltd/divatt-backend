@@ -678,4 +678,24 @@ public class OrderAndPaymentService {
 
 		return resource;
 	}
+
+	public GlobalResponse cancelOrderService(String refOrderId, Integer refProductId) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("orderId").is(refOrderId).and("productId").is(refProductId));
+			OrderSKUDetailsEntity skuDetailsEntity= mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+			if(!skuDetailsEntity.getOrderItemStatus().equals("cancelled")) {
+				skuDetailsEntity.setId(skuDetailsEntity.getId());
+				skuDetailsEntity.setOrderItemStatus("cancelled");
+				orderSKUDetailsRepo.save(skuDetailsEntity);
+				return new GlobalResponse("Success", "Ordered product cancelled successfully", 200);
+			}
+			else {
+				return new GlobalResponse("Error", "Product already cancelled", 400);
+			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

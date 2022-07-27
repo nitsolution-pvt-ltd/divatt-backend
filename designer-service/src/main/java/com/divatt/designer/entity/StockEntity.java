@@ -8,12 +8,13 @@ public class StockEntity {
 	private Integer stock;
 	private Integer price;
 	private String senderEmail;
+	private String productLink;
 	public StockEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public StockEntity(String productDescription, String productImage, String size, Integer stock, Integer price,
-			String senderEmail) {
+			String senderEmail, String productLink) {
 		super();
 		this.productDescription = productDescription;
 		this.productImage = productImage;
@@ -21,11 +22,13 @@ public class StockEntity {
 		this.stock = stock;
 		this.price = price;
 		this.senderEmail = senderEmail;
+		this.productLink = productLink;
 	}
 	@Override
 	public String toString() {
 		return "StockEntity [productDescription=" + productDescription + ", productImage=" + productImage + ", size="
-				+ size + ", stock=" + stock + ", price=" + price + ", senderEmail=" + senderEmail + "]";
+				+ size + ", stock=" + stock + ", price=" + price + ", senderEmail=" + senderEmail + ", productLink="
+				+ productLink + "]";
 	}
 	public String getProductDescription() {
 		return productDescription;
@@ -63,4 +66,11 @@ public class StockEntity {
 	public void setSenderEmail(String senderEmail) {
 		this.senderEmail = senderEmail;
 	}
+	public String getProductLink() {
+		return productLink;
+	}
+	public void setProductLink(String productLink) {
+		this.productLink = productLink;
+	}
+	
 }

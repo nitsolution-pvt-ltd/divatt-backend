@@ -557,5 +557,14 @@ public class OrderAndPaymentContoller {
 //		fos.close();
 		return ResponseEntity.ok(imageString);
 		}
-	
+
+	@PutMapping("/cancelOrder/{orderId}/{productId}")
+	public GlobalResponse cancelOrder(@PathVariable String orderId, @PathVariable Integer productId) {
+		try {
+			return this.orderAndPaymentService.cancelOrderService(orderId,productId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
