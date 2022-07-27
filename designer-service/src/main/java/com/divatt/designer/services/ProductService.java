@@ -815,30 +815,8 @@ public class ProductService {
 			ImagesEntity[] images=productMasterEntity.getImages();
 			String image1=images[0].getName();
 			System.out.println(images[0].getName());
-//			String productImage="__ProductImage__";
-//			String productName="__ProductName__";
-//			String productDesc="__ProductDesc__";
-//			String productPrice="__ProductPrice__";
-//			String productDiscount="__ProductDiscount__";
-//			String productLink="__ProductLink__";
-//			String productDesignerName="__ProductDesignerName__";
-//			String productUserName="__Username__";
-//			String designerImage="__DesignerImage__";
-//			Path filePath= Path.of("D:\\packageservice\\projects\\Divatt\\divatt-backend-updated-4-05-2022\\divatt-backend\\designer-service\\src\\main\\resources\\templates\\emailTemplate.html");
-//			Path filePath= null;
-////			File resource = new ClassPathResource("emailTemplate.html"). getFile();
-////			String ETBody = new String(Files.readAllBytes(resource.toPath()));
-//			String ETBody = "";
-//			String ETreplace = ETBody.replace(productImage,image1);
-//			String ETreplace1 = ETreplace.replace(productName,productMasterEntity.getProductName());
-//			String ETreplace2 = ETreplace1.replace(productDesc,productMasterEntity.getProductDescription());
-//			String ETreplace3 = ETreplace2.replace(productPrice,productMasterEntity.getPrice().getIndPrice().getDealPrice().toString());
-//			String ETreplace4 = ETreplace3.replace(productDiscount,productMasterEntity.getPrice().getIndPrice().getDiscountValue().toString());
-//			String ETreplace5 = ETreplace4.replace(productLink,"https://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
-//			String ETreplace6 = ETreplace5.replace(productDesignerName,productMasterEntity.getDesignerName());
-//			String ETreplace7 = ETreplace6.replace(designerImage,designerImageData);
 			Map<String, Object> data2= new HashMap<String, Object>();
-			System.out.println("https://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
+			//System.out.println("https://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
 			for(int i=0;i<userInfoList.size();i++)
 			{
 				EmailEntity emailEntity= new EmailEntity();
@@ -846,7 +824,15 @@ public class ProductService {
 				emailEntity.setProductDesignerName(productMasterEntity.getDesignerName());
 				emailEntity.setProductImage(image1);
 				emailEntity.setProductName(productMasterEntity.getProductName());
-				emailEntity.setProducyDiscount(productMasterEntity.getPrice().getIndPrice().getDiscountValue().toString());
+				if(productMasterEntity.getPrice().getIndPrice().getDiscountType().equals("None")){
+					emailEntity.setProducyDiscount("No discount");
+				}else if(productMasterEntity.getPrice().getIndPrice().getDiscountType().equals("Flat")){
+					 emailEntity.setProducyDiscount("Rs."+productMasterEntity.getPrice().getIndPrice().getDiscountValue().toString());
+					
+				}
+				else {
+					emailEntity.setProducyDiscount(productMasterEntity.getPrice().getIndPrice().getDiscountValue().toString()+"%");
+				}
 				emailEntity.setProductPrice(productMasterEntity.getPrice().getIndPrice().getDealPrice().toString());
 				emailEntity.setUserName(userInfoList.get(i).getFirstName());
 				emailEntity.setProductId(productMasterEntity.getProductId().toString());
