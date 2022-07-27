@@ -9,20 +9,20 @@
          </thead>
        </table>
        <table style="margin-top: 20px;margin-bottom: 25px;width: 100%;">
-        <tr style=" color: #000;font-weight: bold; padding: 5px;">
+        <tr th:each="data1 : ${data}" style=" color: #000;font-weight: bold; padding: 5px;">
             <td style="text-align: center; line-height: 25px;
-        ">Hi __Username__, <br/> New Product Arrival From,</td>
+        ">Hi, <th:block th:text="${data1.userName}"></th:block> <br/> New Product Arrival From,</td>
         </tr>
         <tr style=" color: #000;font-weight: bold; padding: 5px;margin-top: 25px;">
           <td>
             <div style="text-align: center;padding: 10px;height: 150px;margin-top: 15px;
         ">
-              <div>
-                <img src="__DesignerImage__" style="margin: auto;height: 85px;-o-object-fit: cover;object-fit: cover;
+              <div th:each="data1 : ${data}">
+               <img th:src="@{${data1.designerImage}}" style="margin: auto;height: 85px;-o-object-fit: cover;object-fit: cover;
               width: 85px;
               border-radius: 100%;
               cursor: pointer;">
-              <h3 style="font-size: 18px; margin: 20px 0 9px 0;">__ProductDesignerName__</h3>
+              <h3 style="font-size: 18px; margin: 20px 0 9px 0;"><th:block th:text="${data1.productDesignerName}"></th:block></h3>
               </div>
             </div>
           </td>
@@ -32,23 +32,23 @@
          <thead>
            <tr style=" color: #6c757d;font-weight: bold; padding: 5px;">
              <td colspan="2" style="text-align: left;">PRODUCT INFORMATION</td>
-             <td style="text-align: center;">DESC</td>
+             <td style="text-align: center;">DESCRIPTION</td>
              <td style="padding: 10px;text-align:center;">DISCOUNT</td>
              <td style="text-align: right;padding: 10px;">PRICE</td>
            </tr>
          </thead>
          <tbody>
-           <tr>
+           <tr th:each="data1 : ${data}">
              <td style="width:10%; ">
-               <a href="__ProductLink__"><img src="__ProductImage__" style="width:50px;" /></a>
+               <a th:href="@{'http://65.1.190.195/divatt/product-detail/' + ${data1.productId}}" target="_blank"><img th:src="@{${data1.productImage}}" style="width:50px;" /></a>
              </td>
              <td style="width:20%;margin-left:10px;text-align: left;">
-             <a href="__ProductLink__" style="text-decoration: none;color:#000000;">__ProductName__</a></td>
-             <td style="width:20%;padding: 10px; text-align:center;">__ProductDesc__</td>
-             <td style="text-align: center;padding: 10px;">__ProductDiscount__</td>
+             <a th:href="@{'http://65.1.190.195/divatt/product-detail/' + ${data1.productId}}" target="_blank" style="text-decoration: none;color:#000000;"><th:block th:text="${data1.productName}"></th:block></a></td>
+             <td style="width:20%;padding: 10px; text-align:center;"><th:block th:text="${data1.productDesc}"></th:block></td>
+             <td style="text-align: center;padding: 10px;"><th:block th:text="${data1.producyDiscount}"></th:block> %</td>
              <td style="width:30%; ;font-weight: bold;font-size: 14px;">
                <table style="width:100%;">
-                 <tr><td style="text-align:end;font-size:13px;"> <b>Rs.</b>__ProductPrice__</td></tr>
+                 <tr><td style="text-align:end;font-size:13px;"> <b>Rs.</b><th:block th:text="${data1.productPrice}"></th:block></td></tr>
                </table>
              </td>
            </tr>
