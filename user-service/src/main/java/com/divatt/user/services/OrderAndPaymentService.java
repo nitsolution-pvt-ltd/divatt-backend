@@ -165,7 +165,7 @@ public class OrderAndPaymentService {
 
 	}
 	
-	public ResponseEntity<?> postOrderSKUService(List<OrderSKUDetailsEntity> orderSKUDetailsEntity) {
+	public ResponseEntity<?> postOrderSKUService(OrderSKUDetailsEntity orderSKUDetailsEntityRow) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderSKUService()");
 
 		try {
@@ -178,7 +178,7 @@ public class OrderAndPaymentService {
 			
 			OrderSKUDetailsEntity filterCatDetails = new OrderSKUDetailsEntity();
 
-			for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
+//			for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
 				
 			
 			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
@@ -202,7 +202,7 @@ public class OrderAndPaymentService {
 			filterCatDetails.setCreatedOn(format);
 
 			OrderSKUDetailsEntity data = orderSKUDetailsRepo.save(filterCatDetails);
-			}
+//			}
 			
 			return ResponseEntity.ok(null);
 		} catch (RazorpayException e) {

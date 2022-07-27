@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
-
 import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.OrderDetailsEntity;
@@ -70,7 +69,7 @@ import springfox.documentation.spring.web.json.Json;
 
 @Service
 public class ProductService {
-	
+
 	@Autowired
 	private RestTemplate restTemplate;
 
@@ -91,8 +90,6 @@ public class ProductService {
 
 	@Autowired
 	private MongoOperations mongoOperations;
-	
-	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
@@ -159,95 +156,103 @@ public class ProductService {
 			query.addCriteria(Criteria.where("designer_id").is(productData.getDesignerId()));
 			List<DesignerProfileEntity> designerProfileInfo = mongoOperations.find(query, DesignerProfileEntity.class);
 			if (!designerProfileInfo.isEmpty()) {
-				Query query2=new Query();
-				query2.addCriteria(Criteria.where("profile_status").is("COMPLETED").and("_id").is(productData.getDesignerId()));
-				List<DesignerLoginEntity> list=mongoOperations.find(query2, DesignerLoginEntity.class);
-				if(!list.isEmpty())
-				{
-				Query query1 = new Query();
-				query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName")
-						.is(productData.getProductName()));
-				List<UserProfile>userProfiles= new ArrayList<UserProfile>();
-				List<ProductMasterEntity> productInfo = mongoOperations.find(query1, ProductMasterEntity.class);
-				if (productInfo.isEmpty()) {
+				Query query2 = new Query();
+				query2.addCriteria(
+						Criteria.where("profile_status").is("COMPLETED").and("_id").is(productData.getDesignerId()));
+				List<DesignerLoginEntity> list = mongoOperations.find(query2, DesignerLoginEntity.class);
+				if (!list.isEmpty()) {
+					Query query1 = new Query();
+					query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName")
+							.is(productData.getProductName()));
+					List<UserProfile> userProfiles = new ArrayList<UserProfile>();
+					List<ProductMasterEntity> productInfo = mongoOperations.find(query1, ProductMasterEntity.class);
+					if (productInfo.isEmpty()) {
 //					RestTemplate restTemplate = new RestTemplate();
-					ResponseEntity<String> categoryResponse = restTemplate.getForEntity(
-							"https://localhost:8084/dev/category/view/" + productData.getCategoryId(), String.class);
+						ResponseEntity<String> categoryResponse = restTemplate.getForEntity(
+								"https://localhost:8084/dev/category/view/" + productData.getCategoryId(),
+								String.class);
 
-					ResponseEntity<String> subcategoryResponse = restTemplate.getForEntity(
-							"https://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
-							String.class);
-					productRepo.save(customFunction.filterDataEntity(productData));
-					Query query3= new Query();
-					query3.addCriteria(Criteria.where("productName").is(productData.getProductName()));
-					ProductMasterEntity newProductData=mongoOperations.findOne(query3, ProductMasterEntity.class);
+						ResponseEntity<String> subcategoryResponse = restTemplate.getForEntity(
+								"https://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
+								String.class);
+						productRepo.save(customFunction.filterDataEntity(productData));
+						Query query3 = new Query();
+						query3.addCriteria(Criteria.where("productName").is(productData.getProductName()));
+						ProductMasterEntity newProductData = mongoOperations.findOne(query3, ProductMasterEntity.class);
 //					RestTemplate followerData= new RestTemplate();
-					List<UserProfileInfo> userInfoList= new ArrayList<UserProfileInfo>();
-					List<Long>userId= new ArrayList<Long>();
-					
-					ResponseEntity<String> forEntity = restTemplate.getForEntity("https://localhost:8082/dev/user/followedUserList/"+productData.getDesignerId(), String.class);
-					String data=forEntity.getBody();
-					JSONArray jsonArray= new JSONArray(data);
-					String designerImageData = designerProfileRepo.findBydesignerId(productData.getDesignerId().longValue()).get().getDesignerProfile().getProfilePic();
-					for(int i=0;i<jsonArray.length();i++)
-					{
-						ObjectMapper objectMapper = new ObjectMapper();
-						UserProfile readValue = objectMapper.readValue(jsonArray.get(i).toString(), UserProfile.class);
-//						RestTemplate userResponse= new RestTemplate();
-						ResponseEntity<UserProfileInfo> userInfo= restTemplate.getForEntity("https://localhost:8082/dev/user/getUserId/"+readValue.getUserId(), UserProfileInfo.class);
-						userInfoList.add(userInfo.getBody());
-					}
-					for(int i=0;i<userId.size();i++)
-					{
-						ResponseEntity<UserProfileInfo> userProfileList= restTemplate.getForEntity("https://localhost:8080/dev/auth/info/USER/"+userId.get(i), UserProfileInfo.class);
-						
-					}
-					productRepo.save(customFunction.filterDataEntity(productData));
+						List<UserProfileInfo> userInfoList = new ArrayList<UserProfileInfo>();
+						List<Long> userId = new ArrayList<Long>();
 
-					
-					//char emailData[];
-					ImagesEntity[] images=productData.getImages();
-					String image1=images[0].getName();
-					System.out.println(images[0].getName());
-					String productImage="__ProductImage__";
-					String productName="__ProductName__";
-					String productDesc="__ProductDesc__";
-					String productPrice="__ProductPrice__";
-					String productDiscount="__ProductDiscount__";
-					String productLink="__ProductLink__";
-					String productDesignerName="__ProductDesignerName__";
-					String productUserName="__Username__";
-					String designerImage="__DesignerImage__";
+						ResponseEntity<String> forEntity = restTemplate.getForEntity(
+								"https://localhost:8082/dev/user/followedUserList/" + productData.getDesignerId(),
+								String.class);
+						String data = forEntity.getBody();
+						JSONArray jsonArray = new JSONArray(data);
+						String designerImageData = designerProfileRepo
+								.findBydesignerId(productData.getDesignerId().longValue()).get().getDesignerProfile()
+								.getProfilePic();
+						for (int i = 0; i < jsonArray.length(); i++) {
+							ObjectMapper objectMapper = new ObjectMapper();
+							UserProfile readValue = objectMapper.readValue(jsonArray.get(i).toString(),
+									UserProfile.class);
+//						RestTemplate userResponse= new RestTemplate();
+							ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(
+									"https://localhost:8082/dev/user/getUserId/" + readValue.getUserId(),
+									UserProfileInfo.class);
+							userInfoList.add(userInfo.getBody());
+						}
+						for (int i = 0; i < userId.size(); i++) {
+							ResponseEntity<UserProfileInfo> userProfileList = restTemplate.getForEntity(
+									"https://localhost:8080/dev/auth/info/USER/" + userId.get(i),
+									UserProfileInfo.class);
+
+						}
+						productRepo.save(customFunction.filterDataEntity(productData));
+
+						// char emailData[];
+						ImagesEntity[] images = productData.getImages();
+						String image1 = images[0].getName();
+						System.out.println(images[0].getName());
+						String productImage = "__ProductImage__";
+						String productName = "__ProductName__";
+						String productDesc = "__ProductDesc__";
+						String productPrice = "__ProductPrice__";
+						String productDiscount = "__ProductDiscount__";
+						String productLink = "__ProductLink__";
+						String productDesignerName = "__ProductDesignerName__";
+						String productUserName = "__Username__";
+						String designerImage = "__DesignerImage__";
 //					Path filePath= Path.of("D:\\packageservice\\projects\\Divatt\\divatt-backend-updated-4-05-2022\\divatt-backend\\designer-service\\src\\main\\resources\\templates\\emailTemplate.html");
-					Path filePath= null;
-					String ETBody = Files.readString(filePath);
-					String ETreplace = ETBody.replace(productImage,image1);
-					String ETreplace1 = ETreplace.replace(productName,productData.getProductName());
-					String ETreplace2 = ETreplace1.replace(productDesc,productData.getProductDescription());
-					String ETreplace3 = ETreplace2.replace(productPrice,productData.getPrice().getIndPrice().getDealPrice().toString());
-					String ETreplace4 = ETreplace3.replace(productDiscount,productData.getPrice().getIndPrice().getDiscountValue().toString());
-					String ETreplace5 = ETreplace4.replace(productLink,"http://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
-					String ETreplace6 = ETreplace5.replace(productDesignerName,productData.getDesignerName());
-					String ETreplace7 = ETreplace6.replace(designerImage,designerImageData);
-					System.out.println("http://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
-					for(int i=0;i<userInfoList.size();i++)
-					{
-						String ETreplace8 = ETreplace7.replace(productUserName,userInfoList.get(i).getFirstName());
+						Path filePath = null;
+						String ETBody = Files.readString(filePath);
+						String ETreplace = ETBody.replace(productImage, image1);
+						String ETreplace1 = ETreplace.replace(productName, productData.getProductName());
+						String ETreplace2 = ETreplace1.replace(productDesc, productData.getProductDescription());
+						String ETreplace3 = ETreplace2.replace(productPrice,
+								productData.getPrice().getIndPrice().getDealPrice().toString());
+						String ETreplace4 = ETreplace3.replace(productDiscount,
+								productData.getPrice().getIndPrice().getDiscountValue().toString());
+						String ETreplace5 = ETreplace4.replace(productLink, "http://65.1.190.195/divatt/product-detail/"
+								+ newProductData.getProductId().toString());
+						String ETreplace6 = ETreplace5.replace(productDesignerName, productData.getDesignerName());
+						String ETreplace7 = ETreplace6.replace(designerImage, designerImageData);
+						System.out.println("http://65.1.190.195/divatt/product-detail/"
+								+ newProductData.getProductId().toString());
+						for (int i = 0; i < userInfoList.size(); i++) {
+							String ETreplace8 = ETreplace7.replace(productUserName, userInfoList.get(i).getFirstName());
 //						System.out.println(userInfoList.get(i).getEmail());
-						EmailSenderThread emailSenderThread= new EmailSenderThread(userInfoList.get(i).getEmail(), "New Product Available", ETreplace8, true, null);
-						emailSenderThread.start();
+							EmailSenderThread emailSenderThread = new EmailSenderThread(userInfoList.get(i).getEmail(),
+									"New Product Available", ETreplace8, true, null);
+							emailSenderThread.start();
+						}
+						return new GlobalResponce("Success!!", "Product added successfully", 200);
+					} else {
+						return new GlobalResponce("Error!!", "Product already added", 400);
 					}
-					return new GlobalResponce("Success!!", "Product added successfully", 200);
 				} else {
-					return new GlobalResponce("Error!!", "Product already added", 400);
-				}
-			}
-				else
-				{
 					return new GlobalResponce("Error!!", "Designer doucument is not appoved", 400);
 				}
-			}
-				else {
+			} else {
 				return new GlobalResponce("Error!!", "Designerid does not exist!!", 400);
 			}
 		} catch (Exception e) {
@@ -260,15 +265,17 @@ public class ProductService {
 			LOGGER.info("Inside-ProductService.productDetails()");
 			if (productRepo.existsById(productId)) {
 				LOGGER.info("Inside - ProductService.productDetails()");
-				 ProductMasterEntity masterEntity= productRepo.findById(productId).get();
+				ProductMasterEntity masterEntity = productRepo.findById(productId).get();
 //				 RestTemplate restTemplate= new RestTemplate();
-				 ResponseEntity<Object> categoryEntity=restTemplate.getForEntity("https://localhost:8084/dev/category/view/"+masterEntity.getCategoryId(), Object.class);
-				 ResponseEntity<Object> subCategoryEntity=restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+masterEntity.getSubCategoryId(), Object.class);
-				 ProductEntity productData=customFunction.productFilter(masterEntity);
-				 productData.setCategoryObject(categoryEntity.getBody());
-				 productData.setSubCategoryObject(subCategoryEntity.getBody());
-				 return productData;
-				 
+				ResponseEntity<Object> categoryEntity = restTemplate.getForEntity(
+						"https://localhost:8084/dev/category/view/" + masterEntity.getCategoryId(), Object.class);
+				ResponseEntity<Object> subCategoryEntity = restTemplate.getForEntity(
+						"https://localhost:8084/dev/subcategory/view/" + masterEntity.getSubCategoryId(), Object.class);
+				ProductEntity productData = customFunction.productFilter(masterEntity);
+				productData.setCategoryObject(categoryEntity.getBody());
+				productData.setSubCategoryObject(subCategoryEntity.getBody());
+				return productData;
+
 			} else {
 				throw new CustomException("Product not found");
 			}
@@ -401,7 +408,7 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	public Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page,
 			String sort, String sortName, Boolean isDeleted, int limit) {
 		try {
@@ -450,7 +457,7 @@ public class ProductService {
 				throw new CustomException("Product not found!");
 			} else {
 				List<ProductMasterEntity> list = productRepo.findByProductIdIn(productIdList);
-				
+
 				if (list.size() <= 0) {
 					throw new CustomException("Product not found!");
 				} else {
@@ -603,7 +610,7 @@ public class ProductService {
 
 				if (status.equals("all")) {
 
-					findAll = productRepo.SearchAndfindByIsDeleted(keyword, isDeleted,pagingSort);	
+					findAll = productRepo.SearchAndfindByIsDeleted(keyword, isDeleted, pagingSort);
 
 				} else if (status.equals("pending")) {
 
@@ -752,7 +759,8 @@ public class ProductService {
 	public List<ProductMasterEntity> UserDesignerProductList(Integer Id) {
 		try {
 			Query query = new Query();
-			query.addCriteria(Criteria.where("designerId").is(Id).and("isActive").is(true).and("adminStatus").is("Approved"));
+			query.addCriteria(
+					Criteria.where("designerId").is(Id).and("isActive").is(true).and("adminStatus").is("Approved"));
 			List<ProductMasterEntity> productList = mongoOperations.find(query, ProductMasterEntity.class);
 
 			if (productList.isEmpty()) {
@@ -819,7 +827,6 @@ public class ProductService {
 			} else {
 				List<ProductMasterEntity> list = productRepo.findByProductIdIn(productIdList);
 
-				
 				if (list.size() <= 0) {
 					throw new CustomException("Product not found!");
 				} else {
@@ -830,91 +837,79 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
 
 	public GlobalResponce adminApproval(Integer productId, ProductMasterEntity masterEntity) {
 		try {
 			masterEntity.setProductId(productId);
 			productRepo.save(masterEntity);
 			return new GlobalResponce("Successfull", "Product approved", 200);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public GlobalResponce multiDelete(List<Integer> productIdList) {
 		try {
-			List<ProductMasterEntity> productList=new ArrayList<ProductMasterEntity>();
-			for(int i=0;i<productIdList.size();i++)
-			{
-				ProductMasterEntity productData=productRepo.findById(productIdList.get(i)).get();
+			List<ProductMasterEntity> productList = new ArrayList<ProductMasterEntity>();
+			for (int i = 0; i < productIdList.size(); i++) {
+				ProductMasterEntity productData = productRepo.findById(productIdList.get(i)).get();
 				productList.add(productData);
 			}
-			List<ProductMasterEntity> collect = productList.stream().filter(e->e.getIsDeleted().equals(false)).collect(Collectors.toList());
-			for(int i=0;i<collect.size();i++)
-			{
+			List<ProductMasterEntity> collect = productList.stream().filter(e -> e.getIsDeleted().equals(false))
+					.collect(Collectors.toList());
+			for (int i = 0; i < collect.size(); i++) {
 				collect.get(i).setIsDeleted(true);
 				collect.get(i).setIsActive(false);
 			}
 			productRepo.saveAll(collect);
-			//System.out.println(collect);
+			// System.out.println(collect);
 			return new GlobalResponce("Success", "The products are deleted successfully", 200);
-			
-		}
-		catch(Exception e) {
+
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
-
-	public GlobalResponce stockClearenceService(List<OrderSKUDetailsEntity> orderSKUDetailsEntities)
-	{
+	public GlobalResponce stockClearenceService(List<OrderSKUDetailsEntity> orderSKUDetailsEntities) {
 		try {
-			for (int i=0;i<orderSKUDetailsEntities.size();i++) {
-				int productId=orderSKUDetailsEntities.get(i).getProductId();
-				int productQty=orderSKUDetailsEntities.get(i).getUnits().intValue();
-				String productSize=orderSKUDetailsEntities.get(i).getSize();
-				List<StandardSOH> updatedSOH=new ArrayList<StandardSOH>();
-				ProductMasterEntity productMasterEntity= productRepo.findById(productId).get();
-				List<StandardSOH> standardSOHs=productMasterEntity.getStanderedSOH();
-				for(int a=0;a<standardSOHs.size();a++)
-				{
-					StandardSOH standardSOH=new StandardSOH();
-					//System.out.println(standardSOHs.get(a));
-					//System.out.println(productQty);
-					if(standardSOHs.get(a).getSizeType().equals(productSize)) {
-						standardSOH.setSoh(standardSOHs.get(a).getSoh().intValue()-productQty);
+			for (int i = 0; i < orderSKUDetailsEntities.size(); i++) {
+				int productId = orderSKUDetailsEntities.get(i).getProductId();
+				int productQty = orderSKUDetailsEntities.get(i).getUnits().intValue();
+				String productSize = orderSKUDetailsEntities.get(i).getSize();
+				List<StandardSOH> updatedSOH = new ArrayList<StandardSOH>();
+				ProductMasterEntity productMasterEntity = productRepo.findById(productId).get();
+				List<StandardSOH> standardSOHs = productMasterEntity.getStanderedSOH();
+				for (int a = 0; a < standardSOHs.size(); a++) {
+					StandardSOH standardSOH = new StandardSOH();
+					// System.out.println(standardSOHs.get(a));
+					// System.out.println(productQty);
+					if (standardSOHs.get(a).getSizeType().equals(productSize)) {
+						standardSOH.setSoh(standardSOHs.get(a).getSoh().intValue() - productQty);
 						standardSOH.setOos(standardSOHs.get(a).getOos());
 						standardSOH.setSizeType(productSize);
 						standardSOH.setNotify(standardSOHs.get(a).getNotify());
 						updatedSOH.add(standardSOH);
-					}
-					else{
+					} else {
 						updatedSOH.add(standardSOHs.get(a));
 					}
 				}
-				ProductMasterEntity masterEntity= productRepo.findById(productId).get();
+				ProductMasterEntity masterEntity = productRepo.findById(productId).get();
 				masterEntity.setStanderedSOH(standardSOHs);
 				System.out.println(masterEntity);
 				productRepo.save(masterEntity);
 			}
-			return new GlobalResponce("Success", "Stock cleared successfully",200);
-		}
-		catch(Exception e) {
+			return new GlobalResponce("Success", "Stock cleared successfully", 200);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	public List<ProductMasterEntity> productListCategorySubcategory(String categoryName,
-			String subcategoryName) {
+
+	public List<ProductMasterEntity> productListCategorySubcategory(String categoryName, String subcategoryName) {
 		try {
-//		RestTemplate restTemplate= new RestTemplate();
-		ResponseEntity<CategoryEntity> categoryEntity= restTemplate.getForEntity("https://localhost:8085/dev/category/", CategoryEntity.class);
-		return null;	
-		}
-		catch(Exception e) {
+			ResponseEntity<CategoryEntity> categoryEntity = restTemplate
+					.getForEntity("https://localhost:8085/dev/category/", CategoryEntity.class);
+			return null;
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -922,30 +917,29 @@ public class ProductService {
 	public List<ProductMasterEntity> viewProductByCategorySubcategoryService(String categoryName,
 			String subCategoryName) {
 		try {
-			
+
 //			RestTemplate restTemplate= new RestTemplate();
-			ResponseEntity<UserResponseEntity> userResponseEntity= restTemplate.getForEntity("https://localhost:8085/dev/category/viewByName/"+categoryName+"/"+subCategoryName, UserResponseEntity.class);
+			ResponseEntity<UserResponseEntity> userResponseEntity = restTemplate.getForEntity(
+					"https://localhost:8085/dev/category/viewByName/" + categoryName + "/" + subCategoryName,
+					UserResponseEntity.class);
 			System.out.println(userResponseEntity.getBody());
-			int categoryIdvalue=userResponseEntity.getBody().getCategoryEntity().getId();
-			if(userResponseEntity.getBody().getSubCategoryEntity().getParentId().equals("0"))
-			{
-				Query query= new Query();
-				query.addCriteria(Criteria.where("categoryId").is(categoryIdvalue)
-						.and("isDeleted").is(false).and("isActive").is(true)
-						.and("adminStatus").is("Approved"));
-				List<ProductMasterEntity> productMasterEntities=mongoOperations.find(query, ProductMasterEntity.class);
+			int categoryIdvalue = userResponseEntity.getBody().getCategoryEntity().getId();
+			if (userResponseEntity.getBody().getSubCategoryEntity().getParentId().equals("0")) {
+				Query query = new Query();
+				query.addCriteria(Criteria.where("categoryId").is(categoryIdvalue).and("isDeleted").is(false)
+						.and("isActive").is(true).and("adminStatus").is("Approved"));
+				List<ProductMasterEntity> productMasterEntities = mongoOperations.find(query,
+						ProductMasterEntity.class);
 				return productMasterEntities;
 			}
-			int subcategoryIdvalue= userResponseEntity.getBody().getSubCategoryEntity().getId();
-			Query query= new Query();
-			query.addCriteria(Criteria.where("categoryId").is(categoryIdvalue)
-					.and("subCategoryId").is(subcategoryIdvalue)
-					.and("isDeleted").is(false).and("isActive").is(true)
-					.and("adminStatus").is("Approved"));
-			List<ProductMasterEntity> productMasterEntities=mongoOperations.find(query, ProductMasterEntity.class);
+			int subcategoryIdvalue = userResponseEntity.getBody().getSubCategoryEntity().getId();
+			Query query = new Query();
+			query.addCriteria(
+					Criteria.where("categoryId").is(categoryIdvalue).and("subCategoryId").is(subcategoryIdvalue)
+							.and("isDeleted").is(false).and("isActive").is(true).and("adminStatus").is("Approved"));
+			List<ProductMasterEntity> productMasterEntities = mongoOperations.find(query, ProductMasterEntity.class);
 			return productMasterEntities;
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -968,17 +962,16 @@ public class ProductService {
 			Page<ProductMasterEntity> findAll = null;
 			List<ProductMasterEntity> findAlls = null;
 
-
 			if (keyword.isEmpty()) {
-				
+
 				LocalDate date = LocalDate.now();
 
-				findAll = productRepo.findNotify(date,pagingSort);
+				findAll = productRepo.findNotify(date, pagingSort);
 //				findAll = productRepo.findByStanderedSOHNotifySohGreaterThan(pagingSort);
-				
+
 			} else {
-				findAll = productRepo.DesignerSearchfindByIsDeletedAndAdminStatus(keyword, isDeleted,
-						"Approved", pagingSort);
+				findAll = productRepo.DesignerSearchfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",
+						pagingSort);
 
 			}
 
@@ -1004,47 +997,48 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
-	//@Scheduled(fixedDelay = 10000)
-	public String schData()
-	{
+
+	// @Scheduled(fixedDelay = 10000)
+	public String schData() {
 		try {
-				List<DesignerProfileEntity> designerProfileEntities= designerProfileRepo.findAll();
-				HashMap<Integer, List<StockEntity>> data = new HashMap<Integer, List<StockEntity>>();
-				List<Integer> designerList= new ArrayList<Integer>();
-				for(int i=0;i<designerProfileEntities.size();i++)
-				{
-					designerList.add(designerProfileEntities.get(i).getDesignerId().intValue());
-				}
-				for(int i=0;i<designerList.size();i++) {
-					List<StockEntity> stockList= new ArrayList<StockEntity>();
-					List<ProductMasterEntity> productDataList=productRepo.findByDesignerIdAndIsDeletedAndAdminStatusAndIsActive(designerList.get(i), false, "Approved", true);
-					List<Integer> productList= new ArrayList<Integer>();
-					for(int a=0;a<productDataList.size();a++) {
-						List<StandardSOH> sohData=productDataList.get(a).getStanderedSOH();
-						for(int b=0;b<sohData.size();b++) {
-							if(sohData.get(b).getSoh()<sohData.get(b).getNotify())
-							{
-								productList.add(productDataList.get(a).getProductId());
-								ImagesEntity[] imagesEntities=productDataList.get(i).getImages();
-								String productImages=imagesEntities[0].getName().toString();
-								StockEntity stockEntity= new StockEntity();
-								stockEntity.setPrice(productDataList.get(a).getPrice().getIndPrice().getDealPrice().intValue());
-								stockEntity.setProductDescription(productDataList.get(a).getProductDescription());
-								stockEntity.setProductImage(productImages);
-								stockEntity.setSenderEmail(designerProfileRepo.findBydesignerId(designerList.get(i).longValue()).get().getDesignerProfile().getEmail());
-								stockEntity.setSize(sohData.get(b).getSizeType());
-								stockEntity.setStock(sohData.get(b).getNotify());
-								stockList.add(stockEntity); 
-							}
+			List<DesignerProfileEntity> designerProfileEntities = designerProfileRepo.findAll();
+			HashMap<Integer, List<StockEntity>> data = new HashMap<Integer, List<StockEntity>>();
+			List<Integer> designerList = new ArrayList<Integer>();
+			for (int i = 0; i < designerProfileEntities.size(); i++) {
+				designerList.add(designerProfileEntities.get(i).getDesignerId().intValue());
+			}
+			for (int i = 0; i < designerList.size(); i++) {
+				List<StockEntity> stockList = new ArrayList<StockEntity>();
+				List<ProductMasterEntity> productDataList = productRepo
+						.findByDesignerIdAndIsDeletedAndAdminStatusAndIsActive(designerList.get(i), false, "Approved",
+								true);
+				List<Integer> productList = new ArrayList<Integer>();
+				for (int a = 0; a < productDataList.size(); a++) {
+					List<StandardSOH> sohData = productDataList.get(a).getStanderedSOH();
+					for (int b = 0; b < sohData.size(); b++) {
+						if (sohData.get(b).getSoh() < sohData.get(b).getNotify()) {
+							productList.add(productDataList.get(a).getProductId());
+							ImagesEntity[] imagesEntities = productDataList.get(i).getImages();
+							String productImages = imagesEntities[0].getName().toString();
+							StockEntity stockEntity = new StockEntity();
+							stockEntity.setPrice(
+									productDataList.get(a).getPrice().getIndPrice().getDealPrice().intValue());
+							stockEntity.setProductDescription(productDataList.get(a).getProductDescription());
+							stockEntity.setProductImage(productImages);
+							stockEntity.setSenderEmail(
+									designerProfileRepo.findBydesignerId(designerList.get(i).longValue()).get()
+											.getDesignerProfile().getEmail());
+							stockEntity.setSize(sohData.get(b).getSizeType());
+							stockEntity.setStock(sohData.get(b).getNotify());
+							stockList.add(stockEntity);
 						}
 					}
-					if(!productList.isEmpty()) {
-						
-						data.put(designerList.get(i), stockList);
-					}
 				}
+				if (!productList.isEmpty()) {
+
+					data.put(designerList.get(i), stockList);
+				}
+			}
 //				//System.out.println(data);
 //				Map<String, Object> data1= new HashMap<String, Object>();
 //				List<StockEntity> list= new ArrayList<StockEntity>();
@@ -1060,9 +1054,8 @@ public class ProductService {
 //				}
 //				System.out.println(list);
 //				return null;
-				 return null;
-				}
-		catch(Exception e) {
+			return null;
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
