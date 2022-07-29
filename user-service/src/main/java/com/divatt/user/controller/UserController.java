@@ -275,6 +275,17 @@ public class UserController {
 
 	}
 
+	@GetMapping("/followerCount/{designerId}")
+	public GlobalResponse followerCount(@PathVariable Long designerId) {
+		try {
+			return this.userService.getCountFollowers(designerId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
 	@PostMapping("/add")
 	public ResponseEntity<?> addUser(@Valid @RequestBody UserLoginEntity userLoginEntity, Errors error) {
 		LOGGER.info("Inside - UserController.addUser()");

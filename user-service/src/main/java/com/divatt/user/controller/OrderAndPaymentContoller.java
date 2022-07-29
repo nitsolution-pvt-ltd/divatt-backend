@@ -251,7 +251,6 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());	
 				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());	
 				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());	
-				
 				Query query= new Query();
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity=mongoOperations.findOne(query, UserLoginEntity.class);
@@ -562,6 +561,16 @@ public class OrderAndPaymentContoller {
 	public GlobalResponse cancelOrder(@PathVariable String orderId, @PathVariable Integer productId) {
 		try {
 			return this.orderAndPaymentService.cancelOrderService(orderId,productId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/getOrderByInvoiceId/{invoiceId}")
+	public Object getOrderByInvoiceId(@PathVariable String invoiceId) {
+		try {
+			return this.orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

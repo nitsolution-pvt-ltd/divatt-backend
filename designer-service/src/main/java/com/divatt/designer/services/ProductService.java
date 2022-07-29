@@ -893,14 +893,13 @@ public class ProductService {
 						standardSOH.setOos(standardSOHs.get(a).getOos());
 						standardSOH.setSizeType(productSize);
 						standardSOH.setNotify(standardSOHs.get(a).getNotify());
+						System.out.println(standardSOH);
 						updatedSOH.add(standardSOH);
-					} else {
-						updatedSOH.add(standardSOHs.get(a));
 					}
 				}
 				ProductMasterEntity masterEntity = productRepo.findById(productId).get();
-				masterEntity.setStanderedSOH(standardSOHs);
-				System.out.println(masterEntity);
+				masterEntity.setStanderedSOH(updatedSOH);
+				//System.out.println(masterEntity);
 				productRepo.save(masterEntity);
 			}
 			return new GlobalResponce("Success", "Stock cleared successfully", 200);
@@ -1070,17 +1069,29 @@ public class ProductService {
 		}
 	}
 
-//	public GlobalResponce stockRecovereService(OrderSKUDetailsEntity orderDetails) {
-//		try {
-//			ProductMasterEntity productMasterEntity= productRepo.findById(orderDetails.getProductId()).get();
-//			List<StandardSOH> standeredSOH = productMasterEntity.getStanderedSOH();
-//			for(int i=0;i<standeredSOH.size();i++) {
-//				
-//			}
-//			//return null;
-//		}
-//		catch(Exception e) {
-//			throw new CustomException(e.getMessage());
-//		}
-//	}
+	public GlobalResponce stockRecovereService(OrderSKUDetailsEntity orderDetails) {
+		try {
+			ProductMasterEntity productMasterEntity= productRepo.findById(orderDetails.getProductId()).get();
+			List<StandardSOH> standeredSOH = productMasterEntity.getStanderedSOH();
+			List<StandardSOH> recoveredSOH= new ArrayList<StandardSOH>();
+			for(int i=0;i<standeredSOH.size();i++) {
+				if(standeredSOH.get(i).getSizeType().equals(orderDetails.getSize())) {
+					StandardSOH standardSOH= new StandardSOH();
+					standardSOH.setNotify(standeredSOH.get(i).getNotify());
+					standardSOH.setOos(standeredSOH.get(i).getOos());
+					standardSOH.setSizeType(standeredSOH.get(i).getSizeType());
+					standardSOH.setSoh(standeredSOH.get(i).getSoh()+orderDetails.getUnits().intValue());
+					recoveredSOH.add(standardSOH);
+				}
+			}
+			productMasterEntity.setProductId(orderDetails.getProductId());
+			productMasterEntity.setStanderedSOH(recoveredSOH);
+			productRepo.save(productMasterEntity);
+			return new GlobalResponce("Successfull", "Stock recovered", 200);
+			//return null;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

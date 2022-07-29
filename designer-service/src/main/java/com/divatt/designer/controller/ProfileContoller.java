@@ -23,6 +23,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.util.Streamable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
@@ -86,6 +90,13 @@ public class ProfileContoller {
 
 	@Autowired
 	DatabaseSeqRepo databaseSeqRepo;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	
+	@Autowired
+	private MongoOperations mongoOperations;
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
@@ -213,6 +224,7 @@ public class ProfileContoller {
 	
 			
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
+			designerLoginEntityDB.setCategories(designerLoginEntity.getCategories());
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginRepo.save(designerLoginEntityDB);
@@ -251,21 +263,19 @@ public class ProfileContoller {
 			designerProfile.setEmail(findById.get().getEmail());
 			designerProfile.setPassword(findById.get().getPassword());
 			designerProfile.setProfilePic(designerProfileEntity.getDesignerProfile().getProfilePic());
+//			designerProfile.setDesignerCategory(designerProfile.getDesignerCategory());
 
 			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
 			
 			designerProfileEntityDB.setBoutiqueProfile(designerProfileEntity.getBoutiqueProfile());
 			designerProfileEntityDB.setDesignerProfile(designerProfile);
 			designerProfileEntityDB.setSocialProfile(designerProfileEntity.getSocialProfile());
+//			designerProfileEntityDB.setDesignerLevel(designerProfile.getDesignerCategory());
 
 			designerProfileRepo.save(designerProfileEntityDB);
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setProfileStatus("SUBMITTED");
 			designerLoginRepo.save(designerLoginEntityDB);
-			
-			
-			
-
 		}
 
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
@@ -412,6 +422,63 @@ public class ProfileContoller {
 
 			return response;
 		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@GetMapping("/countData/{designerId}")
+	public Object testAPI(@PathVariable Long designerId)
+	{
+		try {
+			org.json.simple.JSONObject response= new org.json.simple.JSONObject();
+			ResponseEntity<GlobalResponce> userData=restTemplate.getForEntity("https://192.168.1.121:8085/dev/user/followerCount/"+designerId, GlobalResponce.class);
+			String followersData=userData.getBody().getMessage();
+			response.put("FollowersData", followersData);
+			response.put("Products", productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false, "Approved", designerId, true));
+			return response;
+		}
+		catch(Exception e){
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@GetMapping("/getDesignerCategory")
+	public  List<Object> getDesignerCategory()
+	{
+		try {
+				List<DesignerLoginEntity> designerProfileList=designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
+				List<Object> designercategories= new ArrayList<Object>();
+				for(int i=0;i<designerProfileList.size();i++) {
+					if(designerProfileList.get(i).getCategories()!=null) {
+						org.json.simple.JSONObject jsonObject= new org.json.simple.JSONObject();
+						jsonObject.put("Name", designerProfileList.get(i).getCategories());
+						designercategories.add(jsonObject);
+					}
+				}
+				return designercategories;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/getDesignerDetails/{designerCategories}")
+	public List<DesignerLoginEntity> getDesignerDetails(@PathVariable String designerCategories){
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("categories").is(designerCategories));
+			List<DesignerLoginEntity> designerData= mongoOperations.find(query, DesignerLoginEntity.class);
+			for(int i=0;i<designerData.size();i++) {
+				Query query2= new Query();
+				query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
+				DesignerProfileEntity designerProfileData=mongoOperations.findOne(query2, DesignerProfileEntity.class);
+				designerData.get(i).setDesignerProfileEntity(designerProfileData);
+			}
+			return designerData;
+		}
+		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

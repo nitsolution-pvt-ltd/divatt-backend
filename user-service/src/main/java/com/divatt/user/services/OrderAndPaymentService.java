@@ -199,6 +199,7 @@ public class OrderAndPaymentService {
 			filterCatDetails.setTaxAmount(orderSKUDetailsEntityRow.getTaxAmount());
 			filterCatDetails.setTaxType(orderSKUDetailsEntityRow.getTaxType());
 			filterCatDetails.setUpdatedOn(orderSKUDetailsEntityRow.getUpdatedOn());
+			filterCatDetails.setSize(orderSKUDetailsEntityRow.getSize());
 			filterCatDetails.setCreatedOn(format);
 
 			OrderSKUDetailsEntity data = orderSKUDetailsRepo.save(filterCatDetails);
@@ -688,11 +689,40 @@ public class OrderAndPaymentService {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus("cancelled");
 				orderSKUDetailsRepo.save(skuDetailsEntity);
+				Query query2= new Query();
+				query.addCriteria(Criteria.where("orderId").is(refOrderId));
+				OrderDetailsEntity detailsEntity= mongoOperations.findOne(query2, OrderDetailsEntity.class);
+				detailsEntity.setId(detailsEntity.getId());
+				detailsEntity.setTotalAmount(detailsEntity.getTotalAmount()-skuDetailsEntity.getSalesPrice());
+				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount()-skuDetailsEntity.getTaxAmount());
+				detailsEntity.setMrp(detailsEntity.getMrp()-skuDetailsEntity.getMrp());
+				orderDetailsRepo.save(detailsEntity);
 				return new GlobalResponse("Success", "Ordered product cancelled successfully", 200);
 			}
 			else {
 				return new GlobalResponse("Error", "Product already cancelled", 400);
 			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public Object getOrderServiceByInvoiceId(String invoiceId) {
+		try {
+			Query query= new Query();
+			Query query2= new Query();
+			Map<String, List<OrderSKUDetailsEntity>> orderDetails= new HashMap<String, List<OrderSKUDetailsEntity>>();
+			query.addCriteria(Criteria.where("invoice_id").is(invoiceId));
+			OrderDetailsEntity detailsEntity= mongoOperations.findOne(query, OrderDetailsEntity.class);
+			query.addCriteria(Criteria.where("orderId").is(detailsEntity.getOrderId()));
+			List<OrderSKUDetailsEntity> orderList=mongoOperations.find(query2, OrderSKUDetailsEntity.class);
+			orderDetails.put("SKUDetails", orderList);
+			org.json.simple.JSONObject responce = new org.json.simple.JSONObject();
+			responce.put("OrderDetails",detailsEntity);
+			responce.putAll(orderDetails);
+			return responce;
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

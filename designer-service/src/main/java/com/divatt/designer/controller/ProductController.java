@@ -403,13 +403,13 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-//	@PutMapping("/stockRecoverService")
-//	public GlobalResponce stockRecoverService(@RequestBody OrderSKUDetailsEntity orderDetails) {
-//		try {
-//			return this.productService.stockRecovereService(orderDetails);
-//		}
-//		catch(Exception e) {
-//			throw new CustomException(e.getMessage());
-//		}
-//	}
+	@PutMapping("/stockRecoverService")
+	public GlobalResponce stockRecoverService(@RequestBody OrderSKUDetailsEntity orderDetails) {
+		try {
+			return this.productService.stockRecovereService(orderDetails);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
