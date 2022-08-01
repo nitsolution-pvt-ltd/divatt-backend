@@ -467,16 +467,28 @@ public class ProfileContoller {
 	@GetMapping("/getDesignerDetails/{designerCategories}")
 	public List<DesignerLoginEntity> getDesignerDetails(@PathVariable String designerCategories){
 		try {
-			Query query= new Query();
-			query.addCriteria(Criteria.where("categories").is(designerCategories));
-			List<DesignerLoginEntity> designerData= mongoOperations.find(query, DesignerLoginEntity.class);
-			for(int i=0;i<designerData.size();i++) {
-				Query query2= new Query();
-				query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
-				DesignerProfileEntity designerProfileData=mongoOperations.findOne(query2, DesignerProfileEntity.class);
-				designerData.get(i).setDesignerProfileEntity(designerProfileData);
+			if(!designerCategories.equals("all")) {
+				Query query= new Query();
+				query.addCriteria(Criteria.where("categories").is(designerCategories));
+				List<DesignerLoginEntity> designerData= mongoOperations.find(query, DesignerLoginEntity.class);
+				for(int i=0;i<designerData.size();i++) {
+					Query query2= new Query();
+					query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
+					DesignerProfileEntity designerProfileData=mongoOperations.findOne(query2, DesignerProfileEntity.class);
+					designerData.get(i).setDesignerProfileEntity(designerProfileData);
+				}
+				return designerData;
 			}
-			return designerData;
+			else {
+				List<DesignerLoginEntity> designerData= designerLoginRepo.findAll();
+				for(int i=0;i<designerData.size();i++) {
+					Query query2= new Query();
+					query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
+					DesignerProfileEntity designerProfileData=mongoOperations.findOne(query2, DesignerProfileEntity.class);
+					designerData.get(i).setDesignerProfileEntity(designerProfileData);
+				}
+				return designerData;
+			}
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
