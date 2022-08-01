@@ -428,7 +428,7 @@ public class ProfileContoller {
 	
 	@SuppressWarnings("unchecked")
 	@GetMapping("/countData/{designerId}")
-	public Object testAPI(@PathVariable Long designerId)
+	public org.json.simple.JSONObject countData(@PathVariable Long designerId)
 	{
 		try {
 			org.json.simple.JSONObject response= new org.json.simple.JSONObject();
@@ -476,6 +476,11 @@ public class ProfileContoller {
 					query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
 					DesignerProfileEntity designerProfileData=mongoOperations.findOne(query2, DesignerProfileEntity.class);
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
+					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
+					String productCount = countData.get("Products").toString();
+					String followerCount=countData.get("FollowersData").toString();
+					designerData.get(i).setProductCount(Integer.parseInt(productCount));
+					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
 				}
 				return designerData;
 			}
@@ -486,6 +491,11 @@ public class ProfileContoller {
 					query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
 					DesignerProfileEntity designerProfileData=mongoOperations.findOne(query2, DesignerProfileEntity.class);
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
+					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
+					String productCount = countData.get("Products").toString();
+					String followerCount=countData.get("FollowersData").toString();
+					designerData.get(i).setProductCount(Integer.parseInt(productCount));
+					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
 				}
 				return designerData;
 			}
