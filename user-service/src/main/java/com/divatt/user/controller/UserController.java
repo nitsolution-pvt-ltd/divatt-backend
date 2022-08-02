@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.user.entity.SendMail;
 import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
@@ -293,12 +294,17 @@ public class UserController {
 			if (error.hasErrors()) {
 				throw new CustomException("Please check input fields");
 			}
-			Unirest.setTimeouts(0, 0);
-			JsonNode body = Unirest.get("http://localhost:8080/dev/auth/Present/"+userLoginEntity.getEmail())
-			  .asJson().getBody();
-			JSONObject jsObj = body.getObject();
-			if((boolean) jsObj.get("isPresent"))
+//			Unirest.setTimeouts(0, 0);
+//			JsonNode body = Unirest.get("http://localhost:8080/dev/auth/Present/"+userLoginEntity.getEmail())
+//			  .asJson().getBody();
+//			JSONObject jsObj = body.getObject();
+//			if((boolean) jsObj.get("isPresent"))
+//				throw new CustomException("Email already present");
+			ResponseEntity<String> response= restTemplate.getForEntity("https://localhost:8080/dev/auth/Present/"+userLoginEntity.getEmail(),String.class);
+			JSONObject jsonObject= new JSONObject(response.getBody());
+			if((boolean)jsonObject.get("isPresent"))
 				throw new CustomException("Email already present");
+			System.out.println(response.getBody());
 			if (userLoginRepo.findByEmail(userLoginEntity.getEmail()).isPresent())
 				throw new CustomException("Email id is already Present");
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
@@ -313,22 +319,27 @@ public class UserController {
 			userLoginEntity.setProfilePic("");
 			userLoginEntity.setRegisterType("Self");
 			userLoginRepo.save(userLoginEntity);
-			JsonObject jo = new JsonObject();
-			jo.addProperty("senderMailId", userLoginEntity.getEmail());
-			jo.addProperty("subject", "Successfully Registration");
-			jo.addProperty("body", "Welcome " + userLoginEntity.getEmail() + "" + ",\n   "
+//			JsonObject jo = new JsonObject();
+//			jo.addProperty("senderMailId", userLoginEntity.getEmail());
+//			jo.addProperty("subject", "Successfully Registration");
+//			jo.addProperty("body", "Welcome " + userLoginEntity.getEmail() + "" + ",\n   "
+//					+ " you have been register successfully."
+//					+ "Please active your account by clicking the bellow link "
+//					+ URI.create(env.getProperty("redirectapi")
+//							+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()))
+//					+ " . We will verify your details and come back to you soon.");
+//			jo.addProperty("enableHtml", false);
+			SendMail mail= new SendMail(userLoginEntity.getEmail(), "Successfully Registration", "Welcome " + userLoginEntity.getEmail() + "" + ",\n   "
 					+ " you have been register successfully."
 					+ "Please active your account by clicking the bellow link "
 					+ URI.create(env.getProperty("redirectapi")
 							+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()))
-					+ " . We will verify your details and come back to you soon.");
-			jo.addProperty("enableHtml", false);
+					+ " . We will verify your details and come back to you soon.", false);
 			try {
-				Unirest.setTimeouts(0, 0);
-				Unirest.post("http://localhost:8080/dev/auth/sendMail")
-						.header("Content-Type", "application/json").body(jo.toString()).asString();
+				ResponseEntity<String> mailStatus=restTemplate.postForEntity("https://65.1.190.195:8080/dev/auth/sendMail", mail, String.class);
+				System.out.println(mailStatus.getBody());
 			} catch (Exception e) {
-
+				throw new CustomException(e.getMessage());
 			}
 			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Registered successfully", 200));
 		} catch (Exception e) {
@@ -758,4 +769,23 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+//	@GetMapping("/getUserDetails/{token}")
+//	public List<Integer> getUserDetails(@PathVariable String token) {
+//		try {
+//			String extractUsername = null;
+//			try {
+//				extractUsername = jwtUtil.extractUsername(token.substring(7));
+//			} catch (Exception e) {
+//				throw new CustomException("Unauthorized");
+//			}
+//			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
+//				throw new CustomException("Unauthorized");
+//			}
+//			
+//		}
+//		catch(Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
 }

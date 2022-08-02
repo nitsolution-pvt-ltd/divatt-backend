@@ -356,12 +356,22 @@ public class ProductService {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page,
 			String sort, String sortName, Boolean isDeleted, int limit) {
 		try {
 			LOGGER.info("Inside-ProductService.allWishlistProductData()");
 			if (productIdList.isEmpty()) {
-				throw new CustomException("Product not found!");
+				Map<String, Object> response = new HashMap<>();
+				List<String> data= new ArrayList<String>();
+//				data.add("Wishlist empty");
+				response.put("data", data);
+				response.put("currentPage", 0);
+				response.put("total", 0);
+				response.put("totalPage", 0);
+				response.put("perPage", 0);
+				response.put("perPageElement", 0);
+				return response;
 			} else {
 				List<ProductMasterEntity> list = productRepo.findByProductIdIn(productIdList);
 
@@ -1060,6 +1070,7 @@ public class ProductService {
 						String htmlContent=templateEngine.process("lowStockEmailTemplate", context);
 						EmailSenderThread emailSenderThread= new EmailSenderThread(emails.get(i), "Product out of stock", htmlContent, true, null,restTemplate);
 						emailSenderThread.start();
+						System.out.println(Thread.activeCount());
 					}
 				}
 					return new GlobalResponce("Success", "Designer informed successfully", 200);

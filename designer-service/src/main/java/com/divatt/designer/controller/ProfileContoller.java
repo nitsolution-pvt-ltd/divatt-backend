@@ -4,6 +4,7 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,6 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,10 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.util.Streamable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +38,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -432,7 +437,7 @@ public class ProfileContoller {
 	{
 		try {
 			org.json.simple.JSONObject response= new org.json.simple.JSONObject();
-			ResponseEntity<GlobalResponce> userData=restTemplate.getForEntity("https://192.168.1.121:8085/dev/user/followerCount/"+designerId, GlobalResponce.class);
+			ResponseEntity<GlobalResponce> userData=restTemplate.getForEntity("https://localhost:8085/dev/user/followerCount/"+designerId, GlobalResponce.class);
 			String followersData=userData.getBody().getMessage();
 			response.put("FollowersData", followersData);
 			response.put("Products", productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false, "Approved", designerId, true));
@@ -465,7 +470,7 @@ public class ProfileContoller {
 	}
 	
 	@GetMapping("/getDesignerDetails/{designerCategories}")
-	public List<DesignerLoginEntity> getDesignerDetails(@PathVariable String designerCategories){
+	public List<DesignerLoginEntity> getDesignerDetails(@RequestHeader("Authorization") String token, @PathVariable String designerCategories){
 		try {
 			if(!designerCategories.equals("all")) {
 				Query query= new Query();
@@ -504,4 +509,5 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
 }

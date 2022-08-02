@@ -86,6 +86,9 @@ public class OrderAndPaymentService {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
@@ -459,7 +462,6 @@ public class OrderAndPaymentService {
 			int CountData = (int) orderDetailsRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
-				System.out.println(limit);
 				limit = CountData;
 			}
 
@@ -469,21 +471,14 @@ public class OrderAndPaymentService {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
 
-			Page<OrderDetailsEntity> findAll = null;
-			List<OrderDetailsEntity> findAlls = null;
+			Page<OrderSKUDetailsEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
 
-				findAll = orderDetailsRepo.findDesigner(designerId, pagingSort);
-				Query query = new Query();
-
-				query.addCriteria(Criteria.where("products").elemMatch(Criteria.where("designerId").is(designerId)));
-				query.fields().include("order_id").include("products.$");
-
-				findAlls = mongoTemplate.find(query, OrderDetailsEntity.class);
+				findAll = orderSKUDetailsRepo.findByDesignerId(designerId, pagingSort);
 
 			} else {
-				findAll = orderDetailsRepo.Search(keyword, pagingSort);
+//				findAll = orderDetailsRepo.Search(keyword, pagingSort);
 			}
 
 			List<Object> productId = new ArrayList<>();
@@ -520,7 +515,7 @@ public class OrderAndPaymentService {
 			}
 
 			Map<String, Object> response = new HashMap<>();
-			response.put("data", findAlls);
+			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
 			response.put("totalPage", totalPage);
@@ -536,7 +531,6 @@ public class OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 	public GlobalResponse invoiceGenarator(String orderId) {
 		try {
 			Query query = new Query();
@@ -709,20 +703,29 @@ public class OrderAndPaymentService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object getOrderServiceByInvoiceId(String invoiceId) {
+	public Map<String, Object> getOrderServiceByInvoiceId(String invoiceId) {
 		try {
 			Query query= new Query();
 			Query query2= new Query();
-			Map<String, List<OrderSKUDetailsEntity>> orderDetails= new HashMap<String, List<OrderSKUDetailsEntity>>();
+			List<Object> resObjects= new ArrayList<Object>();
+			Map<String, Object> response= new HashMap<String, Object>();
 			query.addCriteria(Criteria.where("invoice_id").is(invoiceId));
+			org.json.simple.JSONObject resObjct= new org.json.simple.JSONObject();
 			OrderDetailsEntity detailsEntity= mongoOperations.findOne(query, OrderDetailsEntity.class);
-			query.addCriteria(Criteria.where("orderId").is(detailsEntity.getOrderId()));
+			response.put("OrderDetails", detailsEntity);
+			System.out.println(detailsEntity.getOrderId());
+			query2.addCriteria(Criteria.where("orderId").is(detailsEntity.getOrderId()));
 			List<OrderSKUDetailsEntity> orderList=mongoOperations.find(query2, OrderSKUDetailsEntity.class);
-			orderDetails.put("SKUDetails", orderList);
-			org.json.simple.JSONObject responce = new org.json.simple.JSONObject();
-			responce.put("OrderDetails",detailsEntity);
-			responce.putAll(orderDetails);
-			return responce;
+			for(int i=0;i<orderList.size();i++) {
+				ResponseEntity<Object> designerData = restTemplate.getForEntity("https://192.168.1.121:8085/dev/designer/"+orderList.get(i).getDesignerId(), Object.class);
+				org.json.simple.JSONObject object= new org.json.simple.JSONObject();
+				object.put("ProductData", orderList.get(i));
+				object.put("DesignerData", designerData.getBody());
+				resObjects.add(object);
+			}
+			
+			response.put("ProductDetails", resObjects);
+			return response;
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
