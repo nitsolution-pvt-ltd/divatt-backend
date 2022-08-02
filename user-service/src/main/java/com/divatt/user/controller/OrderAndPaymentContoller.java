@@ -576,4 +576,32 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
+	@GetMapping("/getPdfByOrderId/{id}")
+	public ResponseEntity<byte[]> getPdfByOrderId(@PathVariable String id) throws IOException {
+		System.err.println(id);
+		List<OrderDetailsEntity> findByOrderId = orderDetailsRepo.findByOrderId(id);
+		System.out.println(findByOrderId.toString());
+		OrderDetailsEntity orderDetailsEntity = findByOrderId.get(0);
+		File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
+		
+		FileInputStream fl = new FileInputStream(createPdfSupplier);
+        byte[] arr = new byte[(int)createPdfSupplier.length()];
+        fl.read(arr);
+        fl.close();
+		
+		 HttpHeaders headers = new HttpHeaders();
+
+		    headers.setContentType(MediaType.parseMediaType("application/pdf"));
+		    String filename = "Order.pdf";
+
+		    headers.add("content-disposition", "inline;filename=" + filename);
+//		    headers.add("content-disposition", "attachment;filename=" + filename);
+
+		    //headers.setContentDispositionFormData(filename, filename);
+		    headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+		    ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(arr, headers, HttpStatus.OK);
+		    return response;
+	}
 }
