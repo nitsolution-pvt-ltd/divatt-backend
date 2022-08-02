@@ -11,6 +11,7 @@ import com.divatt.user.entity.UserDesignerEntity;
 public interface UserDesignerRepo extends MongoRepository<UserDesignerEntity,Integer>{
 	Optional<UserDesignerEntity> findByUserId(Long userId);
 	List<UserDesignerEntity> findByDesignerIdAndIsFollowing(Long designerId,Boolean isFollowing);
+	Long countByDesignerId(Long designerId);
 	
 
 }

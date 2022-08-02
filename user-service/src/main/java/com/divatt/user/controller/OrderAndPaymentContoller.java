@@ -174,7 +174,7 @@ public class OrderAndPaymentContoller {
 
 	}
 	@PostMapping("/orderSKUDetails/add")
-	public ResponseEntity<?> postOrderSKUDetails(@RequestHeader("Authorization") String token, @Valid @RequestBody List<OrderSKUDetailsEntity> orderSKUDetailsEntity) {
+	public ResponseEntity<?> postOrderSKUDetails(@RequestHeader("Authorization") String token, @Valid @RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderSKUDetails()");
 
 		try {
@@ -237,7 +237,7 @@ public class OrderAndPaymentContoller {
 
 			    
 				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
-//				orderDetailsEntity.setInvoiceId("IV"+InvNumber);				
+				orderDetailsEntity.setInvoiceId("IV"+InvNumber);				
 				orderDetailsEntity.setOrderId("OR" + System.currentTimeMillis());
 				orderDetailsEntity.setBillingAddress(orderDetailsEntity.getBillingAddress());
 				orderDetailsEntity.setOrderDate(formatDate);
@@ -251,7 +251,6 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());	
 				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());	
 				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());	
-				
 				Query query= new Query();
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity=mongoOperations.findOne(query, UserLoginEntity.class);
@@ -267,12 +266,12 @@ public class OrderAndPaymentContoller {
 				
 				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity.getOrderSKUDetailsEntity();
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
-				
+					
 					orderSKUDetailsEntityRow.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
 
-				postOrderSKUDetails(token,orderSKUDetailsEntity);
+				postOrderSKUDetails(token,orderSKUDetailsEntityRow);
 				}
 				
 				map.put("orderId", OrderData.getOrderId());
@@ -557,5 +556,24 @@ public class OrderAndPaymentContoller {
 //		fos.close();
 		return ResponseEntity.ok(imageString);
 		}
+
+	@PutMapping("/cancelOrder/{orderId}/{productId}")
+	public GlobalResponse cancelOrder(@PathVariable String orderId, @PathVariable Integer productId) {
+		try {
+			return this.orderAndPaymentService.cancelOrderService(orderId,productId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 	
+	@GetMapping("/getOrderByInvoiceId/{invoiceId}")
+	public Object getOrderByInvoiceId(@PathVariable String invoiceId) {
+		try {
+			return this.orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

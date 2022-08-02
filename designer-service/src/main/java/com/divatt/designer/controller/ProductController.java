@@ -394,5 +394,22 @@ public class ProductController implements ProductServiceImp {
 	}
 	
 	
-	
+	@GetMapping("/designerNotification")
+	public GlobalResponce designerNotification() {
+		try {
+			return this.productService.designerNotification();
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@PutMapping("/stockRecoverService")
+	public GlobalResponce stockRecoverService(@RequestBody OrderSKUDetailsEntity orderDetails) {
+		try {
+			return this.productService.stockRecovereService(orderDetails);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

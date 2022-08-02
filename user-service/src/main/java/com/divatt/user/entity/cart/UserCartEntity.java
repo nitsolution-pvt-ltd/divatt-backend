@@ -38,6 +38,10 @@ public class UserCartEntity {
 	@Field(value = "added_on")
 	private Date addedOn;
 
+	@Field("size")
+	@NotNull(message ="size is required")
+	private String selectedSize;
+
 	public UserCartEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -45,19 +49,21 @@ public class UserCartEntity {
 
 	public UserCartEntity(Integer id, @NotNull(message = "Username is required!") Integer userId,
 			@NotNull(message = "Product name is required!") Integer productId,
-			@NotNull(message = "Quantity is required!") Integer qty, Date addedOn) {
+			@NotNull(message = "Quantity is required!") Integer qty, Date addedOn,
+			@NotNull(message = "size is required") String selectedSize) {
 		super();
 		this.id = id;
 		this.userId = userId;
 		this.productId = productId;
 		this.qty = qty;
 		this.addedOn = addedOn;
+		this.selectedSize = selectedSize;
 	}
 
 	@Override
 	public String toString() {
 		return "UserCartEntity [id=" + id + ", userId=" + userId + ", productId=" + productId + ", qty=" + qty
-				+ ", addedOn=" + addedOn + "]";
+				+ ", addedOn=" + addedOn + ", selectedSize=" + selectedSize + "]";
 	}
 
 	public Integer getId() {
@@ -100,8 +106,17 @@ public class UserCartEntity {
 		this.addedOn = addedOn;
 	}
 
+	public String getSelectedSize() {
+		return selectedSize;
+	}
 
+	public void setSelectedSize(String selectedSize) {
+		this.selectedSize = selectedSize;
+	}
 
-
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
+	}
+	
 	
 }

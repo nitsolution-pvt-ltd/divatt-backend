@@ -1,5 +1,6 @@
 package com.divatt.designer.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -10,16 +11,18 @@ import com.divatt.designer.response.GlobalResponce;
 
 @Service
 public class OrderService {
+	@Autowired
+	private RestTemplate restTemplate;
 
 	public GlobalResponce changeStatus(String orderId, String statusKeyword) {
 		try {
-			RestTemplate restTemplate= new RestTemplate();
-			ResponseEntity<OrderDetailsEntity> serviceResponse= restTemplate.getForEntity("http://localhost:8082/dev/userOrder/getOrder/"+orderId, OrderDetailsEntity.class);
+//			RestTemplate restTemplate= new RestTemplate();
+			ResponseEntity<OrderDetailsEntity> serviceResponse= restTemplate.getForEntity("https://localhost:8082/dev/userOrder/getOrder/"+orderId, OrderDetailsEntity.class);
 			//System.out.println(serviceResponse.getBody());
 			OrderDetailsEntity updatedOrder=serviceResponse.getBody();
 			updatedOrder.setOrderStatus(statusKeyword);
 			System.out.println(updatedOrder);
-			restTemplate.put("Http://localhost:8082/dev/userOrder/updateOrder/" + orderId,updatedOrder ,
+			restTemplate.put("https://localhost:8082/dev/userOrder/updateOrder/" + orderId,updatedOrder ,
 					String.class);
 			return new GlobalResponce("Success", "Order status updated", 200);
 		}

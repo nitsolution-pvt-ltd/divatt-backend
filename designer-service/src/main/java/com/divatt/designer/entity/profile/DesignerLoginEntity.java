@@ -43,28 +43,20 @@ public class DesignerLoginEntity {
 	
 	private Integer follwerCount = 0;
 
+	
+	private String categories;
+
+
 	public DesignerLoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Integer getProductCount() {
-		return productCount;
-	}
 
-	public void setProductCount(Integer productCount) {
-		this.productCount = productCount;
-	}
-
-	public Integer getFollwerCount() {
-		return follwerCount;
-	}
-	public void setFollwerCount(Integer follwerCount) {
-		this.follwerCount = follwerCount;
-	}
 
 	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String password, String authToken,
-			@NotNull Boolean isDeleted, @NotNull String profileStatus, @NotNull String accountStatus,
-			String adminComment, Json logins, DesignerProfileEntity designerProfileEntity) {
+			@NotNull Boolean isDeleted, @NotNull String profileStatus, String accountStatus, String adminComment,
+			Json logins, DesignerProfileEntity designerProfileEntity, Integer productCount, Integer follwerCount,
+			String categories) {
 		super();
 		this.dId = dId;
 		this.email = email;
@@ -76,56 +68,60 @@ public class DesignerLoginEntity {
 		this.adminComment = adminComment;
 		this.logins = logins;
 		this.designerProfileEntity = designerProfileEntity;
+		this.productCount = productCount;
+		this.follwerCount = follwerCount;
+		this.categories = categories;
 	}
+
 
 	@Override
 	public String toString() {
 		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", password=" + password + ", authToken="
 				+ authToken + ", isDeleted=" + isDeleted + ", profileStatus=" + profileStatus + ", accountStatus="
 				+ accountStatus + ", adminComment=" + adminComment + ", logins=" + logins + ", designerProfileEntity="
-				+ designerProfileEntity + "]";
+				+ designerProfileEntity + ", productCount=" + productCount + ", follwerCount=" + follwerCount
+				+ ", categories=" + categories + "]";
 	}
 
-	public DesignerProfileEntity getDesignerProfileEntity() {
-		return designerProfileEntity;
-	}
-
-	public void setDesignerProfileEntity(DesignerProfileEntity designerProfileEntity) {
-		this.designerProfileEntity = designerProfileEntity;
-	}
 
 	public Long getdId() {
 		return dId;
 	}
 
+
 	public void setdId(Long dId) {
 		this.dId = dId;
 	}
+
 
 	public String getEmail() {
 		return email;
 	}
 
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 
 	public String getPassword() {
 		return password;
 	}
 
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 
 	public String getAuthToken() {
 		return authToken;
 	}
 
+
 	public void setAuthToken(String authToken) {
 		this.authToken = authToken;
 	}
-
 
 
 	public Boolean getIsDeleted() {
@@ -133,31 +129,34 @@ public class DesignerLoginEntity {
 	}
 
 
-
 	public void setIsDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
+
 
 	public String getProfileStatus() {
 		return profileStatus;
 	}
 
+
 	public void setProfileStatus(String profileStatus) {
 		this.profileStatus = profileStatus;
 	}
+
 
 	public String getAccountStatus() {
 		return accountStatus;
 	}
 
+
 	public void setAccountStatus(String accountStatus) {
 		this.accountStatus = accountStatus;
 	}
 
+
 	public String getAdminComment() {
 		return adminComment;
 	}
-
 
 
 	public void setAdminComment(String adminComment) {
@@ -165,11 +164,9 @@ public class DesignerLoginEntity {
 	}
 
 
-
 	public Json getLogins() {
 		return logins;
 	}
-
 
 
 	public void setLogins(Json logins) {
@@ -177,10 +174,48 @@ public class DesignerLoginEntity {
 	}
 
 
+	public DesignerProfileEntity getDesignerProfileEntity() {
+		return designerProfileEntity;
+	}
+
+
+	public void setDesignerProfileEntity(DesignerProfileEntity designerProfileEntity) {
+		this.designerProfileEntity = designerProfileEntity;
+	}
+
+
+	public Integer getProductCount() {
+		return productCount;
+	}
+
+
+	public void setProductCount(Integer productCount) {
+		this.productCount = productCount;
+	}
+
+
+	public Integer getFollwerCount() {
+		return follwerCount;
+	}
+
+
+	public void setFollwerCount(Integer follwerCount) {
+		this.follwerCount = follwerCount;
+	}
+
+
+	public String getCategories() {
+		return categories;
+	}
+
+
+	public void setCategories(String categories) {
+		this.categories = categories;
+	}
+
 
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
-	}	
+	}
 	
-
 }

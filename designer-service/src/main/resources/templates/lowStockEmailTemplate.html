@@ -20,9 +20,9 @@
                 <tr style="font-size: 20px;">
                     <td colspan="5" style="padding:20px 20px;text-align: center;">
                      <div style="font-family: 'Lato', sans-serif;font-size: 22px;text-transform: uppercase;margin-top: 12px;letter-spacing: 1.5px;font-weight: 600;">Alert, Your Stock is Low.</div>
-                    <tr style="font-size: 20px;">
+                    <tr th:each="data2 : ${data4}" style="font-size: 20px;">
                         <td colspan="5" style="padding:20px 20px;text-align: left;font-family: 'Lato', sans-serif;">
-                            &nbsp; Hi Designer. <br>
+                            &nbsp; Hi .<span th:text="${data2.designerName}"></span> <br>
                           <!-- <div style="font-family: 'Lato', sans-serif;text-align: left;font-size: 15px;font-weight: 500;line-height: 30px;color: #000;
                             ">
                              &nbsp; &nbsp;chakraborty123@gmail.com
@@ -52,22 +52,22 @@
             <tbody style="font-family: 'Lato', sans-serif;">
             <tr th:each="data1 : ${data}">
                   <td style="width: 10%;text-align: center;padding: 10px;padding-top: 2px;border-left: 1.6px solid #656262;border-bottom: 1.6px solid #656262;">
-                      <a href="http://65.1.190.195/admin/add-designer-product/edit/184" target="_blank"><img src="https://divatt-uat.s3.amazonaws.com/M_HERE1.webp" style="width:80%;margin: auto;"></a>
+                      <a th:href="@{'http://65.1.190.195/admin/add-designer-product/edit/' + ${data1.productLink}}" target="_blank"><img th:src="@{${data1.productImage}}"style="width:80%;margin: auto;"></a>
                   </td>
                   <td colspan="3" style="width:53%;margin-left:10px;text-align: left;padding: 10px;border-bottom: 1.6px solid #656262;border-left: 1.6px solid #656262;color: #000;">
-                    <a href="http://65.1.190.195/admin/add-designer-product/edit/184" target="_blank" style="text-decoration: none;color: #000;"><th:block th:text="${data1.productDescription}"></th:block></a>
+                    <a th:href="@{'http://65.1.190.195/admin/add-designer-product/edit/' + ${data1.productLink}}" target="_blank" style="text-decoration: none;color: #000;"><th:block th:text="${data1.productDescription}"></th:block></a>
                   </td>
                   <td style="width:15%;padding: 5px;text-align: center;border: 1.6px solid #656262;">
                       <table style="width:100%;">
-                          <tr><td style="width:100%;color: #000;">Size  :</td> <td style="color: #000;">XL</td></tr>
+                          <tr><td style="width:100%;color: #000;">Size  :</td> <td style="color: #000;"><th:block th:text="${data1.size}"></th:block></td></tr>
                         </table>
                   </td>
                   <td style="width:10%; ;font-weight: bold;font-size: 14px;border-bottom: 1.6px solid #656262;border-right: 1.5px solid #656262;text-align: center;">
-                    2
+                    <th:block th:text="${data1.stock}"></th:block>
                   </td>
                   <td style="width:16%; ;font-weight: bold;font-size: 14px;border-bottom: 1.6px solid #656262;border-left: 1.6px solid #656262;">
                     <table style="width:100%;">
-                      <tr><td style="text-align:center;font-weight: 600;color: #000;">₹ <th:block th:text="${price}"></th:block></td></tr>
+                      <tr><td style="text-align:center;font-weight: 600;color: #000;"><!--₹-->Rs. <th:block th:text="${data1.price}"></th:block></td></tr>
                     </table>
                   </td>
                 </tr>
@@ -77,11 +77,9 @@
           <table style="width:100%;margin-top: 50px;margin-bottom: 60px;">
             <tr>
                 <td style="text-align:center;font-weight: 600;color: #000;">
-                    <a href="http://65.1.190.195/admin/product-list" style="padding: 0.375rem 0.75rem;text-transform: uppercase;font-family: 'Lato', sans-serif;text-decoration: none;
-                    font-size: 1rem;cursor: pointer;height: 25px;display: block;width: fit-content; margin: auto;line-height: 1.5;
-                    border-radius: 0.25rem;color: rgb(255 255 255) !important;letter-spacing: 0.05em;border: 2px solid rgb(135 192 72) !important;
-                    background-image: linear-gradient(30deg, rgb(135 192 72) 50%, rgb(0 0 0 / 0%) 50%);background-size: 1000px;
-                    background-repeat: no-repeat;background-position: 0;-webkit-transition: background 300ms ease-in-out;transition: background 300ms ease-in-out;" target="_blank">Add Stock</a>
+                    <a href="http://65.1.190.195/admin/product-list" style="background:#87C048;padding: 0.375rem 0.75rem;text-transform: uppercase;font-family: 'Lato', sans-serif;text-decoration: none;
+                    font-size: 0.8rem;cursor: pointer;height: 25px;display: block;width: fit-content; margin: auto;line-height: 2;color:#fff;border-radius: 5px;letter-spacing: 0.05em;border: none;
+                    " target="_blank">Add Stock</a>
                 </td>
             </tr>
           </table>

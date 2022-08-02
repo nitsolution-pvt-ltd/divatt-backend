@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.divatt.admin.entity.ColourMetaEntity;
+import com.divatt.admin.entity.DesignerCategoryEntity;
 import com.divatt.admin.entity.category.CategoryEntity;
 
 @Repository
