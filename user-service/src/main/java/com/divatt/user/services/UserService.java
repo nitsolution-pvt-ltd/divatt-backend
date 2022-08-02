@@ -215,14 +215,7 @@ public class UserService {
 //			HttpResponse<JsonNode> response = null;
 			ResponseEntity<String> response1 = null;
 			if (productIds != null) {
-<<<<<<< HEAD
-				Unirest.setTimeouts(0, 0);
-				response = Unirest.post("https://localhost:8083/dev/designerProduct/getWishlistProductList")
-						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
-			}
-			
-			return ResponseEntity.ok(new Json(response.getBody().toString()));
-=======
+
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
@@ -235,7 +228,6 @@ public class UserService {
 //						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
 			}
 			return ResponseEntity.ok(new Json(response1.getBody()));
->>>>>>> 931d8177d325dedec2f0c679e25fcf5065e4c9d5
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
