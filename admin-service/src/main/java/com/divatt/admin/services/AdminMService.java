@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,12 +21,14 @@ import org.springframework.stereotype.Service;
 import com.divatt.admin.entity.BannerEntity;
 import com.divatt.admin.entity.ColourEntity;
 import com.divatt.admin.entity.ColourMetaEntity;
+import com.divatt.admin.entity.DesignerCategoryEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminMDataRepo;
 import com.divatt.admin.repo.BannerRepo;
+import com.divatt.admin.repo.DesignerCategoryRepo;
 
 @Service
 public class AdminMService {
@@ -41,6 +44,9 @@ public class AdminMService {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+	private DesignerCategoryRepo designerCategoryRepo;
 
 	public List<ColourEntity> getColour() {
 		try {
@@ -151,6 +157,51 @@ public class AdminMService {
 				return new GlobalResponse("Success", "Banner added successfully", 200);
 			}
 		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public GlobalResponse addDesignerCategory(DesignerCategoryEntity designerCategoryEntity) {
+		try {
+			Query query= new Query();
+//			List<String>savedList= new ArrayList<String>();
+			List<String>updatedList=new ArrayList<>();
+			query.addCriteria(Criteria.where("metakey").is("DESIGNER_LEVELS"));
+			DesignerCategoryEntity designerEntity= mongoOperations.findOne(query, DesignerCategoryEntity.class);
+			for(int i=0;i<designerCategoryEntity.getDesignerLevels().size();i++) {
+					if(!designerEntity.getDesignerLevels().contains(designerCategoryEntity.getDesignerLevels().get(i))) {
+						updatedList.add(designerCategoryEntity.getDesignerLevels().get(i));
+					}
+			}
+			updatedList.addAll(designerEntity.getDesignerLevels());
+			designerEntity.setDesignerLevels(updatedList);
+			designerEntity.setMetakey("DESIGNER_LEVELS");
+			System.out.println(designerEntity);
+			designerCategoryRepo.save(designerEntity);
+			return new GlobalResponse("Success", "Designer category added successfully", 200);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Object> getDesignerService() {
+		try {
+			Query query= new Query();
+			List<Object> response= new ArrayList<Object>();
+			query.addCriteria(Criteria.where("id").is(101));
+			DesignerCategoryEntity designerCategoryEntity=mongoOperations.findOne(query, DesignerCategoryEntity.class);
+			System.out.println(designerCategoryEntity);
+			for(int i=0;i<designerCategoryEntity.getDesignerLevels().size();i++) {
+				JSONObject jsonObject= new  JSONObject();
+				jsonObject.put("Name", designerCategoryEntity.getDesignerLevels().get(i));
+				//response.put(i,jsonObject);
+				response.add(jsonObject);
+			}
+			return response;
+		}
+		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

@@ -267,11 +267,21 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setShippingAddress(orderDetailsEntity.getShippingAddress());
 				orderDetailsEntity.setDeliveryMode(orderDetailsEntity.getDeliveryMode());
 				orderDetailsEntity.setDeliveryCheckUrl(orderDetailsEntity.getDeliveryCheckUrl());
+<<<<<<< HEAD
 				orderDetailsEntity.setShippingCharges(orderDetailsEntity.getShippingCharges());
 				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());
 				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());
 				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());
 				orderDetailsEntity.setCreatedOn(format);
+=======
+				orderDetailsEntity.setShippingCharges(orderDetailsEntity.getShippingCharges());	
+				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());	
+				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());	
+				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());	
+				Query query= new Query();
+				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
+				UserLoginEntity userLoginEntity=mongoOperations.findOne(query, UserLoginEntity.class);
+>>>>>>> ba4f2a4d5a43dfd54935531f2114580be68de0c1
 
 				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderDetailsEntity);
 
@@ -545,6 +555,7 @@ public class OrderAndPaymentContoller {
 		return orderAndPaymentService.getClassPathFile(filename, response);
 	}
 	
+<<<<<<< HEAD
 	
 	@PostMapping("/track/add")
 	public ResponseEntity<?> postOrderTracking(@Valid @RequestBody OrderTrackingEntity orderTrackingEntity) {
@@ -584,4 +595,49 @@ public class OrderAndPaymentContoller {
 	} 
 
 
+=======
+	@PostMapping("/imageEncode")
+	public ResponseEntity<?> ImageEncide(@RequestBody String ImageReq) throws Exception{
+		//encode image to Base64 String
+		String file = ImageReq.toString();
+		System.out.println(ImageReq.toString());
+
+//		JsonNode jn1 = new JsonNode(ImageReq.toString());
+//		JSONObject object = jn1.getObject();
+//		String file= object.get("image").toString();
+		
+		File f = new File("https://divatt-uat.s3.amazonaws.com/f1.avif"); 
+		FileInputStream fis = new FileInputStream(f);
+		byte byteArray[] = new byte[(int)f.length()];
+		fis.read(byteArray);
+		String imageString = Base64.encodeBase64String(byteArray);
+		//decode Base64 String to image
+//		FileOutputStream fos = new FileOutputStream("https://divatt-uat.s3.amazonaws.com/f1.avif"); //change path of image according to you
+//		byteArray = Base64.decodeBase64(imageString);
+//		fos.write(byteArray);
+		fis.close();
+//		fos.close();
+		return ResponseEntity.ok(imageString);
+		}
+
+	@PutMapping("/cancelOrder/{orderId}/{productId}")
+	public GlobalResponse cancelOrder(@PathVariable String orderId, @PathVariable Integer productId) {
+		try {
+			return this.orderAndPaymentService.cancelOrderService(orderId,productId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/getOrderByInvoiceId/{invoiceId}")
+	public Object getOrderByInvoiceId(@PathVariable String invoiceId) {
+		try {
+			return this.orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+>>>>>>> ba4f2a4d5a43dfd54935531f2114580be68de0c1
 }

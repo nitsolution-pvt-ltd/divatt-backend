@@ -92,6 +92,9 @@ public class OrderAndPaymentService {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
@@ -217,6 +220,7 @@ public class OrderAndPaymentService {
 			filterCatDetails.setTaxAmount(orderSKUDetailsEntityRow.getTaxAmount());
 			filterCatDetails.setTaxType(orderSKUDetailsEntityRow.getTaxType());
 			filterCatDetails.setUpdatedOn(orderSKUDetailsEntityRow.getUpdatedOn());
+			filterCatDetails.setSize(orderSKUDetailsEntityRow.getSize());
 			filterCatDetails.setCreatedOn(format);
 
 			OrderSKUDetailsEntity data = orderSKUDetailsRepo.save(filterCatDetails);
@@ -484,6 +488,7 @@ public class OrderAndPaymentService {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
 
+<<<<<<< HEAD
 			Page<OrderDetailsEntity> findAll = null;
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = null;
 
@@ -491,6 +496,16 @@ public class OrderAndPaymentService {
 
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
 //				findAll = orderDetailsRepo.findByDesignerId(designerId, pagingSort);
+=======
+			Page<OrderSKUDetailsEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+
+				findAll = orderSKUDetailsRepo.findByDesignerId(designerId, pagingSort);
+
+			} else {
+//				findAll = orderDetailsRepo.Search(keyword, pagingSort);
+>>>>>>> ba4f2a4d5a43dfd54935531f2114580be68de0c1
 			}
 
 			List<Object> productId = new ArrayList<>();
@@ -548,7 +563,11 @@ public class OrderAndPaymentService {
 			}
 
 			Map<String, Object> response = new HashMap<>();
+<<<<<<< HEAD
 			response.put("data", new Json(productId.toString()));
+=======
+			response.put("data", findAll.getContent());
+>>>>>>> ba4f2a4d5a43dfd54935531f2114580be68de0c1
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
 			response.put("totalPage", totalPage);
@@ -564,7 +583,6 @@ public class OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 	public GlobalResponse invoiceGenarator(String orderId) {
 		try {
 			Query query = new Query();
@@ -708,6 +726,7 @@ public class OrderAndPaymentService {
 		return resource;
 	}
 
+<<<<<<< HEAD
 	@SuppressWarnings("rawtypes")
 	public ResponseEntity<?> postOrderHandleDetailsService(org.json.simple.JSONObject object) {
 
@@ -826,5 +845,63 @@ public class OrderAndPaymentService {
 			return ResponseEntity.ok(e2.getMessage());
 		}
 
+=======
+	public GlobalResponse cancelOrderService(String refOrderId, Integer refProductId) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("orderId").is(refOrderId).and("productId").is(refProductId));
+			OrderSKUDetailsEntity skuDetailsEntity= mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+			if(!skuDetailsEntity.getOrderItemStatus().equals("cancelled")) {
+				skuDetailsEntity.setId(skuDetailsEntity.getId());
+				skuDetailsEntity.setOrderItemStatus("cancelled");
+				orderSKUDetailsRepo.save(skuDetailsEntity);
+				Query query2= new Query();
+				query.addCriteria(Criteria.where("orderId").is(refOrderId));
+				OrderDetailsEntity detailsEntity= mongoOperations.findOne(query2, OrderDetailsEntity.class);
+				detailsEntity.setId(detailsEntity.getId());
+				detailsEntity.setTotalAmount(detailsEntity.getTotalAmount()-skuDetailsEntity.getSalesPrice());
+				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount()-skuDetailsEntity.getTaxAmount());
+				detailsEntity.setMrp(detailsEntity.getMrp()-skuDetailsEntity.getMrp());
+				orderDetailsRepo.save(detailsEntity);
+				return new GlobalResponse("Success", "Ordered product cancelled successfully", 200);
+			}
+			else {
+				return new GlobalResponse("Error", "Product already cancelled", 400);
+			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getOrderServiceByInvoiceId(String invoiceId) {
+		try {
+			Query query= new Query();
+			Query query2= new Query();
+			List<Object> resObjects= new ArrayList<Object>();
+			Map<String, Object> response= new HashMap<String, Object>();
+			query.addCriteria(Criteria.where("invoice_id").is(invoiceId));
+			org.json.simple.JSONObject resObjct= new org.json.simple.JSONObject();
+			OrderDetailsEntity detailsEntity= mongoOperations.findOne(query, OrderDetailsEntity.class);
+			response.put("OrderDetails", detailsEntity);
+			System.out.println(detailsEntity.getOrderId());
+			query2.addCriteria(Criteria.where("orderId").is(detailsEntity.getOrderId()));
+			List<OrderSKUDetailsEntity> orderList=mongoOperations.find(query2, OrderSKUDetailsEntity.class);
+			for(int i=0;i<orderList.size();i++) {
+				ResponseEntity<Object> designerData = restTemplate.getForEntity("https://192.168.1.121:8085/dev/designer/"+orderList.get(i).getDesignerId(), Object.class);
+				org.json.simple.JSONObject object= new org.json.simple.JSONObject();
+				object.put("ProductData", orderList.get(i));
+				object.put("DesignerData", designerData.getBody());
+				resObjects.add(object);
+			}
+			
+			response.put("OrderSKUDetails", resObjects);
+			return response;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+>>>>>>> ba4f2a4d5a43dfd54935531f2114580be68de0c1
 	}
 }

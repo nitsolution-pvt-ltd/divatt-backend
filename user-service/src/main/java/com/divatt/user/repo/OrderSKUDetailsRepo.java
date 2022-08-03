@@ -22,4 +22,6 @@ public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEnti
 	
 	
 
+	Page<OrderSKUDetailsEntity> findByDesignerId(int designerId, Pageable pagingSort);
+
 }

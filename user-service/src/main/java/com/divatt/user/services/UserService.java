@@ -253,7 +253,8 @@ public class UserService {
 						filterCatDetails.setProductId(getRow.getProductId());
 						filterCatDetails.setQty(getRow.getQty());
 						filterCatDetails.setAddedOn(new Date());
-
+						filterCatDetails.setSelectedSize(getRow.getSelectedSize());
+						
 						userCartRepo.save(filterCatDetails);
 					}
 				}
@@ -388,6 +389,8 @@ public class UserService {
 					UserCartEntity cart = userCartRepo
 							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
 							.get(0);
+					String selectedSize= userCartRepo
+							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString())).get(0).getSelectedSize();
 					ObjectMapper obj = new ObjectMapper();
 					String writeValueAsString = null;
 					try {
@@ -398,6 +401,7 @@ public class UserService {
 					JsonNode cartJN = new JsonNode(writeValueAsString);
 					JSONObject cartObject = cartJN.getObject();
 					object.put("cartData", cartObject);
+					object.put("selectedSize",selectedSize);
 					l1.add(object);
 				});
 
@@ -772,6 +776,17 @@ public class UserService {
 			UserLoginEntity userDetails = userLoginRepo.findById(userId).get();
 			return userDetails;
 		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public GlobalResponse getCountFollowers(Long designerId) {
+		try {
+			Long countByDesignerId = userDesignerRepo.countByDesignerId(designerId);
+			return new GlobalResponse("Successfull", ""+countByDesignerId, 200);
+			//return null;
+		}
+		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

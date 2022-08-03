@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.divatt.admin.entity.BannerEntity;
 import com.divatt.admin.entity.ColourEntity;
 import com.divatt.admin.entity.ColourMetaEntity;
+import com.divatt.admin.entity.DesignerCategoryEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.services.AdminMService;
@@ -70,4 +71,24 @@ public class AdminMDataController {
 		}
 	}
 
+	@PutMapping("/addDesignerCategory")
+	public GlobalResponse addDesignerCaregory(@RequestBody DesignerCategoryEntity designerCategoryEntity) {
+		try {
+			return this.adminMService.addDesignerCategory(designerCategoryEntity);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/getDesignerCategory")
+	public List<Object> getDesignerList()
+	{
+		try {
+			return this.adminMService.getDesignerService();
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
