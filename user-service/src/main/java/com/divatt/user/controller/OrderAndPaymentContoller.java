@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
+import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
@@ -100,7 +101,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import org.apache.commons.codec.binary.Base64;
 
-
 @RestController
 @RequestMapping("/userOrder")
 public class OrderAndPaymentContoller {
@@ -165,16 +165,18 @@ public class OrderAndPaymentContoller {
 			}
 
 //			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
-				return this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
+			return this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
 //			}
-			
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
+
 	@PostMapping("/orderSKUDetails/add")
-	public ResponseEntity<?> postOrderSKUDetails(@RequestHeader("Authorization") String token, @Valid @RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity) {
+	public ResponseEntity<?> postOrderSKUDetails(@RequestHeader("Authorization") String token,
+			@Valid @RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderSKUDetails()");
 
 		try {
@@ -184,7 +186,26 @@ public class OrderAndPaymentContoller {
 			} catch (Exception e) {
 				throw new CustomException("Unauthorized");
 			}
-				return this.orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
+			return this.orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	@PostMapping("/razorpay/handle")
+	public ResponseEntity<?> postOrderHandle(@RequestBody org.json.simple.JSONObject orderHandleDetails) {
+		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderHandleDetails()");
+
+		try {
+			LOGGER.info("TEST " + orderHandleDetails);
+
+			org.json.simple.JSONObject paymentE = new org.json.simple.JSONObject((Map) orderHandleDetails.get("payload"));
+			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) paymentE.get("payment"));
+
+//			return ResponseEntity.ok(orderHandleDetails);
+			return this.orderAndPaymentService.postOrderHandleDetailsService(PayEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -224,20 +245,19 @@ public class OrderAndPaymentContoller {
 			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
 
 				OrderDetailsEntity orderDetailsEntity = orderAndPaymentGlobalEntity.getOrderDetailsEntity();
-				
+
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 				SimpleDateFormat formatters = new SimpleDateFormat("dd/MM/yyyy");
 				Date date = new Date();
 				String format = formatter.format(date);
 				String formatDate = formatters.format(date);
 
-				OrderDetailsEntity OrderLastRow=orderDetailsRepo.findTopByOrderByIdDesc();
- 
-			    String InvNumber = String.format("%014d", OrderLastRow.getId());   
+				OrderDetailsEntity OrderLastRow = orderDetailsRepo.findTopByOrderByIdDesc();
 
-			    
+				String InvNumber = String.format("%014d", OrderLastRow.getId());
+
 				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
-				orderDetailsEntity.setInvoiceId("IV"+InvNumber);				
+				orderDetailsEntity.setInvoiceId("IV" + InvNumber);
 				orderDetailsEntity.setOrderId("OR" + System.currentTimeMillis());
 				orderDetailsEntity.setBillingAddress(orderDetailsEntity.getBillingAddress());
 				orderDetailsEntity.setOrderDate(formatDate);
@@ -247,16 +267,23 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setShippingAddress(orderDetailsEntity.getShippingAddress());
 				orderDetailsEntity.setDeliveryMode(orderDetailsEntity.getDeliveryMode());
 				orderDetailsEntity.setDeliveryCheckUrl(orderDetailsEntity.getDeliveryCheckUrl());
-				orderDetailsEntity.setShippingCharges(orderDetailsEntity.getShippingCharges());	
-				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());	
-				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());	
-				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());	
-				
-				Query query= new Query();
-				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
-				UserLoginEntity userLoginEntity=mongoOperations.findOne(query, UserLoginEntity.class);
+				orderDetailsEntity.setShippingCharges(orderDetailsEntity.getShippingCharges());
+				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());
+				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());
+				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());
+				orderDetailsEntity.setCreatedOn(format);
 
 				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderDetailsEntity);
+
+				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity.getOrderSKUDetailsEntity();
+				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
+
+					orderSKUDetailsEntityRow.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
+					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
+					orderSKUDetailsEntityRow.setCreatedOn(format);
+
+					postOrderSKUDetails(token, orderSKUDetailsEntityRow);
+				}
 				
 				OrderPaymentEntity orderPaymentEntity = orderAndPaymentGlobalEntity.getOrderPaymentEntity();
 				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
@@ -264,24 +291,18 @@ public class OrderAndPaymentContoller {
 				orderPaymentEntity.setCreatedOn(new Date());
 
 				postOrderPaymentDetails(token, orderPaymentEntity);
-				
-				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity.getOrderSKUDetailsEntity();
-				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
-					
-					orderSKUDetailsEntityRow.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
-					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
-					orderSKUDetailsEntityRow.setCreatedOn(format);
 
-				postOrderSKUDetails(token,orderSKUDetailsEntityRow);
-				}
-				
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
+				
+				Query query = new Query();
+				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
+				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
 
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 				sendEmailWithAttachment(
-						extractUsername, "Order summary", "Hi " +userLoginEntity.getFirstName() + ""
+						extractUsername, "Order summary", "Hi " + userLoginEntity.getFirstName() + ""
 								+ ",\n                           " + " Your order created successfully. ",
 						false, createPdfSupplier);
 
@@ -336,14 +357,13 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
-	
+
 	@PutMapping("/updateOrder/{orderId}")
-	public GlobalResponse updateOrder(@RequestBody OrderDetailsEntity orderDetailsEntity,@PathVariable String orderId)
-	{
+	public GlobalResponse updateOrder(@RequestBody OrderDetailsEntity orderDetailsEntity,
+			@PathVariable String orderId) {
 		try {
-			return this.orderAndPaymentService.orderUpdateService(orderDetailsEntity,orderId);
-		}
-		catch(Exception e) {
+			return this.orderAndPaymentService.orderUpdateService(orderDetailsEntity, orderId);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -363,15 +383,6 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
-
-//	@GetMapping("/invoice/{orderId}")
-//	public GlobalResponse invoiceGenarater(@PathVariable String orderId) {
-//		try {
-//			return this.orderAndPaymentService.invoiceGenarator(orderId);
-//		} catch (Exception e) {
-//			throw new CustomException(e.getMessage());
-//		}
-//	}
 
 	@PostMapping("/genpdf/order")
 	File createPdfSupplier(@RequestBody OrderDetailsEntity orderDetailsEntity) throws IOException {
@@ -421,7 +432,7 @@ public class OrderAndPaymentContoller {
 		Document document = new Document();
 		try {
 
-			document = new Document();			
+			document = new Document();
 			document.addAuthor("Divatt");
 			document.addCreationDate();
 			document.addProducer();
@@ -480,16 +491,16 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/invoice/{orderId1}")
 	File invGenarator(@PathVariable String orderId1) throws IOException {
 //		System.out.println("ok");
-		Query query= new Query();
+		Query query = new Query();
 		query.addCriteria(Criteria.where("orderId").is(orderId1));
-		OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
+		OrderDetailsEntity orderDetailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
 		/* first, get and initialize an engine */
 		VelocityEngine ve = new VelocityEngine();
- 
+
 		/* next, get the Template */
 		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
@@ -512,7 +523,7 @@ public class OrderAndPaymentContoller {
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		baos =generatePdf (writer.toString());
+		baos = generatePdf(writer.toString());
 
 		try (OutputStream outputStream = new FileOutputStream("order-summary.pdf")) {
 			baos.writeTo(outputStream);
@@ -521,41 +532,56 @@ public class OrderAndPaymentContoller {
 
 		return new File("order-summary.pdf");
 	}
-	
+
 	@GetMapping(value = "/api/files/system/{filename}", produces = "text/csv; charset=utf-8")
 	@ResponseStatus(HttpStatus.OK)
 	public Resource getFileFromFileSystem(@PathVariable String filename, HttpServletResponse response) {
 		return orderAndPaymentService.getFileSystem(filename, response);
 	}
- 
+
 	@GetMapping(value = "/api/files/classpath/{filename}", produces = "text/csv; charset=utf-8")
 	@ResponseStatus(HttpStatus.OK)
 	public Resource getFileFromClasspath(@PathVariable String filename, HttpServletResponse response) {
 		return orderAndPaymentService.getClassPathFile(filename, response);
 	}
 	
-	@PostMapping("/imageEncode")
-	public ResponseEntity<?> ImageEncide(@RequestBody String ImageReq) throws Exception{
-		//encode image to Base64 String
-		String file = ImageReq.toString();
-		System.out.println(ImageReq.toString());
-
-//		JsonNode jn1 = new JsonNode(ImageReq.toString());
-//		JSONObject object = jn1.getObject();
-//		String file= object.get("image").toString();
-		
-		File f = new File("https://divatt-uat.s3.amazonaws.com/f1.avif"); 
-		FileInputStream fis = new FileInputStream(f);
-		byte byteArray[] = new byte[(int)f.length()];
-		fis.read(byteArray);
-		String imageString = Base64.encodeBase64String(byteArray);
-		//decode Base64 String to image
-//		FileOutputStream fos = new FileOutputStream("https://divatt-uat.s3.amazonaws.com/f1.avif"); //change path of image according to you
-//		byteArray = Base64.decodeBase64(imageString);
-//		fos.write(byteArray);
-		fis.close();
-//		fos.close();
-		return ResponseEntity.ok(imageString);
-		}
 	
+	@PostMapping("/track/add")
+	public ResponseEntity<?> postOrderTracking(@Valid @RequestBody OrderTrackingEntity orderTrackingEntity) {
+		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderTracking()");
+
+		try {
+			return this.orderAndPaymentService.postOrderTrackingService(orderTrackingEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	@PutMapping("/track/update/{trackingId}")
+	public ResponseEntity<?> putOrderTracking(@Valid @RequestBody OrderTrackingEntity orderTrackingEntity,@PathVariable() String trackingId) {
+		LOGGER.info("Inside - OrderAndPaymentContoller.putOrderTracking()");
+
+		try {
+			return this.orderAndPaymentService.putOrderTrackingService(orderTrackingEntity,trackingId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	} 
+	
+	@GetMapping("/getTracking/{orderId}")
+	public ResponseEntity<?> getOrderTrackingDetails(@PathVariable() String orderId,
+			@RequestParam(defaultValue = "0") int userId,@RequestParam(defaultValue = "0") int designerId) {
+
+		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderTrackingDetails()");
+
+		try {
+			return this.orderAndPaymentService.getOrderTrackingDetailsService(orderId,userId,designerId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	} 
+
+
 }

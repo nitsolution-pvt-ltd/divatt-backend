@@ -25,4 +25,8 @@ public interface UserOrderPaymentRepo extends MongoRepository<OrderPaymentEntity
 	Optional<OrderPaymentEntity> findByUserId(Integer userId);
 	
 	
+	@Query(value = "{ 'payment_details.razorpay_payment_id' : {$regex:?0,$options:'i'} }, { 'payment_details.razorpay_order_id' : {$regex:?0,$options:'i'}}")
+	Optional<OrderPaymentEntity> findPaymentId(String PayID,String OrID);
+	
+	
 }
