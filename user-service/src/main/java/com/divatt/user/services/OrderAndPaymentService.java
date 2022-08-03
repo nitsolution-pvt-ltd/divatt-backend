@@ -724,7 +724,7 @@ public class OrderAndPaymentService {
 				resObjects.add(object);
 			}
 			
-			response.put("ProductDetails", resObjects);
+			response.put("OrderSKUDetails", resObjects);
 			return response;
 		}
 		catch(Exception e) {

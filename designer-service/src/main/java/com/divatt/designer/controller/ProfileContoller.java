@@ -459,7 +459,9 @@ public class ProfileContoller {
 					if(designerProfileList.get(i).getCategories()!=null) {
 						org.json.simple.JSONObject jsonObject= new org.json.simple.JSONObject();
 						jsonObject.put("Name", designerProfileList.get(i).getCategories());
-						designercategories.add(jsonObject);
+						if(!designercategories.contains(jsonObject)) {
+							designercategories.add(jsonObject);
+						}
 					}
 				}
 				return designercategories;
