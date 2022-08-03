@@ -488,7 +488,6 @@ public class OrderAndPaymentService {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
 
-<<<<<<< HEAD
 			Page<OrderDetailsEntity> findAll = null;
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = null;
 
@@ -496,16 +495,6 @@ public class OrderAndPaymentService {
 
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
 //				findAll = orderDetailsRepo.findByDesignerId(designerId, pagingSort);
-=======
-			Page<OrderSKUDetailsEntity> findAll = null;
-
-			if (keyword.isEmpty()) {
-
-				findAll = orderSKUDetailsRepo.findByDesignerId(designerId, pagingSort);
-
-			} else {
-//				findAll = orderDetailsRepo.Search(keyword, pagingSort);
->>>>>>> ba4f2a4d5a43dfd54935531f2114580be68de0c1
 			}
 
 			List<Object> productId = new ArrayList<>();
@@ -563,11 +552,7 @@ public class OrderAndPaymentService {
 			}
 
 			Map<String, Object> response = new HashMap<>();
-<<<<<<< HEAD
 			response.put("data", new Json(productId.toString()));
-=======
-			response.put("data", findAll.getContent());
->>>>>>> ba4f2a4d5a43dfd54935531f2114580be68de0c1
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
 			response.put("totalPage", totalPage);
@@ -726,7 +711,7 @@ public class OrderAndPaymentService {
 		return resource;
 	}
 
-<<<<<<< HEAD
+
 	@SuppressWarnings("rawtypes")
 	public ResponseEntity<?> postOrderHandleDetailsService(org.json.simple.JSONObject object) {
 
@@ -844,8 +829,8 @@ public class OrderAndPaymentService {
 		} catch (Exception e2) {
 			return ResponseEntity.ok(e2.getMessage());
 		}
+	}
 
-=======
 	public GlobalResponse cancelOrderService(String refOrderId, Integer refProductId) {
 		try {
 			Query query= new Query();
@@ -902,6 +887,6 @@ public class OrderAndPaymentService {
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
->>>>>>> ba4f2a4d5a43dfd54935531f2114580be68de0c1
+
 	}
 }
