@@ -16,6 +16,7 @@ import org.springframework.core.io.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.poi.hpsf.Array;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -392,16 +393,20 @@ public class OrderAndPaymentService {
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 
 				OrderSKUDetailsRow.forEach(D -> {
+
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
+
 					try {
 						productIdFilters = objs.writeValueAsString(D);
-						Integer i = (int) (long) OrderSKUDetailsRow.get(0).getUserId();
+						Integer i = (int) (long) D.getUserId();
 
 						List<OrderTrackingEntity> findByIdTracking = this.orderTrackingRepo
-								.findByOrderIdAndUserIdAndDesignerIdAndProductId(orderId, i,
-										OrderSKUDetailsRow.get(0).getDesignerId(),
-										OrderSKUDetailsRow.get(0).getProductId());
+								.findByOrderIdAndUserIdAndDesignerIdAndProductId(orderId, i, D.getDesignerId(),
+										D.getProductId());
+						JsonNode cartJNs = new JsonNode(productIdFilters);
+						JSONObject objectss = cartJNs.getObject();
+
 						if (findByIdTracking.size() > 0) {
 							String writeValueAsStringd = null;
 							try {
@@ -412,15 +417,15 @@ public class OrderAndPaymentService {
 
 							JsonNode TrackingJson = new JsonNode(writeValueAsStringd);
 
-							JsonNode cartJNs = new JsonNode(productIdFilters);
-							JSONObject objectss = cartJNs.getObject();
 							objectss.put("TrackingData", TrackingJson.getObject());
-							productIds.add(objectss);
+
 						}
+						productIds.add(objectss);
 					} catch (JsonProcessingException e2) {
 						e2.printStackTrace();
 					}
 				});
+//					}
 
 				String writeValueAsString = null;
 				try {
@@ -429,26 +434,21 @@ public class OrderAndPaymentService {
 					e1.printStackTrace();
 				}
 
-				String OrderSKUD = null;
-				try {
-					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
-				} catch (JsonProcessingException e2) {
-					e2.printStackTrace();
-				}
+//				String OrderSKUD = null;
+//				try {
+//					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+//				} catch (JsonProcessingException e2) {
+//					e2.printStackTrace();
+//				}
 				JsonNode paymentJson = new JsonNode(writeValueAsString);
 
-				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
-				
+//				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
+
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
 				objects.put("paymentData", paymentJson.getObject());
-				if(productIds.size() > 0) {
-					objects.put("OrderSKUDetails", productIds);
-				}else {
-					objects.put("OrderSKUDetails", OrderSKUDJson.getArray());
-				}
-				
-				
+				objects.put("OrderSKUDetails", productIds);
+
 				productId.add(objects);
 
 			});
@@ -858,13 +858,17 @@ public class OrderAndPaymentService {
 				findById = this.orderTrackingRepo.findByOrderIdL(orderId);
 
 			}
+			List<Object> St = new ArrayList<>();
 			if (findById.size() <= 0) {
-				map.put("status", 400);
+				map.put("status", 200);
+				map.put("data", St);
 				map.put("message", "Order not found");
 				return ResponseEntity.ok(map);
 			}
+			map.put("status", 200);
+			map.put("data", findById);
 
-			return ResponseEntity.ok(findById);
+			return ResponseEntity.ok(map);
 		} catch (Exception e2) {
 			return ResponseEntity.ok(e2.getMessage());
 		}
