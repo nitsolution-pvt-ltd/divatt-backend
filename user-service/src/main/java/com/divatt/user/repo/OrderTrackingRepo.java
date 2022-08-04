@@ -25,7 +25,7 @@ public interface OrderTrackingRepo extends MongoRepository<OrderTrackingEntity,I
 	@Query("{ 'tracking_id' : ?0}")	
 	List<OrderTrackingEntity> findByTrackingIds(String trackingId);
 	
-	List<OrderTrackingEntity> findByTrackingIdAndDesignerId(String trackingId);
+	List<OrderTrackingEntity> findByOrderIdAndUserIdAndDesignerIdAndProductId(String trackingId,int usderid,int DesignerId,int ProductId);
 	
 	
 }
