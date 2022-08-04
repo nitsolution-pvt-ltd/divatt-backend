@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.divatt.user.entity.BillingAddressEntity;
+
 @Document(collection = "tbl_order_details_new")
 public class OrderDetailsEntity {
 	@Transient
@@ -33,7 +35,7 @@ public class OrderDetailsEntity {
 	
 	@NotNull(message = "Billing address is required!")
 	@Field(name = "billing_address") 
-	private Object billingAddress;
+	private BillingAddressEntity billingAddress;
 	
 	@NotNull(message = "Total amount is required!")
 	@Field(name = "total_amount") 
@@ -80,7 +82,7 @@ public class OrderDetailsEntity {
 
 	public OrderDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
 			String invoiceId, @NotNull(message = "Shipping address is required!") Object shippingAddress,
-			@NotNull(message = "Billing address is required!") Object billingAddress,
+			@NotNull(message = "Billing address is required!") BillingAddressEntity billingAddress,
 			@NotNull(message = "Total amount is required!") Double totalAmount, String orderDate, String orderStatus,
 			String deliveryStatus, String deliveryMode, String deliveryDate, String deliveryCheckUrl,
 			Double shippingCharges, Double discount, Double mrp, Double taxAmount, String createdOn) {
@@ -156,11 +158,11 @@ public class OrderDetailsEntity {
 		this.shippingAddress = shippingAddress;
 	}
 
-	public Object getBillingAddress() {
+	public BillingAddressEntity getBillingAddress() {
 		return billingAddress;
 	}
 
-	public void setBillingAddress(Object billingAddress) {
+	public void setBillingAddress(BillingAddressEntity billingAddress) {
 		this.billingAddress = billingAddress;
 	}
 

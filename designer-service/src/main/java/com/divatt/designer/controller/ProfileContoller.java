@@ -512,4 +512,14 @@ public class ProfileContoller {
 		}
 	}
 	
+	@GetMapping("/designerIdList")
+	public List<DesignerLoginEntity> getDesignerIdList(){
+		try {
+			return designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 }
