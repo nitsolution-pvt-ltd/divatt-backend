@@ -1070,7 +1070,7 @@ public class ProductService {
 						String htmlContent=templateEngine.process("lowStockEmailTemplate", context);
 						EmailSenderThread emailSenderThread= new EmailSenderThread(emails.get(i), "Product out of stock", htmlContent, true, null,restTemplate);
 						emailSenderThread.start();
-						System.out.println(Thread.activeCount());
+					//	System.out.println(Thread.activeCount());
 					}
 				}
 					return new GlobalResponce("Success", "Designer informed successfully", 200);

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.UserAddressEntity;
@@ -48,12 +49,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -63,6 +66,9 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+
+import com.itextpdf.html2pdf.ConverterProperties;
+import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -78,6 +84,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.json.JSONArray;
@@ -98,7 +105,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 import org.apache.commons.codec.binary.Base64;
 
 @RestController
@@ -125,6 +133,9 @@ public class OrderAndPaymentContoller {
 
 	@Autowired
 	private MongoOperations mongoOperations;
+	
+	@Autowired
+	private TemplateEngine templateEngine;
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 
 	@PostMapping("/razorpay/create")
@@ -596,14 +607,54 @@ public class OrderAndPaymentContoller {
 		}
 	}
 	
-	@GetMapping("/getOrderByInvoiceId/{invoiceId}")
-	public Object getOrderByInvoiceId(@PathVariable String invoiceId) {
-		try {
-			return this.orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
-		}
-		catch(Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
+//	@GetMapping("/getOrderByInvoiceId/{invoiceId}")
+//	public   String getOrderByInvoiceId(@PathVariable String invoiceId) {
+//		try {
+//			return this.orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
+//		}
+//		catch(Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
 
+//	@GetMapping("/getInvoicePdf")
+//	public ResponseEntity<?> getInvoicePdf() throws IOException {
+//		try {
+//			StringBuilder  stringBuilder= new StringBuilder();
+//			FileReader fileReader= new FileReader("C:\\Users\\ASUS\\Documents\\NITProject-JAVA\\divatt-backend -3-8-2022\\divatt-backend\\user-service\\src\\main\\resources\\templates\\test.html");
+//			BufferedReader br = new BufferedReader(fileReader);
+//			String val=null;
+//			 while ((val = br.readLine()) != null) {
+//				 stringBuilder.append(val);
+//	            }
+//			 String result = stringBuilder.toString();
+//	         // System.out.println(result);
+//	          
+//	          ByteArrayOutputStream target = new ByteArrayOutputStream();
+//	          ConverterProperties converterProperties = new ConverterProperties();
+//	          converterProperties.setBaseUri("http://localhost:8082");
+//	          HtmlConverter.convertToPdf(result, target, converterProperties);  
+//	          byte[] bytes = target.toByteArray();
+//	          return ResponseEntity.ok()
+//	                  .contentType(MediaType.APPLICATION_PDF)
+//	                  .body(bytes);
+//		}
+//		catch(Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
+//	
+//	@GetMapping("/test")
+//	public String getInvoicePdfTest() throws IOException,ResourceNotFoundException {
+//		
+//			BillingAddressEntity billAddressData= new BillingAddressEntity();
+//			billAddressData.setAddress1("Address");
+//			Map<String, Object> response= new HashMap<>();
+//			response.put("Data1", billAddressData);
+//			Context context= new Context();
+//			context.setVariables(response);
+//			String htmlContent=templateEngine.process("test", context);
+//			return htmlContent;
+//		
+//	}
 }
