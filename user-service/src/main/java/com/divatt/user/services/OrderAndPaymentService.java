@@ -984,7 +984,7 @@ public class OrderAndPaymentService {
 			List<OrderSKUDetailsEntity> orderList = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
 			for (int i = 0; i < orderList.size(); i++) {
 				ResponseEntity<Object> designerData = restTemplate.getForEntity(
-						"https://192.168.1.121:8085/dev/designer/" + orderList.get(i).getDesignerId(), Object.class);
+						"https://localhost:8085/dev/designer/" + orderList.get(i).getDesignerId(), Object.class);
 				org.json.simple.JSONObject object = new org.json.simple.JSONObject();
 				object.put("ProductData", orderList.get(i));
 				object.put("DesignerData", designerData.getBody());
