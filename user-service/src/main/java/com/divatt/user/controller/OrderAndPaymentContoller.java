@@ -608,53 +608,12 @@ public class OrderAndPaymentContoller {
 	}
 	
 	@GetMapping("/getOrderByInvoiceId/{invoiceId}")
-	public   String getOrderByInvoiceId(@PathVariable String invoiceId) {
+	public   ResponseEntity<?> getOrderByInvoiceId(@PathVariable String invoiceId) {
 		try {
 			return this.orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-	}
-
-	@GetMapping("/getInvoicePdf")
-	public ResponseEntity<?> getInvoicePdf() throws IOException {
-		try {
-			StringBuilder  stringBuilder= new StringBuilder();
-			FileReader fileReader= new FileReader("C:\\Users\\ASUS\\Documents\\NITProject-JAVA\\divatt-backend -3-8-2022\\divatt-backend\\user-service\\src\\main\\resources\\templates\\test.html");
-			BufferedReader br = new BufferedReader(fileReader);
-			String val=null;
-			 while ((val = br.readLine()) != null) {
-				 stringBuilder.append(val);
-	            }
-			 String result = stringBuilder.toString();
-	         // System.out.println(result);
-	          
-	          ByteArrayOutputStream target = new ByteArrayOutputStream();
-	          ConverterProperties converterProperties = new ConverterProperties();
-	          converterProperties.setBaseUri("http://localhost:8082");
-	          HtmlConverter.convertToPdf(result, target, converterProperties);  
-	          byte[] bytes = target.toByteArray();
-	          return ResponseEntity.ok()
-	                  .contentType(MediaType.APPLICATION_PDF)
-	                  .body(bytes);
-		}
-		catch(Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
-	
-	@GetMapping("/test")
-	public String getInvoicePdfTest() throws IOException,ResourceNotFoundException {
-		
-			BillingAddressEntity billAddressData= new BillingAddressEntity();
-			billAddressData.setAddress1("Address");
-			Map<String, Object> response= new HashMap<>();
-			response.put("Data1", billAddressData);
-			Context context= new Context();
-			context.setVariables(response);
-			String htmlContent=templateEngine.process("test", context);
-			return htmlContent;
-		
 	}
 }

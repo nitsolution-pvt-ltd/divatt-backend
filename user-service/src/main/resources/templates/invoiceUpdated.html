@@ -51,22 +51,10 @@
               <!--<tr>
                         <td th:text="'Profile: ' + ${profile}"></td>
                     </tr>-->
-                <tr th:each="data1 : ${Data1}">
-                    <td style="font-size: 16px;line-height: 22px;color: #000;"   th:text=" ${data1.address1} " >
-                        {{data1.address1}} <br>
-                        {{data1.address1}} , {{orderDetails?.shippingAddress?.city}} {{orderDetails?.shippingAddress?.state}}<br>
-                        {{orderDetails?.shippingAddress?.country}} - {{orderDetails?.shippingAddress?.postalCode}} <br>
-                        {{orderDetails?.shippingAddress?.mobile}}
+                <tr th:each="data1 : ${billAddressData}">
+                    <td style="font-size: 16px;line-height: 22px;color: #000;"   th:text=" ${data1.address1} + '' + ${data1.country} + '' + ${data1.state} + '' + ${data1.city} + '' + ${data1.fullName} + '' +  ${data1.postalCode} + '' + ${data1.mobile}" >
                     </td>
-                    
-                    
-                    
-                    <td style="font-size: 16px;line-height: 22px;color: #000;">
-                        {{orderDetails?.shippingAddress?.fullName}} <br>
-                        {{orderDetails?.shippingAddress?.address1}} , {{orderDetails?.shippingAddress?.city}} {{orderDetails?.shippingAddress?.state}}<br>
-                        {{orderDetails?.shippingAddress?.country}} - {{orderDetails?.shippingAddress?.postalCode}} <br>
-                        {{orderDetails?.shippingAddress?.mobile}}
-                    </td>
+
                 </tr>
             </tbody>
           </table>
@@ -75,11 +63,11 @@
             <thead>
                 <tr >
                     <td colspan="3" style="width:23%;margin-left:10px;text-align: left;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;">Product</td>
-                    <td colspan="3" style="width:33%;margin-left:10px;text-align: left;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;">Descption</td>
+                    <td colspan="3" style="width:30%;margin-left:10px;text-align: left;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;">Descption</td>
                     <td style="width:10%;padding: 5px;text-align: center;border-bottom: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">QUANTITY</td>
-                    <td colspan="3" style="width:12%;margin-left:10px;text-align: center;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;">Gross Amount ₹</td>
-                    <td colspan="3" style="width:10%;margin-left:10px;text-align: center;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;">IGST ₹</td>
-                    <td colspan="3" style="width:20%;margin-left:10px;text-align: center;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;">Total ₹</td>
+                    <td colspan="3" style="width:12%;margin-left:10px;text-align: center;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;">Gross Amount (Rs.)</td>
+                    <td colspan="3" style="width:10%;margin-left:10px;text-align: center;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;">IGST (Rs.)</td>
+                    <td colspan="3" style="width:20%;margin-left:10px;text-align: center;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;">Total (Rs.)</td>
 
                   </tr>
             </thead>
@@ -87,7 +75,7 @@
             <tbody style="font-family: 'Lato', sans-serif;">
                 <tr th:each="data1 : ${data}">
                     <td colspan="3" style="width:23%;margin-left:10px;text-align: left;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;"><th:block th:text="${data1.productSKUId}"></th:block></td>
-                    <td colspan="3" style="width:33%;margin-left:10px;text-align: left;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;"><th:block th:text="${data1.productDescription}"></th:block></td>
+                    <td colspan="3" style="width:30%;margin-left:10px;text-align: left;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;"><th:block th:text="${data1.productDescription}"></th:block></td>
                     <td style="width:12%;padding: 5px;text-align: center;border-bottom: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
                         <table style="width:100%;">
                             <tr><td style="width:60%;color: #000;">Size  :</td> <td style="color: #000;"><th:block th:text="${data1.quantity}"></th:block></td></tr>
@@ -103,18 +91,18 @@
           </table>
           <table style="border-collapse: collapse;width: 100%;font-family: 'Lato', sans-serif;font-size: 16px;">
             <tbody>
-                <tr>
-                    <td style="width: 68%;border-left: 1.6px solid;border-bottom: 1.6px solid;padding: 16px;">
+               <tr th:each="data1 : ${totalData}">
+                    <td style="width: 65%;border-left: 1.6px solid;border-bottom: 1.6px solid;padding: 16px;">
                         
                     </td>
                     <td style="width: 12%;text-align: right;padding: 5px;border-right: 1.6px solid;border-bottom: 1.6px solid;font-weight: 500;border-left: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
-                         688.00
+                         <th:block th:text="${data1.grossAmount}"></th:block>
                     </td>
                     <td style="width: 10%;text-align: right;padding: 5px;border-right: 1.6px solid;border-bottom: 1.6px solid;font-weight: 500;border-left: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
-                         688.00
+                        <th:block th:text="${data1.igst}"></th:block>
                     </td>
-                    <td style="width: 10%;text-align: right;padding: 5px;border-right: 1.6px solid;border-bottom: 1.6px solid;font-weight: 500;border-left: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
-                         688.00
+                    <td style="width: 15%;text-align: right;padding: 5px;border-right: 1.6px solid;border-bottom: 1.6px solid;font-weight: 500;border-left: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
+                        <th:block th:text="${data1.withTaxAmount}"></th:block>
                     </td>
                 </tr>
             </tbody>

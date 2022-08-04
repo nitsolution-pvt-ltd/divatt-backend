@@ -1,5 +1,6 @@
 package com.divatt.user.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.origin.SystemEnvironmentOrigin;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -34,6 +36,8 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -41,6 +45,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import com.divatt.user.controller.OrderAndPaymentContoller;
 import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.DesignerLoginEntity;
 import com.divatt.user.entity.InvoiceEntity;
@@ -59,6 +64,8 @@ import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.html2pdf.ConverterProperties;
+import com.itextpdf.html2pdf.HtmlConverter;
 import com.lowagie.text.DocumentException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -905,7 +912,7 @@ public class OrderAndPaymentService {
 
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public String getOrderServiceByInvoiceId(String invoiceId) {
+	public ResponseEntity<?> getOrderServiceByInvoiceId(String invoiceId) {
 		try {
 			Query query= new Query();
 			Query query2= new Query();
@@ -915,6 +922,12 @@ public class OrderAndPaymentService {
 			OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
 			BillingAddressEntity billAddressData= new BillingAddressEntity();
 			billAddressData.setAddress1(orderDetailsEntity.getBillingAddress().getAddress1());
+			billAddressData.setFullName(orderDetailsEntity.getBillingAddress().getFullName());
+			billAddressData.setCountry(orderDetailsEntity.getBillingAddress().getCountry());
+			billAddressData.setState(orderDetailsEntity.getBillingAddress().getState());
+			billAddressData.setCity(orderDetailsEntity.getBillingAddress().getCity());
+			billAddressData.setPostalCode(orderDetailsEntity.getBillingAddress().getPostalCode());
+			billAddressData.setMobile(orderDetailsEntity.getBillingAddress().getMobile());
 			query2.addCriteria(Criteria.where("orderId").is(orderDetailsEntity.getOrderId()));
 			List<OrderSKUDetailsEntity> orderSKUDetails= mongoOperations.find(query2, OrderSKUDetailsEntity.class);
 			String body = restTemplate.getForEntity("https://localhost:8083/dev/designer/designerIdList", String.class).getBody();
@@ -930,38 +943,62 @@ public class OrderAndPaymentService {
 			int totalTax=0;
 			int totalAmount=0;
 			int totalGrossAmount=0;
-			ProductInvoice invoice1= new ProductInvoice();
 			for(int i=0;i<desiredDesingerIdList.size();i++) {
-				List<ProductInvoice> productList= new ArrayList<ProductInvoice>();
-				ProductInvoice invoice= new ProductInvoice();
-				for(int a=0;a<orderSKUDetails.size();a++) {
-					if(orderSKUDetails.get(a).getDesignerId()==desiredDesingerIdList.get(i)) {
+				List<ProductInvoice> productList= new ArrayList<>();
+//				int a=0;a<orderSKUDetails.size();a++
+				for(OrderSKUDetailsEntity a : orderSKUDetails) {
+					//List<ProductInvoice> productList= new ArrayList<ProductInvoice>();
+					if(a.getDesignerId()==desiredDesingerIdList.get(i)) {
 						//System.out.println((orderSKUDetails.get(a).getProductId()));
-						invoice.setGrossAmount(orderSKUDetails.get(a).getMrp().intValue());
-						invoice.setIgst(orderSKUDetails.get(a).getTaxAmount().intValue());
-						invoice.setProductDescription(orderSKUDetails.get(a).getProductName());
-						invoice.setProductSKUId(orderSKUDetails.get(a).getProductSku());
-						invoice.setQuantity(orderSKUDetails.get(a).getUnits().toString());
-						invoice.setWithTaxAmount(orderSKUDetails.get(a).getSalesPrice().intValue());
+						ProductInvoice invoice= new ProductInvoice();
+						invoice.setGrossAmount(a.getMrp().intValue());
+						invoice.setIgst(a.getTaxAmount().intValue());
+						invoice.setProductDescription(a.getProductName());
+						invoice.setProductSKUId(a.getProductSku());
+						invoice.setQuantity(a.getUnits().toString());
+						invoice.setWithTaxAmount(a.getSalesPrice().intValue());
+						LOGGER.info(invoice.toString());
 						productList.add(invoice);
-						totalTax=totalTax+orderSKUDetails.get(a).getTaxAmount().intValue();
-						totalAmount=totalAmount+orderSKUDetails.get(a).getSalesPrice().intValue();
-						totalGrossAmount=totalGrossAmount+orderSKUDetails.get(a).getMrp().intValue();
-						System.out.println(totalGrossAmount);
+						totalTax=totalTax+a.getTaxAmount().intValue();
+						totalAmount=totalAmount+a.getSalesPrice().intValue();
+						totalGrossAmount=totalGrossAmount+a.getMrp().intValue();
 					}
 				}
-				if(invoice.getProductDescription()!=null) {
-					//data.put("data", productList);
+				//invoice.getProductDescription() != null
+				LOGGER.info("Outside of loop inner loop <><><><><> !!!" + productList);
+				if(productList.size() > 0) {
+					LOGGER.info("Rpoduct List data <><><><><> !!! " + productList);
+					data.put("data", productList);
 				}
-				
 			}
+			ProductInvoice invoice= new ProductInvoice();
+			invoice.setGrossAmount(totalGrossAmount);
+			invoice.setWithTaxAmount(totalAmount);
+			invoice.setIgst(totalTax);
+			Map<String, Object> data4= new HashMap<>();
+			data4.put("totalData", invoice);
 			Map<String, Object> response= new HashMap<>();
 			response.put("billAddressData", billAddressData);
 			Context context= new Context();
 			context.setVariables(response);
-			String htmlContent=templateEngine.process("test", context);
-			System.out.println(htmlContent);
-			return htmlContent;
+			context.setVariables(data);
+			context.setVariables(data4);
+			String htmlContent=templateEngine.process("invoiceUpdated.html", context);
+			// System.out.println(result);
+ 
+			ByteArrayOutputStream target = new ByteArrayOutputStream();
+			ConverterProperties converterProperties = new ConverterProperties();
+			converterProperties.setBaseUri("http://localhost:8082");
+			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);  
+			byte[] bytes = target.toByteArray();
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Disposition", "attachment; filename=" + "orderInvoiceUpdated.pdf");
+			return ResponseEntity.ok()
+					.headers(headers)
+					.contentType(MediaType.APPLICATION_PDF)
+					.body(bytes);
+//			OrderAndPaymentContoller andPaymentContoller= new OrderAndPaymentContoller();
+//			ByteArrayOutputStream generatePdf = andPaymentContoller.generatePdf(htmlContent);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
@@ -990,7 +1027,6 @@ public class OrderAndPaymentService {
 				object.put("DesignerData", designerData.getBody());
 				resObjects.add(object);
 			}
-
 			response.put("OrderSKUDetails", resObjects);
 			return response;
 		} catch (Exception e) {
