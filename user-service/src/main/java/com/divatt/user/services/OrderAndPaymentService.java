@@ -1,5 +1,6 @@
 package com.divatt.user.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -10,17 +11,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.core.io.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.poi.hpsf.Array;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.origin.SystemEnvironmentOrigin;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -32,6 +37,8 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -39,7 +46,12 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import com.divatt.user.controller.OrderAndPaymentContoller;
+import com.divatt.user.entity.BillingAddressEntity;
+import com.divatt.user.entity.DesignerLoginEntity;
 import com.divatt.user.entity.InvoiceEntity;
+import com.divatt.user.entity.OrderTrackingEntity;
+import com.divatt.user.entity.ProductInvoice;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
@@ -48,13 +60,17 @@ import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.PDFRunner;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
+import com.divatt.user.repo.OrderTrackingRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.html2pdf.ConverterProperties;
+import com.itextpdf.html2pdf.HtmlConverter;
 import com.lowagie.text.DocumentException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
+import com.razorpay.Invoice;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
@@ -76,6 +92,9 @@ public class OrderAndPaymentService {
 	private OrderDetailsRepo orderDetailsRepo;
 
 	@Autowired
+	private OrderTrackingRepo orderTrackingRepo;
+
+	@Autowired
 	private OrderSKUDetailsRepo orderSKUDetailsRepo;
 
 	@Autowired
@@ -86,9 +105,12 @@ public class OrderAndPaymentService {
 
 	@Autowired
 	private Environment env;
-	
+
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private TemplateEngine templateEngine;
 
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
@@ -96,6 +118,19 @@ public class OrderAndPaymentService {
 	protected String getRandomString() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		StringBuilder salt = new StringBuilder();
+		Random rnd = new Random();
+		while (salt.length() < 16) {
+			int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+			salt.append(SALTCHARS.charAt(index));
+		}
+		String saltStr = salt.toString();
+		return saltStr;
+	}
+
+	protected String getRandomStringInt() {
+		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+//		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		StringBuilder salt = new StringBuilder();
 		Random rnd = new Random();
 		while (salt.length() < 16) {
@@ -167,7 +202,7 @@ public class OrderAndPaymentService {
 		}
 
 	}
-	
+
 	public ResponseEntity<?> postOrderSKUService(OrderSKUDetailsEntity orderSKUDetailsEntityRow) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderSKUService()");
 
@@ -178,12 +213,11 @@ public class OrderAndPaymentService {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			Date date = new Date();
 			String format = formatter.format(date);
-			
+
 			OrderSKUDetailsEntity filterCatDetails = new OrderSKUDetailsEntity();
 
 //			for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
-				
-			
+
 			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 			filterCatDetails.setOrderId(orderSKUDetailsEntityRow.getOrderId());
 			filterCatDetails.setColour(orderSKUDetailsEntityRow.getColour());
@@ -207,7 +241,7 @@ public class OrderAndPaymentService {
 
 			OrderSKUDetailsEntity data = orderSKUDetailsRepo.save(filterCatDetails);
 //			}
-			
+
 			return ResponseEntity.ok(null);
 		} catch (RazorpayException e) {
 			throw new CustomException(e.getMessage());
@@ -358,6 +392,7 @@ public class OrderAndPaymentService {
 				throw new CustomException("Order not found");
 			}
 			List<Object> productId = new ArrayList<>();
+			List<Object> productIds = new ArrayList<>();
 
 			findById.forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
@@ -371,27 +406,63 @@ public class OrderAndPaymentService {
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 
+				OrderSKUDetailsRow.forEach(D -> {
+
+					ObjectMapper objs = new ObjectMapper();
+					String productIdFilters = null;
+
+					try {
+						productIdFilters = objs.writeValueAsString(D);
+						Integer i = (int) (long) D.getUserId();
+
+						List<OrderTrackingEntity> findByIdTracking = this.orderTrackingRepo
+								.findByOrderIdAndUserIdAndDesignerIdAndProductId(orderId, i, D.getDesignerId(),
+										D.getProductId());
+						JsonNode cartJNs = new JsonNode(productIdFilters);
+						JSONObject objectss = cartJNs.getObject();
+
+						if (findByIdTracking.size() > 0) {
+							String writeValueAsStringd = null;
+							try {
+								writeValueAsStringd = objs.writeValueAsString(findByIdTracking.get(0));
+							} catch (JsonProcessingException e1) {
+								e1.printStackTrace();
+							}
+
+							JsonNode TrackingJson = new JsonNode(writeValueAsStringd);
+
+							objectss.put("TrackingData", TrackingJson.getObject());
+
+						}
+						productIds.add(objectss);
+					} catch (JsonProcessingException e2) {
+						e2.printStackTrace();
+					}
+				});
+//					}
+
 				String writeValueAsString = null;
 				try {
 					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
-				
-				String OrderSKUD = null;
-				try {
-					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
-				} catch (JsonProcessingException e2) {
-					e2.printStackTrace();
-				}
+
+//				String OrderSKUD = null;
+//				try {
+//					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+//				} catch (JsonProcessingException e2) {
+//					e2.printStackTrace();
+//				}
 				JsonNode paymentJson = new JsonNode(writeValueAsString);
 
-				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
-				
+//				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
+
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
 				objects.put("paymentData", paymentJson.getObject());
-				objects.put("OrderSKUDetails", OrderSKUDJson.getArray());
+				objects.put("OrderSKUDetails", productIds);
+
 				productId.add(objects);
 
 			});
@@ -400,7 +471,6 @@ public class OrderAndPaymentService {
 		} catch (Exception e2) {
 			return ResponseEntity.ok(e2.getMessage());
 		}
-
 	}
 
 	public ResponseEntity<?> getUserOrderDetailsService(Integer userId) {
@@ -422,7 +492,7 @@ public class OrderAndPaymentService {
 				}
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
-				
+
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
 
@@ -432,14 +502,14 @@ public class OrderAndPaymentService {
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
-				
+
 				String OrderSKUD = null;
 				try {
 					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
 				} catch (JsonProcessingException e2) {
 					e2.printStackTrace();
 				}
-				
+
 				JsonNode paymentJson = new JsonNode(writeValueAsString);
 				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
 
@@ -471,19 +541,26 @@ public class OrderAndPaymentService {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
 
-			Page<OrderSKUDetailsEntity> findAll = null;
+			Page<OrderDetailsEntity> findAll = null;
+			List<OrderSKUDetailsEntity> OrderSKUDetailsData = null;
 
 			if (keyword.isEmpty()) {
 
-				findAll = orderSKUDetailsRepo.findByDesignerId(designerId, pagingSort);
-
-			} else {
-//				findAll = orderDetailsRepo.Search(keyword, pagingSort);
+				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
+//				findAll = orderDetailsRepo.findByDesignerId(designerId, pagingSort);
 			}
 
 			List<Object> productId = new ArrayList<>();
 
-			findAll.forEach(e -> {
+			List<String> OrderId = OrderSKUDetailsData.stream()
+//								.filter(c -> c.getOrderId().equals(c.getOrderId()))
+					.map(c -> c.getOrderId()).collect(Collectors.toList());
+
+			findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
+
+			List<OrderDetailsEntity> content = findAll.getContent();
+
+			content.forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
 				String productIdFilter = null;
 				try {
@@ -493,6 +570,11 @@ public class OrderAndPaymentService {
 				}
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
+						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
+
+				JsonNode pJN = new JsonNode(productIdFilter);
+				JSONObject object = pJN.getObject();
 
 				String writeValueAsString = null;
 				try {
@@ -500,12 +582,20 @@ public class OrderAndPaymentService {
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
-				JsonNode paymentJson = new JsonNode(writeValueAsString);
 
-				JsonNode cartJN = new JsonNode(productIdFilter);
-				JSONObject objects = cartJN.getObject();
-				objects.put("paymentData", paymentJson.getObject());
-				productId.add(objects);
+				String OrderSKUD = null;
+				try {
+					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+				} catch (JsonProcessingException e2) {
+					e2.printStackTrace();
+				}
+
+				JsonNode paymentJson = new JsonNode(writeValueAsString);
+				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
+
+				object.put("paymentData", paymentJson.getObject());
+				object.put("OrderSKUDetails", OrderSKUDJson.getArray());
+				productId.add(object);
 
 			});
 
@@ -515,7 +605,7 @@ public class OrderAndPaymentService {
 			}
 
 			Map<String, Object> response = new HashMap<>();
-			response.put("data", findAll.getContent());
+			response.put("data", new Json(productId.toString()));
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
 			response.put("totalPage", totalPage);
@@ -531,6 +621,7 @@ public class OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	public GlobalResponse invoiceGenarator(String orderId) {
 		try {
 			Query query = new Query();
@@ -626,7 +717,7 @@ public class OrderAndPaymentService {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(orderId));
 			OrderDetailsEntity orderDetailsEntity2 = mongoOperations.findOne(query, OrderDetailsEntity.class);
-			System.out.println(orderDetailsEntity2);
+//			System.out.println(orderDetailsEntity2);
 			if (!orderDetailsEntity2.equals(null)) {
 				System.out.println(orderDetailsEntity);
 				OrderDetailsEntity orderDetailsEntity1 = orderDetailsRepo.findByOrderId(orderId).get(0);
@@ -674,61 +765,277 @@ public class OrderAndPaymentService {
 		return resource;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public ResponseEntity<?> postOrderHandleDetailsService(org.json.simple.JSONObject object) {
+
+		try {
+
+			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) object.get("entity"));
+
+			Optional<OrderPaymentEntity> PaymentRow = userOrderPaymentRepo.findPaymentId(PayEntity.get("id").toString(),
+					PayEntity.get("order_id").toString());
+
+			List<OrderDetailsEntity> OrderRow = orderDetailsRepo.findByOrderId(PaymentRow.get().getOrderId());
+
+			return ResponseEntity.ok(OrderRow);
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	public ResponseEntity<?> postOrderTrackingService(OrderTrackingEntity orderTrackingEntity) {
+
+		try {
+
+			List<OrderTrackingEntity> OrderTrackingRow = orderTrackingRepo
+					.findByTrackingIds(orderTrackingEntity.getTrackingId());
+
+//			if (OrderTrackingRow.size() <= 0){
+
+			OrderTrackingEntity filterCatDetails = new OrderTrackingEntity();
+
+			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderTrackingEntity.SEQUENCE_NAME));
+			filterCatDetails.setOrderId(orderTrackingEntity.getOrderId());
+			filterCatDetails.setDeliveredDate(orderTrackingEntity.getDeliveredDate());
+			filterCatDetails.setDeliveryExpectedDate(orderTrackingEntity.getDeliveryExpectedDate());
+			filterCatDetails.setDeliveryMode(orderTrackingEntity.getDeliveryMode());
+			filterCatDetails.setDeliveryStatus(orderTrackingEntity.getDeliveryStatus());
+			filterCatDetails.setDeliveryType(orderTrackingEntity.getDeliveryType());
+			filterCatDetails.setProcuctSku(orderTrackingEntity.getProcuctSku());
+			filterCatDetails.setProductId(orderTrackingEntity.getProductId());
+			filterCatDetails.setTrackingHistory(orderTrackingEntity.getTrackingHistory());
+			filterCatDetails.setTrackingUrl(orderTrackingEntity.getTrackingUrl());
+			filterCatDetails.setTrackingId(getRandomStringInt());
+			filterCatDetails.setUserId(orderTrackingEntity.getUserId());
+			filterCatDetails.setDesignerId(orderTrackingEntity.getDesignerId());
+
+			OrderTrackingEntity data = orderTrackingRepo.save(filterCatDetails);
+
+			return ResponseEntity.ok(new GlobalResponse("Success", "Tracking updated successfully", 200));
+
+//			} else {
+//				throw new CustomException("Something went to wrong! from order related");
+//			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	public ResponseEntity<?> putOrderTrackingService(OrderTrackingEntity orderTrackingEntity, String trackingId) {
+
+		try {
+
+			Optional<OrderTrackingEntity> OrderTrackingRow = orderTrackingRepo.findByTrackingId(trackingId);
+
+			if (!OrderTrackingRow.isEmpty()) {
+
+				OrderTrackingEntity filterCatDetails = OrderTrackingRow.get();
+
+				filterCatDetails.setOrderId(orderTrackingEntity.getOrderId());
+				filterCatDetails.setDeliveredDate(orderTrackingEntity.getDeliveredDate());
+				filterCatDetails.setDeliveryExpectedDate(orderTrackingEntity.getDeliveryExpectedDate());
+				filterCatDetails.setDeliveryMode(orderTrackingEntity.getDeliveryMode());
+				filterCatDetails.setDeliveryStatus(orderTrackingEntity.getDeliveryStatus());
+				filterCatDetails.setDeliveryType(orderTrackingEntity.getDeliveryType());
+				filterCatDetails.setProcuctSku(orderTrackingEntity.getProcuctSku());
+				filterCatDetails.setProductId(orderTrackingEntity.getProductId());
+				filterCatDetails.setTrackingHistory(orderTrackingEntity.getTrackingHistory());
+				filterCatDetails.setTrackingUrl(orderTrackingEntity.getTrackingUrl());
+				filterCatDetails.setTrackingId(trackingId);
+				filterCatDetails.setUserId(orderTrackingEntity.getUserId());
+				filterCatDetails.setDesignerId(orderTrackingEntity.getDesignerId());
+
+				OrderTrackingEntity data = orderTrackingRepo.save(filterCatDetails);
+
+				return ResponseEntity.ok(new GlobalResponse("Success", "Tracking updated successfully", 200));
+
+			} else {
+				throw new CustomException("Something went to wrong! from order related");
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	public ResponseEntity<?> getOrderTrackingDetailsService(String orderId, int userId, int designerId) {
+		try {
+			Map<String, Object> map = new HashMap<>();
+			List<OrderTrackingEntity> findById = null;
+
+			if (orderId != null && (Integer) userId != 0 && (Integer) designerId != 0) {
+				findById = this.orderTrackingRepo.findByOrderIdLDU(orderId, userId, designerId);
+			} else {
+				findById = this.orderTrackingRepo.findByOrderIdL(orderId);
+
+			}
+			List<Object> St = new ArrayList<>();
+			if (findById.size() <= 0) {
+				map.put("status", 200);
+				map.put("data", St);
+				map.put("message", "Order not found");
+				return ResponseEntity.ok(map);
+			}
+			map.put("status", 200);
+			map.put("data", findById);
+
+			return ResponseEntity.ok(map);
+		} catch (Exception e2) {
+			return ResponseEntity.ok(e2.getMessage());
+		}
+	}
+
 	public GlobalResponse cancelOrderService(String refOrderId, Integer refProductId) {
 		try {
-			Query query= new Query();
+			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(refOrderId).and("productId").is(refProductId));
-			OrderSKUDetailsEntity skuDetailsEntity= mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
-			if(!skuDetailsEntity.getOrderItemStatus().equals("cancelled")) {
+			OrderSKUDetailsEntity skuDetailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+			if (!skuDetailsEntity.getOrderItemStatus().equals("cancelled")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus("cancelled");
 				orderSKUDetailsRepo.save(skuDetailsEntity);
-				Query query2= new Query();
+				Query query2 = new Query();
 				query.addCriteria(Criteria.where("orderId").is(refOrderId));
-				OrderDetailsEntity detailsEntity= mongoOperations.findOne(query2, OrderDetailsEntity.class);
+				OrderDetailsEntity detailsEntity = mongoOperations.findOne(query2, OrderDetailsEntity.class);
 				detailsEntity.setId(detailsEntity.getId());
-				detailsEntity.setTotalAmount(detailsEntity.getTotalAmount()-skuDetailsEntity.getSalesPrice());
-				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount()-skuDetailsEntity.getTaxAmount());
-				detailsEntity.setMrp(detailsEntity.getMrp()-skuDetailsEntity.getMrp());
+				detailsEntity.setTotalAmount(detailsEntity.getTotalAmount() - skuDetailsEntity.getSalesPrice());
+				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
+				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
 				return new GlobalResponse("Success", "Ordered product cancelled successfully", 200);
-			}
-			else {
+			} else {
 				return new GlobalResponse("Error", "Product already cancelled", 400);
 			}
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public Map<String, Object> getOrderServiceByInvoiceId(String invoiceId) {
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ResponseEntity<?> getOrderServiceByInvoiceId(String invoiceId) {
 		try {
 			Query query= new Query();
 			Query query2= new Query();
-			List<Object> resObjects= new ArrayList<Object>();
-			Map<String, Object> response= new HashMap<String, Object>();
-			query.addCriteria(Criteria.where("invoice_id").is(invoiceId));
-			org.json.simple.JSONObject resObjct= new org.json.simple.JSONObject();
-			OrderDetailsEntity detailsEntity= mongoOperations.findOne(query, OrderDetailsEntity.class);
-			response.put("OrderDetails", detailsEntity);
-			System.out.println(detailsEntity.getOrderId());
-			query2.addCriteria(Criteria.where("orderId").is(detailsEntity.getOrderId()));
-			List<OrderSKUDetailsEntity> orderList=mongoOperations.find(query2, OrderSKUDetailsEntity.class);
-			for(int i=0;i<orderList.size();i++) {
-				ResponseEntity<Object> designerData = restTemplate.getForEntity("https://192.168.1.121:8085/dev/designer/"+orderList.get(i).getDesignerId(), Object.class);
-				org.json.simple.JSONObject object= new org.json.simple.JSONObject();
-				object.put("ProductData", orderList.get(i));
-				object.put("DesignerData", designerData.getBody());
-				resObjects.add(object);
+			Map<String, Object> data= new HashMap<String, Object>();
+			List<Integer> desiredDesingerIdList= new ArrayList<Integer>();
+			query.addCriteria(Criteria.where("invoiceId").is(invoiceId));
+			OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
+			BillingAddressEntity billAddressData= new BillingAddressEntity();
+			billAddressData.setAddress1(orderDetailsEntity.getBillingAddress().getAddress1());
+			billAddressData.setFullName(orderDetailsEntity.getBillingAddress().getFullName());
+			billAddressData.setCountry(orderDetailsEntity.getBillingAddress().getCountry());
+			billAddressData.setState(orderDetailsEntity.getBillingAddress().getState());
+			billAddressData.setCity(orderDetailsEntity.getBillingAddress().getCity());
+			billAddressData.setPostalCode(orderDetailsEntity.getBillingAddress().getPostalCode());
+			billAddressData.setMobile(orderDetailsEntity.getBillingAddress().getMobile());
+			query2.addCriteria(Criteria.where("orderId").is(orderDetailsEntity.getOrderId()));
+			List<OrderSKUDetailsEntity> orderSKUDetails= mongoOperations.find(query2, OrderSKUDetailsEntity.class);
+			String body = restTemplate.getForEntity("https://localhost:8083/dev/designer/designerIdList", String.class).getBody();
+			JSONArray jsonArray= new JSONArray(body);
+			//System.out.println(jsonArray);
+			ObjectMapper mapper= new ObjectMapper();
+			for(int i=0;i<jsonArray.length();i++) {
+				org.json.simple.JSONObject designerLoginEntity=mapper.readValue(jsonArray.get(i).toString(), org.json.simple.JSONObject.class);
+				desiredDesingerIdList.add(Integer.parseInt(designerLoginEntity.get("dId").toString()));
+				//System.out.println(designerLoginEntity.get("dId").toString());
 			}
-			
-			response.put("ProductDetails", resObjects);
-			return response;
+			//System.out.println(desiredDesingerIdList);
+			int totalTax=0;
+			int totalAmount=0;
+			int totalGrossAmount=0;
+			for(int i=0;i<desiredDesingerIdList.size();i++) {
+				List<ProductInvoice> productList= new ArrayList<>();
+//				int a=0;a<orderSKUDetails.size();a++
+				for(OrderSKUDetailsEntity a : orderSKUDetails) {
+					//List<ProductInvoice> productList= new ArrayList<ProductInvoice>();
+					if(a.getDesignerId()==desiredDesingerIdList.get(i)) {
+						//System.out.println((orderSKUDetails.get(a).getProductId()));
+						ProductInvoice invoice= new ProductInvoice();
+						invoice.setGrossAmount(a.getMrp().intValue());
+						invoice.setIgst(a.getTaxAmount().intValue());
+						invoice.setProductDescription(a.getProductName());
+						invoice.setProductSKUId(a.getProductSku());
+						invoice.setQuantity(a.getUnits().toString());
+						invoice.setWithTaxAmount(a.getSalesPrice().intValue());
+						LOGGER.info(invoice.toString());
+						productList.add(invoice);
+						totalTax=totalTax+a.getTaxAmount().intValue();
+						totalAmount=totalAmount+a.getSalesPrice().intValue();
+						totalGrossAmount=totalGrossAmount+a.getMrp().intValue();
+					}
+				}
+				//invoice.getProductDescription() != null
+				LOGGER.info("Outside of loop inner loop <><><><><> !!!" + productList);
+				if(productList.size() > 0) {
+					LOGGER.info("Rpoduct List data <><><><><> !!! " + productList);
+					data.put("data", productList);
+				}
+			}
+			ProductInvoice invoice= new ProductInvoice();
+			invoice.setGrossAmount(totalGrossAmount);
+			invoice.setWithTaxAmount(totalAmount);
+			invoice.setIgst(totalTax);
+			Map<String, Object> data4= new HashMap<>();
+			data4.put("totalData", invoice);
+			Map<String, Object> response= new HashMap<>();
+			response.put("billAddressData", billAddressData);
+			Context context= new Context();
+			context.setVariables(response);
+			context.setVariables(data);
+			context.setVariables(data4);
+			String htmlContent=templateEngine.process("invoiceUpdated.html", context);
+			// System.out.println(result);
+ 
+			ByteArrayOutputStream target = new ByteArrayOutputStream();
+			ConverterProperties converterProperties = new ConverterProperties();
+			converterProperties.setBaseUri("http://localhost:8082");
+			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);  
+			byte[] bytes = target.toByteArray();
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Disposition", "attachment; filename=" + "orderInvoiceUpdated.pdf");
+			return ResponseEntity.ok()
+					.headers(headers)
+					.contentType(MediaType.APPLICATION_PDF)
+					.body(bytes);
+//			OrderAndPaymentContoller andPaymentContoller= new OrderAndPaymentContoller();
+//			ByteArrayOutputStream generatePdf = andPaymentContoller.generatePdf(htmlContent);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+
+	}
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getOrderInvoiceId(String invoiceId) {
+		try {
+			Query query = new Query();
+			Query query2 = new Query();
+			List<Object> resObjects = new ArrayList<Object>();
+			Map<String, Object> response = new HashMap<String, Object>();
+			query.addCriteria(Criteria.where("invoice_id").is(invoiceId));
+			org.json.simple.JSONObject resObjct = new org.json.simple.JSONObject();
+			OrderDetailsEntity detailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
+			response.put("OrderDetails", detailsEntity);
+			System.out.println(detailsEntity.getOrderId());
+			query2.addCriteria(Criteria.where("orderId").is(detailsEntity.getOrderId()));
+			List<OrderSKUDetailsEntity> orderList = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
+			for (int i = 0; i < orderList.size(); i++) {
+				ResponseEntity<Object> designerData = restTemplate.getForEntity(
+						"https://localhost:8085/dev/designer/" + orderList.get(i).getDesignerId(), Object.class);
+				org.json.simple.JSONObject object = new org.json.simple.JSONObject();
+				object.put("ProductData", orderList.get(i));
+				object.put("DesignerData", designerData.getBody());
+				resObjects.add(object);
+			}
+			response.put("OrderSKUDetails", resObjects);
+			return response;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 }

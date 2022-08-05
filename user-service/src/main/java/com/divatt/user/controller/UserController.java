@@ -769,23 +769,4 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-//	@GetMapping("/getUserDetails/{token}")
-//	public List<Integer> getUserDetails(@PathVariable String token) {
-//		try {
-//			String extractUsername = null;
-//			try {
-//				extractUsername = jwtUtil.extractUsername(token.substring(7));
-//			} catch (Exception e) {
-//				throw new CustomException("Unauthorized");
-//			}
-//			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
-//				throw new CustomException("Unauthorized");
-//			}
-//			
-//		}
-//		catch(Exception e) {
-//			throw new CustomException(e.getMessage());
-//		}
-//	}
 }

@@ -459,7 +459,9 @@ public class ProfileContoller {
 					if(designerProfileList.get(i).getCategories()!=null) {
 						org.json.simple.JSONObject jsonObject= new org.json.simple.JSONObject();
 						jsonObject.put("Name", designerProfileList.get(i).getCategories());
-						designercategories.add(jsonObject);
+						if(!designercategories.contains(jsonObject)) {
+							designercategories.add(jsonObject);
+						}
 					}
 				}
 				return designercategories;
@@ -504,6 +506,16 @@ public class ProfileContoller {
 				}
 				return designerData;
 			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/designerIdList")
+	public List<DesignerLoginEntity> getDesignerIdList(){
+		try {
+			return designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
