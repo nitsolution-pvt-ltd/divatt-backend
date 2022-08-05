@@ -596,8 +596,8 @@ public class OrderAndPaymentContoller {
 		    headers.setContentType(MediaType.parseMediaType("application/pdf"));
 		    String filename = "Order.pdf";
 
-//		    headers.add("content-disposition", "inline;filename=" + filename);
-		    headers.add("content-disposition", "attachment;filename=" + filename);
+		    headers.add("content-disposition", "inline;filename=" + filename);
+//		    headers.add("content-disposition", "attachment;filename=" + filename);
 
 		    //headers.setContentDispositionFormData(filename, filename);
 		    headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
