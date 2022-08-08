@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-    <div style="width: 750px;margin: auto;padding: 15px !important;">
+    <div style="width: 650px;margin: auto;padding: 15px !important;">
         <table style="width: 100%;">
             <thead>
                 <tr style="font-size: 20px;">
@@ -22,26 +22,58 @@
                 <tr style="font-size: 20px;">
                     <td colspan="5" style="padding:20px 20px;text-align: center;">
                      <img src="https://mercomindia.s3.ap-south-1.amazonaws.com/wp-content/uploads/2021/11/tick-mark.png" alt="" style="width: 60px;">
-                     <div style="font-family: 'Lato', sans-serif;font-size: 22px;text-transform: uppercase;margin-top: 12px;letter-spacing: 1.5px;font-weight: 600;">Thank You</div>
-                     <div style="font-family: 'Lato', sans-serif;font-size: 18px;text-transform: capitalize;margin-top: 12px;font-weight: 500;line-height: 30px;
-                        ">
+                     <div style="font-size: 22px;text-transform: uppercase;margin-top: 12px;letter-spacing: 1.5px;font-weight: 600;">Thank You</div>
+                     <div style="font-size: 18px;text-transform: capitalize;margin-top: 12px;font-weight: 500;line-height: 30px;
+                        " >
                         Payment is sucessfully processed and your order is on the way. <br>
-                        transacation id:123B4271AC82X
+                        transacation id:123B4271AC82X 
+                        <!-- <table>
+                        <tr>
+                        <td>transacation id :<br></td>
+                        <td th:text=" ${data1.address1}"></td>
+                        </tr>
+                        <td>
+                        </td>
+                        </table> -->
                     </div>
                      <hr style="border-left: 0;border-width: 3px; border-bottom: 0;border-color: rgb(0 0 0);margin-top: 38px;"/>
                     </td>
                 </tr>
+               <!-- <tr>
+                	<td>Designer</td>
+                </tr>
+                <tr style="margin-bottom: 30px;" th:each="data1 : ${billAddressData}">
+                	<td style="width: 50%;">
+                		Chandan Chakraborty
+                    	<table style="width: 100%;">
+                    		<tr><td th:text=" ${data1.address1}"></td></tr>
+                    		<tr><td th:text=" ${data1.country}"></td></tr>
+                    		<tr><td th:text=" ${data1.state}"></td></tr>
+                    		<tr><td th:text=" ${data1.city}"></td></tr>
+                    		<tr><td th:text=" ${data1.fullName}"></td></tr>
+                    		<tr><td th:text=" ${data1.postalCode}"></td></tr>
+                    		<tr><td th:text=" ${data1.mobile}"></td></tr>
+                    	</table>
+                    </td>
+                    <td  style="width: 50%;">
+                		<table style="width: 100%;">
+                    		<tr><td>ORDER DATE:</td></tr>
+                    		<tr><td>ORDER ID:</td></tr>
+                    	</table>
+                    </td>
+                	</td>
+                </tr> -->
             </tbody>  
         </table>
-        <table style="border-collapse: collapse;font-family: 'Lato', sans-serif;font-size: 16px; width: 100%;">
+        <table style="border-collapse: collapse;font-size: 16px; width: 100%;">
             <thead>
                 <tr>
-                    <th>
-                        <h1 style="font-family: 'Lato', sans-serif;text-transform: uppercase;font-size: 17px;font-weight: 800;margin-bottom: 22px;margin-top: 40px;
+                    <th style="width: 50%">
+                        <h1 style="text-transform: uppercase;font-size: 17px;font-weight: 800;margin-bottom: 22px;margin-top: 40px;
           border-bottom: 1.6px solid;padding-bottom: 17px;color: #000;text-align: left;width: 95%;">Billing Address</h1>
                     </th>
-                    <th>
-                        <h1 style="font-family: 'Lato', sans-serif;text-transform: uppercase;font-size: 17px;font-weight: 800;margin-bottom: 22px;margin-top: 40px;
+                    <th style="width: 50%">
+                        <h1 style="text-transform: uppercase;font-size: 17px;font-weight: 800;margin-bottom: 22px;margin-top: 40px;
           border-bottom: 1.6px solid;padding-bottom: 17px;color: #000;text-align: left;width: 95%;">Shipping Address</h1>
                     </th>
                 </tr>
@@ -52,13 +84,32 @@
                         <td th:text="'Profile: ' + ${profile}"></td>
                     </tr>-->
                 <tr th:each="data1 : ${billAddressData}">
-                    <td style="font-size: 16px;line-height: 22px;color: #000;"   th:text=" ${data1.address1} + '' + ${data1.country} + '' + ${data1.state} + '' + ${data1.city} + '' + ${data1.fullName} + '' +  ${data1.postalCode} + '' + ${data1.mobile}" >
+                    <td style="font-size: 16px;line-height: 22px;color: #000; width: 50%">
+                    	<table style="width: 100%;">
+                    		<tr><td th:text=" ${data1.address1}"></td></tr>
+                    		<tr><td th:text=" ${data1.country}"></td></tr>
+                    		<tr><td th:text=" ${data1.state}"></td></tr>
+                    		<tr><td th:text=" ${data1.city}"></td></tr>
+                    		<tr><td th:text=" ${data1.fullName}"></td></tr>
+                    		<tr><td th:text=" ${data1.postalCode}"></td></tr>
+                    		<tr><td th:text=" ${data1.mobile}"></td></tr>
+                    	</table>
                     </td>
-
+                    <td style="font-size: 16px;line-height: 22px;color: #000; width: 50%">
+                    <table style="width: 100%;">
+                    		<tr><td th:text=" ${data1.address1}"></td></tr>
+                    		<tr><td th:text=" ${data1.country}"></td></tr>
+                    		<tr><td th:text=" ${data1.state}"></td></tr>
+                    		<tr><td th:text=" ${data1.city}"></td></tr>
+                    		<tr><td th:text=" ${data1.fullName}"></td></tr>
+                    		<tr><td th:text=" ${data1.postalCode}"></td></tr>
+                    		<tr><td th:text=" ${data1.mobile}"></td></tr>
+                    	</table>
+                    </td>
                 </tr>
             </tbody>
           </table>
-        <h1 style="font-family: 'Lato', sans-serif;text-transform: uppercase;font-size: 17px;font-weight: 600;margin-bottom: 22px;">Your order details</h1>
+        <h1 style="text-transform: uppercase;font-size: 17px;font-weight: 600;margin-bottom: 22px;">Your order details</h1>
         <table style="width:100%; height:auto; background-color:#fff; margin-top:0px;  padding:20px;  border: 1.5px solid #656262; border-collapse: collapse;" border >
             <thead>
                 <tr >
@@ -72,44 +123,40 @@
                   </tr>
             </thead>
 
-            <tbody style="font-family: 'Lato', sans-serif;">
+            <tbody style="">
                 <tr th:each="data1 : ${data}">
                     <td colspan="3" style="width:23%;margin-left:10px;text-align: left;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;"><th:block th:text="${data1.productSKUId}"></th:block></td>
                     <td colspan="3" style="width:30%;margin-left:10px;text-align: left;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;"><th:block th:text="${data1.productDescription}"></th:block></td>
                     <td style="width:12%;padding: 5px;text-align: center;border-bottom: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
                         <table style="width:100%;">
-                            <tr><td style="width:60%;color: #000;">Size  :</td> <td style="color: #000;"><th:block th:text="${data1.quantity}"></th:block></td></tr>
-                            <tr><td style="width:60%;color: #000;">Qty  :</td> <td style="color: #000;"></td></tr>
+                            <tr><td style="width:60%;color: #000;">Size  :</td> <td style="color: #000;"><th:block th:text="${data1.productSize}"></th:block></td></tr>
+                            <tr><td style="width:60%;color: #000;">Qty  :</td> <td style="color: #000;"><th:block th:text="${data1.quantity}"></th:block></td></tr>
                             </table>
                     </td>
                     <td colspan="3" style="width:12%;margin-left:10px;text-align: center;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;"><th:block th:text="${data1.grossAmount}"></th:block></td>
                     <td colspan="3" style="width:10%;margin-left:10px;text-align: center;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;"><th:block th:text="${data1.igst}"></th:block></td>
                     <td colspan="3" style="width:20%;margin-left:10px;text-align: center;padding: 5px;border-bottom: 1.6px solid;border-left: 1.6px solid;border-right: 1.6px solid;color: #000;font-size: 14px;"><th:block th:text="${data1.withTaxAmount}"></th:block></td>
                 </tr>
-            </tbody>
-           
-          </table>
-          <table style="border-collapse: collapse;width: 100%;font-family: 'Lato', sans-serif;font-size: 16px;">
-            <tbody>
-               <tr th:each="data1 : ${totalData}">
-                    <td style="width: 65%;border-left: 1.6px solid;border-bottom: 1.6px solid;padding: 16px;">
+                <tr th:each="data1 : ${totalData}">
+                    <td colspan="7" style="width: 58%;border-left: 1.6px solid;border-bottom: 1.6px solid;padding: 16px;">
                         
                     </td>
-                    <td style="width: 12%;text-align: right;padding: 5px;border-right: 1.6px solid;border-bottom: 1.6px solid;font-weight: 500;border-left: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
+                    <td colspan="3" style="width: 12%;text-align: right;padding: 5px;border-right: 1.6px solid;border-bottom: 1.6px solid;font-weight: 500;border-left: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
                          <th:block th:text="${data1.grossAmount}"></th:block>
                     </td>
-                    <td style="width: 10%;text-align: right;padding: 5px;border-right: 1.6px solid;border-bottom: 1.6px solid;font-weight: 500;border-left: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
+                    <td colspan="3" style="width: 10%;text-align: right;padding: 5px;border-right: 1.6px solid;border-bottom: 1.6px solid;font-weight: 500;border-left: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
                         <th:block th:text="${data1.igst}"></th:block>
                     </td>
-                    <td style="width: 15%;text-align: right;padding: 5px;border-right: 1.6px solid;border-bottom: 1.6px solid;font-weight: 500;border-left: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
+                    <td colspan="3" style="width: 20%;text-align: right;padding: 5px;border-right: 1.6px solid;border-bottom: 1.6px solid;font-weight: 500;border-left: 1.6px solid;border-right: 1.6px solid;font-size: 14px;">
                         <th:block th:text="${data1.withTaxAmount}"></th:block>
                     </td>
                 </tr>
             </tbody>
+           
           </table>
           
           
-          <h1 style="font-family: 'Lato', sans-serif;text-transform: uppercase;font-size: 23px;font-weight: 800;
+          <h1 style="text-transform: uppercase;font-size: 23px;font-weight: 800;
           margin-bottom: 22px;margin-top: 40px;letter-spacing: 1.5px;text-align: center;">Follow US</h1>
           <div style="text-align: center;">
             <a href="#" style="text-decoration: none;color: #000;text-align: center;margin-right: 10px;">
