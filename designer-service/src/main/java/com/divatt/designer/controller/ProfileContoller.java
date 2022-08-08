@@ -1,11 +1,8 @@
 package com.divatt.designer.controller;
 
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,22 +12,15 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.util.Streamable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.designer.entity.SendMail;
 import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
@@ -59,13 +50,6 @@ import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
-import com.google.gson.JsonObject;
-import com.google.inject.internal.Errors;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-
-import springfox.documentation.spring.web.json.Json;
 import com.divatt.designer.repo.*;
 
 @RestController
@@ -83,10 +67,10 @@ public class ProfileContoller {
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
+
 	@Autowired
 	private DesignerPersonalInfoRepo designerPersonalInfoRepo;
-	
+
 	@Autowired
 	private ProductRepository productRepo;
 
@@ -95,36 +79,37 @@ public class ProfileContoller {
 
 	@Autowired
 	DatabaseSeqRepo databaseSeqRepo;
-	
+
 	@Autowired
 	private RestTemplate restTemplate;
-	
-	
+
 	@Autowired
 	private MongoOperations mongoOperations;
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
 		try {
 			Optional<DesignerProfileEntity> findById = designerProfileRepo.findBydesignerId(id);
-			
-			if(findById.isPresent());
+
+			if (findById.isPresent())
+				;
 			DesignerProfileEntity designerProfileEntity = findById.get();
 			try {
-				if(designerProfileEntity.getSocialProfile()==null)
+				if (designerProfileEntity.getSocialProfile() == null)
 					designerProfileEntity.setSocialProfile(new SocialProfile());
-			}catch(Exception e) {
+			} catch (Exception e) {
 				designerProfileEntity.setSocialProfile(new SocialProfile());
 			}
 			try {
 				DesignerLoginEntity designerLoginEntity = designerLoginRepo.findById(id).get();
 				designerProfileEntity.setAccountStatus(designerLoginEntity.getAccountStatus());
 				designerProfileEntity.setProfileStatus(designerLoginEntity.getProfileStatus());
-				designerProfileEntity.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
-			}catch(Exception e) {
-				
+				designerProfileEntity
+						.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
+			} catch (Exception e) {
+
 			}
-			
+
 			return ResponseEntity.ok(designerProfileEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -135,23 +120,20 @@ public class ProfileContoller {
 	@GetMapping("/user/{id}")
 	public ResponseEntity<?> getUserDesigner(@PathVariable Long id) {
 		try {
-			DesignerLoginEntity designerLoginEntity= new DesignerLoginEntity();
+			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
 			if (!findById.isPresent())
 				throw new CustomException("This designer profile is not completed");
-			if(findById.get().getProfileStatus().equals("COMPLETED"))
-			{
+			if (findById.get().getProfileStatus().equals("COMPLETED")) {
 				designerLoginEntity = findById.get();
-			designerLoginEntity.setDesignerProfileEntity(
-					designerProfileRepo.findBydesignerId(Long.parseLong(designerLoginEntity.getdId().toString())).get());
-			designerLoginEntity.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false, "Approved", Long.parseLong(designerLoginEntity.getdId().toString()),true));
-			
-			
-			
-		}
+				designerLoginEntity.setDesignerProfileEntity(designerProfileRepo
+						.findBydesignerId(Long.parseLong(designerLoginEntity.getdId().toString())).get());
+				designerLoginEntity.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(
+						false, "Approved", Long.parseLong(designerLoginEntity.getdId().toString()), true));
+
+			}
 			return ResponseEntity.ok(designerLoginEntity);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -161,12 +143,13 @@ public class ProfileContoller {
 		try {
 			designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
 
-				Unirest.setTimeouts(0, 0);
-				JsonNode body = Unirest.get("http://localhost:8080/dev/auth/Present/"+designerProfileEntity.getDesignerProfile().getEmail())
-				  .asJson().getBody();
-				JSONObject jsObj = body.getObject();
-				if((boolean) jsObj.get("isPresent"))
-					throw new CustomException("Email already present");
+			ResponseEntity<String> forEntity = restTemplate.getForEntity(
+					"https://localhost:8080/dev/auth/Present/" + designerProfileEntity.getDesignerProfile().getEmail(),
+					String.class);
+
+			JSONObject jsObj = new JSONObject(forEntity.getBody());
+			if ((boolean) jsObj.get("isPresent"))
+				throw new CustomException("Email already present");
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
 
 			designerLoginEntity.setdId((long) sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
@@ -189,21 +172,19 @@ public class ProfileContoller {
 
 			DesignerLogEntity designerLogEntity = new DesignerLogEntity();
 
+			SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
+					"Successfully Registration",
+					"Welcome " + designerProfileEntity.getDesignerProfile().getEmail() + "" + ",\n   "
+							+ ",\n                           "
+							+ " you have been register successfully. Please active your account by clicking the bellow link "
+							+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
+									.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
+							+ " . We will verify your details and come back to you soon.",
+					false);
 
-			JsonObject jo = new JsonObject();
-			jo.addProperty("senderMailId", designerProfileEntity.getDesignerProfile().getEmail());
-			jo.addProperty("subject", "Successfully Registration");
-			jo.addProperty("body", "Welcome " + designerProfileEntity.getDesignerProfile().getEmail() + ""
-					+ ",\n                           "
-					+ " you have been register successfully.Please active your account by clicking the bellow link "
-					+ URI.create("http://65.1.190.195:8083/dev/designer/redirect/"
-							+ Base64.getEncoder().encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
-					+ " . We will verify your details and come back to you soon.");
-			jo.addProperty("enableHtml", false);
 			try {
-				Unirest.setTimeouts(0, 0);
-				HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
-						.header("Content-Type", "application/json").body(jo.toString()).asString();
+				ResponseEntity<String> response = restTemplate
+						.postForEntity("https://65.1.190.195:8080/dev/auth/sendMail", mail, String.class);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
@@ -217,17 +198,16 @@ public class ProfileContoller {
 
 	@PutMapping("/update")
 	public ResponseEntity<?> updateDesigner(@RequestBody DesignerLoginEntity designerLoginEntity) {
-		
+
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerLoginEntity.getdId());
 		if (!findById.isPresent())
 			throw new CustomException("Designer Details Not Found");
 		else {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
-			if(designerLoginEntity.getProfileStatus().equals("REJECTED")) {
+			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
 				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
 			}
-	
-			
+
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerLoginEntityDB.setCategories(designerLoginEntity.getCategories());
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
@@ -241,19 +221,22 @@ public class ProfileContoller {
 	public ResponseEntity<?> updateDesignerProfile(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
 		try {
 			@Valid
-			DesignerPersonalInfoEntity designerPersonalInfoEntity = designerProfileEntity.getDesignerPersonalInfoEntity();	
-				Optional<DesignerPersonalInfoEntity> findByDesignerId = designerPersonalInfoRepo.findByDesignerId(designerProfileEntity.getDesignerId());
-				if(findByDesignerId.isPresent())
-					designerPersonalInfoEntity.setId(findByDesignerId.get().getId());
-				else
-					designerPersonalInfoEntity.setId((long)sequenceGenerator.getNextSequence(DesignerPersonalInfoEntity.SEQUENCE_NAME));
-				designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
-				
-				designerPersonalInfoRepo.save(designerPersonalInfoEntity);
-		}catch(Exception e) {
+			DesignerPersonalInfoEntity designerPersonalInfoEntity = designerProfileEntity
+					.getDesignerPersonalInfoEntity();
+			Optional<DesignerPersonalInfoEntity> findByDesignerId = designerPersonalInfoRepo
+					.findByDesignerId(designerProfileEntity.getDesignerId());
+			if (findByDesignerId.isPresent())
+				designerPersonalInfoEntity.setId(findByDesignerId.get().getId());
+			else
+				designerPersonalInfoEntity
+						.setId((long) sequenceGenerator.getNextSequence(DesignerPersonalInfoEntity.SEQUENCE_NAME));
+			designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
+
+			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+		} catch (Exception e) {
 			throw new CustomException("Please check the fields");
 		}
-		
+
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerProfileEntity.getDesignerId());
 		if (!findById.isPresent())
 			throw new CustomException("Designer details not found");
@@ -271,7 +254,7 @@ public class ProfileContoller {
 //			designerProfile.setDesignerCategory(designerProfile.getDesignerCategory());
 
 			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
-			
+
 			designerProfileEntityDB.setBoutiqueProfile(designerProfileEntity.getBoutiqueProfile());
 			designerProfileEntityDB.setDesignerProfile(designerProfile);
 			designerProfileEntityDB.setSocialProfile(designerProfileEntity.getSocialProfile());
@@ -292,8 +275,7 @@ public class ProfileContoller {
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted,
 			@RequestParam(defaultValue = "APPROVE") String profileStatus,
-			@RequestParam(defaultValue = "") String keyword,
-			@RequestParam Optional<String> sortBy) {
+			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
 
 		try {
 			return this.getDesignerProfDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy, profileStatus);
@@ -309,7 +291,7 @@ public class ProfileContoller {
 				.findByEmail(new String(Base64.getDecoder().decode(email)));
 		if (findByEmail.isPresent()) {
 			DesignerLoginEntity designerLoginEntity = findByEmail.get();
-			if(designerLoginEntity.getAccountStatus().equals("INACTIVE"))
+			if (designerLoginEntity.getAccountStatus().equals("INACTIVE"))
 				designerLoginEntity.setAccountStatus("ACTIVE");
 			designerLoginRepo.save(designerLoginEntity);
 		}
@@ -324,22 +306,22 @@ public class ProfileContoller {
 			long count = databaseSeqRepo.findById(DesignerLoginEntity.SEQUENCE_NAME).get().getSeq();
 			Random rd = new Random();
 			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
-			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false,"COMPLETED","ACTIVE");
+			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false,
+					"COMPLETED", "ACTIVE");
 			List<Integer> lst = new ArrayList<>();
 			if (findAll.size() <= 15) {
-				designerLoginEntity=findAll;
-				
-			}else {
-				Boolean flag = true;
+				designerLoginEntity = findAll;
 
+			} else {
+				Boolean flag = true;
 
 				while (flag) {
 					int nextInt = rd.nextInt((int) count);
 					for (DesignerLoginEntity obj : findAll) {
-						
+
 						if (obj.getdId() == nextInt && !lst.contains(nextInt)) {
 							lst.add(nextInt);
-							designerLoginEntity.add(obj);					  
+							designerLoginEntity.add(obj);
 
 						}
 						if (designerLoginEntity.size() > 14)
@@ -349,10 +331,11 @@ public class ProfileContoller {
 				}
 
 			}
-			
-						Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
+
+			Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
 				try {
-					e.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,"Approved",e.getdId(),true));
+					e.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,
+							"Approved", e.getdId(), true));
 					e.setDesignerProfileEntity(
 							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
 				} catch (Exception o) {
@@ -368,8 +351,7 @@ public class ProfileContoller {
 	}
 
 	public Map<String, Object> getDesignerProfDetails(int page, int limit, String sort, String sortName,
-			Boolean isDeleted,
-			String keyword, Optional<String> sortBy,String profileStatus) {
+			Boolean isDeleted, String keyword, Optional<String> sortBy, String profileStatus) {
 		try {
 			int CountData = (int) designerLoginRepo.count();
 			Pageable pagingSort = null;
@@ -386,11 +368,12 @@ public class ProfileContoller {
 			Page<DesignerLoginEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				
-				findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted,profileStatus,pagingSort);
-			} else {				
-				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted,profileStatus, pagingSort);				
-				
+
+				findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted, profileStatus, pagingSort);
+			} else {
+				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted, profileStatus,
+						pagingSort);
+
 			}
 
 			if (findAll.getSize() <= 1)
@@ -430,96 +413,95 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@GetMapping("/countData/{designerId}")
-	public org.json.simple.JSONObject countData(@PathVariable Long designerId)
-	{
+	public org.json.simple.JSONObject countData(@PathVariable Long designerId) {
 		try {
-			org.json.simple.JSONObject response= new org.json.simple.JSONObject();
-			ResponseEntity<GlobalResponce> userData=restTemplate.getForEntity("https://localhost:8085/dev/user/followerCount/"+designerId, GlobalResponce.class);
-			String followersData=userData.getBody().getMessage();
+			org.json.simple.JSONObject response = new org.json.simple.JSONObject();
+			ResponseEntity<GlobalResponce> userData = restTemplate
+					.getForEntity("https://localhost:8085/dev/user/followerCount/" + designerId, GlobalResponce.class);
+			String followersData = userData.getBody().getMessage();
 			response.put("FollowersData", followersData);
-			response.put("Products", productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false, "Approved", designerId, true));
+			response.put("Products", productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,
+					"Approved", designerId, true));
 			return response;
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@GetMapping("/getDesignerCategory")
-	public  List<Object> getDesignerCategory()
-	{
+	public List<Object> getDesignerCategory() {
 		try {
-				List<DesignerLoginEntity> designerProfileList=designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
-				List<Object> designercategories= new ArrayList<Object>();
-				for(int i=0;i<designerProfileList.size();i++) {
-					if(designerProfileList.get(i).getCategories()!=null) {
-						org.json.simple.JSONObject jsonObject= new org.json.simple.JSONObject();
-						jsonObject.put("Name", designerProfileList.get(i).getCategories());
-						if(!designercategories.contains(jsonObject)) {
-							designercategories.add(jsonObject);
-						}
+			List<DesignerLoginEntity> designerProfileList = designerLoginRepo
+					.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
+			List<Object> designercategories = new ArrayList<Object>();
+			for (int i = 0; i < designerProfileList.size(); i++) {
+				if (designerProfileList.get(i).getCategories() != null) {
+					org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+					jsonObject.put("Name", designerProfileList.get(i).getCategories());
+					if (!designercategories.contains(jsonObject)) {
+						designercategories.add(jsonObject);
 					}
 				}
-				return designercategories;
-		}
-		catch(Exception e) {
+			}
+			return designercategories;
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/getDesignerDetails/{designerCategories}")
-	public List<DesignerLoginEntity> getDesignerDetails(@RequestHeader("Authorization") String token, @PathVariable String designerCategories){
+	public List<DesignerLoginEntity> getDesignerDetails(@RequestHeader("Authorization") String token,
+			@PathVariable String designerCategories) {
 		try {
-			if(!designerCategories.equals("all")) {
-				Query query= new Query();
+			if (!designerCategories.equals("all")) {
+				Query query = new Query();
 				query.addCriteria(Criteria.where("categories").is(designerCategories));
-				List<DesignerLoginEntity> designerData= mongoOperations.find(query, DesignerLoginEntity.class);
-				for(int i=0;i<designerData.size();i++) {
-					Query query2= new Query();
+				List<DesignerLoginEntity> designerData = mongoOperations.find(query, DesignerLoginEntity.class);
+				for (int i = 0; i < designerData.size(); i++) {
+					Query query2 = new Query();
 					query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
-					DesignerProfileEntity designerProfileData=mongoOperations.findOne(query2, DesignerProfileEntity.class);
+					DesignerProfileEntity designerProfileData = mongoOperations.findOne(query2,
+							DesignerProfileEntity.class);
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
 					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
 					String productCount = countData.get("Products").toString();
-					String followerCount=countData.get("FollowersData").toString();
+					String followerCount = countData.get("FollowersData").toString();
+					designerData.get(i).setProductCount(Integer.parseInt(productCount));
+					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
+				}
+				return designerData;
+			} else {
+				List<DesignerLoginEntity> designerData = designerLoginRepo.findAll();
+				for (int i = 0; i < designerData.size(); i++) {
+					Query query2 = new Query();
+					query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
+					DesignerProfileEntity designerProfileData = mongoOperations.findOne(query2,
+							DesignerProfileEntity.class);
+					designerData.get(i).setDesignerProfileEntity(designerProfileData);
+					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
+					String productCount = countData.get("Products").toString();
+					String followerCount = countData.get("FollowersData").toString();
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
 					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
 				}
 				return designerData;
 			}
-			else {
-				List<DesignerLoginEntity> designerData= designerLoginRepo.findAll();
-				for(int i=0;i<designerData.size();i++) {
-					Query query2= new Query();
-					query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
-					DesignerProfileEntity designerProfileData=mongoOperations.findOne(query2, DesignerProfileEntity.class);
-					designerData.get(i).setDesignerProfileEntity(designerProfileData);
-					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
-					String productCount = countData.get("Products").toString();
-					String followerCount=countData.get("FollowersData").toString();
-					designerData.get(i).setProductCount(Integer.parseInt(productCount));
-					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
-				}
-				return designerData;
-			}
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/designerIdList")
-	public List<DesignerLoginEntity> getDesignerIdList(){
+	public List<DesignerLoginEntity> getDesignerIdList() {
 		try {
 			return designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 }
