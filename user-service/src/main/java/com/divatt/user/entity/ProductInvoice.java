@@ -8,12 +8,13 @@ public class ProductInvoice {
 	private Integer grossAmount;
 	private Integer igst;
 	private Integer withTaxAmount;
+	private String productSize;
 	public ProductInvoice() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public ProductInvoice(String productSKUId, String productDescription, String quantity, Integer grossAmount,
-			Integer igst, Integer withTaxAmount) {
+			Integer igst, Integer withTaxAmount, String productSize) {
 		super();
 		this.productSKUId = productSKUId;
 		this.productDescription = productDescription;
@@ -21,12 +22,13 @@ public class ProductInvoice {
 		this.grossAmount = grossAmount;
 		this.igst = igst;
 		this.withTaxAmount = withTaxAmount;
+		this.productSize = productSize;
 	}
 	@Override
 	public String toString() {
 		return "ProductInvoice [productSKUId=" + productSKUId + ", productDescription=" + productDescription
 				+ ", quantity=" + quantity + ", grossAmount=" + grossAmount + ", igst=" + igst + ", withTaxAmount="
-				+ withTaxAmount + "]";
+				+ withTaxAmount + ", productSize=" + productSize + "]";
 	}
 	public String getProductSKUId() {
 		return productSKUId;
@@ -64,6 +66,10 @@ public class ProductInvoice {
 	public void setWithTaxAmount(Integer withTaxAmount) {
 		this.withTaxAmount = withTaxAmount;
 	}
-	
-	
+	public String getProductSize() {
+		return productSize;
+	}
+	public void setProductSize(String productSize) {
+		this.productSize = productSize;
+	}
 }

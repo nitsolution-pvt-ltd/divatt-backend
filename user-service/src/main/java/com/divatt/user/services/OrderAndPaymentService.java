@@ -949,6 +949,7 @@ public class OrderAndPaymentService {
 			int totalGrossAmount=0;
 			for(int i=0;i<desiredDesingerIdList.size();i++) {
 				List<ProductInvoice> productList= new ArrayList<>();
+				
 //				int a=0;a<orderSKUDetails.size();a++
 				for(OrderSKUDetailsEntity a : orderSKUDetails) {
 					//List<ProductInvoice> productList= new ArrayList<ProductInvoice>();
@@ -961,6 +962,7 @@ public class OrderAndPaymentService {
 						invoice.setProductSKUId(a.getProductSku());
 						invoice.setQuantity(a.getUnits().toString());
 						invoice.setWithTaxAmount(a.getSalesPrice().intValue());
+						invoice.setProductSize(a.getSize());
 						LOGGER.info(invoice.toString());
 						productList.add(invoice);
 						totalTax=totalTax+a.getTaxAmount().intValue();
