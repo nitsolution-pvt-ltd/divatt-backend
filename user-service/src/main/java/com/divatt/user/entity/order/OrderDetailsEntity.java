@@ -74,10 +74,24 @@ public class OrderDetailsEntity {
 	
 	@Field(name = "created_on") 
 	private String createdOn;
+	
+	@Field(name = "razorpay_order_id") 
+	private String razorpayOrderId;
 
 	public OrderDetailsEntity() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String toString() {
+		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", invoiceId="
+				+ invoiceId + ", shippingAddress=" + shippingAddress + ", billingAddress=" + billingAddress
+				+ ", totalAmount=" + totalAmount + ", orderDate=" + orderDate + ", orderStatus=" + orderStatus
+				+ ", deliveryStatus=" + deliveryStatus + ", deliveryMode=" + deliveryMode + ", deliveryDate="
+				+ deliveryDate + ", deliveryCheckUrl=" + deliveryCheckUrl + ", shippingCharges=" + shippingCharges
+				+ ", discount=" + discount + ", mrp=" + mrp + ", taxAmount=" + taxAmount + ", createdOn=" + createdOn
+				+ ", razorpayOrderId=" + razorpayOrderId + "]";
 	}
 
 	public OrderDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
@@ -85,7 +99,8 @@ public class OrderDetailsEntity {
 			@NotNull(message = "Billing address is required!") BillingAddressEntity billingAddress,
 			@NotNull(message = "Total amount is required!") Double totalAmount, String orderDate, String orderStatus,
 			String deliveryStatus, String deliveryMode, String deliveryDate, String deliveryCheckUrl,
-			Double shippingCharges, Double discount, Double mrp, Double taxAmount, String createdOn) {
+			Double shippingCharges, Double discount, Double mrp, Double taxAmount, String createdOn,
+			String razorpayOrderId) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -105,17 +120,7 @@ public class OrderDetailsEntity {
 		this.mrp = mrp;
 		this.taxAmount = taxAmount;
 		this.createdOn = createdOn;
-	}
-
-	@Override
-	public String toString() {
-		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", invoiceId="
-				+ invoiceId + ", shippingAddress=" + shippingAddress + ", billingAddress=" + billingAddress
-				+ ", totalAmount=" + totalAmount + ", orderDate=" + orderDate + ", orderStatus=" + orderStatus
-				+ ", deliveryStatus=" + deliveryStatus + ", deliveryMode=" + deliveryMode + ", deliveryDate="
-				+ deliveryDate + ", deliveryCheckUrl=" + deliveryCheckUrl + ", shippingCharges=" + shippingCharges
-				+ ", discount=" + discount + ", mrp=" + mrp + ", taxAmount=" + taxAmount + ", createdOn=" + createdOn
-				+ "]";
+		this.razorpayOrderId = razorpayOrderId;
 	}
 
 	public Integer getId() {
@@ -262,10 +267,17 @@ public class OrderDetailsEntity {
 		this.createdOn = createdOn;
 	}
 
+	public String getRazorpayOrderId() {
+		return razorpayOrderId;
+	}
+
+	public void setRazorpayOrderId(String razorpayOrderId) {
+		this.razorpayOrderId = razorpayOrderId;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
-	
 	
 }

@@ -72,6 +72,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.razorpay.Invoice;
 import com.razorpay.Order;
+import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
@@ -108,7 +109,7 @@ public class OrderAndPaymentService {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	
+
 	@Autowired
 	private TemplateEngine templateEngine;
 
@@ -182,16 +183,51 @@ public class OrderAndPaymentService {
 		try {
 
 			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
-
+			LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentService() get data");
 //			List<Payment> payments = razorpayClient.Payments.fetchAll();
+//			List<Payment> payments = razorpayClient.Orders.fetchPayments("order_K52Jk6ZCwVCOt2");
+
+			String paymentIdFilter = null;
+			ObjectMapper obj = new ObjectMapper();
+			try {
+				paymentIdFilter = obj.writeValueAsString(orderPaymentEntity.getPaymentDetails());
+			} catch (JsonProcessingException e1) {
+				e1.printStackTrace();
+			}
+			JsonNode OrderPayJson = new JsonNode(paymentIdFilter);
+
+			Payment payment = razorpayClient.Payments
+					.fetch(OrderPayJson.getObject().get("razorpay_payment_id").toString());
+
+//			System.out.println(OrderPayJson.getObject().get("razorpay_payment_id"));
+//			System.out.println("O"+payments.toString());
+			System.out.println("P" + payment);
+//			payment.get("error_code");
+//			payment.get("error_reason");
+//			payment.get("error_step");
+//			payment.get("status");
+
+			String payStatus = null;
+			if (!payment.get("error_code").equals(null) && !payment.get("error_reason").equals(null)
+					&& !payment.get("error_step").equals(null) && !payment.get("status").equals("captured")) {
+				payStatus = "Completed";
+
+			}
+			List<OrderDetailsEntity> findOrderRow = orderDetailsRepo.findByOrderId(orderPaymentEntity.getOrderId());
+			if (findOrderRow.size() <= 0) {
+				throw new CustomException("Order not found");
+			}
+
+//			System.out.println(payment.get("error_code").toString());
+
 			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 
 			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
 			filterCatDetails.setOrderId(orderPaymentEntity.getOrderId());
 			filterCatDetails.setPaymentMode(orderPaymentEntity.getPaymentMode());
 			filterCatDetails.setPaymentDetails(orderPaymentEntity.getPaymentDetails());
-			filterCatDetails.setPaymentResponse(orderPaymentEntity.getPaymentResponse());
-			filterCatDetails.setPaymentStatus(orderPaymentEntity.getPaymentStatus());
+			filterCatDetails.setPaymentResponse(new Json(payment.toString()));
+			filterCatDetails.setPaymentStatus(payStatus);
 			filterCatDetails.setUserId(orderPaymentEntity.getUserId());
 			filterCatDetails.setCreatedOn(new Date());
 
@@ -338,13 +374,16 @@ public class OrderAndPaymentService {
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 
 				String writeValueAsString = null;
-				try {
-					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
-				} catch (JsonProcessingException e1) {
-					e1.printStackTrace();
+				JSONObject payRow = null;
+				if (!OrderPaymentRow.isEmpty()) {
+					try {
+						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
+					} catch (JsonProcessingException e1) {
+						e1.printStackTrace();
+					}
+					JsonNode paymentJson = new JsonNode(writeValueAsString);
+					payRow = paymentJson.getObject();
 				}
-				JsonNode paymentJson = new JsonNode(writeValueAsString);
-
 				String OrderSKUD = null;
 				try {
 					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
@@ -356,7 +395,7 @@ public class OrderAndPaymentService {
 
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
-				objects.put("paymentData", paymentJson.getObject());
+				objects.put("paymentData", payRow);
 				objects.put("OrderSKUDetails", OrderSKUDJson.getArray());
 				productId.add(objects);
 
@@ -439,28 +478,22 @@ public class OrderAndPaymentService {
 						e2.printStackTrace();
 					}
 				});
-//					}
 
 				String writeValueAsString = null;
-				try {
-					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
-				} catch (JsonProcessingException e1) {
-					e1.printStackTrace();
+				JSONObject payJson = null;
+				if (!OrderPaymentRow.isEmpty()) {
+					try {
+						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
+					} catch (JsonProcessingException e1) {
+						e1.printStackTrace();
+					}
+
+					JsonNode paymentJson = new JsonNode(writeValueAsString);
+					payJson = paymentJson.getObject();
 				}
-
-//				String OrderSKUD = null;
-//				try {
-//					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
-//				} catch (JsonProcessingException e2) {
-//					e2.printStackTrace();
-//				}
-				JsonNode paymentJson = new JsonNode(writeValueAsString);
-
-//				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
-
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
-				objects.put("paymentData", paymentJson.getObject());
+				objects.put("paymentData", payJson);
 				objects.put("OrderSKUDetails", productIds);
 
 				productId.add(objects);
@@ -484,6 +517,7 @@ public class OrderAndPaymentService {
 
 			findById.forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
+
 				String productIdFilter = null;
 				try {
 					productIdFilter = obj.writeValueAsString(e);
@@ -493,14 +527,21 @@ public class OrderAndPaymentService {
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 
+				String writeValueAsString = null;
+
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
+				JsonNode paymentJson = null;
+				JSONObject payJson = null;
 
-				String writeValueAsString = null;
-				try {
-					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
-				} catch (JsonProcessingException e1) {
-					e1.printStackTrace();
+				if (!OrderPaymentRow.isEmpty()) {
+					try {
+						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
+					} catch (JsonProcessingException e1) {
+						e1.printStackTrace();
+					}
+					paymentJson = new JsonNode(writeValueAsString);
+					payJson = paymentJson.getObject();
 				}
 
 				String OrderSKUD = null;
@@ -510,10 +551,9 @@ public class OrderAndPaymentService {
 					e2.printStackTrace();
 				}
 
-				JsonNode paymentJson = new JsonNode(writeValueAsString);
 				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
 
-				object.put("paymentData", paymentJson.getObject());
+				object.put("paymentData", payJson);
 				object.put("OrderSKUDetails", OrderSKUDJson.getArray());
 				productId.add(object);
 
@@ -577,12 +617,16 @@ public class OrderAndPaymentService {
 				JSONObject object = pJN.getObject();
 
 				String writeValueAsString = null;
-				try {
-					writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
-				} catch (JsonProcessingException e1) {
-					e1.printStackTrace();
+				JSONObject payRow = null;
+				if (!OrderPaymentRow.isEmpty()) {
+					try {
+						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
+					} catch (JsonProcessingException e1) {
+						e1.printStackTrace();
+					}
+					JsonNode paymentJson = new JsonNode(writeValueAsString);
+					payRow = paymentJson.getObject();
 				}
-
 				String OrderSKUD = null;
 				try {
 					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
@@ -590,10 +634,9 @@ public class OrderAndPaymentService {
 					e2.printStackTrace();
 				}
 
-				JsonNode paymentJson = new JsonNode(writeValueAsString);
 				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
 
-				object.put("paymentData", paymentJson.getObject());
+				object.put("paymentData", payRow);
 				object.put("OrderSKUDetails", OrderSKUDJson.getArray());
 				productId.add(object);
 
@@ -717,16 +760,14 @@ public class OrderAndPaymentService {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(orderId));
 			OrderDetailsEntity orderDetailsEntity2 = mongoOperations.findOne(query, OrderDetailsEntity.class);
-//			System.out.println(orderDetailsEntity2);
 			if (!orderDetailsEntity2.equals(null)) {
-				System.out.println(orderDetailsEntity);
 				OrderDetailsEntity orderDetailsEntity1 = orderDetailsRepo.findByOrderId(orderId).get(0);
 				orderDetailsEntity1.setOrderId(orderDetailsRepo.findByOrderId(orderId).get(0).getOrderId());
 				orderDetailsEntity1.setOrderStatus(orderDetailsEntity.getOrderStatus());
 				orderDetailsRepo.save(orderDetailsEntity1);
-				return new GlobalResponse("Success!!", "Order status updated", 200);
+				return new GlobalResponse("Success", "Order status updated", 200);
 			} else {
-				return new GlobalResponse("Error!!", "Order not found", 400);
+				return new GlobalResponse("Error", "Order not found", 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -774,9 +815,18 @@ public class OrderAndPaymentService {
 
 			Optional<OrderPaymentEntity> PaymentRow = userOrderPaymentRepo.findPaymentId(PayEntity.get("id").toString(),
 					PayEntity.get("order_id").toString());
+			if (PaymentRow.isEmpty()) {
+				LOGGER.info("Order payment id not found in payment table");
+				throw new CustomException("Order not found");
+			}
 
 			List<OrderDetailsEntity> OrderRow = orderDetailsRepo.findByOrderId(PaymentRow.get().getOrderId());
+			if (OrderRow.size() <= 0) {
+				LOGGER.info("Order id not found in order table");
+				throw new CustomException("Order not found");
+			}
 
+			System.out.println(PaymentRow);
 			return ResponseEntity.ok(OrderRow);
 
 		} catch (Exception e) {
@@ -914,17 +964,16 @@ public class OrderAndPaymentService {
 		}
 	}
 
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ResponseEntity<?> getOrderServiceByInvoiceId(String invoiceId) {
 		try {
-			Query query= new Query();
-			Query query2= new Query();
-			Map<String, Object> data= new HashMap<String, Object>();
-			List<Integer> desiredDesingerIdList= new ArrayList<Integer>();
+			Query query = new Query();
+			Query query2 = new Query();
+			Map<String, Object> data = new HashMap<String, Object>();
+			List<Integer> desiredDesingerIdList = new ArrayList<Integer>();
 			query.addCriteria(Criteria.where("invoiceId").is(invoiceId));
-			OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
-			BillingAddressEntity billAddressData= new BillingAddressEntity();
+			OrderDetailsEntity orderDetailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
+			BillingAddressEntity billAddressData = new BillingAddressEntity();
 			billAddressData.setAddress1(orderDetailsEntity.getBillingAddress().getAddress1());
 			billAddressData.setFullName(orderDetailsEntity.getBillingAddress().getFullName());
 			billAddressData.setCountry(orderDetailsEntity.getBillingAddress().getCountry());
@@ -933,29 +982,31 @@ public class OrderAndPaymentService {
 			billAddressData.setPostalCode(orderDetailsEntity.getBillingAddress().getPostalCode());
 			billAddressData.setMobile(orderDetailsEntity.getBillingAddress().getMobile());
 			query2.addCriteria(Criteria.where("orderId").is(orderDetailsEntity.getOrderId()));
-			List<OrderSKUDetailsEntity> orderSKUDetails= mongoOperations.find(query2, OrderSKUDetailsEntity.class);
-			String body = restTemplate.getForEntity("https://localhost:8083/dev/designer/designerIdList", String.class).getBody();
-			JSONArray jsonArray= new JSONArray(body);
-			//System.out.println(jsonArray);
-			ObjectMapper mapper= new ObjectMapper();
-			for(int i=0;i<jsonArray.length();i++) {
-				org.json.simple.JSONObject designerLoginEntity=mapper.readValue(jsonArray.get(i).toString(), org.json.simple.JSONObject.class);
+			List<OrderSKUDetailsEntity> orderSKUDetails = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
+			String body = restTemplate.getForEntity("https://localhost:8083/dev/designer/designerIdList", String.class)
+					.getBody();
+			JSONArray jsonArray = new JSONArray(body);
+			// System.out.println(jsonArray);
+			ObjectMapper mapper = new ObjectMapper();
+			for (int i = 0; i < jsonArray.length(); i++) {
+				org.json.simple.JSONObject designerLoginEntity = mapper.readValue(jsonArray.get(i).toString(),
+						org.json.simple.JSONObject.class);
 				desiredDesingerIdList.add(Integer.parseInt(designerLoginEntity.get("dId").toString()));
-				//System.out.println(designerLoginEntity.get("dId").toString());
+				// System.out.println(designerLoginEntity.get("dId").toString());
 			}
-			//System.out.println(desiredDesingerIdList);
-			int totalTax=0;
-			int totalAmount=0;
-			int totalGrossAmount=0;
-			for(int i=0;i<desiredDesingerIdList.size();i++) {
-				List<ProductInvoice> productList= new ArrayList<>();
-				
+			// System.out.println(desiredDesingerIdList);
+			int totalTax = 0;
+			int totalAmount = 0;
+			int totalGrossAmount = 0;
+			for (int i = 0; i < desiredDesingerIdList.size(); i++) {
+				List<ProductInvoice> productList = new ArrayList<>();
+
 //				int a=0;a<orderSKUDetails.size();a++
-				for(OrderSKUDetailsEntity a : orderSKUDetails) {
-					//List<ProductInvoice> productList= new ArrayList<ProductInvoice>();
-					if(a.getDesignerId()==desiredDesingerIdList.get(i)) {
-						//System.out.println((orderSKUDetails.get(a).getProductId()));
-						ProductInvoice invoice= new ProductInvoice();
+				for (OrderSKUDetailsEntity a : orderSKUDetails) {
+					// List<ProductInvoice> productList= new ArrayList<ProductInvoice>();
+					if (a.getDesignerId() == desiredDesingerIdList.get(i)) {
+						// System.out.println((orderSKUDetails.get(a).getProductId()));
+						ProductInvoice invoice = new ProductInvoice();
 						invoice.setGrossAmount(a.getMrp().intValue());
 						invoice.setIgst(a.getTaxAmount().intValue());
 						invoice.setProductDescription(a.getProductName());
@@ -965,52 +1016,49 @@ public class OrderAndPaymentService {
 						invoice.setProductSize(a.getSize());
 						LOGGER.info(invoice.toString());
 						productList.add(invoice);
-						totalTax=totalTax+a.getTaxAmount().intValue();
-						totalAmount=totalAmount+a.getSalesPrice().intValue();
-						totalGrossAmount=totalGrossAmount+a.getMrp().intValue();
+						totalTax = totalTax + a.getTaxAmount().intValue();
+						totalAmount = totalAmount + a.getSalesPrice().intValue();
+						totalGrossAmount = totalGrossAmount + a.getMrp().intValue();
 					}
 				}
-				//invoice.getProductDescription() != null
+				// invoice.getProductDescription() != null
 				LOGGER.info("Outside of loop inner loop <><><><><> !!!" + productList);
-				if(productList.size() > 0) {
+				if (productList.size() > 0) {
 					LOGGER.info("Rpoduct List data <><><><><> !!! " + productList);
 					data.put("data", productList);
 				}
 			}
-			ProductInvoice invoice= new ProductInvoice();
+			ProductInvoice invoice = new ProductInvoice();
 			invoice.setGrossAmount(totalGrossAmount);
 			invoice.setWithTaxAmount(totalAmount);
 			invoice.setIgst(totalTax);
-			Map<String, Object> data4= new HashMap<>();
+			Map<String, Object> data4 = new HashMap<>();
 			data4.put("totalData", invoice);
-			Map<String, Object> response= new HashMap<>();
+			Map<String, Object> response = new HashMap<>();
 			response.put("billAddressData", billAddressData);
-			Context context= new Context();
+			Context context = new Context();
 			context.setVariables(response);
 			context.setVariables(data);
 			context.setVariables(data4);
-			String htmlContent=templateEngine.process("invoiceUpdated.html", context);
+			String htmlContent = templateEngine.process("invoiceUpdated.html", context);
 			// System.out.println(result);
- 
+
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			ConverterProperties converterProperties = new ConverterProperties();
 			converterProperties.setBaseUri("http://localhost:8082");
-			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);  
+			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);
 			byte[] bytes = target.toByteArray();
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Disposition", "attachment; filename=" + "orderInvoiceUpdated.pdf");
-			return ResponseEntity.ok()
-					.headers(headers)
-					.contentType(MediaType.APPLICATION_PDF)
-					.body(bytes);
+			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(bytes);
 //			OrderAndPaymentContoller andPaymentContoller= new OrderAndPaymentContoller();
 //			ByteArrayOutputStream generatePdf = andPaymentContoller.generatePdf(htmlContent);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
+
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> getOrderInvoiceId(String invoiceId) {
 		try {
