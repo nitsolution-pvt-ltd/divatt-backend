@@ -186,11 +186,12 @@ public class AdminMService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Object> getDesignerService() {
+	public Object getDesignerService() {
 		try {
 			Query query= new Query();
 			List<Object> response= new ArrayList<Object>();
 			query.addCriteria(Criteria.where("id").is(101));
+			JSONObject jsonObject1= new JSONObject();
 			DesignerCategoryEntity designerCategoryEntity=mongoOperations.findOne(query, DesignerCategoryEntity.class);
 			System.out.println(designerCategoryEntity);
 			for(int i=0;i<designerCategoryEntity.getDesignerLevels().size();i++) {
@@ -199,7 +200,8 @@ public class AdminMService {
 				//response.put(i,jsonObject);
 				response.add(jsonObject);
 			}
-			return response;
+			jsonObject1.put("data", response);
+			return jsonObject1;
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
