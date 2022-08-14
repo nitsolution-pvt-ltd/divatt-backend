@@ -210,12 +210,10 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderHandle()");
 
 		try {
-			LOGGER.info("Inside - OrderAndPaymentContoller.postOrderHandle " + orderHandleDetails);
 
 			org.json.simple.JSONObject paymentE = new org.json.simple.JSONObject((Map) orderHandleDetails.get("payload"));
 			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) paymentE.get("payment"));
 
-//			return ResponseEntity.ok(orderHandleDetails);
 			return this.orderAndPaymentService.postOrderHandleDetailsService(PayEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

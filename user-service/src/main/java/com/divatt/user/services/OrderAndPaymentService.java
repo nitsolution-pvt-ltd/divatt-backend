@@ -1,8 +1,6 @@
 package com.divatt.user.services;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,17 +13,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.core.io.Resource;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
-import org.apache.poi.hpsf.Array;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.origin.SystemEnvironmentOrigin;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -44,15 +38,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import com.divatt.user.controller.OrderAndPaymentContoller;
 import com.divatt.user.entity.BillingAddressEntity;
-import com.divatt.user.entity.DesignerLoginEntity;
 import com.divatt.user.entity.InvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.ProductInvoice;
-import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
@@ -64,13 +54,12 @@ import com.divatt.user.repo.OrderTrackingRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
-import com.lowagie.text.DocumentException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
-import com.razorpay.Invoice;
 import com.razorpay.Order;
 import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
@@ -160,7 +149,8 @@ public class OrderAndPaymentService {
 		LOGGER.info("Inside - OrderAndPaymentService.postRazorpayOrderCreateService()");
 
 		try {
-			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
+					env.getProperty("secretKey"));
 			JSONObject options = new JSONObject();
 
 			options.put("amount", orderDetailsEntity.getTotalAmount());
@@ -185,7 +175,7 @@ public class OrderAndPaymentService {
 			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
 			LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentService() get data");
 //			List<Payment> payments = razorpayClient.Payments.fetchAll();
-//			List<Payment> payments = razorpayClient.Orders.fetchPayments("order_K52Jk6ZCwVCOt2");
+//			List<Payment> payments = razorpayClient.Orders.fetchPayments("order_K56yBf2oeFkIg8");
 
 			String paymentIdFilter = null;
 			ObjectMapper obj = new ObjectMapper();
@@ -199,26 +189,23 @@ public class OrderAndPaymentService {
 			Payment payment = razorpayClient.Payments
 					.fetch(OrderPayJson.getObject().get("razorpay_payment_id").toString());
 
-//			System.out.println(OrderPayJson.getObject().get("razorpay_payment_id"));
-//			System.out.println("O"+payments.toString());
-			System.out.println("P" + payment);
-//			payment.get("error_code");
-//			payment.get("error_reason");
-//			payment.get("error_step");
-//			payment.get("status");
-
-			String payStatus = null;
-			if (!payment.get("error_code").equals(null) && !payment.get("error_reason").equals(null)
-					&& !payment.get("error_step").equals(null) && !payment.get("status").equals("captured")) {
-				payStatus = "Completed";
+			String payStatus = "FAILED";
+			if (payment.get("error_code").equals(null) && payment.get("error_reason").equals(null)
+					&& payment.get("error_step").equals(null) && payment.get("status").equals("captured")) {
+				payStatus = "COMPLETED";
 
 			}
 			List<OrderDetailsEntity> findOrderRow = orderDetailsRepo.findByOrderId(orderPaymentEntity.getOrderId());
 			if (findOrderRow.size() <= 0) {
 				throw new CustomException("Order not found");
 			}
-
-//			System.out.println(payment.get("error_code").toString());
+			Map<String, Object> map = null;
+			try {
+				map = obj.readValue(payment.toString(), new TypeReference<Map<String, Object>>() {
+				});
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
 
 			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 
@@ -226,7 +213,7 @@ public class OrderAndPaymentService {
 			filterCatDetails.setOrderId(orderPaymentEntity.getOrderId());
 			filterCatDetails.setPaymentMode(orderPaymentEntity.getPaymentMode());
 			filterCatDetails.setPaymentDetails(orderPaymentEntity.getPaymentDetails());
-			filterCatDetails.setPaymentResponse(new Json(payment.toString()));
+			filterCatDetails.setPaymentResponse(map);
 			filterCatDetails.setPaymentStatus(payStatus);
 			filterCatDetails.setUserId(orderPaymentEntity.getUserId());
 			filterCatDetails.setCreatedOn(new Date());
@@ -808,26 +795,74 @@ public class OrderAndPaymentService {
 
 	@SuppressWarnings("rawtypes")
 	public ResponseEntity<?> postOrderHandleDetailsService(org.json.simple.JSONObject object) {
-
+		LOGGER.info("Inside - OrderAndPaymentService.postOrderHandleDetailsService ");
 		try {
 
 			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) object.get("entity"));
 
-			Optional<OrderPaymentEntity> PaymentRow = userOrderPaymentRepo.findPaymentId(PayEntity.get("id").toString(),
-					PayEntity.get("order_id").toString());
-			if (PaymentRow.isEmpty()) {
-				LOGGER.info("Order payment id not found in payment table");
-				throw new CustomException("Order not found");
-			}
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
+					env.getProperty("secretKey"));
 
-			List<OrderDetailsEntity> OrderRow = orderDetailsRepo.findByOrderId(PaymentRow.get().getOrderId());
+			List<OrderDetailsEntity> OrderRow = orderDetailsRepo
+					.findByRazorpayOrderId(PayEntity.get("order_id").toString());
+
 			if (OrderRow.size() <= 0) {
 				LOGGER.info("Order id not found in order table");
 				throw new CustomException("Order not found");
 			}
 
-			System.out.println(PaymentRow);
-			return ResponseEntity.ok(OrderRow);
+			List<Payment> payments = razorpayClient.Orders.fetchPayments(PayEntity.get("order_id").toString());
+
+			Payment payment = null;
+			String payStatus = "FAILED";
+			for (Payment pay : payments) {
+				payment = razorpayClient.Payments.fetch(pay.get("id").toString());
+
+				if (payment.get("error_code").equals(null) && payment.get("error_reason").equals(null)
+						&& payment.get("error_step").equals(null) && payment.get("status").equals("captured")) {
+					payStatus = "COMPLETED";
+					break;
+				}
+			}
+
+			if (payment.equals(null)) {
+				LOGGER.info("Payment not found in order table");
+				throw new CustomException("Payment not found");
+			}
+
+			ObjectMapper obj = new ObjectMapper();
+			Map<String, Object> map = obj.readValue(payment.toString(), new TypeReference<Map<String, Object>>() {
+			});
+
+			Map<String, Object> PayResponse = new HashMap<>();
+			PayResponse.put("razorpay_payment_id", PayEntity.get("id"));
+			PayResponse.put("razorpay_order_id", PayEntity.get("order_id"));
+			PayResponse.put("razorpay_signature", "");
+
+			Optional<OrderPaymentEntity> PaymentRow = userOrderPaymentRepo.findPaymentId(PayEntity.get("id").toString(),
+					PayEntity.get("order_id").toString());
+
+			int payId = sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME);
+			OrderPaymentEntity filterCatDetails = null;
+
+			if (PaymentRow.isEmpty()) {
+				filterCatDetails = new OrderPaymentEntity();
+			} else {
+				filterCatDetails = PaymentRow.get();
+				payId = PaymentRow.get().getId();
+			}
+
+			filterCatDetails.setId(payId);
+			filterCatDetails.setOrderId(OrderRow.get(0).getOrderId());
+			filterCatDetails.setPaymentDetails(PayResponse);
+			filterCatDetails.setPaymentResponse(map);
+			filterCatDetails.setPaymentStatus(payStatus);
+			filterCatDetails.setUserId(OrderRow.get(0).getUserId());
+			filterCatDetails.setCreatedOn(new Date());
+
+			OrderPaymentEntity data = userOrderPaymentRepo.save(filterCatDetails);
+
+			return ResponseEntity.ok(data);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
