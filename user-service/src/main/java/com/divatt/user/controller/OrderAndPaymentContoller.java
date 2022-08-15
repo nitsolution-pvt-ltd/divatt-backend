@@ -164,7 +164,7 @@ public class OrderAndPaymentContoller {
 
 	@PostMapping("/payment/add")
 	public ResponseEntity<?> postOrderPaymentDetails(@RequestHeader("Authorization") String token,
-			@Valid @RequestBody OrderPaymentEntity orderPaymentEntity) {
+			 @RequestBody OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
 
 		try {
@@ -207,15 +207,13 @@ public class OrderAndPaymentContoller {
 	@SuppressWarnings("rawtypes")
 	@PostMapping("/razorpay/handle")
 	public ResponseEntity<?> postOrderHandle(@RequestBody org.json.simple.JSONObject orderHandleDetails) {
-		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderHandleDetails()");
+		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderHandle()");
 
 		try {
-			LOGGER.info("TEST " + orderHandleDetails);
 
 			org.json.simple.JSONObject paymentE = new org.json.simple.JSONObject((Map) orderHandleDetails.get("payload"));
 			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) paymentE.get("payment"));
 
-//			return ResponseEntity.ok(orderHandleDetails);
 			return this.orderAndPaymentService.postOrderHandleDetailsService(PayEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -283,6 +281,7 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());
 				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());
 				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());
+				orderDetailsEntity.setRazorpayOrderId(orderDetailsEntity.getRazorpayOrderId());
 				orderDetailsEntity.setCreatedOn(format);
 
 
@@ -298,12 +297,12 @@ public class OrderAndPaymentContoller {
 					postOrderSKUDetails(token, orderSKUDetailsEntityRow);
 				}
 				
-				OrderPaymentEntity orderPaymentEntity = orderAndPaymentGlobalEntity.getOrderPaymentEntity();
-				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
-				orderPaymentEntity.setOrderId(OrderData.getOrderId());
-				orderPaymentEntity.setCreatedOn(new Date());
+//				OrderPaymentEntity orderPaymentEntity = orderAndPaymentGlobalEntity.getOrderPaymentEntity();
+//				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
+//				orderPaymentEntity.setOrderId(OrderData.getOrderId());
+//				orderPaymentEntity.setCreatedOn(new Date());
 
-				postOrderPaymentDetails(token, orderPaymentEntity);
+//				postOrderPaymentDetails(token, orderPaymentEntity);
 
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
@@ -313,13 +312,13 @@ public class OrderAndPaymentContoller {
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
 
-				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-				sendEmailWithAttachment(
-						extractUsername, "Order summary", "Hi " + userLoginEntity.getFirstName() + ""
-								+ ",\n                           " + " Your order created successfully. ",
-						false, createPdfSupplier);
-
-				createPdfSupplier.delete();
+//				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
+//				sendEmailWithAttachment(
+//						extractUsername, "Order summary", "Hi " + userLoginEntity.getFirstName() + ""
+//								+ ",\n                           " + " Your order created successfully. ",
+//						false, createPdfSupplier);
+//
+//				createPdfSupplier.delete();
 			}
 
 			return ResponseEntity.ok(map);
@@ -335,7 +334,7 @@ public class OrderAndPaymentContoller {
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
-		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()");
+		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
 
 		try {
 			return this.orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy);
@@ -386,7 +385,7 @@ public class OrderAndPaymentContoller {
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
-		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner()");
+		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner() for Designer side listing");
 
 		try {
 			return this.orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword,

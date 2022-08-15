@@ -82,7 +82,7 @@ public class AdminMDataController {
 	}
 	
 	@GetMapping("/getDesignerCategory")
-	public List<Object> getDesignerList()
+	public Object getDesignerList()
 	{
 		try {
 			return this.adminMService.getDesignerService();

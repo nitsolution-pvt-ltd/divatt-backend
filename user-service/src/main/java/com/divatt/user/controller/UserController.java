@@ -769,4 +769,13 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	@GetMapping("/getUserAddress/{userId}")
+	public UserAddressEntity getUserAddressDeatails(@PathVariable Long userId) {
+		try {
+			return userAddressRepo.findByUserId(userId).get(0);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
