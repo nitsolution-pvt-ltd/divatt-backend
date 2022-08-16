@@ -437,6 +437,7 @@ public class ProfileContoller {
 		try {
 			List<DesignerLoginEntity> designerProfileList = designerLoginRepo
 					.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
+			org.json.simple.JSONObject response= new org.json.simple.JSONObject();
 			List<Object> designercategories = new ArrayList<Object>();
 			for (int i = 0; i < designerProfileList.size(); i++) {
 				if (designerProfileList.get(i).getCategories() != null) {
@@ -446,6 +447,7 @@ public class ProfileContoller {
 						designercategories.add(jsonObject);
 					}
 				}
+				
 			}
 			return designercategories;
 		} catch (Exception e) {
