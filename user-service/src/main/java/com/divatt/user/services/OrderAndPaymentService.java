@@ -172,7 +172,7 @@ public class OrderAndPaymentService {
 
 		try {
 
-			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
 			LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentService() get data");
 //			List<Payment> payments = razorpayClient.Payments.fetchAll();
 //			List<Payment> payments = razorpayClient.Orders.fetchPayments("order_K56yBf2oeFkIg8");
@@ -231,7 +231,7 @@ public class OrderAndPaymentService {
 
 		try {
 
-			RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
 
 			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			Date date = new Date();
