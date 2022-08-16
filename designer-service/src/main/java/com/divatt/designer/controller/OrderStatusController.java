@@ -1,6 +1,7 @@
 package com.divatt.designer.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.divatt.designer.entity.InvoiceMainData;
 import com.divatt.designer.entity.ProductInvoice;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
@@ -42,5 +45,16 @@ public class OrderStatusController {
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+	
+	@GetMapping("/userSideInvoicePDF/{orderId}")
+		public String userSideInvoicePDF(@PathVariable String orderId) {
+			try {
+				return this.orderService.getUserPDFService(orderId);
+			}
+			catch(Exception e)
+			{
+				throw new CustomException(e.getMessage());
+			}
 	}
 }

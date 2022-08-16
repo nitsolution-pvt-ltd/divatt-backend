@@ -21,7 +21,7 @@ public class DesignerInvoiceReq {
 	    public JSONObject shippingAddress;
 	    public String invoiceId;
 	    public int id;
-	    public JSONObject billingAddress;
+	    public UserAddressEntity billingAddress;
 	    public String deliveryDate;
 	    public double taxAmount;
 	    public String orderDate;
@@ -33,8 +33,8 @@ public class DesignerInvoiceReq {
 		public DesignerInvoiceReq(String deliveryCheckUrl, String orderId, int shippingCharges, String orderStatus,
 				int discount, int mrp, int userId, String createdOn, double totalAmount,
 				List<InvoiceProductList> orderSKUDetails, String deliveryMode, JSONObject paymentData,
-				JSONObject shippingAddress, String invoiceId, int id, JSONObject billingAddress, String deliveryDate,
-				double taxAmount, String orderDate, String deliveryStatus) {
+				JSONObject shippingAddress, String invoiceId, int id, UserAddressEntity billingAddress,
+				String deliveryDate, double taxAmount, String orderDate, String deliveryStatus) {
 			super();
 			this.deliveryCheckUrl = deliveryCheckUrl;
 			this.orderId = orderId;
@@ -45,7 +45,7 @@ public class DesignerInvoiceReq {
 			this.userId = userId;
 			this.createdOn = createdOn;
 			this.totalAmount = totalAmount;
-			this.OrderSKUDetails = orderSKUDetails;
+			OrderSKUDetails = orderSKUDetails;
 			this.deliveryMode = deliveryMode;
 			this.paymentData = paymentData;
 			this.shippingAddress = shippingAddress;
@@ -56,6 +56,17 @@ public class DesignerInvoiceReq {
 			this.taxAmount = taxAmount;
 			this.orderDate = orderDate;
 			this.deliveryStatus = deliveryStatus;
+		}
+		@Override
+		public String toString() {
+			return "DesignerInvoiceReq [deliveryCheckUrl=" + deliveryCheckUrl + ", orderId=" + orderId
+					+ ", shippingCharges=" + shippingCharges + ", orderStatus=" + orderStatus + ", discount=" + discount
+					+ ", mrp=" + mrp + ", userId=" + userId + ", createdOn=" + createdOn + ", totalAmount="
+					+ totalAmount + ", OrderSKUDetails=" + OrderSKUDetails + ", deliveryMode=" + deliveryMode
+					+ ", paymentData=" + paymentData + ", shippingAddress=" + shippingAddress + ", invoiceId="
+					+ invoiceId + ", id=" + id + ", billingAddress=" + billingAddress + ", deliveryDate=" + deliveryDate
+					+ ", taxAmount=" + taxAmount + ", orderDate=" + orderDate + ", deliveryStatus=" + deliveryStatus
+					+ "]";
 		}
 		public String getDeliveryCheckUrl() {
 			return deliveryCheckUrl;
@@ -147,10 +158,10 @@ public class DesignerInvoiceReq {
 		public void setId(int id) {
 			this.id = id;
 		}
-		public JSONObject getBillingAddress() {
+		public UserAddressEntity getBillingAddress() {
 			return billingAddress;
 		}
-		public void setBillingAddress(JSONObject billingAddress) {
+		public void setBillingAddress(UserAddressEntity billingAddress) {
 			this.billingAddress = billingAddress;
 		}
 		public String getDeliveryDate() {
@@ -176,17 +187,6 @@ public class DesignerInvoiceReq {
 		}
 		public void setDeliveryStatus(String deliveryStatus) {
 			this.deliveryStatus = deliveryStatus;
-		}
-		@Override
-		public String toString() {
-			return "DesignerInvoiceReq [deliveryCheckUrl=" + deliveryCheckUrl + ", orderId=" + orderId
-					+ ", shippingCharges=" + shippingCharges + ", orderStatus=" + orderStatus + ", discount=" + discount
-					+ ", mrp=" + mrp + ", userId=" + userId + ", createdOn=" + createdOn + ", totalAmount="
-					+ totalAmount + ", OrderSKUDetails=" + OrderSKUDetails + ", deliveryMode=" + deliveryMode
-					+ ", paymentData=" + paymentData + ", shippingAddress=" + shippingAddress + ", invoiceId="
-					+ invoiceId + ", id=" + id + ", billingAddress=" + billingAddress + ", deliveryDate=" + deliveryDate
-					+ ", taxAmount=" + taxAmount + ", orderDate=" + orderDate + ", deliveryStatus=" + deliveryStatus
-					+ "]";
 		}
 		
 }
