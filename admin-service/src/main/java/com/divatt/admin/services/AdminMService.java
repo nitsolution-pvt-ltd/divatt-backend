@@ -462,8 +462,7 @@ public ColourEntity getColour(String name) {
 			List<Object> response = new ArrayList<Object>();
 			query.addCriteria(Criteria.where("id").is(101));
 			JSONObject jsonObject1= new JSONObject();
-			DesignerCategoryEntity designerCategoryEntity = mongoOperations.findOne(query,
-					DesignerCategoryEntity.class);
+			DesignerCategoryEntity designerCategoryEntity=mongoOperations.findOne(query, DesignerCategoryEntity.class);
 			System.out.println(designerCategoryEntity);
 			for (int i = 0; i < designerCategoryEntity.getDesignerLevels().size(); i++) {
 				JSONObject jsonObject = new JSONObject();
@@ -474,7 +473,8 @@ public ColourEntity getColour(String name) {
 			jsonObject1.put("data", response);
 			//designerCategoryEntity.getDesignerLevels();
 			return jsonObject1;
-		} catch (Exception e) {
+		}
+		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
