@@ -332,6 +332,8 @@ public class ProductService {
 				findAll = productRepo.Search(keyword, isDeleted, pagingSort);
 
 			}
+			
+			System.out.println(findAll.toString());
 
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {

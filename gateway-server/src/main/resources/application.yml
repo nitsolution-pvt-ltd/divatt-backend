@@ -60,6 +60,10 @@ spring:
         uri: https://localhost:8082/dev/userOrder
         id: User
         predicates[0]: Path=/dev/userOrder/**
+      routes[14]:
+        uri: https://localhost:8083/dev/order
+        id: Designer
+        predicates[0]: Path=/dev/order/**
       globalcors:
         corsConfigurations:
           '[/**]':

@@ -27,7 +27,6 @@ import com.divatt.admin.services.ProductService;
 import com.google.gson.JsonObject;
 
 @RestController
-//@Description("This Conttroller is responsible for Control the product service")
 @RequestMapping("/product")
 public class ProductController {
 
@@ -60,19 +59,5 @@ public class ProductController {
 		Aggregation aggregation = Aggregation.newAggregation(lookupOperation);
 		ResponseEntity.ok(mongoTemplate.aggregate(aggregation, ProductEntity.class, String.class).getMappedResults());
 	}
-
-//	@GetMapping("/designerOrderList")
-//	public ResponseEntity<?> designerOrderList(@RequestParam(defaultValue = "0") Integer page,
-//			@RequestParam(defaultValue = "10") Integer limit,@RequestParam(defaultValue = "0") String keyword) {
-//
-//		LOGGER.info("Inside - ProductController.designerOrderList()");
-//
-//		try {
-//			return this.productService.designerOrderListService(page, limit,keyword);
-//		} catch (Exception e) {
-//			throw new CustomException(e.getMessage());
-//		}
-//
-//	}
 
 }

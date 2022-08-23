@@ -26,7 +26,6 @@ public class BannerEntity {
 	@Field(name = "title")
 	private String title;
 	
-//	@NotNull(message = "Description is requried!")
 	@Field(name = "description")
 	private String description;
 	
