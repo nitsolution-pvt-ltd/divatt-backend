@@ -1,5 +1,6 @@
 package com.divatt.designer.entity.product;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -75,7 +76,8 @@ public class ProductMasterEntity {
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
 	private String SKQCode;
-	private String comments;
+	private List<Object> comments = new ArrayList<>();
+	
 	private String adminStatus;
 	public ProductMasterEntity(Integer productId, String designerName, Integer designerId, Integer categoryId,
 			Integer subCategoryId, @NotEmpty(message = "Gender Category Required") String gender,
@@ -87,7 +89,7 @@ public class ProductMasterEntity {
 			List<StandardSOH> standeredSOH, Integer customizationSOH, Object extraSpecifications,
 			Specification specifications, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			Date adminStatusOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String sKQCode,
-			String comments, String adminStatus) {
+			List<Object> comments, String adminStatus) {
 		super();
 		this.productId = productId;
 		this.designerName = designerName;
@@ -338,12 +340,13 @@ public class ProductMasterEntity {
 	public void setSKQCode(String sKQCode) {
 		SKQCode = sKQCode;
 	}
-	public String getComments() {
+	public List<Object> getComments() {
 		return comments;
 	}
-	public void setComments(String comments) {
+	public void setComments(List<Object> comments) {
 		this.comments = comments;
 	}
+
 	public String getAdminStatus() {
 		return adminStatus;
 	}

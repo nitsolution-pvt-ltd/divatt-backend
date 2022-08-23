@@ -1,5 +1,7 @@
 package com.divatt.admin.contoller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,7 @@ public class ProductController {
 			int productId = comment.getProductId();
 			int designerId = comment.getDesignerId();
 			String adminStatus = comment.getAdminStatus();
-			String commString = comment.getComments();
+			List<Object> commString = comment.getComments();
 			String ApprovedBy = comment.getApprovedBy();
 
 			return this.productService.productApproval(productId, designerId, commString, ApprovedBy, adminStatus);
