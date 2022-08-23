@@ -43,7 +43,7 @@ public class ProductController {
 			int productId = comment.getProductId();
 			int designerId = comment.getDesignerId();
 			String adminStatus = comment.getAdminStatus();
-			List<Object> commString = comment.getComments();
+			List<Object> commString = comment.getComments(); 			
 			String ApprovedBy = comment.getApprovedBy();
 
 			return this.productService.productApproval(productId, designerId, commString, ApprovedBy, adminStatus);

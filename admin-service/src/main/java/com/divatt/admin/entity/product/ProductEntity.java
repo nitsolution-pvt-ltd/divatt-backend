@@ -62,6 +62,7 @@ public class ProductEntity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 	public ProductEntity(Integer productId, Integer designerId, Integer categoryId, Integer subCategoryId,
 			String gender, String productName, String productDescription, Object age, Boolean cod,
 			Boolean customization, Object purchaseQuantity, String priceType, Float taxPercentage, Boolean taxInclusive,

@@ -77,7 +77,7 @@ public class ProductMasterEntity {
 	private Date approvedOn;
 	private String SKQCode;
 	private List<Object> comments = new ArrayList<>();
-
+ 
 	private String adminStatus;
 	public ProductMasterEntity(Integer productId, String designerName, Integer designerId, Integer categoryId,
 			Integer subCategoryId, @NotEmpty(message = "Gender Category Required") String gender,
