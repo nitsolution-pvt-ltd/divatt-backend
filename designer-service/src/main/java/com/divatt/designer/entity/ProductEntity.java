@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.divatt.designer.entity.product.AgeEntity;
+
 import com.divatt.designer.entity.product.GiftEntity;
 import com.divatt.designer.entity.product.ImagesEntity;
 import com.divatt.designer.entity.product.PriceEntity;
@@ -53,7 +54,7 @@ public class ProductEntity {
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
 	private String SKQCode;
-	private String comments;
+	private List<Object> comments;
 	private String adminStatus;
 	private Object categoryObject;
 	private Object subCategoryObject;
@@ -68,7 +69,7 @@ public class ProductEntity {
 			List<StandardSOH> standeredSOH, Integer customizationSOH, Object extraSpecifications,
 			Specification specifications, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			Date adminStatusOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String sKQCode,
-			String comments, String adminStatus, Object categoryObject, Object subCategoryObject) {
+			List<Object> comments, String adminStatus, Object categoryObject, Object subCategoryObject) {
 		super();
 		this.productId = productId;
 		this.designerName = designerName;
@@ -322,11 +323,11 @@ public class ProductEntity {
 	public void setSKQCode(String sKQCode) {
 		SKQCode = sKQCode;
 	}
-	public String getComments() {
+	public List<Object> getComments() {
 		return comments;
 	}
-	public void setComments(String comments) {
-		this.comments = comments;
+	public void setComments(List<Object> list) {
+		this.comments = list;
 	}
 	public String getAdminStatus() {
 		return adminStatus;
