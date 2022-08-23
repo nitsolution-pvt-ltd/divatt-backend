@@ -172,7 +172,8 @@ public class OrderAndPaymentService {
 
 		try {
 
-			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
+					env.getProperty("secretKey"));
 			LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentService() get data");
 //			List<Payment> payments = razorpayClient.Payments.fetchAll();
 //			List<Payment> payments = razorpayClient.Orders.fetchPayments("order_K56yBf2oeFkIg8");
@@ -206,6 +207,9 @@ public class OrderAndPaymentService {
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
+			Map<String, String> mapPayId = new HashMap<>();
+			mapPayId.put("OrderId", orderPaymentEntity.getOrderId());
+			mapPayId.put("TransactionId", OrderPayJson.getObject().get("razorpay_payment_id").toString());
 
 			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 
@@ -218,8 +222,8 @@ public class OrderAndPaymentService {
 			filterCatDetails.setUserId(orderPaymentEntity.getUserId());
 			filterCatDetails.setCreatedOn(new Date());
 
-			OrderPaymentEntity data = userOrderPaymentRepo.save(filterCatDetails);
-			return ResponseEntity.ok(data);
+			userOrderPaymentRepo.save(filterCatDetails);
+			return ResponseEntity.ok(mapPayId);
 		} catch (RazorpayException e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -231,7 +235,8 @@ public class OrderAndPaymentService {
 
 		try {
 
-			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
+					env.getProperty("secretKey"));
 
 			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			Date date = new Date();
