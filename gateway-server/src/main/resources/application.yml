@@ -84,13 +84,6 @@ server:
     enabled: true
     protocol: TLS
     enabled-protocols: TLSv1.2
-#  ssl:
-##   key-store: C:\Users\Ahadul\Downloads\divatt.jks
-#   key-store: divatt.jks
-#   key-store-password: divatt
-#   key-store-type: JKS
-#   key-alias: divatt
-#   key-password: divatt
 
 
 eureka:

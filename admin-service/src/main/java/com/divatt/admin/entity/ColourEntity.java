@@ -1,26 +1,22 @@
 package com.divatt.admin.entity;
 
-import java.util.List;
-
 public class ColourEntity {
 
 	private String colorName;
 	private String colorValue;
-	private String isActive;
+	private Boolean isActive = true;
 	public ColourEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public ColourEntity(String colorName, String colorValue, String isActive) {
+	public ColourEntity(String colorName, String colorValue, Boolean isActive) {
 		super();
 		this.colorName = colorName;
 		this.colorValue = colorValue;
 		this.isActive = isActive;
 	}
-	@Override
-	public String toString() {
-		return "ColourEntity [colorName=" + colorName + ", colorValue=" + colorValue + ", isActive=" + isActive + "]";
-	}
+	
+	
 	public String getColorName() {
 		return colorName;
 	}
@@ -33,11 +29,18 @@ public class ColourEntity {
 	public void setColorValue(String colorValue) {
 		this.colorValue = colorValue;
 	}
-	public String getIsActive() {
+	public Boolean getIsActive() {
 		return isActive;
 	}
-	public void setIsActive(String isActive) {
+	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	@Override
+	public String toString() {
+		return "ColourEntity [colorName=" + colorName + ", colorValue=" + colorValue + ", isActive=" + isActive + "]";
+	}
+	
+	
+	
 	
 }

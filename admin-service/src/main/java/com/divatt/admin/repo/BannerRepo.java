@@ -10,5 +10,6 @@ import com.divatt.admin.entity.BannerEntity;
 public interface BannerRepo extends MongoRepository<BannerEntity, Long> {
 	
 	
+	
 
 }

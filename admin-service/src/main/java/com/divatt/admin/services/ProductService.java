@@ -35,7 +35,7 @@ public class ProductService {
 	@Autowired
 	private RestTemplate restTemplate;
 
-	public GlobalResponse productApproval(Integer productId, Integer designerId, String comment, String ApprovedBy,
+	public GlobalResponse productApproval(Integer productId, Integer designerId, List<Object> commString, String ApprovedBy,
 			String adminStatus) {
 		try {
 			ResponseEntity<ProductEntity> exchange = restTemplate.exchange(
@@ -46,7 +46,7 @@ public class ProductService {
 
 				productdata.setApprovedBy(ApprovedBy);
 				productdata.setApprovedOn(new Date());
-				productdata.setComments(comment);
+				productdata.setComments(commString);
 				productdata.setIsActive(true);
 				productdata.setAdminStatus(adminStatus);
 				productdata.setAdminStatusOn(new Date());
