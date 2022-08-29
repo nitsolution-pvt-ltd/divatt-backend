@@ -1,5 +1,9 @@
 package com.divatt.admin.contoller;
 
+import java.util.Date;
+import java.util.List;
+
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,4 +62,14 @@ public class ProductController {
 		ResponseEntity.ok(mongoTemplate.aggregate(aggregation, ProductEntity.class, String.class).getMappedResults());
 	}
 
-}
+	@GetMapping("/getReportSheet/{startDate}/{endDate}")
+	public List<JSONObject> getReportSheetAPI(@PathVariable Date startDate,
+											  @PathVariable Date endDate){
+		try {
+			return this.productService.getReportSheet(startDate,endDate);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	}

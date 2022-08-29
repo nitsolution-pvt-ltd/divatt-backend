@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.ws.rs.Path;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -773,6 +774,17 @@ public class UserController {
 	public UserAddressEntity getUserAddressDeatails(@PathVariable Long userId) {
 		try {
 			return userAddressRepo.findByUserId(userId).get(0);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@GetMapping("/getUserDetails/{token}")
+	public UserLoginEntity getUserLoginEntity(@PathVariable String token) {
+		try {
+			String extractedToken=token.substring(7);
+			LOGGER.info(extractedToken);
+			return this.userService.getUserDetailsService(extractedToken);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

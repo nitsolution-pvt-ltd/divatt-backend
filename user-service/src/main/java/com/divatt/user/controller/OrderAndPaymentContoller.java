@@ -64,6 +64,7 @@ import java.io.StringWriter;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -81,6 +82,14 @@ import com.mashape.unirest.http.Unirest;
 import springfox.documentation.spring.web.json.Json;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -91,6 +100,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -133,7 +143,7 @@ public class OrderAndPaymentContoller {
 
 	@Autowired
 	private MongoOperations mongoOperations;
-	
+
 	@Autowired
 	private TemplateEngine templateEngine;
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
@@ -164,7 +174,7 @@ public class OrderAndPaymentContoller {
 
 	@PostMapping("/payment/add")
 	public ResponseEntity<?> postOrderPaymentDetails(@RequestHeader("Authorization") String token,
-			 @RequestBody OrderPaymentEntity orderPaymentEntity) {
+			@RequestBody OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
 
 		try {
@@ -211,7 +221,8 @@ public class OrderAndPaymentContoller {
 
 		try {
 
-			org.json.simple.JSONObject paymentE = new org.json.simple.JSONObject((Map) orderHandleDetails.get("payload"));
+			org.json.simple.JSONObject paymentE = new org.json.simple.JSONObject(
+					(Map) orderHandleDetails.get("payload"));
 			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) paymentE.get("payment"));
 
 			return this.orderAndPaymentService.postOrderHandleDetailsService(PayEntity);
@@ -284,19 +295,20 @@ public class OrderAndPaymentContoller {
 				orderDetailsEntity.setRazorpayOrderId(orderDetailsEntity.getRazorpayOrderId());
 				orderDetailsEntity.setCreatedOn(format);
 
-
 				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderDetailsEntity);
 
-				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity.getOrderSKUDetailsEntity();
+				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
+						.getOrderSKUDetailsEntity();
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
 
-					orderSKUDetailsEntityRow.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
+					orderSKUDetailsEntityRow
+							.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
 
 					postOrderSKUDetails(token, orderSKUDetailsEntityRow);
 				}
-				
+
 //				OrderPaymentEntity orderPaymentEntity = orderAndPaymentGlobalEntity.getOrderPaymentEntity();
 //				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
 //				orderPaymentEntity.setOrderId(OrderData.getOrderId());
@@ -307,7 +319,7 @@ public class OrderAndPaymentContoller {
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
-				
+
 				Query query = new Query();
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
@@ -556,8 +568,7 @@ public class OrderAndPaymentContoller {
 	public Resource getFileFromClasspath(@PathVariable String filename, HttpServletResponse response) {
 		return orderAndPaymentService.getClassPathFile(filename, response);
 	}
-	
-	
+
 	@PostMapping("/track/add")
 	public ResponseEntity<?> postOrderTracking(@Valid @RequestBody OrderTrackingEntity orderTrackingEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderTracking()");
@@ -569,54 +580,52 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
+
 	@PutMapping("/track/update/{trackingId}")
-	public ResponseEntity<?> putOrderTracking(@Valid @RequestBody OrderTrackingEntity orderTrackingEntity,@PathVariable() String trackingId) {
+	public ResponseEntity<?> putOrderTracking(@Valid @RequestBody OrderTrackingEntity orderTrackingEntity,
+			@PathVariable() String trackingId) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.putOrderTracking()");
 
 		try {
-			return this.orderAndPaymentService.putOrderTrackingService(orderTrackingEntity,trackingId);
+			return this.orderAndPaymentService.putOrderTrackingService(orderTrackingEntity, trackingId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
-	} 
-	
+	}
+
 	@GetMapping("/getTracking/{orderId}")
 	public ResponseEntity<?> getOrderTrackingDetails(@PathVariable() String orderId,
-			@RequestParam(defaultValue = "0") int userId,@RequestParam(defaultValue = "0") int designerId) {
+			@RequestParam(defaultValue = "0") int userId, @RequestParam(defaultValue = "0") int designerId) {
 
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderTrackingDetails()");
 
 		try {
-			return this.orderAndPaymentService.getOrderTrackingDetailsService(orderId,userId,designerId);
+			return this.orderAndPaymentService.getOrderTrackingDetailsService(orderId, userId, designerId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
-	} 
-
+	}
 
 	@PutMapping("/cancelOrder/{orderId}/{productId}")
 	public GlobalResponse cancelOrder(@PathVariable String orderId, @PathVariable Integer productId) {
 		try {
-			return this.orderAndPaymentService.cancelOrderService(orderId,productId);
-		}
-		catch(Exception e) {
+			return this.orderAndPaymentService.cancelOrderService(orderId, productId);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/getOrderByInvoiceId/{invoiceId}")
-	public   ResponseEntity<?> getOrderByInvoiceId(@PathVariable String invoiceId) {
+	public ResponseEntity<?> getOrderByInvoiceId(@PathVariable String invoiceId) {
 		try {
 			return this.orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
+
 	@GetMapping("/getPdfByOrderId/{id}")
 	public ResponseEntity<byte[]> getPdfByOrderId(@PathVariable String id) throws IOException {
 		System.err.println(id);
@@ -624,23 +633,109 @@ public class OrderAndPaymentContoller {
 		System.out.println(findByOrderId.toString());
 		OrderDetailsEntity orderDetailsEntity = findByOrderId.get(0);
 		File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-		
+
 		FileInputStream fl = new FileInputStream(createPdfSupplier);
-        byte[] arr = new byte[(int)createPdfSupplier.length()];
-        fl.read(arr);
-        fl.close();
-		
-		 HttpHeaders headers = new HttpHeaders();
+		byte[] arr = new byte[(int) createPdfSupplier.length()];
+		fl.read(arr);
+		fl.close();
 
-		    headers.setContentType(MediaType.parseMediaType("application/pdf"));
-		    String filename = "Order.pdf";
+		HttpHeaders headers = new HttpHeaders();
 
-		    headers.add("content-disposition", "inline;filename=" + filename);
+		headers.setContentType(MediaType.parseMediaType("application/pdf"));
+		String filename = "Order.pdf";
+
+		headers.add("content-disposition", "inline;filename=" + filename);
 //		    headers.add("content-disposition", "attachment;filename=" + filename);
 
-		    //headers.setContentDispositionFormData(filename, filename);
-		    headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-		    ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(arr, headers, HttpStatus.OK);
-		    return response;
+		// headers.setContentDispositionFormData(filename, filename);
+		headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(arr, headers, HttpStatus.OK);
+		return response;
+	}
+
+	//@GetMapping("/getOrderList")
+	public List<OrderDetailsEntity> getOrderListAPI() {
+		try {
+			int flag = 0;
+			List<OrderDetailsEntity> sortingList = new ArrayList<OrderDetailsEntity>();
+			List<OrderDetailsEntity> orderDetailsList = orderDetailsRepo.findAll();
+			for (OrderDetailsEntity data : orderDetailsList) {
+				if (data.getOrderDate().equals("27/07/2022")) {
+					flag++;
+				}
+				if (data.getOrderDate().equals("01/08/2022")) {
+					flag = 0;
+				}
+				if (flag != 0) {
+					sortingList.add(data);
+				}
+			}
+			return sortingList;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@GetMapping("/exelSheet")
+	public ResponseEntity<InputStreamSource> exelGen(@RequestParam String startDate,@RequestParam String endDate) {
+		try {
+			int flag = 0;
+			List<OrderDetailsEntity> sortingList = new ArrayList<OrderDetailsEntity>();
+			List<OrderDetailsEntity> orderDetailsList = orderDetailsRepo.findAll();
+			for (OrderDetailsEntity data : orderDetailsList) {
+				if (data.getOrderDate().equals(startDate)) {
+					flag++;
+				}
+				if (data.getOrderDate().equals(endDate)) {
+					flag = 0;
+				}
+				if (flag != 0) {
+					sortingList.add(data);
+				}
+			}
+			String[] colum= {"InvoiceId","DelivaryDate","OrderDate","OrderId","OrderStatus","DelivaryStatus","TotalAmount","MRP Value","Total Taxamount"};
+			try(Workbook workbook= new XSSFWorkbook();
+			ByteArrayOutputStream arrayOutputStream= new ByteArrayOutputStream();
+					){
+				Sheet sheet=workbook.createSheet("SampleData");
+				Font createFont = workbook.createFont();
+				createFont.setBold(true);
+				createFont.setColor(IndexedColors.BLUE.getIndex());
+				
+				CellStyle headerFont=workbook.createCellStyle();
+				headerFont.setFont(createFont);
+				Row headerRow= sheet.createRow(0);
+				for(int col=0;col<colum.length;col++) {
+					Cell cell=headerRow.createCell(col);
+					cell.setCellValue(colum[col]);
+					cell.setCellStyle(headerFont);
+				}
+				int rowIndex=1;
+				List<OrderDetailsEntity> orderList=sortingList;
+				for(OrderDetailsEntity detailsEntity:orderList) {
+					Row row= sheet.createRow(rowIndex++);
+					row.createCell(0).setCellValue(detailsEntity.getInvoiceId());
+					row.createCell(1).setCellValue(detailsEntity.getDeliveryDate());
+					row.createCell(2).setCellValue(detailsEntity.getOrderDate());
+					row.createCell(3).setCellValue(detailsEntity.getOrderId());
+					row.createCell(4).setCellValue(detailsEntity.getOrderStatus());
+					row.createCell(5).setCellValue(detailsEntity.getDeliveryStatus());
+					row.createCell(6).setCellValue(detailsEntity.getTotalAmount());
+					row.createCell(7).setCellValue(detailsEntity.getMrp());
+					row.createCell(8).setCellValue(detailsEntity.getTaxAmount());
+				}
+				workbook.write(arrayOutputStream);
+				ByteArrayInputStream arrayInputStream= new ByteArrayInputStream(arrayOutputStream.toByteArray());
+				 HttpHeaders headers= new HttpHeaders();
+				 headers.add("Content-Disposition", "attachment; filename=data.xlsx");
+				 return ResponseEntity
+						 .ok()
+						 .headers(headers)
+						 .body(new InputStreamResource(arrayInputStream));
+			}
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 }

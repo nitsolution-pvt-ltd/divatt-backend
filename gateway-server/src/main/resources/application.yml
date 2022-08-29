@@ -74,7 +74,7 @@ spring:
   application:
     name: ApiGatway
 server:
-  port: '8085'
+  port: '9095'
   ssl:
     key-store: classpath:gateway-server.jks
     key-store-type: JKS
