@@ -20,6 +20,8 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amazonaws.services.applicationdiscovery.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
@@ -581,25 +583,60 @@ public ColourEntity getColour(String name) {
 		}
 	}
 
-	
 
+	public Map<String, Object> bannerListing(int page, int limit, String sort, String sortName, Boolean isDeleted,
+		String keyword, Optional<String> sortBy) {
 	
-
-
-
+		try {
+			Pageable pagingSort = null;
+			
+	
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+	
+			Page<BannerEntity> findAll = null;
+	
+			if (keyword.isEmpty()) {
+				findAll = bannerRepo.findByIsDeleted(isDeleted, pagingSort);
+			} else {
+				findAll = bannerRepo.Search(keyword, isDeleted, pagingSort);
+	
+			}
+			 
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+	
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+	
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Banner not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		}
 	
 	
-
 	
 	
-	
-	
-	
-  
-	
-
-
-
-	
-
 }
+
+
+
+
+	
+
+
