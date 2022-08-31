@@ -28,7 +28,6 @@ import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.services.AdminMService;
 import com.divatt.admin.services.CategoryService;
-import com.divatt.user.entity.order.OrderDetailsEntity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
