@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,31 +73,13 @@ public class ProductService {
 		}
 	}
 
-//	public ResponseEntity<?> designerOrderListService(Integer page, Integer limit, String keyword)
-//			{
-//		LOGGER.info("Inside - ProductServicer.designerOrderListService()");
-//		try {
-//
-//			JsonObject wishlistObj = new JsonObject();
-//
-//			wishlistObj.addProperty("limit", limit);
-//			wishlistObj.addProperty("page", page);
-//			wishlistObj.addProperty("keyword", keyword);
-//			System.out.println("dd");
-//			HttpResponse<JsonNode> response = null;
-//
-//			Unirest.setTimeouts(0, 0);
-//			response = Unirest.get("http://localhost:8082/dev/userOrder/list")
-//					.header("Content-Type", "application/json").queryString("limit",limit)
-//					.queryString("page",page)
-//					.queryString("keyword",keyword)
-//					.asJson();
-//
-//			return ResponseEntity.ok(new Json(response.getBody().toString()));
-//		} catch (Exception e) {
-//			throw new CustomException(e.getMessage());
-//		}
-//
-//	}
-
+	public List<JSONObject> getReportSheet(Date startDate, Date endDate) {
+		try {
+			//ResponseEntity<JSONObject> responseData=restTemplate.getForEntity("http://localhost:80", null)
+			return null;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

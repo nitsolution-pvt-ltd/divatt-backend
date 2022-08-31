@@ -85,6 +85,7 @@ public class ProfileContoller {
 
 	@Autowired
 	private MongoOperations mongoOperations;
+	
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
@@ -459,6 +460,8 @@ public class ProfileContoller {
 	public List<DesignerLoginEntity> getDesignerDetails(@RequestHeader("Authorization") String token,
 			@PathVariable String designerCategories) {
 		try {
+			ResponseEntity<org.json.simple.JSONObject> response=restTemplate.getForEntity("https://localhost:8082/dev/user/getUserDetails/"+token, org.json.simple.JSONObject.class);
+			System.out.println(response.getBody().get("id").toString());
 			if (!designerCategories.equals("all")) {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("categories").is(designerCategories));
@@ -474,6 +477,7 @@ public class ProfileContoller {
 					String followerCount = countData.get("FollowersData").toString();
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
 					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
+					
 				}
 				return designerData;
 			} else {
@@ -505,5 +509,4 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 }

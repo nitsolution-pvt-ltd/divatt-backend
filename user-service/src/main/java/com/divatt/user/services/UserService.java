@@ -42,6 +42,7 @@ import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
+import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
@@ -93,6 +94,9 @@ public class UserService {
 
 	@Autowired
 	private UserLoginRepo userLoginRepo;
+	
+	@Autowired
+	private JwtUtil jwtUtil;
 
 	public GlobalResponse postWishlistService(ArrayList<WishlistEntity> wishlistEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
@@ -786,6 +790,17 @@ public class UserService {
 			Long countByDesignerId = userDesignerRepo.countByDesignerId(designerId);
 			return new GlobalResponse("Successfull", ""+countByDesignerId, 200);
 			//return null;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public UserLoginEntity getUserDetailsService(String token) {
+		try {
+			String userName=jwtUtil.extractUsername(token);
+			LOGGER.debug(userName);
+			return userLoginRepo.findByEmail(userName).get();
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
