@@ -199,7 +199,7 @@ public class AdminMService {
 				colourEntity2.setColorName(entity.get(i).getColorName());
 				colourEntity2.setColorValue(entity.get(i).getColorValue());
 				colourEntity2.setIsActive(false);
-				
+				 
 				
 				colourEntities.set(i, colourEntity2);
 				
