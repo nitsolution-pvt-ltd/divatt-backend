@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.divatt.admin.entity.ColourMetaEntity;
+import com.divatt.admin.entity.DesignerCategoryEntity;
 import com.divatt.admin.entity.category.CategoryEntity;
 
 @Repository
@@ -14,7 +15,16 @@ public interface AdminMDataRepo extends MongoRepository<ColourMetaEntity, Intege
 
 	Page<ColourMetaEntity> findByMetaKey(String metaKey,String string, Pageable pagingSort);
 
-	@Query(value = "{ $or: [ { 'colorName' : {$regex:?0,$options:'i'} }, { 'colorValue' : {$regex:?0,$options:'i'} }]}")
-	Page<ColourMetaEntity> Search(String keyword, String string, Pageable pagingSort);
+	/*
+	 * @Query(value =
+	 * "{ $or: [ { 'colorName' : {$regex:?0} }, { 'colorValue' : {$regex:?0} }]}")
+	 * Page<ColourMetaEntity> Search(String keyword, String string, Pageable
+	 * pagingSort);
+	 */
+	
+	
+@Query(value = "{ $or: [ { 'colorName' : {$regex:?0,$options:'i'} }, { 'colorValue' : {$regex:?0,$options:'i'} }]}") 
+Page<ColourMetaEntity> Search(String keyword, String string, Pageable pagingSort);
+	 
 
 }

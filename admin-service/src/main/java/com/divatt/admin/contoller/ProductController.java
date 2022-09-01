@@ -1,5 +1,9 @@
 package com.divatt.admin.contoller;
+import java.util.Date;
+import java.util.List;
 
+import org.json.simple.JSONObject;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +29,6 @@ import com.divatt.admin.services.ProductService;
 import com.google.gson.JsonObject;
 
 @RestController
-//@Description("This Conttroller is responsible for Control the product service")
 @RequestMapping("/product")
 public class ProductController {
 
@@ -41,7 +44,7 @@ public class ProductController {
 			int productId = comment.getProductId();
 			int designerId = comment.getDesignerId();
 			String adminStatus = comment.getAdminStatus();
-			String commString = comment.getComments();
+			List<Object> commString = comment.getComments(); 			
 			String ApprovedBy = comment.getApprovedBy();
 
 			return this.productService.productApproval(productId, designerId, commString, ApprovedBy, adminStatus);
@@ -59,18 +62,14 @@ public class ProductController {
 		ResponseEntity.ok(mongoTemplate.aggregate(aggregation, ProductEntity.class, String.class).getMappedResults());
 	}
 
-//	@GetMapping("/designerOrderList")
-//	public ResponseEntity<?> designerOrderList(@RequestParam(defaultValue = "0") Integer page,
-//			@RequestParam(defaultValue = "10") Integer limit,@RequestParam(defaultValue = "0") String keyword) {
-//
-//		LOGGER.info("Inside - ProductController.designerOrderList()");
-//
-//		try {
-//			return this.productService.designerOrderListService(page, limit,keyword);
-//		} catch (Exception e) {
-//			throw new CustomException(e.getMessage());
-//		}
-//
-//	}
-
-}
+	@GetMapping("/getReportSheet/{startDate}/{endDate}")
+	public List<JSONObject> getReportSheetAPI(@PathVariable Date startDate,
+											  @PathVariable Date endDate){
+		try {
+			return this.productService.getReportSheet(startDate,endDate);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	}

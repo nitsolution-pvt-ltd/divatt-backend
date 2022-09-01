@@ -11,7 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +23,7 @@ import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
+import com.divatt.admin.repo.CategoryRepo;
 import com.divatt.admin.repo.SubCategoryRepo;
 
 @Service
@@ -35,13 +39,21 @@ public class SubCategoryService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private CategoryRepo categoryRepo;
+	
+	
+	@Autowired
+	private MongoOperations mongoOperations;
 
 	public GlobalResponse postSubCategoryDetails(@RequestBody SubCategoryEntity subCategoryEntity) {
 		LOGGER.info("Inside - SubCategoryService.postSubCategoryDetails()");
 
 		try {
-			List<SubCategoryEntity> findBySubCategoryName = subCategoryRepo
-					.findByCategoryNameAndIsDeleted(subCategoryEntity.getCategoryName(),false);
+			Query query= new Query();
+			query.addCriteria(Criteria.where("parentId").is(subCategoryEntity.getParentId()).and("categoryName").is(subCategoryEntity.getCategoryName()));
+			List<SubCategoryEntity> findBySubCategoryName=mongoOperations.find(query, SubCategoryEntity.class);
 			if (findBySubCategoryName.size() >= 1) {
 				throw new CustomException("Subcategory already exist!");
 			} else {

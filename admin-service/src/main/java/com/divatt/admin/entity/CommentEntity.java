@@ -1,12 +1,14 @@
 package com.divatt.admin.entity;
 
+import java.util.List;
+
 public class CommentEntity {
 
 	
 	private Integer productId;
 	private Integer designerId;
-	private String comments;
-	
+	private List<Object> comments;
+	//add 4 field of spype listobject with those skype fiedls
 	private String approvedBy;
 	private String adminStatus;
 	
@@ -15,7 +17,7 @@ public class CommentEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public CommentEntity(Integer productId, Integer designerId, String comments, String approvedBy,
+	public CommentEntity(Integer productId, Integer designerId, List<Object> comments, String approvedBy,
 			String adminStatus) {
 		super();
 		this.productId = productId;
@@ -47,11 +49,11 @@ public class CommentEntity {
 		this.designerId = designerId;
 	}
 
-	public String getComments() {
+	public List<Object> getComments() {
 		return comments;
 	}
 
-	public void setComments(String comments) {
+	public void setComments(List<Object> comments) {
 		this.comments = comments;
 	}
 

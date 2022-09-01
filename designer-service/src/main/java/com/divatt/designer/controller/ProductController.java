@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 //import org.json.JSONObject;
-import com.divatt.designer.entity.OrderEntity;
+import com.divatt.designer.entity.OrderSKUDetailsEntity;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.exception.CustomException;
@@ -40,6 +40,12 @@ public class ProductController implements ProductServiceImp {
 	
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
+	
+	
+	@GetMapping("/test")
+	public String test() {
+		return "Hii";
+	}
 
 	@GetMapping("/allList")
 	public Map<String, Object> allProductList(@RequestParam(defaultValue = "0") int page,
@@ -309,7 +315,7 @@ public class ProductController implements ProductServiceImp {
 //				list.add(a);
 //			}
 			
-			System.out.println(productIdList);
+//			System.out.println(productIdList);
 			return productService.ProductListByIdService(productIdList);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -342,7 +348,7 @@ public class ProductController implements ProductServiceImp {
 	}
 
 	@PutMapping("/stockClearence")
-	public GlobalResponce stockClearence(@RequestBody List<OrderEntity> jsonObject)
+	public GlobalResponce stockClearence(@RequestBody List<OrderSKUDetailsEntity> jsonObject)
 	{
 		try {
 			return this.productService.stockClearenceService(jsonObject);
@@ -365,6 +371,42 @@ public class ProductController implements ProductServiceImp {
 	public List<ProductMasterEntity> viewProductByCategorySubcategory(@PathVariable String categoryName, @PathVariable String subCategoryName){
 		try {
 			return this.productService.viewProductByCategorySubcategoryService(categoryName,subCategoryName);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
+	@GetMapping("/getProductReminder")
+	public Map<String, Object> getProductReminder(
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		try {
+			LOGGER.info("Inside-ProductController.getProductReminder()");
+//return null;
+			return productService.getProductReminderService(page, limit, sortBy, sort, sortName, keyword,isDeleted);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
+	@GetMapping("/designerNotification")
+	public GlobalResponce designerNotification() {
+		try {
+			return this.productService.designerNotification();
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@PutMapping("/stockRecoverService")
+	public GlobalResponce stockRecoverService(@RequestBody OrderSKUDetailsEntity orderDetails) {
+		try {
+			return this.productService.stockRecovereService(orderDetails);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

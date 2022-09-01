@@ -52,6 +52,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.divatt.admin.entity.AdminModule;
@@ -62,6 +63,7 @@ import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminModulesRepo;
 import com.divatt.admin.repo.LoginRepository;
 import com.divatt.admin.services.SequenceGenerator;
+import com.divatt.admin.entity.SendMail;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -76,7 +78,7 @@ public class ProfileContoller {
 
 	@Autowired
 	private S3Service s3Service;
-	
+
 	@Autowired
 	private LoginRepository loginRepository;
 
@@ -91,23 +93,30 @@ public class ProfileContoller {
 
 	@Autowired
 	private AdminModulesRepo adminModulesRepo;
-	
+
 	@Autowired
 	private JwtUtil JwtUtil;
 
+	@Autowired
+	private RestTemplate restTemplate;
+
 	Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
 
-	
+	@GetMapping("/test")
+	public String test() {
+		return "Https is working";
+	}
+
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
-	public Map<String, Object> getAll(@RequestHeader("Authorization") String token,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
-			@RequestParam(defaultValue = "createdOn") String sortName,
+	public Map<String, Object> getAll(@RequestHeader("Authorization") String token,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - ProfileContoller.getAll()");
 
 		try {
-			if(!checkPermission(token, "module7", "list"))
+			if (!checkPermission(token, "module7", "list"))
 				throw new CustomException("Don't have list permission");
 			return this.getAdminProfDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 		} catch (Exception e) {
@@ -121,7 +130,7 @@ public class ProfileContoller {
 		LOGGER.info("Inside - ProfileContoller.getAllProf()");
 
 		try {
-			if(!checkPermission(token, "module7", "list"))
+			if (!checkPermission(token, "module7", "list"))
 				throw new CustomException("Don't have list permission");
 			List<LoginEntity> orElseThrow = Optional
 					.of(mongoOperations.find(query(where("is_deleted").is(false)), LoginEntity.class))
@@ -136,10 +145,10 @@ public class ProfileContoller {
 	}
 
 	@GetMapping("/{id}")
-	public LoginEntity getProfById(@RequestHeader("Authorization") String token,@PathVariable("id") Long id) {
+	public LoginEntity getProfById(@RequestHeader("Authorization") String token, @PathVariable("id") Long id) {
 		LOGGER.info("Inside - ProfileContoller.getProfById()");
 		try {
-			if(!checkPermission(token, "module7", "list"))
+			if (!checkPermission(token, "module7", "list"))
 				throw new CustomException("Don't have get permission");
 			List<LoginEntity> orElseThrow = Optional.of(mongoOperations
 					.find(query(where("_id").is(id).andOperator(where("is_deleted").is(false))), LoginEntity.class))
@@ -154,19 +163,20 @@ public class ProfileContoller {
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<?> addProfile(@RequestHeader("Authorization") String token,@Valid @RequestBody LoginEntity loginEntity, Errors error) {
+	public ResponseEntity<?> addProfile(@RequestHeader("Authorization") String token,
+			@Valid @RequestBody LoginEntity loginEntity, Errors error) {
 		LOGGER.info("Inside - ProfileContoller.addProfile()");
+		String pass=loginEntity.getPassword();
 		try {
 			if (error.hasErrors()) {
 				throw new CustomException("Please check all input fields");
 			}
-			Unirest.setTimeouts(0, 0);
-			JsonNode body = Unirest.get("http://localhost:8080/dev/auth/Present/"+loginEntity.getEmail())
-			  .asJson().getBody();
-			JSONObject jsObj = body.getObject();
-			if((boolean) jsObj.get("isPresent"))
+			ResponseEntity<String> forEntity = restTemplate
+					.getForEntity("https://localhost:8080/dev/auth/Present/" + loginEntity.getEmail(), String.class);
+			JSONObject jsonObject = new JSONObject(forEntity.getBody());
+			if ((boolean) jsonObject.get("isPresent"))
 				throw new CustomException("Email already present");
-			if(!checkPermission(token, "module7", "create"))
+			if (!checkPermission(token, "module7", "create"))
 				throw new CustomException("Don't have create permission");
 			Optional<LoginEntity> findByEmail = loginRepository.findByEmail(loginEntity.getEmail());
 			if (findByEmail.isPresent()) {
@@ -184,30 +194,23 @@ public class ProfileContoller {
 			loginEntity.setDeleted(false);
 			loginEntity.setCreatedOn(date.toString());
 			loginEntity.setModifiedOn(date.toString());
-			
-			
-			
-			JsonObject jo = new JsonObject();
-			jo.addProperty("senderMailId", loginEntity.getEmail());
-			jo.addProperty("subject", "Successfully Registration");
-			jo.addProperty("body", "Welcome " + loginEntity.getEmail() + ""
-					+ ",\n                           "
-					+ " Your account created successfully.Please login your account by bellow credentials "
-					+ "\n Username:-  " + loginEntity.getEmail()
-					+ "\n Password:-  " + loginEntity.getPassword()
-					);
-			jo.addProperty("enableHtml", false);
+
+			SendMail mail = new SendMail(loginEntity.getEmail(), "Successfully Registration",
+					"Welcome " + loginEntity.getFirstName() + "" + ",\n   "
+							+ " Your account created successfully. Please login your account by bellow credentials "
+							+ "\n Username:-  " + loginEntity.getEmail() + "\n Password:-  "
+							+ pass,
+					false);
+
 			try {
-				Unirest.setTimeouts(0, 0);
-				HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
-						.header("Content-Type", "application/json").body(jo.toString()).asString();
+				ResponseEntity<String> response = restTemplate
+						.postForEntity("https://65.1.190.195:8080/dev/auth/sendMail", mail, String.class);
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				throw new CustomException(e.getMessage());
 			}
-			
-			
+
 			loginRepository.save(loginEntity);
-					return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Sub admin added successfully", 200),
+			return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Sub admin added successfully", 200),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -217,14 +220,15 @@ public class ProfileContoller {
 
 	@SuppressWarnings("unlikely-arg-type")
 	@PutMapping("/update")
-	public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String token,@Valid @RequestBody LoginEntity loginEntity, Errors error) {
+	public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String token,
+			@Valid @RequestBody LoginEntity loginEntity, Errors error) {
 		LOGGER.info("Inside - ProfileContoller.updateProfile()");
 		try {
 
 			if (error.hasErrors()) {
 				throw new CustomException("Check The Fields");
 			}
-			if(!checkPermission(token, "module7", "update"))
+			if (!checkPermission(token, "module7", "update"))
 				throw new CustomException("Don't have update permission");
 			if (loginEntity.getUid() == null || loginEntity.getUid().equals(""))
 				throw new CustomException("Id is Null");
@@ -254,10 +258,10 @@ public class ProfileContoller {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteProfById(@RequestHeader("Authorization") String token,@PathVariable("id") Long id) {
+	public ResponseEntity<?> deleteProfById(@RequestHeader("Authorization") String token, @PathVariable("id") Long id) {
 		LOGGER.info("Inside - ProfileContoller.deleteProfById()");
 		try {
-			if(!checkPermission(token, "module7", "delete"))
+			if (!checkPermission(token, "module7", "delete"))
 				throw new CustomException("Don't have delete permission");
 			if (mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
 				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)),
@@ -274,10 +278,11 @@ public class ProfileContoller {
 	}
 
 	@PutMapping("/{id}/{status}")
-	public ResponseEntity<?> changeStatusById(@RequestHeader("Authorization") String token,@PathVariable("id") Long id, @PathVariable("status") Boolean status) {
+	public ResponseEntity<?> changeStatusById(@RequestHeader("Authorization") String token, @PathVariable("id") Long id,
+			@PathVariable("status") Boolean status) {
 		LOGGER.info("Inside - ProfileContoller.changeStatusById()");
 		try {
-			if(!checkPermission(token, "module7", "update"))
+			if (!checkPermission(token, "module7", "update"))
 				throw new CustomException("Don't have update permission");
 			if (mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
 				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)),
@@ -293,18 +298,19 @@ public class ProfileContoller {
 		}
 
 	}
-	
+
 	@PutMapping("/muldelete")
-	public GlobalResponse subAdminMulDelete(@RequestHeader("Authorization") String token,@RequestBody() List<Integer> CateID) {
+	public GlobalResponse subAdminMulDelete(@RequestHeader("Authorization") String token,
+			@RequestBody() List<Integer> CateID) {
 		LOGGER.info("Inside - ProfileContoller.subAdminMulDelete()");
 		try {
-			if(!checkPermission(token, "module7", "delete"))
+			if (!checkPermission(token, "module7", "delete"))
 				throw new CustomException("Don't have delete permission");
-			if (!CateID.equals(null)){
+			if (!CateID.equals(null)) {
 				for (Integer CateIdRowId : CateID) {
 
-					 Optional<LoginEntity> findById = loginRepository.findById(CateIdRowId);
-					 LoginEntity filterCatDetails = findById.get();
+					Optional<LoginEntity> findById = loginRepository.findById(CateIdRowId);
+					LoginEntity filterCatDetails = findById.get();
 
 					if (filterCatDetails.getUid() != null) {
 						filterCatDetails.setDeleted(true);
@@ -313,14 +319,13 @@ public class ProfileContoller {
 					}
 				}
 				return new GlobalResponse("SUCCESS", "Subadmin deleted successfully", 200);
-			}else {
+			} else {
 				throw new CustomException("Subadmin Id Not Found!");
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
-		}	
+		}
 	}
-	
 
 	public Map<String, Object> getAdminProfDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
@@ -369,57 +374,59 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	Boolean checkPermission(String token ,String moduleName , String access) {
+
+	Boolean checkPermission(String token, String moduleName, String access) {
 		System.out.println(token);
 		String extractUsername = JwtUtil.extractUsername(token.substring(7));
 		Long role = loginRepository.findByEmail(extractUsername).get().getRole();
 		ArrayList<AdminModule> modules = adminModulesRepo.findById(role).get().getModules();
 		Boolean haveAccess = false;
-		for(AdminModule obj : modules) {
-			if(obj.getModName().equals(moduleName)) {
+		for (AdminModule obj : modules) {
+			if (obj.getModName().equals(moduleName)) {
 				haveAccess = obj.getModPrivs().get(access);
 			}
 		}
 //		if(!haveAccess)
 //			throw new CustomException("Don't have access on this module");
-		
+
 		return haveAccess;
 	}
-	
+
 	@GetMapping("/s3/getFiles")
-	public ResponseEntity<?> getFiles(){
+	public ResponseEntity<?> getFiles() {
 		return ResponseEntity.ok(s3Service.listFiles());
 	}
+
 	@GetMapping("/s3/getBuckets")
-	public ResponseEntity<?> getBuckets(){
+	public ResponseEntity<?> getBuckets() {
 		return ResponseEntity.ok(s3Service.getAllBuckets());
 	}
+
 	@PostMapping("/s3/upload")
-	public ResponseEntity<?> uploadFiles(@RequestPart(value = "file", required = false) MultipartFile file) throws IOException{
-		return ResponseEntity.ok(s3Service.uploadFile(file.getOriginalFilename(),file.getBytes()));
+	public ResponseEntity<?> uploadFiles(@RequestPart(value = "file", required = false) MultipartFile file)
+			throws IOException {
+		return ResponseEntity.ok(s3Service.uploadFile(file.getOriginalFilename(), file.getBytes()));
 	}
-	
+
 	@GetMapping("/testResize")
 	public String testResize() throws IOException {
 		File input = new File("/home/soumen/Downloads/soumen.jpg");
-        BufferedImage image = ImageIO.read(input);
-        
-        BufferedImage resized = resize(image, 500, 500);
-        
-        File output = new File("/home/soumen/Downloads/soumen_500_500.jpg");
-        ImageIO.write(resized, "png", output);
+		BufferedImage image = ImageIO.read(input);
+
+		BufferedImage resized = resize(image, 500, 500);
+
+		File output = new File("/home/soumen/Downloads/soumen_500_500.jpg");
+		ImageIO.write(resized, "png", output);
 		return "Success";
 	}
-	
-	 private static BufferedImage resize(BufferedImage img, int height, int width) {
-	        Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-	        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-	        Graphics2D g2d = resized.createGraphics();
-	        g2d.drawImage(tmp, 0, 0, null);
-	        g2d.dispose();
-	        return resized;
-	    }
-	
+
+	private static BufferedImage resize(BufferedImage img, int height, int width) {
+		Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = resized.createGraphics();
+		g2d.drawImage(tmp, 0, 0, null);
+		g2d.dispose();
+		return resized;
+	}
 
 }

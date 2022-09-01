@@ -1,7 +1,9 @@
 package com.divatt.admin.entity.product;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -33,6 +35,7 @@ public class ProductEntity {
 	private Object giftWrapAmount;
 	private Object price;
 	private Object images[];
+
 	private Object standeredSOH[];
 	private Integer customizationSOH;
 	private Object extraSpecifications;
@@ -51,7 +54,7 @@ public class ProductEntity {
 	private String approvedBy;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	private Date approvedOn;
-	private String comments;
+	private List<Object> comments = new ArrayList<>();
 	private String SKQCode;
 	private String adminStatus;
 	private String designerName;
@@ -59,13 +62,14 @@ public class ProductEntity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 	public ProductEntity(Integer productId, Integer designerId, Integer categoryId, Integer subCategoryId,
 			String gender, String productName, String productDescription, Object age, Boolean cod,
 			Boolean customization, Object purchaseQuantity, String priceType, Float taxPercentage, Boolean taxInclusive,
 			Boolean giftWrap, Object giftWrapAmount, Object price, Object[] images, Object[] standeredSOH,
 			Integer customizationSOH, Object extraSpecifications, Object specifications, Boolean isActive,
 			Boolean isDeleted, Date createdOn, String createdBy, String submittedBy, Date adminStatusOn,
-			String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String comments, String sKQCode,
+			String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, List<Object> comments, String sKQCode,
 			String adminStatus, String designerName) {
 		super();
 		this.productId = productId;
@@ -313,11 +317,11 @@ public class ProductEntity {
 	public void setApprovedOn(Date approvedOn) {
 		this.approvedOn = approvedOn;
 	}
-	public String getComments() {
+	public List<Object> getComments() {
 		return comments;
 	}
-	public void setComments(String comments) {
-		this.comments = comments;
+	public void setComments(List<Object> comment) {
+		this.comments = comment;
 	}
 	public String getSKQCode() {
 		return SKQCode;

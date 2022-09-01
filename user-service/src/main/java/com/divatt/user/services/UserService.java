@@ -2,6 +2,7 @@ package com.divatt.user.services;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,9 +23,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.designerProductEntity.ProductMasterEntity;
@@ -36,6 +42,7 @@ import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
+import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
@@ -62,6 +69,9 @@ public class UserService {
 	private WishlistRepo wishlistRepo;
 
 	@Autowired
+	private RestTemplate restTemplate;
+
+	@Autowired
 	private SequenceGenerator sequenceGenerator;
 
 	@Autowired
@@ -78,12 +88,15 @@ public class UserService {
 
 	@Autowired
 	private OrderDetailsRepo orderDetailsRepo;
-	
+
 	@Autowired
 	private MongoOperations mongoOperations;
-	
+
 	@Autowired
 	private UserLoginRepo userLoginRepo;
+	
+	@Autowired
+	private JwtUtil jwtUtil;
 
 	public GlobalResponse postWishlistService(ArrayList<WishlistEntity> wishlistEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
@@ -102,7 +115,10 @@ public class UserService {
 					filterCatDetails.setId(sequenceGenerator.getNextSequence(WishlistEntity.SEQUENCE_NAME));
 					filterCatDetails.setUserId(getRow.getUserId());
 					filterCatDetails.setProductId(getRow.getProductId());
-					filterCatDetails.setAddedOn(new Date());
+					SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+					Date date = new Date();
+					String format = formatter.format(date);
+					filterCatDetails.setAddedOn(new SimpleDateFormat("yyyy/MM/dd").parse(format));
 					wishlistRepo.save(filterCatDetails);
 				}
 			}
@@ -189,19 +205,33 @@ public class UserService {
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
-			JsonObject wishlistObj = new JsonObject();
+//			JsonObject wishlistObj = new JsonObject();
+//
+//			wishlistObj.addProperty("productId", productIds.toString());
+//			wishlistObj.addProperty("limit", limit);
+//			wishlistObj.addProperty("page", page);
 
-			wishlistObj.addProperty("productId", productIds.toString());
-			wishlistObj.addProperty("limit", limit);
-			wishlistObj.addProperty("page", page);
-			
-			HttpResponse<JsonNode> response = null;
+			Map<String, Object> map = new HashMap<>();
+			map.put("productId", productIds.toString());
+			map.put("limit", limit);
+			map.put("page", page);
+
+//			HttpResponse<JsonNode> response = null;
+			ResponseEntity<String> response1 = null;
 			if (productIds != null) {
-				Unirest.setTimeouts(0, 0);
-				response = Unirest.post("http://localhost:8083/dev/designerProduct/getWishlistProductList")
-						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
+
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+
+				response1 = restTemplate.postForEntity(
+						"https://localhost:8083/dev/designerProduct/getWishlistProductList", entity, String.class);
+
+//				Unirest.setTimeouts(0, 0);
+//				response = Unirest.post("https://localhost:8083/dev/designerProduct/getWishlistProductList")
+//						.header("Content-Type", "application/json").body(wishlistObj.toString()).asJson();
 			}
-			return ResponseEntity.ok(new Json(response.getBody().toString()));
+			return ResponseEntity.ok(new Json(response1.getBody()));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -228,6 +258,7 @@ public class UserService {
 						filterCatDetails.setProductId(getRow.getProductId());
 						filterCatDetails.setQty(getRow.getQty());
 						filterCatDetails.setAddedOn(new Date());
+						filterCatDetails.setSelectedSize(getRow.getSelectedSize());
 						
 						userCartRepo.save(filterCatDetails);
 					}
@@ -246,19 +277,19 @@ public class UserService {
 
 		try {
 			Map<String, Object> map = new HashMap<>();
-			RestTemplate restTemplate= new RestTemplate();
-			ResponseEntity<ProductMasterEntity>response= restTemplate.getForEntity("http://localhost:8085/dev/designerProduct/view/"+userCartEntity.getProductId(), ProductMasterEntity.class);
-			System.out.println(response.getBody());
-			System.out.println();
-			int purchaseQuantity=userCartEntity.getQty();
-			System.out.println("0k");
+//			RestTemplate restTemplate= new RestTemplate();
+			ResponseEntity<ProductMasterEntity> response = restTemplate.getForEntity(
+					"https://localhost:8085/dev/designerProduct/view/" + userCartEntity.getProductId(),
+					ProductMasterEntity.class);
+
+			int purchaseQuantity = userCartEntity.getQty();
+
 			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(userCartEntity.getProductId(),
 					userCartEntity.getUserId());
 
 			if (!findByCat.isPresent()) {
 				throw new CustomException("Product not found in the cart.");
 			} else {
-				
 
 				UserCartEntity RowsDetails = findByCat.get();
 				RowsDetails.setUserId(userCartEntity.getUserId());
@@ -275,7 +306,6 @@ public class UserService {
 //				}
 				UserCartEntity getdata = userCartRepo.save(RowsDetails);
 
-				
 				map.put("reason", "SUCCESS");
 				map.put("message", "Cart updated succesfully");
 				map.put("status", 200);
@@ -316,11 +346,15 @@ public class UserService {
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
-			JsonObject cartObj = new JsonObject();
+//			JsonObject cartObj = new JsonObject();
+//			cartObj.addProperty("productId", productIds.toString());
+//			cartObj.addProperty("limit", limit);
+//			cartObj.addProperty("page", page);
 
-			cartObj.addProperty("productId", productIds.toString());
-			cartObj.addProperty("limit", limit);
-			cartObj.addProperty("page", page);
+			Map<String, Object> maps = new HashMap<>();
+			maps.put("productId", productIds.toString());
+			maps.put("limit", limit);
+			maps.put("page", page);
 
 			Map<String, Object> map = new HashMap<>();
 			map.put("reason", "ERROR");
@@ -332,20 +366,36 @@ public class UserService {
 			}
 
 			try {
-				Unirest.setTimeouts(0, 0);
-				HttpResponse<JsonNode> response = Unirest
-						.post("http://localhost:8083/dev/designerProduct/getCartProductList")
-						.header("Content-Type", "application/json").body(cartObj.toString()).asJson();
+				ResponseEntity<String> response1 = null;
+//				Unirest.setTimeouts(0, 0);
+//				HttpResponse<JsonNode> response = Unirest
+//						.post("https://localhost:8083/dev/designerProduct/getCartProductList")
+//						.header("Content-Type", "application/json").body(cartObj.toString()).asJson();
+//				
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(maps, headers);
 
-				JSONArray array = response.getBody().getArray();
+				response1 = restTemplate.postForEntity("https://localhost:8083/dev/designerProduct/getCartProductList",
+						entity, String.class);
+
+				String body = response1.getBody();
+				List<Object> cp = Arrays.asList(body);
+
+				JsonNode jn1 = new JsonNode(body);
+				JSONArray object1 = jn1.getArray();
 
 				List<Object> l1 = new ArrayList<>();
-				array.forEach(e -> {
+				object1.forEach(e -> {
+
 					JsonNode jn = new JsonNode(e.toString());
 					JSONObject object = jn.getObject();
+
 					UserCartEntity cart = userCartRepo
 							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
 							.get(0);
+					String selectedSize= userCartRepo
+							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString())).get(0).getSelectedSize();
 					ObjectMapper obj = new ObjectMapper();
 					String writeValueAsString = null;
 					try {
@@ -356,6 +406,7 @@ public class UserService {
 					JsonNode cartJN = new JsonNode(writeValueAsString);
 					JSONObject cartObject = cartJN.getObject();
 					object.put("cartData", cartObject);
+					object.put("selectedSize",selectedSize);
 					l1.add(object);
 				});
 
@@ -485,10 +536,10 @@ public class UserService {
 	public ResponseEntity<?> getProductUser() {
 		try {
 
-			RestTemplate restTemplate = new RestTemplate();
+//			RestTemplate restTemplate = new RestTemplate();
 
 			String body = restTemplate
-					.getForEntity("http://localhost:8083/dev/designerProduct/userProductList", String.class).getBody();
+					.getForEntity("https://localhost:8083/dev/designerProduct/userProductList", String.class).getBody();
 
 			Json js = new Json(body);
 			return ResponseEntity.ok(js);
@@ -525,9 +576,9 @@ public class UserService {
 	public ResponseEntity<?> getDesignerDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
-			RestTemplate restTemplate = new RestTemplate();
+//			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<?> Response = restTemplate
-					.getForEntity("http://localhost:8083/dev/designerProduct/getDesignerProductListUser?page=" + page
+					.getForEntity("https://localhost:8083/dev/designerProduct/getDesignerProductListUser?page=" + page
 							+ "&limit=" + limit + "&", String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
@@ -540,38 +591,37 @@ public class UserService {
 	public ResponseEntity<?> productDetails(Integer productId, String userId) {
 		try {
 
-			RestTemplate restTemplate = new RestTemplate();
+//			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<String> exchange = restTemplate.exchange(
-					"http://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null, String.class);
+					"https://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null, String.class);
 			Json js = new Json(exchange.getBody());
 
 			if (!userId.equals("")) {
-			List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
-				
-				if(!cart.isEmpty()) {
-					
-				
-				try {
+				List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
 
-					JsonNode jn = new JsonNode(exchange.getBody().toString());
-					JSONObject object = jn.getObject();
-					
-					ObjectMapper obj = new ObjectMapper();
-					String writeValueAsString = null;
+				if (!cart.isEmpty()) {
+
 					try {
-						writeValueAsString = obj.writeValueAsString(cart);
-					} catch (JsonProcessingException e1) {
-						e1.printStackTrace();
-					}
-					JsonNode cartJN = new JsonNode(writeValueAsString);
-					JSONObject cartObject = cartJN.getObject();
-					object.put("cartData", cartObject);
 
-					return ResponseEntity.ok(new Json(jn.toString()));
-				} catch (Exception e2) {
-					return ResponseEntity.ok(e2.getMessage());
+						JsonNode jn = new JsonNode(exchange.getBody().toString());
+						JSONObject object = jn.getObject();
+
+						ObjectMapper obj = new ObjectMapper();
+						String writeValueAsString = null;
+						try {
+							writeValueAsString = obj.writeValueAsString(cart);
+						} catch (JsonProcessingException e1) {
+							e1.printStackTrace();
+						}
+						JsonNode cartJN = new JsonNode(writeValueAsString);
+						JSONObject cartObject = cartJN.getObject();
+						object.put("cartData", cartObject);
+
+						return ResponseEntity.ok(new Json(jn.toString()));
+					} catch (Exception e2) {
+						return ResponseEntity.ok(e2.getMessage());
+					}
 				}
-			}
 			}
 			return ResponseEntity.ok(js);
 
@@ -584,10 +634,8 @@ public class UserService {
 	public ResponseEntity<?> getDesignerUser() {
 		try {
 
-			RestTemplate restTemplate = new RestTemplate();
-
-			String body = restTemplate.getForEntity("http://localhost:8083/dev/designer/userDesignerList", String.class)
-					.getBody();
+			String body = restTemplate
+					.getForEntity("https://localhost:8083/dev/designer/userDesignerList", String.class).getBody();
 
 			Json js = new Json(body);
 			return ResponseEntity.ok(js);
@@ -600,27 +648,27 @@ public class UserService {
 	public ResponseEntity<?> getDesignerProfileDetailsService(Integer designerId, Long userId) {
 		try {
 
-			RestTemplate restTemplate = new RestTemplate();
+//			RestTemplate restTemplate = new RestTemplate();
 
 			String body = restTemplate
-					.getForEntity("http://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();
+					.getForEntity("https://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();
 			JsonNode jn = new JsonNode(body);
 			JSONObject object = jn.getObject();
 			System.out.println(object);
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
-		System.out.println(userId);
+//		System.out.println(userId);
 			if (userId != 0) {
-				 Optional<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
-				 if(findByUserId.isPresent()) {
-					 object.put("isFollowing", findByUserId.get().getIsFollowing());
-						object.put("rating", findByUserId.get().getRaiting());
-				 }else {
-					 object.put("isFollowing", false);
-						object.put("rating", 0);
+				Optional<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
+				if (findByUserId.isPresent()) {
+					object.put("isFollowing", findByUserId.get().getIsFollowing());
+					object.put("rating", findByUserId.get().getRaiting());
+				} else {
+					object.put("isFollowing", false);
+					object.put("rating", 0);
 
-				 }
-				
+				}
+
 			}
 
 			return ResponseEntity.ok(new Json(object.toString()));
@@ -633,9 +681,9 @@ public class UserService {
 	public ResponseEntity<?> getPerDesignerProductListService(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, String keyword, Optional<String> sortBy, Integer designerId) {
 		try {
-			RestTemplate restTemplate = new RestTemplate();
+//			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<?> Response = restTemplate
-					.getForEntity("http://localhost:8083/dev/designerProduct/getPerDesignerProductUser/" + designerId
+					.getForEntity("https://localhost:8083/dev/designerProduct/getPerDesignerProductUser/" + designerId
 							+ "?page=" + page + "&limit=" + limit + "&", String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
@@ -647,28 +695,25 @@ public class UserService {
 
 	public GlobalResponse multipleDelete(Integer userId) {
 		try {
-			List<UserCartEntity> allData=userCartRepo.findByUserId(userId);
-			if(allData.isEmpty())
-			{
+			List<UserCartEntity> allData = userCartRepo.findByUserId(userId);
+			if (allData.isEmpty()) {
 				return new GlobalResponse("Error!!", "No product found", 400);
 			}
 			userCartRepo.deleteByUserId(userId);
 			return new GlobalResponse("Success", "Cart data deleted successfully", 200);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public List<Integer> viewProductService(String orderId) {
 		try {
-			Query query= new Query();
+			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(orderId));
-			OrderDetailsEntity orderDetailsEntity=mongoOperations.findOne(query, OrderDetailsEntity.class);
-			//List<ProductEntity> productList=orderDetailsEntity.getProducts();
+			OrderDetailsEntity orderDetailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
+			// List<ProductEntity> productList=orderDetailsEntity.getProducts();
 			return null;
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -691,9 +736,9 @@ public class UserService {
 			Page<UserLoginEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = userLoginRepo.findByIsDeleted(isDeleted,pagingSort);
+				findAll = userLoginRepo.findByIsDeleted(isDeleted, pagingSort);
 			} else {
-				findAll = userLoginRepo.Search(keyword,isDeleted,pagingSort);
+				findAll = userLoginRepo.Search(keyword, isDeleted, pagingSort);
 
 			}
 
@@ -715,18 +760,47 @@ public class UserService {
 			} else {
 				return response;
 			}
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public List<UserDesignerEntity> followedUserListService(Integer designerIdvalue) {
 		try {
-			Query query= new Query();
+			Query query = new Query();
 			query.addCriteria(Criteria.where("designerId").is(designerIdvalue));
-			List<UserDesignerEntity> userData= mongoOperations.find(query, UserDesignerEntity.class);
+			List<UserDesignerEntity> userData = mongoOperations.find(query, UserDesignerEntity.class);
 			return userData;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public UserLoginEntity getUserById(Long userId) {
+		try {
+			UserLoginEntity userDetails = userLoginRepo.findById(userId).get();
+			return userDetails;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public GlobalResponse getCountFollowers(Long designerId) {
+		try {
+			Long countByDesignerId = userDesignerRepo.countByDesignerId(designerId);
+			return new GlobalResponse("Successfull", ""+countByDesignerId, 200);
+			//return null;
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public UserLoginEntity getUserDetailsService(String token) {
+		try {
+			String userName=jwtUtil.extractUsername(token);
+			LOGGER.debug(userName);
+			return userLoginRepo.findByEmail(userName).get();
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

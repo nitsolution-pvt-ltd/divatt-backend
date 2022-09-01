@@ -1,5 +1,6 @@
 package com.divatt.user.repo.wishlist;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,5 +23,10 @@ public interface WishlistRepo extends MongoRepository<WishlistEntity, Integer> {
 	Page<WishlistEntity> Search(String sortKey, Pageable pageable);
 
 	void deleteByProductIdAndUserId(Integer productId, Integer userId);
+	
+	List<WishlistEntity> findByAddedOn(Date addedOn);
+	
+	@Query("{addedOn:{$lt?0}}")
+	List<WishlistEntity> findByAddedOnBefore1Week(Date addedOn);
 
 }

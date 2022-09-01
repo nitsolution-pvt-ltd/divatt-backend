@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import com.divatt.user.entity.order.OrderDetailsEntity;
+import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 
 public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Long>{
 	
@@ -28,4 +29,16 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 
 	@Query(value = "{ $or: [ { 'user_id' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} }],$and: [ {  'order_id' : ?1}]}")
 	Page<OrderDetailsEntity> SearchByOrderId( String keyword, String orderId, Pageable pagingSort);
+
+
+	OrderDetailsEntity findTopByOrderByIdDesc();
+
+
+	Page<OrderDetailsEntity> findByOrderIdIn(List<String> orderId, Pageable pagingSort);
+
+
+	@Query(value = "{ 'razorpay_order_id' : {$regex:?0,$options:'i'} }")
+	List<OrderDetailsEntity> findByRazorpayOrderId(String string);
+	
+//	Page<OrderDetailsEntity> findByDesignerId(int designerId,Pageable pageable);
 }

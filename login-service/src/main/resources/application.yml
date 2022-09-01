@@ -124,6 +124,15 @@ spring:
  
 server: 
   port: 8080
+  ssl:
+    key-store: classpath:gateway-server.jks
+    key-store-type: JKS
+    key-alias: gateway-server
+    key-password: Dapp@1234
+    key-store-password: Dapp@1234
+    enabled: true
+    protocol: TLS
+    enabled-protocols: TLSv1.2
   servlet: 
     contextPath: /dev
 name: dev-yml
