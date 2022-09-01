@@ -180,50 +180,38 @@ public class AdminMService {
 
 
 
-
-
-
      public GlobalResponse deleteColour(String name) {
-	    try {
-		
-		
-		
-		List<ColourEntity> entity = colour.getColors();
-		
-		ColourEntity colourEntity2 = new ColourEntity();
-		
-		
-		for(int i=0 ; i< entity.size() ; i++) {
-			
-			if(entity.get(i).getIsActive().equals(true) && entity.get(i).getColorName().equals(name)) {
-				colourEntity2.setColorName(entity.get(i).getColorName());
-				colourEntity2.setColorValue(entity.get(i).getColorValue());
-				colourEntity2.setIsActive(false);
-				 
-				
-				colourEntities.set(i, colourEntity2);
-				
-				
-				ColourMetaEntity coloEntity = new ColourMetaEntity();
-				coloEntity.setId(colour.getId());
-				coloEntity.setMetaKey(colour.getMetaKey());
-				coloEntity.setColors(colourEntities);
-				adminMDataRepo.save(coloEntity);
-				return new GlobalResponse("Success!!", "Colore Delete Successfully", 200);
-				
-				
-			}
-			
-			
-		}
-		
-	}
-	catch (Exception e) {
-		// TODO: handle exception
-		
-		throw new CustomException(e.getMessage()) ;
-	}
-}
+    		try {
+    			
+    			Query query = new Query() ;
+    			query.addCriteria(Criteria.where("metaKey").is("colors")) ;
+    			ColourMetaEntity colourMetaEntity = mongoOperations.findOne(query, ColourMetaEntity.class) ;
+    			List<ColourEntity> listColour = colourMetaEntity.getColors();
+    			Boolean res = true;
+    		    for(int i= 0 ; i< listColour.size() ; i++ ) {
+    			if( listColour.get(i).getColorName().contentEquals(name)) {
+    					//HttpEntity<String> request = new HttpEntity<>(headers);
+    					//ResponseEntity<Boolean> response = this.restTemplate.getForEntity("https://localhost:9095/dev/designerProduct/getColour/"+ listColour.get(i).getColorValue(),Boolean.class);
+    				//	ResponseEntity<Boolean> response1 = this.restTemplate.exchange("https://localhost:9095/dev/designerProduct/getColour/"+ listColour.get(i).getColorValue(),
+    							//Boolean.class);
+    					//res= response.getBody();
+    					if(res) {
+    						 listColour.remove(i);
+    							//ColourMetaEntity colourMetaEntity = new ColourMetaEntity();
+    							colourMetaEntity.setColors(listColour);
+    							colourMetaEntity.setMetaKey("colors");
+    							adminMDataRepo.save(colourMetaEntity);
+    							return new GlobalResponse("Success", "Colour deleted successfully", 200);
+    					 }
+    				}
+    			}
+    			
+    		 return new GlobalResponse("Failed", "Colour not deleted",404);
+    		}
+    		catch (Exception e) {
+    		    throw new CustomException(e.getMessage()) ;
+    		}
+    	}
 
 
 
@@ -389,6 +377,56 @@ public ColourEntity getColour(String name) {
 		}
 
 	}
+	
+	
+	
+	 
+	 public Map<String, Object> bannerListing(int page, int limit, String sort, String sortName, Boolean isDeleted,
+	 		String keyword, Optional<String> sortBy) {
+	 	
+	 		try {
+	 			Pageable pagingSort = null;
+	 			
+	 	
+	 			if (sort.equals("ASC")) {
+	 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+	 			} else {
+	 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+	 			}
+	 	
+	 			Page<BannerEntity> findAll = null;
+	 	
+	 			if (keyword.isEmpty()) {
+	 				findAll = bannerRepo.findByIsDeleted(isDeleted, pagingSort);
+	 			} else {
+	 				findAll = bannerRepo.Search(keyword, isDeleted, pagingSort);
+	 	
+	 			}
+	 			 
+	 			int totalPage = findAll.getTotalPages() - 1;
+	 			if (totalPage < 0) {
+	 				totalPage = 0;
+	 			}
+	 	
+	 			Map<String, Object> response = new HashMap<>();
+	 			response.put("data", findAll.getContent());
+	 			response.put("currentPage", findAll.getNumber());
+	 			response.put("total", findAll.getTotalElements());
+	 			response.put("totalPage", totalPage);
+	 			response.put("perPage", findAll.getSize());
+	 			response.put("perPageElement", findAll.getNumberOfElements());
+	 	
+	 			if (findAll.getSize() <= 1) {
+	 				throw new CustomException("Banner not found!");
+	 			} else {
+	 				return response;
+	 			}
+	 		} catch (Exception e) {
+	 			throw new CustomException(e.getMessage());
+	 		}
+	 		}
+	
+	
 
 	public GlobalResponse addDesignerCategory(DesignerCategoryEntity designerCategoryEntity) {
 		
