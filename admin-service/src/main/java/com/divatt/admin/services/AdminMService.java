@@ -22,7 +22,6 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.amazonaws.services.applicationdiscovery.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
@@ -56,9 +55,7 @@ public class AdminMService {
 
 	@Autowired
 	private DesignerCategoryRepo designerCategoryRepo;
-	
-	@Autowired
-	private RestTemplate restTemplate ;
+
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdminMService.class);
 	
@@ -189,34 +186,37 @@ public class AdminMService {
      public GlobalResponse deleteColour(String name) {
 	    try {
 		
-		LOGGER.info("Inside - AdminMService.deleteColour()");
-		Query query = new Query() ;
-	    query.addCriteria(Criteria.where("metaKey").is("colors")) ;
-	    ColourMetaEntity colourMetaEntity = mongoOperations.findOne(query, ColourMetaEntity.class) ;
-	    List<ColourEntity> listColour = colourMetaEntity.getColors();
-	    Boolean res = true;
-	    for(int i= 0 ; i< listColour.size() ; i++ ) {
-			if( listColour.get(i).getColorName().contentEquals(name)) {
-				//HttpEntity<String> request = new HttpEntity<>(headers);
-				//ResponseEntity<Boolean> response = this.restTemplate.getForEntity("https://localhost:9095/dev/designerProduct/getColour/"+ listColour.get(i).getColorValue(),Boolean.class);
-			//	ResponseEntity<Boolean> response1 = this.restTemplate.exchange("https://localhost:9095/dev/designerProduct/getColour/"+ listColour.get(i).getColorValue(),
-						//Boolean.class);
-			//	res= response.getBody();
+		
+		
+		List<ColourEntity> entity = colour.getColors();
+		
+		ColourEntity colourEntity2 = new ColourEntity();
+		
+		
+		for(int i=0 ; i< entity.size() ; i++) {
+			
+			if(entity.get(i).getIsActive().equals(true) && entity.get(i).getColorName().equals(name)) {
+				colourEntity2.setColorName(entity.get(i).getColorName());
+				colourEntity2.setColorValue(entity.get(i).getColorValue());
+				colourEntity2.setIsActive(false);
 				
-				 if(res) {
-					 listColour.remove(i);
-						
-						//ColourMetaEntity colourMetaEntity = new ColourMetaEntity();
-						colourMetaEntity.setColors(listColour);
-						colourMetaEntity.setMetaKey("colors");
-						adminMDataRepo.save(colourMetaEntity);
-						
-						return new GlobalResponse("Success", "Colour deleted successfully", 200);
-					 
-				 }
+				
+				colourEntities.set(i, colourEntity2);
+				
+				
+				ColourMetaEntity coloEntity = new ColourMetaEntity();
+				coloEntity.setId(colour.getId());
+				coloEntity.setMetaKey(colour.getMetaKey());
+				coloEntity.setColors(colourEntities);
+				adminMDataRepo.save(coloEntity);
+				return new GlobalResponse("Success!!", "Colore Delete Successfully", 200);
+				
+				
+			}
+			
+			
 		}
-		}
-	return new GlobalResponse("Failed", "Colour not deleted",404);
+		
 	}
 	catch (Exception e) {
 		// TODO: handle exception
@@ -529,5 +529,26 @@ public ColourEntity getColour(String name) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	
+
+	
+
+
+
+	
+	
+
+	
+	
+	
+	
+	
+  
+	
+
+
+
+	
 
 }

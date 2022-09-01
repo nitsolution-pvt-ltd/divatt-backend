@@ -29,10 +29,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
-import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
@@ -40,48 +38,28 @@ import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.OrderDetailsRepo;
-import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import com.itextpdf.html2pdf.ConverterProperties;
-import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.codec.Base64.InputStream;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
 
-import springfox.documentation.spring.web.json.Json;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -93,31 +71,17 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.apache.commons.codec.binary.Base64;
 
 @RestController
 @RequestMapping("/userOrder")
@@ -144,8 +108,7 @@ public class OrderAndPaymentContoller {
 	@Autowired
 	private MongoOperations mongoOperations;
 
-	@Autowired
-	private TemplateEngine templateEngine;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 
 	@PostMapping("/razorpay/create")
@@ -178,16 +141,8 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
 
 		try {
-			String extractUsername = null;
-			try {
-				extractUsername = JwtUtil.extractUsername(token.substring(7));
-			} catch (Exception e) {
-				throw new CustomException("Unauthorized");
-			}
-
-//			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
+			
 			return this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
-//			}
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -201,12 +156,6 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderSKUDetails()");
 
 		try {
-			String extractUsername = null;
-			try {
-				extractUsername = JwtUtil.extractUsername(token.substring(7));
-			} catch (Exception e) {
-				throw new CustomException("Unauthorized");
-			}
 			return this.orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -309,13 +258,6 @@ public class OrderAndPaymentContoller {
 					postOrderSKUDetails(token, orderSKUDetailsEntityRow);
 				}
 
-//				OrderPaymentEntity orderPaymentEntity = orderAndPaymentGlobalEntity.getOrderPaymentEntity();
-//				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
-//				orderPaymentEntity.setOrderId(OrderData.getOrderId());
-//				orderPaymentEntity.setCreatedOn(new Date());
-
-//				postOrderPaymentDetails(token, orderPaymentEntity);
-
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", "Order placed successfully");
@@ -324,13 +266,13 @@ public class OrderAndPaymentContoller {
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
 
-//				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-//				sendEmailWithAttachment(
-//						extractUsername, "Order summary", "Hi " + userLoginEntity.getFirstName() + ""
-//								+ ",\n                           " + " Your order created successfully. ",
-//						false, createPdfSupplier);
-//
-//				createPdfSupplier.delete();
+				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
+				sendEmailWithAttachment(
+						extractUsername, "Order summary", "Hi " + userLoginEntity.getFirstName() + ""
+								+ ",\n                           " + " Your order created successfully. ",
+						false, createPdfSupplier);
+
+				createPdfSupplier.delete();
 			}
 
 			return ResponseEntity.ok(map);

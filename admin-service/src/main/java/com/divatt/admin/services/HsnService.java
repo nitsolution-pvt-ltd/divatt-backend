@@ -1,0 +1,266 @@
+package com.divatt.admin.services;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.amazonaws.services.managedblockchain.model.ResourceNotFoundException;
+import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.hsnCode.HsnEntity;
+import com.divatt.admin.exception.CustomException;
+import com.divatt.admin.repo.HsnRepo;
+
+@Service
+public class HsnService {
+	
+	@Autowired
+	private HsnRepo hsnRepo ; 
+	
+	@Autowired
+	private SequenceGenerator sequenceGenerator ;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(HsnService.class);
+
+	public GlobalResponse postHsnDetails(@RequestBody  HsnEntity hsnEntity) {
+		
+		LOGGER.info("Inside - HsnService.postHsnDetails()");
+		
+		try {
+			
+			Optional<HsnEntity> hsnlist = hsnRepo.findByhsnCode(hsnEntity.getHsnCode());
+			
+			if(!hsnlist.isEmpty()) {
+				
+				HsnEntity entity = hsnRepo.findByHsn(hsnEntity.getHsnCode());
+				if(entity.getIsDelete().equals(true)) {
+					throw new CustomException("HsnCode already used");	
+				}
+				else {
+					throw new CustomException("HsnCode already exist");
+				}
+				
+			}
+			else {
+				HsnEntity hsn =  new HsnEntity() ;
+				hsn.setId(sequenceGenerator.getNextSequence(HsnEntity.SEQUENCE_NAME));
+				hsn.setHsnCode(hsnEntity.getHsnCode());
+				hsn.setDescription(hsnEntity.getDescription());
+				hsn.setTaxValue(hsnEntity.getTaxValue());
+				hsn.setSgst(hsnEntity.getTaxValue()/2);
+				hsn.setCgst(hsnEntity.getTaxValue()/2);
+				hsn.setIgst(hsnEntity.getTaxValue());
+				
+				hsnRepo.save(hsn);
+				
+				return new GlobalResponse("SUCCESS", "Hsn added succesfully", 200);	
+			}	
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
+	}
+	
+
+	public GlobalResponse updatetHsnDetailsByHsnCode(@RequestBody HsnEntity hsnEntity,Integer hsnCode) {
+		
+		LOGGER.info("Inside - HsnService.updatetHsnDetailsByHsnCode()");
+		
+		try {
+			Optional<HsnEntity> hsnlist = hsnRepo.findByhsnCode(hsnCode);
+			if(!hsnlist.isEmpty()) {
+				HsnEntity entity =  hsnRepo.findByHsn(hsnCode);
+				
+				if(entity.getIsDelete().equals(false)) {
+					entity.setId(entity.getId());
+					
+					entity.setHsnCode(hsnEntity.getHsnCode());
+					entity.setDescription(hsnEntity.getDescription());
+					entity.setTaxValue(hsnEntity.getTaxValue());
+					entity.setSgst(hsnEntity.getTaxValue()/2);
+					entity.setCgst(hsnEntity.getTaxValue()/2);
+					entity.setIgst(hsnEntity.getTaxValue());
+					entity.setIsActive(true);
+					entity.setIsDelete(false);
+					hsnRepo.save(entity);
+					return new GlobalResponse("SUCCESS", "Hsn update succesfully", 200);
+					
+				}
+				else {
+					return new GlobalResponse("Failed", "This hsnCode already delete", 404);
+				}
+				
+					
+			}
+			else {
+				throw new CustomException("HsnCode not exist");
+				}	
+			
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	
+	
+	public Map<String, Object> getHsnDetails(int page, int limit, String sort, String sortName, Boolean isDelete,
+			String keyword, Optional<String> sortBy) {
+		
+		LOGGER.info("Inside - HsnService.getHsnDetails()");
+		
+		try {
+			int CountData = (int) hsnRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				//pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+				pagingSort=PageRequest.of(page, limit).withSort(Sort.Direction.ASC,sortBy.orElse(sortName));
+			} else {
+				//pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+				pagingSort=PageRequest.of(page, limit).withSort(Sort.Direction.DESC,sortBy.orElse(sortName));
+			}
+
+			Page<HsnEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll =hsnRepo.findByIsDelete(isDelete, "0", pagingSort);
+			} else {
+				findAll = hsnRepo.Search(keyword, isDelete, "0", pagingSort);
+
+			}
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Hsn Not Found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	
+	public Optional<HsnEntity> viewByHsnCode(Integer hsnCode) {
+		LOGGER.info("Inside - HsnService.viewByHsnCode()");
+		
+		try {
+			
+			Optional<HsnEntity> hsnlist = hsnRepo.findByhsnCode(hsnCode);
+			
+			if(!hsnlist.isEmpty()) {
+				return hsnlist ;
+			}
+			else {
+				 throw new CustomException("HsnCode not found");
+			}
+		}
+	   catch (Exception e) {
+		throw new CustomException(e.getMessage());
+		}	
+	}
+
+	
+	
+	public GlobalResponse deleteHsnCode(Integer id) {
+		
+		LOGGER.info("Inside- HsnService.deleteHsnCode()");
+		try {
+			
+			Optional<HsnEntity> hsnlist = hsnRepo.findById(id);
+			if(!hsnlist.isEmpty()) {
+				HsnEntity entity = hsnRepo.findById(id).get();
+				if(entity.getIsDelete().equals(false)) {
+					entity.setIsDelete(true);
+				    hsnRepo.save(entity); 
+					return new GlobalResponse("SUCCESS", "Hsn delete succesfully", 200);
+				}
+				else {
+					 return new GlobalResponse("Failed", "Hsn already deleted", 404);
+					 }
+				}
+			else {
+				
+				return new GlobalResponse("Failed", "HsnCode not found", 404);
+				}
+			}
+		catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}	
+	}
+
+	
+	
+	public GlobalResponse muldeleteHsnCode(List<Integer> hsnId) {
+		try {
+			
+			for(Integer id : hsnId) {
+				HsnEntity entity = hsnRepo.findById(id).get();
+				entity.setIsDelete(true);
+				hsnRepo.save(entity);
+			}
+			
+			return new GlobalResponse("SUCCESS","hsnCode deleted successfully",200);
+	    }
+		
+		catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	
+	
+	
+	
+	public GlobalResponse setStatus(Integer id) {
+		LOGGER.info("Inside- HsnService.setstatus()");
+		try {
+			
+			//Optional<HsnEntity> hsnList = hsnRepo.findById(id);
+			HsnEntity entity = hsnRepo.findById(id).get();
+			
+			if(entity.getIsActive().equals(true)) {
+				
+				entity.setIsActive(false);
+				hsnRepo.save(entity);
+			  return new GlobalResponse("Success" , "Hsn active successfully" , 200);
+			}
+			else {
+				entity.setIsActive(true);
+				hsnRepo.save(entity);
+				return new GlobalResponse("Success" , "Hsn deactive successfully" , 200);
+			}
+		}
+		catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+  }
+
+}
