@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -1107,4 +1109,49 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
+	  
+	
+  public Boolean getColourlist(String colourValue) {
+		
+		try {
+			LOGGER.info("Inside- ProductService.getColourlist()");
+			List<ProductMasterEntity> list = mongoOperations.findAll(ProductMasterEntity.class);
+			
+			for(int i =0 ; i < list.size() ; i++) {
+				
+				
+				
+				List<ImagesEntity> entityColour = Arrays.asList( list.get(i).getImages()) ;
+				
+					if(entityColour.get(0).getColour().toString().contentEquals("#"+colourValue.toString())) {
+						
+						return false ;
+						
+					}
+				
+			}
+			
+			return true;
+			
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

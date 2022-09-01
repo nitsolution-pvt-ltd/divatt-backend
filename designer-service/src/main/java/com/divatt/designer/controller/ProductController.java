@@ -62,6 +62,23 @@ public class ProductController implements ProductServiceImp {
 		}
 	}
 
+	
+	@GetMapping("/getColour/{colourValue}")
+	public Boolean getColour(@PathVariable (value="colourValue") String colourValue) {
+		
+		
+		try {
+			LOGGER.info("Inside- ProductController.getColour()");
+			return productService.getColourlist(colourValue);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
+	}
+
+	
+	
+	
 	@PostMapping("/add")
 	public GlobalResponce add(@Valid @RequestBody ProductMasterEntity productEntity) {
 		try {
