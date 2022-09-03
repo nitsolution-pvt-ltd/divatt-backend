@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.core.io.Resource;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,12 +36,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.InvoiceEntity;
+import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.ProductInvoice;
 import com.divatt.user.entity.order.OrderDetailsEntity;
@@ -49,6 +52,7 @@ import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.PDFRunner;
 import com.divatt.user.repo.OrderDetailsRepo;
+import com.divatt.user.repo.OrderInvoiceRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.OrderTrackingRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
@@ -101,6 +105,11 @@ public class OrderAndPaymentService {
 
 	@Autowired
 	private TemplateEngine templateEngine;
+	
+	@Autowired
+	private OrderInvoiceRepo orderInvoiceRepo;
+
+	
 
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
@@ -701,11 +710,8 @@ public class OrderAndPaymentService {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("order_id").is(orderId));
 				OrderDetailsEntity orderDetailsEntity = mongoTemplate.findOne(query, OrderDetailsEntity.class);
-//				int CountData =orderDetailsEntity.getProducts().size();
+
 				Pageable pagingSort = null;
-//				if (limit == 0) {
-//					limit = CountData;
-//				}
 
 				if (sort.equals("ASC")) {
 					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
@@ -1004,7 +1010,7 @@ public class OrderAndPaymentService {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("all")
 	public ResponseEntity<?> getOrderServiceByInvoiceId(String invoiceId) {
 		try {
 			Query query = new Query();
@@ -1127,5 +1133,92 @@ public class OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+
+	public ResponseEntity<?> postOrderInvoiceService(OrderInvoiceEntity orderInvoiceEntity) {
+			LOGGER.info("Inside - OrderAndPaymentService.postOrderInvoiceService()");
+			OrderInvoiceEntity saveData=null;
+			try {
+				List<OrderInvoiceEntity> findByCategoryName = orderInvoiceRepo.findByInvoiceId(orderInvoiceEntity.getInvoiceId());
+				if (findByCategoryName.size() > 0) {
+					throw new CustomException("Invoice already exist!");
+				} else { 
+				orderInvoiceEntity.setId((long) sequenceGenerator.getNextSequence(OrderInvoiceEntity.SEQUENCE_NAME));
+				saveData = orderInvoiceRepo.save(orderInvoiceEntity);
+				}
+				return ResponseEntity.ok(new GlobalResponse("SUCCESS","Invoice added succesfully",200));
+			} catch (Exception e) {
+				throw new CustomException(e.getMessage());
+			}
+
+		}
+
+	public ResponseEntity<?> putOrderInvoiceService(@PathVariable String invoiceId, @Valid OrderInvoiceEntity orderInvoiceEntity) {
+		LOGGER.info("Inside - OrderAndPaymentService.putOrderInvoiceService()");
+		try {
+			List<OrderInvoiceEntity> findByInvId = orderInvoiceRepo.findByInvoiceId(invoiceId);
+			if (findByInvId.size() <= 0) {
+				throw new CustomException("Invoice not found");
+			} else { 
+				OrderInvoiceEntity orderInvoiceRow = findByInvId.get(0);
+				orderInvoiceRow.setInvoiceDatetime(orderInvoiceEntity.getInvoiceDatetime());
+				orderInvoiceRow.setDesignerDetails(orderInvoiceEntity.getDesignerDetails());
+				orderInvoiceRow.setOrderDatetime(orderInvoiceEntity.getOrderDatetime());
+				orderInvoiceRow.setProductDetails(orderInvoiceEntity.getProductDetails());
+				orderInvoiceRow.setOrderId(orderInvoiceEntity.getOrderId());
+				orderInvoiceRow.setUserDetails(orderInvoiceEntity.getUserDetails());
+				
+				orderInvoiceRepo.save(orderInvoiceRow);
+			}
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS","Invoice updated succesfully",200));
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	public Map<String, Object> getOrderInvoiceService(int page, int limit, String sort, String sortName,
+			String keyword, Optional<String> sortBy) {
+		LOGGER.info("Inside - OrderAndPaymentService.getOrderInvoiceService()");
+
+		try {
+				
+				Pageable pagingSort = null;
+
+				if (sort.equals("ASC")) {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+				} else {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+				}
+
+				Page<OrderInvoiceEntity> findAll = null;
+
+				if (keyword.isEmpty()) {
+					findAll = orderInvoiceRepo.findAll(pagingSort);
+				}
+				else {
+					findAll = orderInvoiceRepo.SearchByKey(keyword,pagingSort);
+				}
+				int totalPage = findAll.getTotalPages() - 1;
+				if (totalPage < 0) {
+					totalPage = 0;
+				}
+
+				Map<String, Object> response = new HashMap<>();
+				response.put("data", findAll.getContent());
+				response.put("currentPage", findAll.getNumber());
+				response.put("total", findAll.getTotalElements());
+				response.put("totalPage", totalPage);
+				response.put("perPage", findAll.getSize());
+				response.put("perPageElement", findAll.getNumberOfElements());
+
+				if (findAll.getSize() <= 1) {
+					throw new CustomException("Payment not found!");
+				} else {
+					return response;
+				}
+			} catch (Exception e) {
+				throw new CustomException(e.getMessage());
+			}
+		
 	}
 }
