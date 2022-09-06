@@ -1158,7 +1158,7 @@ public class OrderAndPaymentService {
 		try {
 			List<OrderInvoiceEntity> findByInvId = orderInvoiceRepo.findByInvoiceId(invoiceId);
 			if (findByInvId.size() <= 0) {
-				throw new CustomException("Invoice not found");
+				throw new CustomException("Invoice not found"); 
 			} else { 
 				OrderInvoiceEntity orderInvoiceRow = findByInvId.get(0);
 				orderInvoiceRow.setInvoiceDatetime(orderInvoiceEntity.getInvoiceDatetime());
@@ -1212,7 +1212,7 @@ public class OrderAndPaymentService {
 				response.put("perPageElement", findAll.getNumberOfElements());
 
 				if (findAll.getSize() <= 1) {
-					throw new CustomException("Payment not found!");
+					throw new CustomException("Invoice not found!");
 				} else {
 					return response;
 				}
