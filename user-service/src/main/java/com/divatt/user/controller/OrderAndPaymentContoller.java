@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
+import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
@@ -83,6 +85,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+@Validated
 @RestController
 @RequestMapping("/userOrder")
 public class OrderAndPaymentContoller {
@@ -681,4 +684,48 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@PostMapping("/invoices/add")
+	public ResponseEntity<?> postOrderInvoiceDetails(@Valid @RequestBody OrderInvoiceEntity orderInvoiceEntity,@RequestHeader("Authorization") String token) {
+		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderInvoiceDetails()");
+
+		try {
+			
+			return this.orderAndPaymentService.postOrderInvoiceService(orderInvoiceEntity);
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@PutMapping("/invoices/update/{invoiceId}")
+	public ResponseEntity<?> putOrderInvoiceDetails(@Valid @RequestBody OrderInvoiceEntity orderInvoiceEntity,@PathVariable String invoiceId,@RequestHeader("Authorization") String token) {
+		LOGGER.info("Inside - OrderAndPaymentContoller.putOrderInvoiceDetails()");
+
+		try {
+			
+			return this.orderAndPaymentService.putOrderInvoiceService(invoiceId,orderInvoiceEntity);
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@GetMapping("/invoices/list")
+	public Map<String, Object> getOrderInvoiceDetails(
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "_id") String sortName,
+			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
+		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderInvoiceDetails()");
+		try {
+			return this.orderAndPaymentService.getOrderInvoiceService(page, limit, sort, sortName, keyword, sortBy);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	
+	
 }
