@@ -78,7 +78,7 @@ spring:
   application:
     name: ApiGatway
 server:
-  port: '8085'
+  port: 9095
   ssl:
     key-store: classpath:local-ssl.p12
     key-store-type: PKCS12
