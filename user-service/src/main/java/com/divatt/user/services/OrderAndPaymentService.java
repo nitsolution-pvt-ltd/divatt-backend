@@ -583,10 +583,9 @@ public class OrderAndPaymentService {
 			}
 
 			Page<OrderDetailsEntity> findAll = null;
-			List<OrderSKUDetailsEntity> OrderSKUDetailsData = null;
-
-			if (keyword.isEmpty()) {
-
+			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
+			if(keyword !=null || !"".equals(keyword)){
+				LOGGER.info("okey");
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
 //				findAll = orderDetailsRepo.findByDesignerId(designerId, pagingSort);
 			}

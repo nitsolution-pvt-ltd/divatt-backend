@@ -67,6 +67,7 @@ public class CustomFunction {
 			filterProductEntity.setAdminStatusOn(new Date());
 			filterProductEntity.setTaxInclusive(productData.getTaxInclusive());
 			filterProductEntity.setAdminStatus("Pending");
+			filterProductEntity.setHsnData(productData.getHsnData());
 			return filterProductEntity;
 			//filterProductEntity.setUpdatedBy(productData.getUpdatedBy());
 			//filterProductEntity.setUpdatedOn();
@@ -119,6 +120,7 @@ public class CustomFunction {
 			filterProductEntity.setApprovedBy(productData.getApprovedBy());
 			filterProductEntity.setApprovedOn(productData.getApprovedOn());
 			filterProductEntity.setComments(productData.getComments());
+			filterProductEntity.setHsnData(productData.getHsnData());
 			return filterProductEntity;
 		}
 		catch(Exception e)
@@ -167,6 +169,7 @@ public class CustomFunction {
 			filterProductEntity.setApprovedBy(productData.getApprovedBy());
 			filterProductEntity.setApprovedOn(productData.getApprovedOn());
 			filterProductEntity.setComments(productData.getComments());
+			filterProductEntity.setHsnData(productData.getHsnData());
 			return filterProductEntity;
 		}
 		catch(Exception e) {

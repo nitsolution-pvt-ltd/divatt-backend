@@ -345,6 +345,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner() for Designer side listing");
 
 		try {
+			//LOGGER.info(""+designerId);
 			return this.orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword,
 					sortBy);
 		} catch (Exception e) {

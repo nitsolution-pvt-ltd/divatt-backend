@@ -79,6 +79,11 @@ public class ProductMasterEntity {
 	private List<Object> comments = new ArrayList<>();
 	 
 	private String adminStatus;
+	private Object hsnData;
+	public ProductMasterEntity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	public ProductMasterEntity(Integer productId, String designerName, Integer designerId, Integer categoryId,
 			Integer subCategoryId, @NotEmpty(message = "Gender Category Required") String gender,
 			@NotEmpty(message = "Product Name Required") String productName,
@@ -89,7 +94,7 @@ public class ProductMasterEntity {
 			List<StandardSOH> standeredSOH, Integer customizationSOH, Object extraSpecifications,
 			Specification specifications, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			Date adminStatusOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String sKQCode,
-			List<Object> comments, String adminStatus) {
+			List<Object> comments, String adminStatus, Object hsnData) {
 		super();
 		this.productId = productId;
 		this.designerName = designerName;
@@ -126,6 +131,7 @@ public class ProductMasterEntity {
 		this.SKQCode = sKQCode;
 		this.comments = comments;
 		this.adminStatus = adminStatus;
+		this.hsnData = hsnData;
 	}
 	@Override
 	public String toString() {
@@ -140,7 +146,7 @@ public class ProductMasterEntity {
 				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
 				+ ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
 				+ ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn + ", SKQCode=" + SKQCode + ", comments="
-				+ comments + ", adminStatus=" + adminStatus + "]";
+				+ comments + ", adminStatus=" + adminStatus + ", hsnData=" + hsnData + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -346,20 +352,20 @@ public class ProductMasterEntity {
 	public void setComments(List<Object> comments) {
 		this.comments = comments;
 	}
-
 	public String getAdminStatus() {
 		return adminStatus;
 	}
 	public void setAdminStatus(String adminStatus) {
 		this.adminStatus = adminStatus;
 	}
+	public Object getHsnData() {
+		return hsnData;
+	}
+	public void setHsnData(Object hsnData) {
+		this.hsnData = hsnData;
+	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	public ProductMasterEntity() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	
 	
 }
