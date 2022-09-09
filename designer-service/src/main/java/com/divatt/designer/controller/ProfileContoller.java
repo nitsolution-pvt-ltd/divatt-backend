@@ -171,8 +171,6 @@ public class ProfileContoller {
 				designerProfileRepo.save(designerProfileEntity);
 			}
 
-			DesignerLogEntity designerLogEntity = new DesignerLogEntity();
-
 			SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
 					"Successfully Registration",
 					"Welcome " + designerProfileEntity.getDesignerProfile().getEmail() + "" + ",\n   "
@@ -202,7 +200,7 @@ public class ProfileContoller {
 
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerLoginEntity.getdId());
 		if (!findById.isPresent())
-			throw new CustomException("Designer Details Not Found");
+			throw new CustomException("Designer details not found");
 		else {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
@@ -252,7 +250,6 @@ public class ProfileContoller {
 			designerProfile.setEmail(findById.get().getEmail());
 			designerProfile.setPassword(findById.get().getPassword());
 			designerProfile.setProfilePic(designerProfileEntity.getDesignerProfile().getProfilePic());
-//			designerProfile.setDesignerCategory(designerProfile.getDesignerCategory());
 
 			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
 
@@ -421,7 +418,7 @@ public class ProfileContoller {
 		try {
 			org.json.simple.JSONObject response = new org.json.simple.JSONObject();
 			ResponseEntity<GlobalResponce> userData = restTemplate
-					.getForEntity("https://localhost:8085/dev/user/followerCount/" + designerId, GlobalResponce.class);
+					.getForEntity("https://localhost:9095/dev/user/followerCount/" + designerId, GlobalResponce.class);
 			String followersData = userData.getBody().getMessage();
 			response.put("FollowersData", followersData);
 			response.put("Products", productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,

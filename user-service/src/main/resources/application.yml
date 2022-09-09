@@ -77,11 +77,17 @@ server:
   servlet: 
     contextPath: /dev
   ssl:
-    key-store: classpath:gateway-server.jks
-    key-store-type: JKS
-    key-store-password: Dapp@1234
-    key-alias: gateway-server
-    key-password: Dapp@1234
+    key-store: classpath:local-ssl.p12
+    key-store-type: PKCS12
+    key-alias: local_ssl
+    key-password: Divatt
+    key-store-password: Divatt
+    enabled: true
+#    key-store: classpath:gateway-server.jks
+#    key-store-type: JKS
+#    key-store-password: Dapp@1234
+#    key-alias: gateway-server
+#    key-password: Dapp@1234
 name: dev-yml
 environment: dev
 enabled: true
