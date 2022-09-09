@@ -147,13 +147,23 @@ public class HsnController {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
-		
-
 	}
 	
+//	@GetMapping("/getactiveHSNList")
+//	public List<HsnEntity> getactiveHSNList(){
+//		try {
+//			return this.hsnService.getActiveHSNListService();
+//		}catch(Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
 	
-	
-	
-	
+	@GetMapping("/getactiveHSNList")
+	public List<HsnEntity> getactiveHSNList(@RequestParam(defaultValue = "") String searchKeyword){
+		try {
+			return this.hsnService.getActiveHSNListService(searchKeyword);
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
