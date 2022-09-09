@@ -279,7 +279,7 @@ public class UserService {
 			Map<String, Object> map = new HashMap<>();
 //			RestTemplate restTemplate= new RestTemplate();
 			ResponseEntity<ProductMasterEntity> response = restTemplate.getForEntity(
-					"https://localhost:8085/dev/designerProduct/view/" + userCartEntity.getProductId(),
+					"https://localhost:9095/dev/designerProduct/view/" + userCartEntity.getProductId(),
 					ProductMasterEntity.class);
 
 			int purchaseQuantity = userCartEntity.getQty();

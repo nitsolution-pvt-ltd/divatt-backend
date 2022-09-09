@@ -830,7 +830,6 @@ public class ProductService {
 			String image1=images[0].getName();
 			System.out.println(images[0].getName());
 			Map<String, Object> data2= new HashMap<String, Object>();
-			//System.out.println("https://65.1.190.195/divatt/product-detail/"+newProductData.getProductId().toString());
 			for(int i=0;i<userInfoList.size();i++)
 			{
 				EmailEntity emailEntity= new EmailEntity();
@@ -860,7 +859,6 @@ public class ProductService {
 				EmailSenderThread emailSenderThread= new EmailSenderThread(userInfoList.get(i).getEmail(), "New product Arrived", htmlContent, true, null,restTemplate);
 				emailSenderThread.start();
 			}
-			//productRepo.save(productData);
 			return new GlobalResponce("Successfull", "Product approved", 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -913,7 +911,6 @@ public class ProductService {
 				}
 				ProductMasterEntity masterEntity = productRepo.findById(productId).get();
 				masterEntity.setStanderedSOH(updatedSOH);
-				//System.out.println(masterEntity);
 				productRepo.save(masterEntity);
 			}
 			return new GlobalResponce("Success", "Stock cleared successfully", 200);
@@ -925,7 +922,7 @@ public class ProductService {
 	public List<ProductMasterEntity> productListCategorySubcategory(String categoryName, String subcategoryName) {
 		try {
 			ResponseEntity<CategoryEntity> categoryEntity = restTemplate
-					.getForEntity("https://localhost:8085/dev/category/", CategoryEntity.class);
+					.getForEntity("https://localhost:9095/dev/category/", CategoryEntity.class);
 			return null;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -936,9 +933,8 @@ public class ProductService {
 			String subCategoryName) {
 		try {
 
-//			RestTemplate restTemplate= new RestTemplate();
 			ResponseEntity<UserResponseEntity> userResponseEntity = restTemplate.getForEntity(
-					"https://localhost:8085/dev/category/viewByName/" + categoryName + "/" + subCategoryName,
+					"https://localhost:9095/dev/category/viewByName/" + categoryName + "/" + subCategoryName,
 					UserResponseEntity.class);
 			System.out.println(userResponseEntity.getBody());
 			int categoryIdvalue = userResponseEntity.getBody().getCategoryEntity().getId();
@@ -1049,8 +1045,8 @@ public class ProductService {
 								stockEntity.setProductImage(productImages);
 								stockEntity.setSize(sohData.get(b).getSizeType());
 								stockEntity.setStock(sohData.get(b).getNotify());
-								stockEntity.setDesignerName(designerProfileRepo.findBydesignerId(designerList.get(i).longValue()).get().getDesignerProfile().getFirstName());
-								entity.setDesignerName(designerProfileRepo.findBydesignerId(designerList.get(i).longValue()).get().getDesignerProfile().getFirstName());
+								stockEntity.setDesignerName(designerProfileRepo.findBydesignerId(designerList.get(i).longValue()).get().getDesignerProfile().getFirstName1());
+								entity.setDesignerName(designerProfileRepo.findBydesignerId(designerList.get(i).longValue()).get().getDesignerProfile().getFirstName1());
 								stockEntity.setProductLink(productDataList.get(a).getProductId().toString());
 								stockList.add(stockEntity); 
 							}
