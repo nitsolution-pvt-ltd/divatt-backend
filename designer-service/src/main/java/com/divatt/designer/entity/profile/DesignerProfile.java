@@ -36,14 +36,19 @@ public class DesignerProfile {
 	
 	@Field(name = "alt_mobile_no")
 	private String altMobileNo;
+
+	@Field(name = "digital_signature")
+	private String digitalSignature;
+	
 	@NotNull
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
+	
 	@Field(name = "dob")
 	private String dob;
 	@NotNull 
+	
 	@Field(name = "gender")
 	private String gender;
-	
 	
 	@NotNull(message = "User profile picture must not be null")
 	@Field(name = "profile_pic")
@@ -59,8 +64,9 @@ public class DesignerProfile {
 
 	public DesignerProfile(@NotNull String email, @NotNull String password, @NotNull String firstName1,
 			@NotNull String lastName1, String firstName2, String lastName2, @NotNull String displayName,
-			@NotNull String mobileNo, String altMobileNo, @NotNull String dob, @NotNull String gender,
-			@NotNull(message = "User profile picture must not be null") String profilePic, String designerCategory) {
+			@NotNull String mobileNo, String altMobileNo, String digitalSignature, @NotNull String dob,
+			@NotNull String gender, @NotNull(message = "User profile picture must not be null") String profilePic,
+			String designerCategory) {
 		super();
 		this.email = email;
 		this.password = password;
@@ -71,6 +77,7 @@ public class DesignerProfile {
 		this.displayName = displayName;
 		this.mobileNo = mobileNo;
 		this.altMobileNo = altMobileNo;
+		this.digitalSignature = digitalSignature;
 		this.dob = dob;
 		this.gender = gender;
 		this.profilePic = profilePic;
@@ -81,9 +88,9 @@ public class DesignerProfile {
 	public String toString() {
 		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
 				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
-				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo + ", dob="
-				+ dob + ", gender=" + gender + ", profilePic=" + profilePic + ", designerCategory=" + designerCategory
-				+ "]";
+				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
+				+ ", digitalSignature=" + digitalSignature + ", dob=" + dob + ", gender=" + gender + ", profilePic="
+				+ profilePic + ", designerCategory=" + designerCategory + "]";
 	}
 
 	public String getEmail() {
@@ -156,6 +163,14 @@ public class DesignerProfile {
 
 	public void setAltMobileNo(String altMobileNo) {
 		this.altMobileNo = altMobileNo;
+	}
+
+	public String getDigitalSignature() {
+		return digitalSignature;
+	}
+
+	public void setDigitalSignature(String digitalSignature) {
+		this.digitalSignature = digitalSignature;
 	}
 
 	public String getDob() {
