@@ -302,13 +302,13 @@ public class UserController {
 //			JSONObject jsObj = body.getObject();
 //			if((boolean) jsObj.get("isPresent"))
 //				throw new CustomException("Email already present");
-			ResponseEntity<String> response= restTemplate.getForEntity("https://localhost:8080/dev/auth/Present/"+userLoginEntity.getEmail(),String.class);
+			ResponseEntity<String> response= restTemplate.getForEntity("https://localhost:8080/dev/auth/Present/USER/"+userLoginEntity.getEmail(),String.class);
 			JSONObject jsonObject= new JSONObject(response.getBody());
-			if((boolean)jsonObject.get("isPresent"))
+			if((boolean)jsonObject.get("isPresent") && jsonObject.get("role").equals("USER"))
 				throw new CustomException("Email already present");
 			System.out.println(response.getBody());
-			if (userLoginRepo.findByEmail(userLoginEntity.getEmail()).isPresent())
-				throw new CustomException("Email id is already Present");
+//			if (userLoginRepo.findByEmail(userLoginEntity.getEmail()).isPresent())
+//				throw new CustomException("Email id is already Present");
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);

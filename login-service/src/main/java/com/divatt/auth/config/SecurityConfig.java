@@ -96,7 +96,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET,"/v2/api-docs").permitAll()
 				.antMatchers(HttpMethod.POST,"/auth/resetPassword/{link}/{linktime}").permitAll()
 				.antMatchers(HttpMethod.GET,"/auth/mailForgotPasswordLink/{email}").permitAll()
-				.antMatchers(HttpMethod.GET,"/auth/Present/{email}").permitAll()
+				.antMatchers(HttpMethod.GET,"/auth/Present/{role}/{email}").permitAll()
 				.antMatchers("/auth/admin/**").hasAuthority("ADMIN")
 				.antMatchers("/auth/designer/**").hasAnyAuthority("DESIGNER","ADMIN")                                                                                                                          
 				.antMatchers("/auth/user/**").hasAnyAuthority("ADMIN","USER")
