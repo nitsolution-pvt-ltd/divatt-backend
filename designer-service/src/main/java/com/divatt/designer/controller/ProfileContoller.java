@@ -157,11 +157,12 @@ public class ProfileContoller {
 			designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
 
 			ResponseEntity<String> forEntity = restTemplate.getForEntity(
-					"https://localhost:8080/dev/auth/Present/" + designerProfileEntity.getDesignerProfile().getEmail(),
+					"https://localhost:8080/dev/auth/Present/DESIGNER/" + designerProfileEntity.getDesignerProfile().getEmail(),
 					String.class);
 
 			JSONObject jsObj = new JSONObject(forEntity.getBody());
-			if ((boolean) jsObj.get("isPresent"))
+			System.out.println("jsObj.get(\"isPresent\"):- "+jsObj.get("role"));
+			if ((boolean) jsObj.get("isPresent") && jsObj.get("role").equals("DESIGNER"))
 				throw new CustomException("Email already present");
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
 

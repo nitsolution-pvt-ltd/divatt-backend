@@ -581,14 +581,31 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 
 	}
 
-	@GetMapping("/Present/{email}")
-	public ResponseEntity<?> checkUserPresent(@PathVariable("email") String email) {
+	@GetMapping("/Present/{role}/{email}")
+	public ResponseEntity<?> checkUserPresent(@PathVariable("email") String email,@PathVariable("role") String role) {
 		JsonObject jsObj = new JsonObject();
 		if (userLoginRepo.findByEmail(email).isPresent() || designerLoginRepo.findByEmail(email).isPresent()
-				|| loginRepository.findByEmail(email).isPresent())
+				|| loginRepository.findByEmail(email).isPresent()) {
 			jsObj.addProperty("isPresent", true);
-		else
+			if(designerLoginRepo.findByEmail(email).isPresent())
+					jsObj.addProperty("role", "DESIGNER");
+			else if(userLoginRepo.findByEmail(email).isPresent())
+				jsObj.addProperty("role", "USER");
+			else if(loginRepository.findByEmail(email).isPresent())
+				jsObj.addProperty("role", "ADMIN");
+			
+			if(designerLoginRepo.findByEmail(email).isPresent() && userLoginRepo.findByEmail(email).isPresent()) {
+				if(role.equals("DESIGNER"))
+					jsObj.addProperty("role", "DESIGNER");
+				if(role.equals("USER"))
+					jsObj.addProperty("role", "USER");
+			}
+				
+		}else {
 			jsObj.addProperty("isPresent", false);
+			jsObj.addProperty("role", "NEW");
+		}
+			
 		return ResponseEntity.ok(new Json(jsObj.toString()));
 	}
 
