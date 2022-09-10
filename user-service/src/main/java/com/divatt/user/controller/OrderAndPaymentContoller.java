@@ -144,7 +144,9 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
 
 		try {
-			
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
 
 		} catch (Exception e) {
@@ -158,7 +160,12 @@ public class OrderAndPaymentContoller {
 			@Valid @RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderSKUDetails()");
 
+		
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
+			
 			return this.orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -185,13 +192,16 @@ public class OrderAndPaymentContoller {
 	}
 
 	@RequestMapping(value = { "/payment/list" }, method = RequestMethod.GET)
-	public Map<String, Object> getOrderPaymentDetails(@RequestParam(defaultValue = "0") int page,
+	public Map<String, Object> getOrderPaymentDetails(@RequestHeader("Authorization") String token, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderPaymentDetails()");
 
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.getOrderPaymentService(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -287,13 +297,16 @@ public class OrderAndPaymentContoller {
 	}
 
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
-	public Map<String, Object> getOrderDetails(@RequestParam(defaultValue = "0") int page,
+	public Map<String, Object> getOrderDetails(@RequestHeader("Authorization") String token, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
 
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -302,11 +315,14 @@ public class OrderAndPaymentContoller {
 	}
 
 	@GetMapping("/getOrder/{orderId}")
-	public ResponseEntity<?> getOrderDetails(@PathVariable() String orderId) {
+	public ResponseEntity<?> getOrderDetails(@RequestHeader("Authorization") String token,@PathVariable() String orderId) {
 
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()");
 
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.getOrderDetailsService(orderId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -315,11 +331,14 @@ public class OrderAndPaymentContoller {
 	}
 
 	@GetMapping("/getUserOrder/{userId}")
-	public ResponseEntity<?> getOrderDetailsByuserId(@PathVariable() Integer userId) {
+	public ResponseEntity<?> getOrderDetailsByuserId(@RequestHeader("Authorization") String token,@PathVariable() Integer userId) {
 
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetailsByuserId()");
 
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.getUserOrderDetailsService(userId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -328,9 +347,12 @@ public class OrderAndPaymentContoller {
 	}
 
 	@PutMapping("/updateOrder/{orderId}")
-	public GlobalResponse updateOrder(@RequestBody OrderDetailsEntity orderDetailsEntity,
+	public GlobalResponse updateOrder(@RequestHeader("Authorization") String token,@RequestBody OrderDetailsEntity orderDetailsEntity,
 			@PathVariable String orderId) {
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.orderUpdateService(orderDetailsEntity, orderId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -338,13 +360,16 @@ public class OrderAndPaymentContoller {
 	}
 
 	@RequestMapping(value = { "/list/{designerId}" }, method = RequestMethod.GET)
-	public Map<String, Object> getOrderByDesigner(@PathVariable int designerId,
+	public Map<String, Object> getOrderByDesigner(@RequestHeader("Authorization") String token,@PathVariable int designerId,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner() for Designer side listing");
 
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword,
 					sortBy);
 		} catch (Exception e) {
@@ -450,11 +475,14 @@ public class OrderAndPaymentContoller {
 	}
 
 	@GetMapping("/orderProductDetails/{orderId}")
-	public Map<String, Object> getOrderproductDetails(@PathVariable String orderId,
+	public Map<String, Object> getOrderproductDetails(@RequestHeader("Authorization") String token,@PathVariable String orderId,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.getProductDetails(orderId, page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -463,11 +491,9 @@ public class OrderAndPaymentContoller {
 
 	@GetMapping("/invoice/{orderId1}")
 	File invGenarator(@PathVariable String orderId1) throws IOException {
-//		System.out.println("ok");
 		Query query = new Query();
 		query.addCriteria(Criteria.where("orderId").is(orderId1));
 		OrderDetailsEntity orderDetailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
-		/* first, get and initialize an engine */
 		VelocityEngine ve = new VelocityEngine();
 
 		/* next, get the Template */

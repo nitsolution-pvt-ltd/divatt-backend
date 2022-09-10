@@ -166,7 +166,7 @@ public class OrderAndPaymentService {
 			options.put("currency", "INR");
 			options.put("receipt", "RC" + getRandomString());
 
-			Order order = razorpayClient.Orders.create(options);
+			final Order order = razorpayClient.Orders.create(options);
 
 			return ResponseEntity.ok(new Json(order.toString()));
 
@@ -184,8 +184,6 @@ public class OrderAndPaymentService {
 			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
 					env.getProperty("secretKey"));
 			LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentService() get data");
-//			List<Payment> payments = razorpayClient.Payments.fetchAll();
-//			List<Payment> payments = razorpayClient.Orders.fetchPayments("order_K56yBf2oeFkIg8");
 
 			String paymentIdFilter = null;
 			ObjectMapper obj = new ObjectMapper();
@@ -243,44 +241,16 @@ public class OrderAndPaymentService {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderSKUService()");
 
 		try {
-
-			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
-					env.getProperty("secretKey"));
-
 			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			Date date = new Date();
 			String format = formatter.format(date);
 
-			OrderSKUDetailsEntity filterCatDetails = new OrderSKUDetailsEntity();
-
-//			for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
-
-			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
-			filterCatDetails.setOrderId(orderSKUDetailsEntityRow.getOrderId());
-			filterCatDetails.setColour(orderSKUDetailsEntityRow.getColour());
-			filterCatDetails.setDesignerId(orderSKUDetailsEntityRow.getDesignerId());
-			filterCatDetails.setMrp(orderSKUDetailsEntityRow.getMrp());
-			filterCatDetails.setDiscount(orderSKUDetailsEntityRow.getDiscount());
-			filterCatDetails.setUserId(orderSKUDetailsEntityRow.getUserId());
-			filterCatDetails.setImages(orderSKUDetailsEntityRow.getImages());
-			filterCatDetails.setOrderItemStatus(orderSKUDetailsEntityRow.getOrderItemStatus());
-			filterCatDetails.setProductId(orderSKUDetailsEntityRow.getProductId());
-			filterCatDetails.setProductName(orderSKUDetailsEntityRow.getProductName());
-			filterCatDetails.setUnits(orderSKUDetailsEntityRow.getUnits());
-			filterCatDetails.setProductSku(orderSKUDetailsEntityRow.getProductSku());
-			filterCatDetails.setReachedCentralHub(orderSKUDetailsEntityRow.getReachedCentralHub());
-			filterCatDetails.setSalesPrice(orderSKUDetailsEntityRow.getSalesPrice());
-			filterCatDetails.setTaxAmount(orderSKUDetailsEntityRow.getTaxAmount());
-			filterCatDetails.setTaxType(orderSKUDetailsEntityRow.getTaxType());
-			filterCatDetails.setUpdatedOn(orderSKUDetailsEntityRow.getUpdatedOn());
-			filterCatDetails.setSize(orderSKUDetailsEntityRow.getSize());
-			filterCatDetails.setCreatedOn(format);
-
-			OrderSKUDetailsEntity data = orderSKUDetailsRepo.save(filterCatDetails);
-//			}
+			orderSKUDetailsEntityRow.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
+			orderSKUDetailsEntityRow.setCreatedOn(format);
+			orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
 
 			return ResponseEntity.ok(null);
-		} catch (RazorpayException e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
@@ -585,15 +555,12 @@ public class OrderAndPaymentService {
 			Page<OrderDetailsEntity> findAll = null;
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
 			if(keyword !=null || !"".equals(keyword)){
-				LOGGER.info("okey");
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
-//				findAll = orderDetailsRepo.findByDesignerId(designerId, pagingSort);
 			}
 
 			List<Object> productId = new ArrayList<>();
 
 			List<String> OrderId = OrderSKUDetailsData.stream()
-//								.filter(c -> c.getOrderId().equals(c.getOrderId()))
 					.map(c -> c.getOrderId()).collect(Collectors.toList());
 
 			findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
@@ -671,20 +638,14 @@ public class OrderAndPaymentService {
 			query.addCriteria(Criteria.where("order_id").is(orderId));
 			OrderDetailsEntity detailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
 			if (detailsEntity != null) {
-				// RestTemplate restTemplate= new RestTemplate();
-				// ResponseEntity<UserLoginEntity>
-				// userLoginEntity=restTemplate.getForEntity("http://localhost:8080/dev/auth/info/USER/"+detailsEntity.getUserId(),
-				// UserLoginEntity.class);
-				// ResponseEntity<UserLoginEntity> userLoginEntity=null;
-				// System.out.println(userLoginEntity.getBody());
+				
 				InvoiceEntity invoiceEntity = new InvoiceEntity();
 				invoiceEntity.setOrderDetailsEntity(detailsEntity);
-				// invoiceEntity.setUserEntity(userLoginEntity.getBody());
 				PDFRunner pdfRunner = new PDFRunner(invoiceEntity);
 				pdfRunner.fun1();
 				return pdfRunner.pdfPath(orderId);
 			} else {
-				return new GlobalResponse("Error!!", "Order not found", 400);
+				return new GlobalResponse("Error", "Order not found", 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -723,9 +684,7 @@ public class OrderAndPaymentService {
 				if (keyword.isEmpty()) {
 					findAll = orderDetailsRepo.findByOrderId(orderId, pagingSort);
 				}
-//				else {
-//					findAll = orderDetailsRepo.SearchByOrderId(keyword,orderId,pagingSort);
-//				}
+
 				int totalPage = findAll.getTotalPages() - 1;
 				if (totalPage < 0) {
 					totalPage = 0;
@@ -1066,10 +1025,9 @@ public class OrderAndPaymentService {
 						totalGrossAmount = totalGrossAmount + a.getMrp().intValue();
 					}
 				}
-				// invoice.getProductDescription() != null
-				LOGGER.info("Outside of loop inner loop <><><><><> !!!" + productList);
+				LOGGER.info(" PDF " + productList);
 				if (productList.size() > 0) {
-					LOGGER.info("Rpoduct List data <><><><><> !!! " + productList);
+					LOGGER.info("Rpoduct List data " + productList);
 					data.put("data", productList);
 				}
 			}
@@ -1096,8 +1054,6 @@ public class OrderAndPaymentService {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Disposition", "attachment; filename=" + "orderInvoiceUpdated.pdf");
 			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(bytes);
-//			OrderAndPaymentContoller andPaymentContoller= new OrderAndPaymentContoller();
-//			ByteArrayOutputStream generatePdf = andPaymentContoller.generatePdf(htmlContent);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -1112,7 +1068,6 @@ public class OrderAndPaymentService {
 			List<Object> resObjects = new ArrayList<Object>();
 			Map<String, Object> response = new HashMap<String, Object>();
 			query.addCriteria(Criteria.where("invoice_id").is(invoiceId));
-			org.json.simple.JSONObject resObjct = new org.json.simple.JSONObject();
 			OrderDetailsEntity detailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
 			response.put("OrderDetails", detailsEntity);
 			System.out.println(detailsEntity.getOrderId());

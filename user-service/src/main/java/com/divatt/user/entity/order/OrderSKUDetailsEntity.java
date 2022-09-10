@@ -25,9 +25,9 @@ public class OrderSKUDetailsEntity {
 	@Field(name = "order_id") 
 	private String orderId;
 	
-//	@Field(name = "invoice_id") 
-//	private String invoiceId;
-	
+	@NotNull(message = "HSN is required!")
+	@Field(name = "hsn") 
+	private Object hsn;
 	
 	@NotNull(message = "Designer is required!")
 	@Field(name = "designer_id") 
@@ -98,6 +98,7 @@ public class OrderSKUDetailsEntity {
 	}
 
 	public OrderSKUDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
+			@NotNull(message = "HSN is required!") Object hsn,
 			@NotNull(message = "Designer is required!") int designerId,
 			@NotNull(message = "Product is required!") int productId,
 			@NotNull(message = "Product name is required!") String productName,
@@ -113,6 +114,7 @@ public class OrderSKUDetailsEntity {
 		this.id = id;
 		this.userId = userId;
 		this.orderId = orderId;
+		this.hsn = hsn;
 		this.designerId = designerId;
 		this.productId = productId;
 		this.productName = productName;
@@ -134,12 +136,13 @@ public class OrderSKUDetailsEntity {
 
 	@Override
 	public String toString() {
-		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", designerId="
-				+ designerId + ", productId=" + productId + ", productName=" + productName + ", productSku="
-				+ productSku + ", size=" + size + ", images=" + images + ", colour=" + colour + ", units=" + units
-				+ ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount + ", taxAmount=" + taxAmount
-				+ ", taxType=" + taxType + ", orderItemStatus=" + orderItemStatus + ", reachedCentralHub="
-				+ reachedCentralHub + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn + "]";
+		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", hsn=" + hsn
+				+ ", designerId=" + designerId + ", productId=" + productId + ", productName=" + productName
+				+ ", productSku=" + productSku + ", size=" + size + ", images=" + images + ", colour=" + colour
+				+ ", units=" + units + ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount
+				+ ", taxAmount=" + taxAmount + ", taxType=" + taxType + ", orderItemStatus=" + orderItemStatus
+				+ ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn
+				+ "]";
 	}
 
 	public Integer getId() {
@@ -164,6 +167,14 @@ public class OrderSKUDetailsEntity {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
+	}
+
+	public Object getHsn() {
+		return hsn;
+	}
+
+	public void setHsn(Object hsn) {
+		this.hsn = hsn;
 	}
 
 	public int getDesignerId() {
@@ -306,10 +317,8 @@ public class OrderSKUDetailsEntity {
 		return SEQUENCE_NAME;
 	}
 
+
 	
-	
-	
-	
-	
+
 
 }
