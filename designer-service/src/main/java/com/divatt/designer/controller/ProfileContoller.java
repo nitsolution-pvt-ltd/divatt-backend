@@ -469,8 +469,7 @@ public class ProfileContoller {
 	public List<DesignerLoginEntity> getDesignerDetails(@RequestHeader("Authorization") String token,
 			@PathVariable String designerCategories) {
 		try {
-			ResponseEntity<org.json.simple.JSONObject> response=restTemplate.getForEntity("https://localhost:8082/dev/user/getUserDetails/"+token, org.json.simple.JSONObject.class);
-			System.out.println(response.getBody().get("id").toString());
+
 			if (!designerCategories.equals("all")) {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("categories").is(designerCategories));

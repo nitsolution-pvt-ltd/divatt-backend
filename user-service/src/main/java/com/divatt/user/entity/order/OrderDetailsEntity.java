@@ -26,9 +26,6 @@ public class OrderDetailsEntity {
 	@Field(name = "order_id") 
 	private String orderId;
 	
-	@Field(name = "invoice_id") 
-	private String invoiceId;
-	
 	@NotNull(message = "Shipping address is required!")
 	@Field(name = "shipping_address") 
 	private Object shippingAddress;
@@ -83,19 +80,8 @@ public class OrderDetailsEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public String toString() {
-		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", invoiceId="
-				+ invoiceId + ", shippingAddress=" + shippingAddress + ", billingAddress=" + billingAddress
-				+ ", totalAmount=" + totalAmount + ", orderDate=" + orderDate + ", orderStatus=" + orderStatus
-				+ ", deliveryStatus=" + deliveryStatus + ", deliveryMode=" + deliveryMode + ", deliveryDate="
-				+ deliveryDate + ", deliveryCheckUrl=" + deliveryCheckUrl + ", shippingCharges=" + shippingCharges
-				+ ", discount=" + discount + ", mrp=" + mrp + ", taxAmount=" + taxAmount + ", createdOn=" + createdOn
-				+ ", razorpayOrderId=" + razorpayOrderId + "]";
-	}
-
 	public OrderDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
-			String invoiceId, @NotNull(message = "Shipping address is required!") Object shippingAddress,
+			@NotNull(message = "Shipping address is required!") Object shippingAddress,
 			@NotNull(message = "Billing address is required!") BillingAddressEntity billingAddress,
 			@NotNull(message = "Total amount is required!") Double totalAmount, String orderDate, String orderStatus,
 			String deliveryStatus, String deliveryMode, String deliveryDate, String deliveryCheckUrl,
@@ -105,7 +91,6 @@ public class OrderDetailsEntity {
 		this.id = id;
 		this.userId = userId;
 		this.orderId = orderId;
-		this.invoiceId = invoiceId;
 		this.shippingAddress = shippingAddress;
 		this.billingAddress = billingAddress;
 		this.totalAmount = totalAmount;
@@ -145,14 +130,6 @@ public class OrderDetailsEntity {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
-	}
-
-	public String getInvoiceId() {
-		return invoiceId;
-	}
-
-	public void setInvoiceId(String invoiceId) {
-		this.invoiceId = invoiceId;
 	}
 
 	public Object getShippingAddress() {
@@ -279,5 +256,6 @@ public class OrderDetailsEntity {
 		return SEQUENCE_NAME;
 	}
 
+	
 	
 }
