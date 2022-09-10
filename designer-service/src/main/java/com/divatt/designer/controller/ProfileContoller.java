@@ -161,7 +161,6 @@ public class ProfileContoller {
 					String.class);
 
 			JSONObject jsObj = new JSONObject(forEntity.getBody());
-			System.out.println("jsObj.get(\"isPresent\"):- "+jsObj.get("role"));
 			if ((boolean) jsObj.get("isPresent") && jsObj.get("role").equals("DESIGNER"))
 				throw new CustomException("Email already present");
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
