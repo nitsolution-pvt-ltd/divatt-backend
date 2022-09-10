@@ -332,19 +332,19 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					mailService.sendEmail(findByUserName.get().getEmail(), "Forgot Password Link",
 							"Hi " + findByUserName.get().getFirstName() + " " + findByUserName.get().getLastName()
 									+ " This is Your Link Reset Password "
-									+ "http://65.1.190.195/admin/auth/reset-password/" + forgotPasswordLink,
+									+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink,
 							false);
 
 				} catch (Exception e) {
 					try {
 						mailService.sendEmail(findByUserNameDesigner.get().getEmail(), "Forgot Password Link",
 								"Hi " + findByUserNameDesigner.get().getEmail() + " This is Link for reset password "
-										+ "http://65.1.190.195/admin/auth/reset-password/" + forgotPasswordLink,
+										+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink,
 								false);
 					} catch (Exception Z) {
 						mailService.sendEmail(findByUserNameUser.get().getEmail(), "Forgot Password Link",
 								"Hi " + findByUserNameUser.get().getEmail() + " This is Link for reset password "
-										+ "http://65.1.190.195/divatt/forgetpassword/" + forgotPasswordLink,
+										+ "https://dev.divatt.com/divatt/forgetpassword/" + forgotPasswordLink,
 								false);
 					}
 
@@ -372,15 +372,12 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			if (findByPrToken.isPresent()) {
 				if (findByPrToken.get().getStatus().equals("ACTIVE")) {
 
-					// ** Create Current Time **//
 					SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 					Date date = new Date();
 					formatter.format(date);
 					Calendar calObjForCurrentTime = Calendar.getInstance();
 					calObjForCurrentTime.setTime(date);
 
-//					byte[] forgotPasswordLinkCreateTimeByte = Base64.getDecoder().decode(linkTime);
-//					String forgotPasswordLinkCreateTimeString = new String(forgotPasswordLinkCreateTimeByte);
 					Calendar calObjForLinkCreateTime = Calendar.getInstance();
 					Date dateObjForLinkCreateTime = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss").parse(linkTime);
 					calObjForLinkCreateTime.setTime(dateObjForLinkCreateTime);
@@ -453,21 +450,6 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 								return new GlobalResponse("SUCCESS", "Password changed successfully", 200);
 							}
 						}
-
-//						jo.addProperty("subject", "Password change successfully");
-//						jo.addProperty("body", "Hello " + jo.get("senderMailId") + ""
-//								+ ",\n                           "
-//								+ " your password have been changed." );
-//						jo.addProperty("enableHtml", false);
-//						try {
-//							Unirest.setTimeouts(0, 0);
-//							HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
-//							  .header("Content-Type", "application/json")
-//							  .body(jo.toString())
-//							  .asString();
-//						}catch(Exception e) {
-//							System.out.println(e.getMessage());
-//						}
 
 					}
 
@@ -582,30 +564,30 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 	}
 
 	@GetMapping("/Present/{role}/{email}")
-	public ResponseEntity<?> checkUserPresent(@PathVariable("email") String email,@PathVariable("role") String role) {
+	public ResponseEntity<?> checkUserPresent(@PathVariable("email") String email, @PathVariable("role") String role) {
 		JsonObject jsObj = new JsonObject();
 		if (userLoginRepo.findByEmail(email).isPresent() || designerLoginRepo.findByEmail(email).isPresent()
 				|| loginRepository.findByEmail(email).isPresent()) {
 			jsObj.addProperty("isPresent", true);
-			if(designerLoginRepo.findByEmail(email).isPresent())
-					jsObj.addProperty("role", "DESIGNER");
-			else if(userLoginRepo.findByEmail(email).isPresent())
+			if (designerLoginRepo.findByEmail(email).isPresent())
+				jsObj.addProperty("role", "DESIGNER");
+			else if (userLoginRepo.findByEmail(email).isPresent())
 				jsObj.addProperty("role", "USER");
-			else if(loginRepository.findByEmail(email).isPresent())
+			else if (loginRepository.findByEmail(email).isPresent())
 				jsObj.addProperty("role", "ADMIN");
-			
-			if(designerLoginRepo.findByEmail(email).isPresent() && userLoginRepo.findByEmail(email).isPresent()) {
-				if(role.equals("DESIGNER"))
+
+			if (designerLoginRepo.findByEmail(email).isPresent() && userLoginRepo.findByEmail(email).isPresent()) {
+				if (role.equals("DESIGNER"))
 					jsObj.addProperty("role", "DESIGNER");
-				if(role.equals("USER"))
+				if (role.equals("USER"))
 					jsObj.addProperty("role", "USER");
 			}
-				
-		}else {
+
+		} else {
 			jsObj.addProperty("isPresent", false);
 			jsObj.addProperty("role", "NEW");
 		}
-			
+
 		return ResponseEntity.ok(new Json(jsObj.toString()));
 	}
 
@@ -616,7 +598,6 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		Class<?>[] interfaces = forName.getInterfaces();
 		Class<?> theFirstAndOnlyInterface = interfaces[0];
 
-//		return theFirstAndOnlyInterface.getMethods().length;
 		return theFirstAndOnlyInterface.getMethods().length + " " + MCount;
 	}
 
