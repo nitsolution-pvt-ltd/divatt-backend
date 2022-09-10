@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.entity.SendMail;
 import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
@@ -86,7 +89,12 @@ public class ProfileContoller {
 	@Autowired
 	private MongoOperations mongoOperations;
 	
+	@Autowired
+	private JWTConfig jwtConfig;
+	
 
+	private static final Logger LOGGER=LoggerFactory.getLogger(ProfileContoller.class);
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
 		try {
@@ -503,6 +511,16 @@ public class ProfileContoller {
 		try {
 			return designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
 		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@GetMapping("/designerCurrentStatus")
+	public GlobalResponce changeDesignerstatus(@RequestHeader("Authorization") String token){
+		try {
+			String userName=jwtConfig.extractUsername(token.substring(7));
+			LOGGER.info(userName);
+			return null;
+		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
