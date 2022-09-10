@@ -219,25 +219,12 @@ public class OrderAndPaymentContoller {
 				String format = formatter.format(date);
 				String formatDate = formatters.format(date);
 
-				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
-				orderDetailsEntity.setOrderId("OR" + System.currentTimeMillis());
-				orderDetailsEntity.setBillingAddress(orderDetailsEntity.getBillingAddress());
-				orderDetailsEntity.setOrderDate(formatDate);
-				orderDetailsEntity.setOrderStatus(orderDetailsEntity.getOrderStatus());
-				orderDetailsEntity.setDeliveryStatus(orderDetailsEntity.getDeliveryStatus());
-				orderDetailsEntity.setUserId(orderDetailsEntity.getUserId());
-				orderDetailsEntity.setShippingAddress(orderDetailsEntity.getShippingAddress());
-				orderDetailsEntity.setDeliveryMode(orderDetailsEntity.getDeliveryMode());
-				orderDetailsEntity.setDeliveryCheckUrl(orderDetailsEntity.getDeliveryCheckUrl());
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderId("OR" + System.currentTimeMillis());
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderDate(formatDate);
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setCreatedOn(format);
 
-				orderDetailsEntity.setShippingCharges(orderDetailsEntity.getShippingCharges());
-				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());
-				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());
-				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());
-				orderDetailsEntity.setRazorpayOrderId(orderDetailsEntity.getRazorpayOrderId());
-				orderDetailsEntity.setCreatedOn(format);
-
-				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderDetailsEntity);
+				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderAndPaymentGlobalEntity.getOrderDetailsEntity());
 
 				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
 						.getOrderSKUDetailsEntity();

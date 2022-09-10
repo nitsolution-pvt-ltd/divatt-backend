@@ -68,6 +68,26 @@ public class OrderDetailsEntity {
 	@Field(name = "tax_amount") 
 	private Double taxAmount;
 	
+	@Field(name = "cgst") 
+	private Double cgst;
+	
+	@Field(name = "sgst") 
+	private Double sgst;
+	
+	@Field(name = "igst") 
+	private Double igst;
+	
+	@Field(name = "shipping_charge") 
+	private Double shippingCharge;
+	
+	@Field(name = "shipping_cgst") 
+	private Double shippingCGST;
+	
+	@Field(name = "shipping_sgst") 
+	private Double shippingSGST;
+	
+	@Field(name = "shipping_igst") 
+	private Double shippingIGST;
 	
 	@Field(name = "created_on") 
 	private String createdOn;
@@ -85,8 +105,9 @@ public class OrderDetailsEntity {
 			@NotNull(message = "Billing address is required!") BillingAddressEntity billingAddress,
 			@NotNull(message = "Total amount is required!") Double totalAmount, String orderDate, String orderStatus,
 			String deliveryStatus, String deliveryMode, String deliveryDate, String deliveryCheckUrl,
-			Double shippingCharges, Double discount, Double mrp, Double taxAmount, String createdOn,
-			String razorpayOrderId) {
+			Double shippingCharges, Double discount, Double mrp, Double taxAmount, Double cgst, Double sgst,
+			Double igst, Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST,
+			String createdOn, String razorpayOrderId) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -104,8 +125,28 @@ public class OrderDetailsEntity {
 		this.discount = discount;
 		this.mrp = mrp;
 		this.taxAmount = taxAmount;
+		this.cgst = cgst;
+		this.sgst = sgst;
+		this.igst = igst;
+		this.shippingCharge = shippingCharge;
+		this.shippingCGST = shippingCGST;
+		this.shippingSGST = shippingSGST;
+		this.shippingIGST = shippingIGST;
 		this.createdOn = createdOn;
 		this.razorpayOrderId = razorpayOrderId;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", shippingAddress="
+				+ shippingAddress + ", billingAddress=" + billingAddress + ", totalAmount=" + totalAmount
+				+ ", orderDate=" + orderDate + ", orderStatus=" + orderStatus + ", deliveryStatus=" + deliveryStatus
+				+ ", deliveryMode=" + deliveryMode + ", deliveryDate=" + deliveryDate + ", deliveryCheckUrl="
+				+ deliveryCheckUrl + ", shippingCharges=" + shippingCharges + ", discount=" + discount + ", mrp=" + mrp
+				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
+				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
+				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", createdOn=" + createdOn + ", razorpayOrderId="
+				+ razorpayOrderId + "]";
 	}
 
 	public Integer getId() {
@@ -236,6 +277,62 @@ public class OrderDetailsEntity {
 		this.taxAmount = taxAmount;
 	}
 
+	public Double getCgst() {
+		return cgst;
+	}
+
+	public void setCgst(Double cgst) {
+		this.cgst = cgst;
+	}
+
+	public Double getSgst() {
+		return sgst;
+	}
+
+	public void setSgst(Double sgst) {
+		this.sgst = sgst;
+	}
+
+	public Double getIgst() {
+		return igst;
+	}
+
+	public void setIgst(Double igst) {
+		this.igst = igst;
+	}
+
+	public Double getShippingCharge() {
+		return shippingCharge;
+	}
+
+	public void setShippingCharge(Double shippingCharge) {
+		this.shippingCharge = shippingCharge;
+	}
+
+	public Double getShippingCGST() {
+		return shippingCGST;
+	}
+
+	public void setShippingCGST(Double shippingCGST) {
+		this.shippingCGST = shippingCGST;
+	}
+
+	public Double getShippingSGST() {
+		return shippingSGST;
+	}
+
+	public void setShippingSGST(Double shippingSGST) {
+		this.shippingSGST = shippingSGST;
+	}
+
+	public Double getShippingIGST() {
+		return shippingIGST;
+	}
+
+	public void setShippingIGST(Double shippingIGST) {
+		this.shippingIGST = shippingIGST;
+	}
+
 	public String getCreatedOn() {
 		return createdOn;
 	}
@@ -255,6 +352,8 @@ public class OrderDetailsEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+
+	
 
 	
 	

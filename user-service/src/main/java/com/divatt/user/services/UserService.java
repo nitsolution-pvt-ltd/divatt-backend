@@ -775,15 +775,22 @@ public class UserService {
 		
 		try {
 			List<StateEntity> findAll = stateRepo.findAll();
-			
 			return findAll;
-			
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
-		
-		
+	
 	}
+	
+//public ResponseEntity<?> getSearchDataService(String sea) {
+//		
+//		try {
+//			return ResponseEntity.ok(sea);
+//			
+//		} catch (Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//		
+//	}
 
 }

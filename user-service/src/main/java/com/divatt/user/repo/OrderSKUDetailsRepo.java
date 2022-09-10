@@ -11,6 +11,7 @@ import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 
 public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEntity,Integer>{
 	
+	
 	List<OrderSKUDetailsEntity> findByOrderId(String orderId);
 	
 	Page<OrderSKUDetailsEntity> findByDesignerId(int designerId,Pageable pageable);

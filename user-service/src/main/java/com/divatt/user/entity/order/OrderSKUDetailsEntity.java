@@ -77,6 +77,27 @@ public class OrderSKUDetailsEntity {
 	@Field(name = "tax_amount") 
 	private Long taxAmount;
 	
+	@Field(name = "cgst") 
+	private Double cgst;
+	
+	@Field(name = "sgst") 
+	private Double sgst;
+	
+	@Field(name = "igst") 
+	private Double igst;
+	
+	@Field(name = "shipping_charge") 
+	private Double shippingCharge;
+	
+	@Field(name = "shipping_cgst") 
+	private Double shippingCGST;
+	
+	@Field(name = "shipping_sgst") 
+	private Double shippingSGST;
+	
+	@Field(name = "shipping_igst") 
+	private Double shippingIGST;
+	
 	@Field(name = "taxType") 
 	private String taxType;
 
@@ -108,8 +129,9 @@ public class OrderSKUDetailsEntity {
 			@NotNull(message = "Units is required!") Long units, @NotNull(message = "mrp is required!") Long mrp,
 			@NotNull(message = "Sales price is required!") Long salesPrice,
 			@NotNull(message = "Discount is required!") Long discount,
-			@NotNull(message = "Tax amount is required!") Long taxAmount, String taxType, String orderItemStatus,
-			String reachedCentralHub, String createdOn, String updatedOn) {
+			@NotNull(message = "Tax amount is required!") Long taxAmount, Double cgst, Double sgst, Double igst,
+			Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST, String taxType,
+			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -127,6 +149,13 @@ public class OrderSKUDetailsEntity {
 		this.salesPrice = salesPrice;
 		this.discount = discount;
 		this.taxAmount = taxAmount;
+		this.cgst = cgst;
+		this.sgst = sgst;
+		this.igst = igst;
+		this.shippingCharge = shippingCharge;
+		this.shippingCGST = shippingCGST;
+		this.shippingSGST = shippingSGST;
+		this.shippingIGST = shippingIGST;
 		this.taxType = taxType;
 		this.orderItemStatus = orderItemStatus;
 		this.reachedCentralHub = reachedCentralHub;
@@ -140,9 +169,11 @@ public class OrderSKUDetailsEntity {
 				+ ", designerId=" + designerId + ", productId=" + productId + ", productName=" + productName
 				+ ", productSku=" + productSku + ", size=" + size + ", images=" + images + ", colour=" + colour
 				+ ", units=" + units + ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount
-				+ ", taxAmount=" + taxAmount + ", taxType=" + taxType + ", orderItemStatus=" + orderItemStatus
-				+ ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn
-				+ "]";
+				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
+				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
+				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", taxType=" + taxType + ", orderItemStatus="
+				+ orderItemStatus + ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn
+				+ ", updatedOn=" + updatedOn + "]";
 	}
 
 	public Integer getId() {
@@ -273,6 +304,62 @@ public class OrderSKUDetailsEntity {
 		this.taxAmount = taxAmount;
 	}
 
+	public Double getCgst() {
+		return cgst;
+	}
+
+	public void setCgst(Double cgst) {
+		this.cgst = cgst;
+	}
+
+	public Double getSgst() {
+		return sgst;
+	}
+
+	public void setSgst(Double sgst) {
+		this.sgst = sgst;
+	}
+
+	public Double getIgst() {
+		return igst;
+	}
+
+	public void setIgst(Double igst) {
+		this.igst = igst;
+	}
+
+	public Double getShippingCharge() {
+		return shippingCharge;
+	}
+
+	public void setShippingCharge(Double shippingCharge) {
+		this.shippingCharge = shippingCharge;
+	}
+
+	public Double getShippingCGST() {
+		return shippingCGST;
+	}
+
+	public void setShippingCGST(Double shippingCGST) {
+		this.shippingCGST = shippingCGST;
+	}
+
+	public Double getShippingSGST() {
+		return shippingSGST;
+	}
+
+	public void setShippingSGST(Double shippingSGST) {
+		this.shippingSGST = shippingSGST;
+	}
+
+	public Double getShippingIGST() {
+		return shippingIGST;
+	}
+
+	public void setShippingIGST(Double shippingIGST) {
+		this.shippingIGST = shippingIGST;
+	}
+
 	public String getTaxType() {
 		return taxType;
 	}
@@ -316,7 +403,6 @@ public class OrderSKUDetailsEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-
 
 	
 

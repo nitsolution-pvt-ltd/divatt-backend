@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.ws.rs.Path;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -42,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.user.entity.ProductEntity;
 import com.divatt.user.entity.SendMail;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
@@ -769,5 +768,17 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+//	@GetMapping("/getSearchData")
+//	public ResponseEntity<?> getSearchData(@RequestParam(value="") String sea) {
+//		try {
+//			LOGGER.info("Inside --> UserController.getSearchData");
+//			
+//			return this.userService.getSearchDataService(sea);
+//		}
+//		catch(Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
 	
 }
