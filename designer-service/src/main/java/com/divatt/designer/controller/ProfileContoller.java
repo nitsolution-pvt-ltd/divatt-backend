@@ -294,7 +294,7 @@ public class ProfileContoller {
 			designerLoginRepo.save(designerLoginEntity);
 		}
 
-		httpServletResponse.setHeader("Location", "http://65.1.190.195/admin/#/auth");
+		httpServletResponse.setHeader("Location", "http://65.1.190.195/admin/auth");
 		httpServletResponse.setStatus(302);
 	}
 

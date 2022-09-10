@@ -35,6 +35,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.designerProductEntity.ProductMasterEntity;
 import com.divatt.user.entity.ProductEntity;
+import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
@@ -44,6 +45,7 @@ import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.OrderDetailsRepo;
+import com.divatt.user.repo.StateRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.repo.cart.UserCartRepo;
@@ -97,6 +99,9 @@ public class UserService {
 	
 	@Autowired
 	private JwtUtil jwtUtil;
+	
+	@Autowired
+	private StateRepo stateRepo;
 
 	public GlobalResponse postWishlistService(ArrayList<WishlistEntity> wishlistEntity) {
 		LOGGER.info("Inside - UserService.postWishlistService()");
@@ -805,6 +810,21 @@ public class UserService {
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	public List<StateEntity> getStateDataService() {
+		
+		try {
+			List<StateEntity> findAll = stateRepo.findAll();
+			
+			return findAll;
+			
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
+		
+		
 	}
 
 }
