@@ -120,16 +120,9 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postRazorpayOrderCreate()");
 
 		try {
-			String extractUsername = null;
-			try {
-				extractUsername = JwtUtil.extractUsername(token.substring(7));
-			} catch (Exception e) {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
 				throw new CustomException("Unauthorized");
-			}
-
-			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
-				throw new CustomException("Unauthorized");
-			}
 			return this.orderAndPaymentService.postRazorpayOrderCreateService(orderDetailsEntity);
 
 		} catch (Exception e) {
@@ -616,9 +609,6 @@ public class OrderAndPaymentContoller {
 		String filename = "Order.pdf";
 
 		headers.add("content-disposition", "inline;filename=" + filename);
-//		    headers.add("content-disposition", "attachment;filename=" + filename);
-
-		// headers.setContentDispositionFormData(filename, filename);
 		headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(arr, headers, HttpStatus.OK);
 		return response;
@@ -715,7 +705,9 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderInvoiceDetails()");
 
 		try {
-			
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.postOrderInvoiceService(orderInvoiceEntity);
 
 		} catch (Exception e) {
@@ -729,7 +721,9 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.putOrderInvoiceDetails()");
 
 		try {
-			
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.putOrderInvoiceService(invoiceId,orderInvoiceEntity);
 
 		} catch (Exception e) {
@@ -739,12 +733,15 @@ public class OrderAndPaymentContoller {
 	}
 	
 	@GetMapping("/invoices/list")
-	public Map<String, Object> getOrderInvoiceDetails(
+	public Map<String, Object> getOrderInvoiceDetails(@RequestHeader("Authorization") String token,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "_id") String sortName,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderInvoiceDetails()");
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.getOrderInvoiceService(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
