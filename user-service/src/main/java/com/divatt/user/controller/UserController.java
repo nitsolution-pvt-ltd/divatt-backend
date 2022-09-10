@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.entity.SendMail;
+import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
@@ -790,4 +791,16 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/getStateData")
+	public List<StateEntity> getStateData() {
+		try {
+			LOGGER.info("Inside --> UserController.getStateData");
+			return this.userService.getStateDataService();
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 }
