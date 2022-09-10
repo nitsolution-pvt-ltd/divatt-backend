@@ -1,5 +1,6 @@
 package com.divatt.designer.controller;
 
+import java.lang.invoke.VarHandle;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -15,6 +16,7 @@ import javax.validation.Valid;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -53,6 +55,9 @@ import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
+
+import net.bytebuddy.agent.builder.AgentBuilder.CircularityLock.Global;
+
 import com.divatt.designer.repo.*;
 
 @RestController
@@ -89,9 +94,8 @@ public class ProfileContoller {
 	@Autowired
 	private MongoOperations mongoOperations;
 	
-	@Autowired
-	private JWTConfig jwtConfig;
 	
+	@Autowired private JWTConfig jwtConfig;
 
 	private static final Logger LOGGER=LoggerFactory.getLogger(ProfileContoller.class);
 	
@@ -514,12 +518,22 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	@GetMapping("/designerCurrentStatus")
-	public GlobalResponce changeDesignerstatus(@RequestHeader("Authorization") String token){
+	@PutMapping("/designerCurrentStatus/{status}")
+	public GlobalResponce changeDesignerStatus(@RequestHeader("Authorization") String token,@PathVariable String status) {
 		try {
-			String userName=jwtConfig.extractUsername(token.substring(7));
-			LOGGER.info(userName);
-			return null;
+			LOGGER.info(jwtConfig.extractUsername(token.substring(7)));
+			LOGGER.info(token.substring(7));
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7)));
+			DesignerLoginEntity designerEntity=new DesignerLoginEntity();
+			if(!findByEmail.isEmpty()) {
+				BeanUtils.copyProperties(findByEmail.get(), designerEntity);
+				designerEntity.setDesignerCurrentStatus(status);
+				designerLoginRepo.save(designerEntity);
+				return new GlobalResponce("Success", "Designer current status", 200);
+			}else {
+				throw new CustomException("User not found");
+			}
+			
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
