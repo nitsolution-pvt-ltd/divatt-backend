@@ -135,7 +135,6 @@ public class UserController {
 		
 		try {
 			List<WishlistEntity> findByAddedOn = wishlistRepo.findAll();
-			System.out.println(findByAddedOn.toString());
 			
 			for(WishlistEntity e : findByAddedOn) {
 				
@@ -154,9 +153,6 @@ public class UserController {
 					Optional<UserLoginEntity> findById = userLoginRepo.findById((long)e.getUserId());
 					try {
 						ResponseEntity<String> forEntity = restTemplate.getForEntity("https://localhost:8083/dev/designerProduct/view/"+e.getProductId(), String.class);
-						String body = forEntity.getBody();
-						
-						System.out.println("body " + body.toString());
 						
 						ObjectMapper objectMapper = new ObjectMapper();
 						Map<String,Object> map = objectMapper.readValue(forEntity.getBody(), Map.class);  
@@ -204,7 +200,6 @@ public class UserController {
 			helper.setFrom("no-reply@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
-//			helper.addAttachment(body, null);
 			mailSender.send(message);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
