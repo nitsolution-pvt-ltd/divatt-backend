@@ -134,15 +134,6 @@ public class UserController {
 		
 		
 		try {
-//			SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-//			Date date = new Date();
-//			String format = formatter.format(date);
-//			
-//			Calendar calObjOfCurDate = Calendar.getInstance();
-//			calObjOfCurDate.setTime(date);
-//			calObjOfCurDate.add(Calendar.DATE, -6);
-//			
-//			Date currentDate=new SimpleDateFormat("yyyy/MM/dd").parse(calObjOfCurDate.get(Calendar.YEAR) + "/"+calObjOfCurDate.get(Calendar.MONTH) + "/"+ calObjOfCurDate.get(Calendar.DATE));
 			List<WishlistEntity> findByAddedOn = wishlistRepo.findAll();
 			System.out.println(findByAddedOn.toString());
 			
@@ -188,9 +179,6 @@ public class UserController {
 								+ "</tbody></table><table style='width:100%;margin-top: 50px;margin-bottom: 60px;'><tr><td style='text-align:center;font-weight: 600;color: #000;'><a href='http://65.1.190.195/divatt/wishlist' style='padding: 0.375rem 0.75rem;text-transform: uppercase;font-family: 'Lato', sans-serif;text-decoration: none; font-size: 1rem;cursor: pointer;height: 25px;display: block;width: fit-content; margin: auto;line-height: 1.5; border-radius: 0.25rem;color: rgb(255 255 255) !important;letter-spacing: 0.05em;border: 2px solid rgb(135 192 72) !important; background-image: linear-gradient(30deg, rgb(135 192 72) 50%, rgb(0 0 0 / 0%) 50%);background-size: 1000px; background-repeat: no-repeat;background-position: 0;-webkit-transition: background 300ms ease-in-out;transition: background 300ms ease-in-out;' target='_blank'>Complete your order now</a></td></tr></table>"
 								+ "<h1 style='font-family: 'Lato', sans-serif;text-transform: uppercase;font-size: 23px;font-weight: 800; margin-bottom: 22px;margin-top: 40px;letter-spacing: 1.6px;text-align: center;'>Follow US</h1><div style='text-align: center;'><a href='#' style='text-decoration: none;color: #000;text-align: center;margin-right: 10px;'><img src='https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png' alt='' style='width: 40px;height:40px;'></a><a href='#' style='text-decoration: none;color: #000;text-align: center;margin-right: 10px;'><img src='https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg' alt='' style='width: 37px;height:37px;'></a><a href='#' style='text-decoration: none;color: #000;text-align: center;margin-right: 10px;'><img src='https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png' alt='' style='width: 40px;height:40px;'></a><a href='#' style='text-decoration: none;color: #000;text-align: center;margin-right: 10px;'><img src='https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png' alt='' style='width: 42px;height:42px;'></a><a href='#' style='text-decoration: none;color: #000;text-align: center;'><img src='https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png' alt='' style='width: 39px;height:37px;'></a></div></div><script type='text/javascript' src='/LBKlAJ/lDsEbq/5P/c4gA/oVBSEXBP4/7cErfJDL3S/NCUhTw/fHU5/ZXVTawM'></script></body></html>", true);
 						
-//						Unirest.setTimeouts(0, 0);
-//						HttpResponse<String> response = Unirest.post("http://localhost:8080/dev/auth/sendMail")
-//								.header("Content-Type", "application/json").body(jo.toString()).asString();
 					} catch (Exception Z) {
 						System.out.println(Z.getMessage());
 					}
@@ -296,12 +284,6 @@ public class UserController {
 			if (error.hasErrors()) {
 				throw new CustomException("Please check input fields");
 			}
-//			Unirest.setTimeouts(0, 0);
-//			JsonNode body = Unirest.get("http://localhost:8080/dev/auth/Present/"+userLoginEntity.getEmail())
-//			  .asJson().getBody();
-//			JSONObject jsObj = body.getObject();
-//			if((boolean) jsObj.get("isPresent"))
-//				throw new CustomException("Email already present");
 			ResponseEntity<String> response= restTemplate.getForEntity("https://localhost:8080/dev/auth/Present/"+userLoginEntity.getEmail(),String.class);
 			JSONObject jsonObject= new JSONObject(response.getBody());
 			if((boolean)jsonObject.get("isPresent"))
@@ -321,16 +303,7 @@ public class UserController {
 			userLoginEntity.setProfilePic("");
 			userLoginEntity.setRegisterType("Self");
 			userLoginRepo.save(userLoginEntity);
-//			JsonObject jo = new JsonObject();
-//			jo.addProperty("senderMailId", userLoginEntity.getEmail());
-//			jo.addProperty("subject", "Successfully Registration");
-//			jo.addProperty("body", "Welcome " + userLoginEntity.getEmail() + "" + ",\n   "
-//					+ " you have been register successfully."
-//					+ "Please active your account by clicking the bellow link "
-//					+ URI.create(env.getProperty("redirectapi")
-//							+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()))
-//					+ " . We will verify your details and come back to you soon.");
-//			jo.addProperty("enableHtml", false);
+
 			SendMail mail= new SendMail(userLoginEntity.getEmail(), "Successfully Registration", "Welcome " + userLoginEntity.getEmail() + "" + ",\n   "
 					+ " you have been register successfully."
 					+ "Please active your account by clicking the bellow link "

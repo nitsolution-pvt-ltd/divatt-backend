@@ -1097,7 +1097,11 @@ public class OrderAndPaymentService {
 				if (findByCategoryName.size() > 0) {
 					throw new CustomException("Invoice already exist!");
 				} else { 
+				OrderInvoiceEntity OrderLastRow = orderInvoiceRepo.findTopByOrderByIdDesc();
+
+				String InvNumber = String.format("%014d", OrderLastRow.getId());
 				orderInvoiceEntity.setId((long) sequenceGenerator.getNextSequence(OrderInvoiceEntity.SEQUENCE_NAME));
+				orderInvoiceEntity.setInvoiceId("IV" + InvNumber);
 				saveData = orderInvoiceRepo.save(orderInvoiceEntity);
 				}
 				return ResponseEntity.ok(new GlobalResponse("SUCCESS","Invoice added succesfully",200));
