@@ -23,6 +23,7 @@ public class DesignerLoginEntity {
 	
 	@NotNull
 	@Field(name = "email") private String email;
+	@Field(name = "user_exist") private String userExist;
 	@Field(name = "password") private String password;
 	@Field(name = "auth_token") private String authToken;
 	@NotNull
@@ -53,13 +54,28 @@ public class DesignerLoginEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String password, String authToken,
-			@NotNull Boolean isDeleted, @NotNull String profileStatus, String accountStatus, String adminComment,
-			Json logins, DesignerProfileEntity designerProfileEntity, Integer productCount, Integer follwerCount,
-			String categories, String designerCurrentStatus) {
+	
+
+	@Override
+	public String toString() {
+		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", userExist=" + userExist + ", password="
+				+ password + ", authToken=" + authToken + ", isDeleted=" + isDeleted + ", profileStatus="
+				+ profileStatus + ", accountStatus=" + accountStatus + ", adminComment=" + adminComment + ", logins="
+				+ logins + ", designerProfileEntity=" + designerProfileEntity + ", productCount=" + productCount
+				+ ", follwerCount=" + follwerCount + ", categories=" + categories + ", designerCurrentStatus="
+				+ designerCurrentStatus + "]";
+	}
+
+
+
+	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String userExist, String password,
+			String authToken, @NotNull Boolean isDeleted, @NotNull String profileStatus, String accountStatus,
+			String adminComment, Json logins, DesignerProfileEntity designerProfileEntity, Integer productCount,
+			Integer follwerCount, String categories, String designerCurrentStatus) {
 		super();
 		this.dId = dId;
 		this.email = email;
+		this.userExist = userExist;
 		this.password = password;
 		this.authToken = authToken;
 		this.isDeleted = isDeleted;
@@ -74,14 +90,19 @@ public class DesignerLoginEntity {
 		this.designerCurrentStatus = designerCurrentStatus;
 	}
 
-	@Override
-	public String toString() {
-		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", password=" + password + ", authToken="
-				+ authToken + ", isDeleted=" + isDeleted + ", profileStatus=" + profileStatus + ", accountStatus="
-				+ accountStatus + ", adminComment=" + adminComment + ", logins=" + logins + ", designerProfileEntity="
-				+ designerProfileEntity + ", productCount=" + productCount + ", follwerCount=" + follwerCount
-				+ ", categories=" + categories + ", designerCurrentStatus=" + designerCurrentStatus + "]";
+
+
+	public String getUserExist() {
+		return userExist;
 	}
+
+
+
+	public void setUserExist(String userExist) {
+		this.userExist = userExist;
+	}
+
+
 
 	public Long getdId() {
 		return dId;

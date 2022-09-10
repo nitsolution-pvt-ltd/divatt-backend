@@ -283,6 +283,13 @@ public class UserController {
 			JSONObject jsonObject= new JSONObject(response.getBody());
 			if((boolean)jsonObject.get("isPresent") && jsonObject.get("role").equals("USER"))
 				throw new CustomException("Email already present");
+			
+			if((boolean) jsonObject.get("isPresent") && jsonObject.get("role").equals("DESIGNER") ) {
+				ResponseEntity<String> forEntity2 = restTemplate.getForEntity(
+						"https://localhost:8080/dev/auth/info/DESIGNER/"+userLoginEntity.getEmail(),
+						String.class);
+				userLoginEntity.setUserExist(forEntity2.getBody());
+			}
 
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();

@@ -21,6 +21,7 @@ public class UserLoginEntity {
 	@Field("first_name") private String firstName;
 	@NotNull
 	@Field("last_name") private String lastName;
+	@Field("user_exist") private String userExist;
 	@NotNull
 	@Field("email") private String email;
 	@NotNull
@@ -41,13 +42,32 @@ public class UserLoginEntity {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public UserLoginEntity(Long id, @NotNull String firstName, @NotNull String lastName, @NotNull String email,
-			@NotNull String password, @NotNull String mobileNo, @NotNull String dob, Boolean isActive,
-			Boolean isDeleted, String createdOn, String profilePic, String registerType, String username, Json logins) {
+	
+
+		
+	public String getUserExist() {
+		return userExist;
+	}
+
+
+
+
+	public void setUserExist(String userExist) {
+		this.userExist = userExist;
+	}
+
+
+
+
+	public UserLoginEntity(Long id, @NotNull String firstName, @NotNull String lastName, String userExist,
+			@NotNull String email, @NotNull String password, @NotNull String mobileNo, @NotNull String dob,
+			Boolean isActive, Boolean isDeleted, String createdOn, String profilePic, String registerType,
+			String username, Json logins) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.userExist = userExist;
 		this.email = email;
 		this.password = password;
 		this.mobileNo = mobileNo;
@@ -60,18 +80,21 @@ public class UserLoginEntity {
 		this.username = username;
 		this.logins = logins;
 	}
-	
-	
 
-		@Override
+
+
+
+	@Override
 	public String toString() {
-		return "UserLoginEntity [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", isActive=" + isActive
-				+ ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", profilePic=" + profilePic
-				+ ", registerType=" + registerType + ", username=" + username + ", logins=" + logins + "]";
+		return "UserLoginEntity [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", userExist="
+				+ userExist + ", email=" + email + ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob
+				+ ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", profilePic="
+				+ profilePic + ", registerType=" + registerType + ", username=" + username + ", logins=" + logins + "]";
 	}
 
-		
+
+
+
 	public Long getId() {
 			return id;
 		}

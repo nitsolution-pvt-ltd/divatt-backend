@@ -55,6 +55,8 @@ import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
 
 import net.bytebuddy.agent.builder.AgentBuilder.CircularityLock.Global;
 
@@ -154,16 +156,22 @@ public class ProfileContoller {
 	@PostMapping("/add")
 	public ResponseEntity<?> addDesigner(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
 		try {
-			designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
 
 			ResponseEntity<String> forEntity = restTemplate.getForEntity(
 					"https://localhost:8080/dev/auth/Present/DESIGNER/" + designerProfileEntity.getDesignerProfile().getEmail(),
 					String.class);
-
+			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
 			JSONObject jsObj = new JSONObject(forEntity.getBody());
 			if ((boolean) jsObj.get("isPresent") && jsObj.get("role").equals("DESIGNER"))
 				throw new CustomException("Email already present");
-			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
+			if((boolean) jsObj.get("isPresent") && jsObj.get("role").equals("USER") ) {
+				ResponseEntity<String> forEntity2 = restTemplate.getForEntity(
+						"https://localhost:8080/dev/auth/info/USER/"+designerProfileEntity.getDesignerProfile().getEmail(),
+						String.class);
+				designerLoginEntity.setUserExist(forEntity2.getBody());
+			}
+			
 
 			designerLoginEntity.setdId((long) sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
 			designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
