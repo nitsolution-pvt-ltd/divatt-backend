@@ -1,5 +1,6 @@
 package com.divatt.designer.controller;
 
+import java.lang.invoke.VarHandle;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -15,6 +16,7 @@ import javax.validation.Valid;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,8 +38,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-
+import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.entity.SendMail;
 import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
@@ -53,6 +54,11 @@ import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+
+import net.bytebuddy.agent.builder.AgentBuilder.CircularityLock.Global;
+
 import com.divatt.designer.repo.*;
 
 @RestController
@@ -78,10 +84,10 @@ public class ProfileContoller {
 	private ProductRepository productRepo;
 
 	@Autowired
-	DesignerLogRepo designerLogRepo;
+	private DesignerLogRepo designerLogRepo;
 
 	@Autowired
-	DatabaseSeqRepo databaseSeqRepo;
+	private DatabaseSeqRepo databaseSeqRepo;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -90,7 +96,10 @@ public class ProfileContoller {
 	private MongoOperations mongoOperations;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
 	
-
+	
+	@Autowired 
+	private JWTConfig jwtConfig;
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
 		try {
@@ -147,16 +156,22 @@ public class ProfileContoller {
 	@PostMapping("/add")
 	public ResponseEntity<?> addDesigner(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
 		try {
-			designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
 
 			ResponseEntity<String> forEntity = restTemplate.getForEntity(
-					"https://localhost:8080/dev/auth/Present/" + designerProfileEntity.getDesignerProfile().getEmail(),
+					"https://localhost:8080/dev/auth/Present/DESIGNER/" + designerProfileEntity.getDesignerProfile().getEmail(),
 					String.class);
-
-			JSONObject jsObj = new JSONObject(forEntity.getBody());
-			if ((boolean) jsObj.get("isPresent"))
-				throw new CustomException("Email already present");
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
+			JSONObject jsObj = new JSONObject(forEntity.getBody());
+			if ((boolean) jsObj.get("isPresent") && jsObj.get("role").equals("DESIGNER"))
+				throw new CustomException("Email already present");
+			if((boolean) jsObj.get("isPresent") && jsObj.get("role").equals("USER") ) {
+				ResponseEntity<String> forEntity2 = restTemplate.getForEntity(
+						"https://localhost:8080/dev/auth/info/USER/"+designerProfileEntity.getDesignerProfile().getEmail(),
+						String.class);
+				designerLoginEntity.setUserExist(forEntity2.getBody());
+			}
+			
 
 			designerLoginEntity.setdId((long) sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
 			designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
@@ -175,8 +190,6 @@ public class ProfileContoller {
 				designerProfileEntity.setDesignerProfile(designerProfile);
 				designerProfileRepo.save(designerProfileEntity);
 			}
-
-			DesignerLogEntity designerLogEntity = new DesignerLogEntity();
 
 			SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
 					"Successfully Registration",
@@ -207,7 +220,7 @@ public class ProfileContoller {
 
 		Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(designerLoginEntity.getdId());
 		if (!findById.isPresent())
-			throw new CustomException("Designer Details Not Found");
+			throw new CustomException("Designer details not found");
 		else {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
@@ -257,7 +270,6 @@ public class ProfileContoller {
 			designerProfile.setEmail(findById.get().getEmail());
 			designerProfile.setPassword(findById.get().getPassword());
 			designerProfile.setProfilePic(designerProfileEntity.getDesignerProfile().getProfilePic());
-//			designerProfile.setDesignerCategory(designerProfile.getDesignerCategory());
 
 			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
 
@@ -302,7 +314,7 @@ public class ProfileContoller {
 			designerLoginRepo.save(designerLoginEntity);
 		}
 
-		httpServletResponse.setHeader("Location", "http://65.1.190.195/admin/#/auth");
+		httpServletResponse.setHeader("Location", "http://65.1.190.195/admin/auth");
 		httpServletResponse.setStatus(302);
 	}
 
@@ -432,7 +444,7 @@ public class ProfileContoller {
 		try {
 			org.json.simple.JSONObject response = new org.json.simple.JSONObject();
 			ResponseEntity<GlobalResponce> userData = restTemplate
-					.getForEntity("https://localhost:8085/dev/user/followerCount/" + designerId, GlobalResponce.class);
+					.getForEntity("https://localhost:9095/dev/user/followerCount/" + designerId, GlobalResponce.class);
 			String followersData = userData.getBody().getMessage();
 			response.put("FollowersData", followersData);
 			response.put("Products", productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,
@@ -471,8 +483,7 @@ public class ProfileContoller {
 	public List<DesignerLoginEntity> getDesignerDetails(@RequestHeader("Authorization") String token,
 			@PathVariable String designerCategories) {
 		try {
-			ResponseEntity<org.json.simple.JSONObject> response=restTemplate.getForEntity("https://localhost:8082/dev/user/getUserDetails/"+token, org.json.simple.JSONObject.class);
-			System.out.println(response.getBody().get("id").toString());
+
 			if (!designerCategories.equals("all")) {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("categories").is(designerCategories));
@@ -520,6 +531,7 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	
 	@GetMapping("/designerStatusInformation")
 	public Map<String, Object> getTotalActiveDesigner() {
@@ -552,6 +564,29 @@ public class ProfileContoller {
 			return response;
 			
 		} catch (Exception e) {
+			
+			throw new CustomException(e.getMessage());
+			
+			}
+    }
+	
+	@PutMapping("/designerCurrentStatus/{status}")
+	public GlobalResponce changeDesignerStatus(@RequestHeader("Authorization") String token,@PathVariable String status) {
+		try {
+			LOGGER.info(jwtConfig.extractUsername(token.substring(7)));
+			LOGGER.info(token.substring(7));
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7)));
+			DesignerLoginEntity designerEntity=new DesignerLoginEntity();
+			if(!findByEmail.isEmpty()) {
+				BeanUtils.copyProperties(findByEmail.get(), designerEntity);
+				designerEntity.setDesignerCurrentStatus(status);
+				designerLoginRepo.save(designerEntity);
+				return new GlobalResponce("Success", "Designer current status", 200);
+			}else {
+				throw new CustomException("User not found");
+			}
+			
+		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

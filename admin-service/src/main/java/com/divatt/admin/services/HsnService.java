@@ -1,9 +1,13 @@
 package com.divatt.admin.services;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -14,6 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -22,6 +29,7 @@ import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.hsnCode.HsnEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.HsnRepo;
+import com.netflix.discovery.converters.Auto;
 
 @Service
 public class HsnService {
@@ -31,6 +39,8 @@ public class HsnService {
 	
 	@Autowired
 	private SequenceGenerator sequenceGenerator ;
+	
+	@Autowired private MongoOperations mongoOperations;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(HsnService.class);
 
@@ -263,4 +273,33 @@ public class HsnService {
 		}
   }
 
+
+	public List<HsnEntity> getActiveHSNListService(String searchKeyword) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("isActive").is(true)
+									  .and("isDelete").is(false));
+			List<HsnEntity> hsnList= mongoOperations.find(query, HsnEntity.class);
+			if(searchKeyword.isEmpty()) {
+				return hsnList;
+			}
+			else {
+				List<HsnEntity> descriptionFiltered= hsnList.stream().filter(e->searchKeyword.equals(e.getDescription())).collect(Collectors.toList());
+				if(descriptionFiltered.isEmpty()) {
+					List<HsnEntity> hsnCodeFiltered= hsnList.stream().filter(e->searchKeyword.equals(e.getHsnCode()+"")).collect(Collectors.toList());
+					if(hsnCodeFiltered.isEmpty()) {
+						List<HsnEntity> taxValueFiltered= hsnList.stream().filter(e->searchKeyword.equals(e.getTaxValue()+"")).collect(Collectors.toList());
+						if(taxValueFiltered.isEmpty()) {
+							throw new CustomException("No data found");
+						}
+						return taxValueFiltered;
+					}
+					return hsnCodeFiltered;
+				}
+				return descriptionFiltered;
+			}
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

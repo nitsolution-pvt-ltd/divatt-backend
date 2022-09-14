@@ -78,16 +78,22 @@ spring:
   application:
     name: ApiGatway
 server:
-  port: '9095'
+  port: 9095
   ssl:
-    key-store: classpath:gateway-server.jks
-    key-store-type: JKS
-    key-alias: gateway-server
-    key-password: Dapp@1234
-    key-store-password: Dapp@1234
+    key-store: classpath:local-ssl.p12
+    key-store-type: PKCS12
+    key-alias: local_ssl
+    key-password: Divatt
+    key-store-password: Divatt
     enabled: true
-    protocol: TLS
-    enabled-protocols: TLSv1.2
+#    key-store: classpath:gateway-server.jks
+#    key-store-type: JKS
+#    key-alias: gateway-server
+#    key-password: Dapp@1234
+#    key-store-password: Dapp@1234
+#    enabled: true
+#    protocol: TLS
+#    enabled-protocols: TLSv1.2
 
 
 eureka:
