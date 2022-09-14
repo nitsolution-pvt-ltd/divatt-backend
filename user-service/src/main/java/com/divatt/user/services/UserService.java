@@ -807,4 +807,25 @@ public class UserService {
 		}
 	}
 
+	public Map<String, Object> getUserStatus() {
+         try {
+        	 LOGGER.info("Inside - UserService.getUserStatus()");
+			Pageable pagingSort = PageRequest.of(0, 10);
+			Page<UserLoginEntity> findAllActive = userLoginRepo.findByIsActive(false,true, pagingSort);
+			Page<UserLoginEntity> findAllInActive = userLoginRepo.findByIsActive(false,false, pagingSort);
+			Page<UserLoginEntity> findAllDeleted = userLoginRepo.findByIsDeleted(true, pagingSort);
+			Map<String, Object> response = new HashMap<>();
+			response.put("Active", findAllActive.getTotalElements());
+			response.put("InActive", findAllInActive.getTotalElements());
+			response.put("Deleted", findAllDeleted.getTotalElements());
+			
+
+			
+			return response;
+			
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }

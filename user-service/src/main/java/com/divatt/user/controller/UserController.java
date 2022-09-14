@@ -790,4 +790,16 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/userStatusInformation")
+	public Map<String, Object> getUserStatus() {
+
+		try {
+			LOGGER.info("Inside - ProductController.getUserStatus()");
+			return this.userService.getUserStatus();
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 }

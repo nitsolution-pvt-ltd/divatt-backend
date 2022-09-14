@@ -37,6 +37,8 @@ public class DesignerProfileEntity {
 	
 	private String accountStatus;
 	
+	private Boolean isDeleted ;
+	
 	private DesignerPersonalInfoEntity designerPersonalInfoEntity;
 	private String designerLevel;
 	public DesignerProfileEntity() {
@@ -45,8 +47,8 @@ public class DesignerProfileEntity {
 	}
 	public DesignerProfileEntity(Long id, Long designerId, @NotNull DesignerProfile designerProfile,
 			@NotNull BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName,
-			String profileStatus, String accountStatus, DesignerPersonalInfoEntity designerPersonalInfoEntity,
-			String designerLevel) {
+			String profileStatus, String accountStatus, Boolean isDeleted,
+			DesignerPersonalInfoEntity designerPersonalInfoEntity, String designerLevel) {
 		super();
 		this.id = id;
 		this.designerId = designerId;
@@ -56,6 +58,7 @@ public class DesignerProfileEntity {
 		this.designerName = designerName;
 		this.profileStatus = profileStatus;
 		this.accountStatus = accountStatus;
+		this.isDeleted = isDeleted;
 		this.designerPersonalInfoEntity = designerPersonalInfoEntity;
 		this.designerLevel = designerLevel;
 	}
@@ -64,8 +67,8 @@ public class DesignerProfileEntity {
 		return "DesignerProfileEntity [id=" + id + ", designerId=" + designerId + ", designerProfile=" + designerProfile
 				+ ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile + ", designerName="
 				+ designerName + ", profileStatus=" + profileStatus + ", accountStatus=" + accountStatus
-				+ ", designerPersonalInfoEntity=" + designerPersonalInfoEntity + ", designerLevel=" + designerLevel
-				+ "]";
+				+ ", isDeleted=" + isDeleted + ", designerPersonalInfoEntity=" + designerPersonalInfoEntity
+				+ ", designerLevel=" + designerLevel + "]";
 	}
 	public Long getId() {
 		return id;
@@ -115,6 +118,12 @@ public class DesignerProfileEntity {
 	public void setAccountStatus(String accountStatus) {
 		this.accountStatus = accountStatus;
 	}
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 	public DesignerPersonalInfoEntity getDesignerPersonalInfoEntity() {
 		return designerPersonalInfoEntity;
 	}
@@ -130,5 +139,6 @@ public class DesignerProfileEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+	
 	
 }

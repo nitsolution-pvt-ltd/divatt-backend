@@ -23,7 +23,7 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 	List<DesignerLoginEntity> findByIsDeletedAndProfileStatusAndDId(Boolean isDeleted,String profileStatus, long dId);
 	
 	List<DesignerLoginEntity> findByProfileStatus(String profileStatus);
-	
+	@Query("{'isDeleted':?0,'profileStatus':?1}")
 	public Page<DesignerLoginEntity> findByIsDeletedAndProfileStatus(Boolean isDeleted,String profileStatus,Pageable pagingSort);
 	
 	public Page<DesignerLoginEntity> findByIsDeleted(Boolean isDeleted,Pageable pagingSort);
@@ -32,6 +32,12 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 	
 	@Query(value = "{ $or: [ { 'email' : {$regex:?0,$options:'i'} } ],$and: [ { 'isDeleted' : ?1 }],$and: [ { 'profileStatus' : ?2 }]}")
 	public Page<DesignerLoginEntity> SearchByDeletedAndProfileStatus(String sortKey, Boolean isDeleted,String profileStatus,Pageable pageable);
+	@Query("{profileStatus:?0}")
+	Page<DesignerLoginEntity> findDesignerProfileStatus( String profileStatus,Pageable pagingSort);
+	@Query("{'isDeleted':?0}")
+	Page<DesignerLoginEntity> findDesignerisDeleted(boolean isDeleted, Pageable pagingSort);
+	@Query("{'isDeleted':?0}")
+	List<DesignerLoginEntity> findByDeleted(boolean isDeleted);
 
 
 	

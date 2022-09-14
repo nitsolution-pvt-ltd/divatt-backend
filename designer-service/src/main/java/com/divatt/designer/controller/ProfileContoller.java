@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
 
 import com.divatt.designer.entity.SendMail;
 import com.divatt.designer.entity.profile.DesignerLogEntity;
@@ -85,6 +88,7 @@ public class ProfileContoller {
 
 	@Autowired
 	private MongoOperations mongoOperations;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
 	
 
 	@GetMapping("/{id}")
@@ -105,6 +109,7 @@ public class ProfileContoller {
 				DesignerLoginEntity designerLoginEntity = designerLoginRepo.findById(id).get();
 				designerProfileEntity.setAccountStatus(designerLoginEntity.getAccountStatus());
 				designerProfileEntity.setProfileStatus(designerLoginEntity.getProfileStatus());
+				designerProfileEntity.setIsDeleted(designerLoginEntity.getIsDeleted());
 				designerProfileEntity
 						.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
 			} catch (Exception e) {
@@ -275,7 +280,7 @@ public class ProfileContoller {
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted,
-			@RequestParam(defaultValue = "APPROVE") String profileStatus,
+			@RequestParam(defaultValue = "") String profileStatus,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
 
 		try {
@@ -368,10 +373,15 @@ public class ProfileContoller {
 
 			Page<DesignerLoginEntity> findAll = null;
 
-			if (keyword.isEmpty()) {
+			if (!profileStatus.isEmpty()) {
 
 				findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted, profileStatus, pagingSort);
-			} else {
+			} 
+			else if( profileStatus.isEmpty() || keyword.isEmpty()) {
+				findAll = designerLoginRepo.findDesignerisDeleted(isDeleted,  pagingSort);
+				
+			}
+			else {
 				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted, profileStatus,
 						pagingSort);
 
@@ -408,6 +418,7 @@ public class ProfileContoller {
 			response.put("submitted", designerLoginRepo.findByProfileStatus("SUBMITTED").size());
 			response.put("completed", designerLoginRepo.findByProfileStatus("COMPLETED").size());
 			response.put("rejected", designerLoginRepo.findByProfileStatus("REJECTED").size());
+			response.put("deleted", designerLoginRepo.findByDeleted(true).size());
 
 			return response;
 		} catch (Exception e) {
@@ -505,6 +516,41 @@ public class ProfileContoller {
 	public List<DesignerLoginEntity> getDesignerIdList() {
 		try {
 			return designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/designerStatusInformation")
+	public Map<String, Object> getTotalActiveDesigner() {
+
+		try {
+			LOGGER.info("Inside - ProductController.getAllProductDetails()");
+			return this.getDesignerInformation();
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	private Map<String, Object> getDesignerInformation() {
+    try {
+    	LOGGER.info("Inside - ProductController.getDesignerInformation()");
+			Pageable pagingSort = PageRequest.of(0, 10);
+			Page<DesignerLoginEntity> findAllCompleted = designerLoginRepo.findDesignerProfileStatus("COMPLETED", pagingSort);
+			Page<DesignerLoginEntity> findAllApproved = designerLoginRepo.findDesignerProfileStatus("APPROVE", pagingSort);
+			Page<DesignerLoginEntity> findAllRejected = designerLoginRepo.findDesignerProfileStatus("REJECTED", pagingSort);
+			Page<DesignerLoginEntity> findAllSubmitted = designerLoginRepo.findDesignerProfileStatus("SUBMITTED", pagingSort);
+			Page<DesignerLoginEntity> findAllWaitForApprove = designerLoginRepo.findDesignerProfileStatus("waitForApprove", pagingSort);
+			Page<DesignerLoginEntity> findAllDeleted = designerLoginRepo.findDesignerisDeleted(true, pagingSort);
+			Map<String, Object> response = new HashMap<>();
+			response.put("Completed", findAllCompleted.getTotalElements());
+			response.put("Approve", findAllApproved.getNumberOfElements());
+			response.put("Rejected", findAllRejected.getNumberOfElements());
+			response.put("Submitted", findAllSubmitted.getNumberOfElements());
+			response.put("WaitForApprove", findAllWaitForApprove.getNumberOfElements());
+			response.put("Deleted", findAllDeleted.getNumberOfElements());
+			return response;
+			
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

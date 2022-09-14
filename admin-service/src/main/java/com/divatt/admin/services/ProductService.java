@@ -2,21 +2,31 @@ package com.divatt.admin.services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.amazonaws.services.sagemaker.model.SortBy;
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.hsnCode.HsnEntity;
 import com.divatt.admin.entity.product.ProductEntity;
 import com.divatt.admin.exception.CustomException;
+import com.divatt.admin.repo.ProductRepo;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -31,6 +41,8 @@ public class ProductService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	@Autowired
+	private ProductRepo productRepo; 
 	
 	@Autowired
 	private RestTemplate restTemplate;
@@ -82,4 +94,27 @@ public class ProductService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	
+	
+	
+	public Map<String, Object> getProductDetails() {
+		try {
+			
+			Pageable pagingSort = PageRequest.of(0, 10);
+			Page<ProductEntity> findAllActive = productRepo.findByStatus(false,true, pagingSort);
+			Page<ProductEntity> findAllInActive = productRepo.findByStatus(false,false, pagingSort);
+			Page<ProductEntity> findAllDeleted = productRepo.findByIsDelete(true, pagingSort);
+			Map<String, Object> response = new HashMap<>();
+			response.put("activeProduct", findAllActive.getTotalElements());
+			response.put("inActiveProduct", findAllInActive.getTotalElements());
+			response.put("deleted", findAllDeleted.getTotalElements());
+			return response;
+			
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
 }
