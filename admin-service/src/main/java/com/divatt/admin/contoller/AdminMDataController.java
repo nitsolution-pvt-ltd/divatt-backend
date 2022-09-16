@@ -182,7 +182,7 @@ public class AdminMDataController {
 		}
 	}
 
-	@PostMapping("/updateBanner/{id}")
+	@PutMapping("/updateBanner/{id}")
 	public GlobalResponse updateBanner(@Valid @RequestBody BannerEntity bannerEntity,@PathVariable (value="id") Long id) {
 		LOGGER.info("Inside - AdminMDataController.updateBanner()");
 		try { 
@@ -192,7 +192,7 @@ public class AdminMDataController {
 		}
 	}
 
-	@GetMapping("/deleteBanner/{id}")
+	@PutMapping("/deleteBanner/{id}")
 	public GlobalResponse deleteBanner(@PathVariable (value="id") Long id) {
 		LOGGER.info("Inside - AdminMDataController.deleteBanner()");
 		try { 
@@ -272,5 +272,29 @@ public class AdminMDataController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/getBanner/{id}")
+	public BannerEntity getBanner(@PathVariable (value="id") Long id) {
+		LOGGER.info("Inside - AdminMDataController.getBanner()");
+		try { 
+
+			return this.adminMService.getBanner(id);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	
+	@PutMapping("/changeBannerStatus/{id}")
+	public GlobalResponse changeBannerStatus(@PathVariable (value="id") Long id) {
+		LOGGER.info("Inside - AdminMDataController.changeBannerStatus()");
+		try { 
+
+			return this.adminMService.changeBannerStatus(id);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 
 }

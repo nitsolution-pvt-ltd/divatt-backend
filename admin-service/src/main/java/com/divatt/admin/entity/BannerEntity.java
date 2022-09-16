@@ -69,6 +69,16 @@ public class BannerEntity {
 		this.isDeleted = isDeleted;
 		this.createdOn = createdOn;
 	}
+	
+	
+
+	public BannerEntity(@NotNull(message = "Title is requried!") String title, String description,
+			@NotNull(message = "Image is requried!") String image) {
+		super();
+		this.title = title;
+		this.description = description;
+		this.image = image;
+	}
 
 	@Override
 	public String toString() {

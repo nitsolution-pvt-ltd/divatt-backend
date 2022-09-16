@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.divatt.auth.entity.GlobalEntity;
 import com.divatt.auth.entity.GlobalResponse;
@@ -95,25 +96,113 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 	private DesignerProfileRepo designerProfileRepo;
 
 	Logger LOGGER = LoggerFactory.getLogger(EcomAuthController.class);
+	@Autowired
+	private RestTemplate restTemplate ;
+	
+	@Autowired
+	private UserLoginEntity userLoginEntity;
+	
+	@PostMapping("/add")
+	public String  entity(@RequestBody() UserLoginEntity userEntity) {
+		
+	System.out.println("hi");	
+	//this.restTemplate.setRequestFactory(null);
+	 this.restTemplate.postForEntity("https://localhost:8082/dev/user/add", userEntity, UserLoginEntity.class);
+		return "Add";
+	}
+	
 
 	@PostMapping("/login")
 	public ResponseEntity<?> superAdminLogin(@RequestBody AdminLoginEntity loginEntity) {
 
 		LOGGER.info("Inside - EcomAuthController.superAdminLogin()");
+		
+		  if( loginEntity.getType().equals("USER")) { 
+			  UserLoginEntity entity =new UserLoginEntity();
+			  if(userLoginRepo.findByEmail(loginEntity.getEmail()).isEmpty()) {
+				  String s = loginEntity.getName().trim();
+				  String str[] = s.split(" ");
+				  
+				  entity.setFirstName(str[0]);
+				  entity.setLastName(str[1]);
+		          entity.setName(loginEntity.getName()); 
+		          entity.setEmail(loginEntity.getEmail());
+		          entity.setPassword(loginEntity.getPassword());
+		          entity.setProfilePic(loginEntity.getProfilePic());
+		          entity.setMobileNo("9784563210");
+		          entity.setSocialType(loginEntity.getSocialType());
+		          entity.setSocialId(loginEntity.getSocialId());
+		          entity.setDob("14/09/2022");
+		  this.restTemplate.postForEntity("https://localhost:8082/dev/user/add",entity, UserLoginEntity.class);
+		  
+		  } }
+		 
+		
 
 		try {
 
 			// ** CHECKING THE USER IS REAL OR NOT **//
-			try {
-				this.authenticationManager.authenticate(
-						new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
-			} catch (Exception e) {
-				if (e.getMessage().equals("Bad credentials"))
-					throw new CustomException("Please check your password");
-				else
-					throw new CustomException(e.getMessage());
+			if(loginEntity.getType().equals("USER")) {
+				
+	               try {
+	            	   UserLoginEntity entity = userLoginRepo.findByEmail(loginEntity.getEmail()).get();
+	            	   
+						
+						this.authenticationManager.authenticate(
+								new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
+						
+					} catch (Exception e) {
+						if (e.getMessage().equals("Bad credentials"))
+							throw new CustomException("Please check your password");
+						else
+							throw new CustomException(e.getMessage());
 
+					}
+				
+	               
+				}
+		 if(loginEntity.getType().equals("USER") && (loginEntity.getSocialType().equals("facebook")||loginEntity.getSocialType().equals("google"))) {
+				
+               try {
+            	   UserLoginEntity entity = userLoginRepo.findByEmail(loginEntity.getEmail()).get();
+            	   
+            	   if(entity.getSocialType().contentEquals(loginEntity.getSocialType())) {
+            		   this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
+            	   }
+            	   else {
+            		   throw new CustomException("Your social loginType don't match , please try with another");
+            	   }
+					
+					
+					
+				} catch (Exception e) {
+					if (e.getMessage().equals("Bad credentials"))
+						throw new CustomException("Please check your password");
+					else
+						throw new CustomException(e.getMessage());
+
+				}
+			
+               
 			}
+			else {
+				
+				try {
+					
+					this.authenticationManager.authenticate(
+							new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
+					
+				} catch (Exception e) {
+					if (e.getMessage().equals("Bad credentials"))
+						throw new CustomException("Please check your password");
+					else
+						throw new CustomException(e.getMessage());
+
+				}
+				
+			}
+			
+			
 			// ** CHECKING END(IF USER IS REAL THEN ONLY HE CAN GO TO NEXT LINE) **//
 
 			UserDetails vendor = this.loginUserDetails.loadUserByUsername(loginEntity.getEmail());

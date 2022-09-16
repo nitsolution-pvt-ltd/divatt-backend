@@ -77,6 +77,15 @@ public class AdminLoginEntity {
 	
 	private Json logins;
 	
+	@Field(name = "social_type")
+	private String socialType;
+	
+	@Field(name = "social_id")
+	private String socialId ;
+	
+	private String name;
+	
+	
 	public AdminLoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -85,18 +94,10 @@ public class AdminLoginEntity {
 
 	
 
-
-	
-
-
-
-
-
-
 	public AdminLoginEntity(Object uid, String firstName, String lastName, String email, String password,
 			String mobileNo, String dob, boolean isActive, boolean isDeleted, String role, String roleName,
 			String gender, String authToken, String createdBy, String createdOn, String modifiedBy, String modifiedOn,
-			String profilePic, String type, Json logins) {
+			String profilePic, String type, Json logins, String socialType, String socialId, String name) {
 		super();
 		this.uid = uid;
 		this.firstName = firstName;
@@ -118,7 +119,13 @@ public class AdminLoginEntity {
 		this.profilePic = profilePic;
 		this.type = type;
 		this.logins = logins;
+		this.socialType = socialType;
+		this.socialId = socialId;
+		this.name = name;
 	}
+
+
+
 
 
 
@@ -128,25 +135,9 @@ public class AdminLoginEntity {
 
 
 
-
-
-
-
-
-
-
-
-
 	public void setType(String type) {
 		this.type = type;
 	}
-
-
-
-
-
-
-
 
 
 
@@ -159,16 +150,9 @@ public class AdminLoginEntity {
 				+ isActive + ", isDeleted=" + isDeleted + ", role=" + role + ", roleName=" + roleName + ", gender="
 				+ gender + ", authToken=" + authToken + ", createdBy=" + createdBy + ", createdOn=" + createdOn
 				+ ", modifiedBy=" + modifiedBy + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic + ", type="
-				+ type + ", logins=" + logins + "]";
+				+ type + ", logins=" + logins + ", socialType=" + socialType + ", socialId=" + socialId + ", name="
+				+ name + "]";
 	}
-
-
-
-
-
-
-
-
 
 
 
@@ -369,6 +353,82 @@ public class AdminLoginEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+	public String getSocialType() {
+		return socialType;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setSocialType(String socialType) {
+		this.socialType = socialType;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	public String getSocialId() {
+		return socialId;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	public void setSocialId(String socialId) {
+		this.socialId = socialId;
+	}
+
+
+
+
+	public String getName() {
+		return name;
+	}
+
+
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
 
 	
 }

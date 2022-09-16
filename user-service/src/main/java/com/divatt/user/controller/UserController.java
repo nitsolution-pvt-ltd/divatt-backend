@@ -302,6 +302,9 @@ public class UserController {
 			userLoginEntity.setCreatedOn(date.toString());
 			userLoginEntity.setProfilePic("");
 			userLoginEntity.setRegisterType("Self");
+			
+			userLoginEntity.setSocialId(userLoginEntity.getSocialId());
+			userLoginEntity.setSocialType(userLoginEntity.getSocialType());
 			userLoginRepo.save(userLoginEntity);
 
 			SendMail mail= new SendMail(userLoginEntity.getEmail(), "Successfully Registration", "Welcome " + userLoginEntity.getEmail() + "" + ",\n   "

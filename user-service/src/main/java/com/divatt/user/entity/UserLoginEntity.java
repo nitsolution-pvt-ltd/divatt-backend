@@ -37,6 +37,14 @@ public class UserLoginEntity {
 	@Field("register_type") private String registerType;
 	@Field("username") private String username;
 	@Field("logins") private Json logins;
+	
+	@Field(name = "social_type")
+	private String socialType;
+	
+	@Field(name = "social_id")
+	private String socialId ; 
+	private String name ;
+	
 	public UserLoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -59,10 +67,14 @@ public class UserLoginEntity {
 
 
 
+
+
+
+
 	public UserLoginEntity(Long id, @NotNull String firstName, @NotNull String lastName, String userExist,
 			@NotNull String email, @NotNull String password, @NotNull String mobileNo, @NotNull String dob,
 			Boolean isActive, Boolean isDeleted, String createdOn, String profilePic, String registerType,
-			String username, Json logins) {
+			String username, Json logins, String socialType, String socialId, String name) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -79,6 +91,9 @@ public class UserLoginEntity {
 		this.registerType = registerType;
 		this.username = username;
 		this.logins = logins;
+		this.socialType = socialType;
+		this.socialId = socialId;
+		this.name = name;
 	}
 
 
@@ -89,7 +104,8 @@ public class UserLoginEntity {
 		return "UserLoginEntity [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", userExist="
 				+ userExist + ", email=" + email + ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob
 				+ ", isActive=" + isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", profilePic="
-				+ profilePic + ", registerType=" + registerType + ", username=" + username + ", logins=" + logins + "]";
+				+ profilePic + ", registerType=" + registerType + ", username=" + username + ", logins=" + logins
+				+ ", socialType=" + socialType + ", socialId=" + socialId + ", name=" + name + "]";
 	}
 
 
@@ -183,6 +199,48 @@ public class UserLoginEntity {
 	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
+	}
+
+
+
+
+	public String getSocialType() {
+		return socialType;
+	}
+
+
+
+
+	public void setSocialType(String socialType) {
+		this.socialType = socialType;
+	}
+
+
+
+
+	public String getSocialId() {
+		return socialId;
+	}
+
+
+
+
+	public void setSocialId(String socialId) {
+		this.socialId = socialId;
+	}
+
+
+
+
+	public String getName() {
+		return name;
+	}
+
+
+
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

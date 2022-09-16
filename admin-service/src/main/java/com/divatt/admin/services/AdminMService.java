@@ -311,8 +311,8 @@ public ColourEntity getColour(String name) {
 				banEntity.setTitle(bannerEntity.getTitle());
 				banEntity.setDescription(bannerEntity.getDescription());
 				banEntity.setImage(bannerEntity.getImage());
-				banEntity.setIsActive(bannerEntity.getIsActive());
-				banEntity.setIsDeleted(bannerEntity.getIsDeleted());
+				banEntity.setIsActive(true);
+				banEntity.setIsDeleted(false);
 				banEntity.setStartDate(bannerEntity.getStartDate());
 				banEntity.setEndDate(bannerEntity.getEndDate());
 				banEntity.setCreatedOn(new Date());
@@ -334,23 +334,33 @@ public ColourEntity getColour(String name) {
 			BannerEntity banEntity = bannerRepo.findById(id)
 					.orElseThrow(() -> new ResourceNotFoundException("Id not exist :" + id));
 
-			if (banEntity.getIsActive()) {
-				banEntity.setId(id);
-				banEntity.setTitle(bannerEntity.getTitle());
-				banEntity.setDescription(bannerEntity.getDescription());
-				banEntity.setImage(bannerEntity.getImage());
-				banEntity.setIsActive(bannerEntity.getIsActive());
-				banEntity.setIsDeleted(bannerEntity.getIsDeleted());
-				banEntity.setStartDate(bannerEntity.getStartDate());
-				banEntity.setEndDate(bannerEntity.getEndDate());
-				banEntity.setCreatedOn(new Date());
-				bannerRepo.save(banEntity);
-				return new GlobalResponse("Success", "Banner updated", 200);
-
-			} else {
-
-				return new GlobalResponse("Failed", "Banner not update", 404);
-			}
+			
+			//BannerEntity updateEntity= new BannerEntity();
+			
+			
+				
+				if(banEntity.getIsDeleted().equals(false)) {
+					banEntity.setId(id);
+					banEntity.setImage(bannerEntity.getImage());
+					banEntity.setTitle(bannerEntity.getTitle());
+					banEntity.setCreatedOn(new Date());
+					banEntity.setIsActive(true);
+					banEntity.setIsDeleted(false);
+					banEntity.setEndDate(bannerEntity.getEndDate());
+					banEntity.setDescription(bannerEntity.getDescription());
+					banEntity.setStartDate(bannerEntity.getStartDate());
+					bannerRepo.save(banEntity);
+					
+					return new GlobalResponse("Success", "Banner updated successfully", 200);
+					
+				}
+				else {
+					return new GlobalResponse("Failed , banner is deleted", "Banner not updated", 200);
+				}
+				
+				
+			
+			
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -364,12 +374,11 @@ public ColourEntity getColour(String name) {
 		BannerEntity bannerEntity = bannerRepo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Id not exist" + id));
 
-		if (bannerEntity.getIsActive() && bannerEntity.getIsDeleted().equals(false)) {
+		if (bannerEntity.getIsDeleted().equals(false)) {
 
-			bannerEntity.setIsActive(false);
-			bannerEntity.setIsDeleted(false);
+			bannerEntity.setIsDeleted(true);
 			bannerRepo.save(bannerEntity);
-            return new GlobalResponse("success", "Banner Deleted", 200);
+            return new GlobalResponse("success", "Banner Deleted successfully", 200);
 
 		} else {
 
@@ -568,6 +577,45 @@ public ColourEntity getColour(String name) {
 		}
 	}
 
+
+	public BannerEntity getBanner(Long id) {
+LOGGER.info("Inside - AdminMService.getBanner()");		
+		
+		BannerEntity bannerEntity = bannerRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Id not exist " + id));
+		
+		if(bannerEntity.getIsDeleted().equals(false)) {
+			return bannerEntity;
+		}
+		else {
+			return null ;
+		}
+
+		
+	}
+
+
+	public GlobalResponse changeBannerStatus(Long id) {
+		
+		BannerEntity bannerEntity = bannerRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Id not exist " + id));
+		if(bannerEntity.getIsDeleted().equals(false) && bannerEntity.getIsActive().equals(true)) {
+			
+			bannerEntity.setIsActive(false);
+			bannerRepo.save(bannerEntity);
+			return new GlobalResponse("Success", "Banner inactive ", 200);
+		}
+		else {
+			bannerEntity.setIsActive(true);
+			bannerRepo.save(bannerEntity);
+			return new GlobalResponse("Success", "Banner active ", 200);
+		}
+		
+		
+	}
+
+
+	
 	
 
 	
