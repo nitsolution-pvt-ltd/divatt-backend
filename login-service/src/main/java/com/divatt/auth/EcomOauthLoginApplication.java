@@ -63,13 +63,33 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 		return passwordEncoder;
 	}
 	
+//	@Bean
+//    public JavaMailSender javaMailSender() {
+//		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+//		mailSender.setHost("smtp.hostinger.in");
+//		mailSender.setPort(587);
+//		mailSender.setUsername("no-reply@nitsolution.in");
+//		mailSender.setPassword("no-Reply@123");
+//		 
+//		Properties properties = new Properties();
+//		properties.setProperty("mail.smtp.auth", "true");
+//		properties.setProperty("mail.smtp.starttls.enable", "true");
+//		properties.setProperty("mail.smtp.ssl.enable", "false");
+//		properties.setProperty("mail.smtps.quitwait", "false");
+//		
+//		
+//		 
+//		mailSender.setJavaMailProperties(properties);
+//        return mailSender;
+//    }
+	
 	@Bean
     public JavaMailSender javaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost("smtp.hostinger.in");
+		mailSender.setHost("smtp-relay.sendinblue.com");
 		mailSender.setPort(587);
-		mailSender.setUsername("no-reply@nitsolution.in");
-		mailSender.setPassword("no-Reply@123");
+		mailSender.setUsername("debanjan@nitsolution.in");
+		mailSender.setPassword("yPkbps02h3AGfcjr");
 		 
 		Properties properties = new Properties();
 		properties.setProperty("mail.smtp.auth", "true");

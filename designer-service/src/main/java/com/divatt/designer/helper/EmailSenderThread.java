@@ -35,7 +35,7 @@ public class EmailSenderThread  extends Thread{
 		sendMail.setSenderMailId(senderMailId);
 		sendMail.setSubject(subject);
 		// RestTemplate mailLink= new RestTemplate();
-		ResponseEntity<String> mailStatus=mailLink.postForEntity("https://65.1.190.195:8080/dev/auth/sendMail", sendMail, String.class);
+		ResponseEntity<String> mailStatus=mailLink.postForEntity("https://localhost:8080/dev/auth/sendMail", sendMail, String.class);
 		System.out.println(mailStatus.getBody());
 	}
 	public EmailSenderThread()

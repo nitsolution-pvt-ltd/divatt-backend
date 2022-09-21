@@ -19,6 +19,24 @@ public class MailService {
 	@Autowired
 	JavaMailSender mailSender;
 
+//	public void sendEmail(String to, String subject, String body,Boolean enableHtml) {
+//
+//		try {
+//
+//			MimeMessage message = mailSender.createMimeMessage();
+//			MimeMessageHelper helper = new MimeMessageHelper(message);
+//
+//			helper.setSubject(subject);
+//			helper.setFrom("no-reply@nitsolution.in");
+//			helper.setTo(to);
+//			helper.setText(body, enableHtml);
+////			helper.addAttachment(body, null);
+//			mailSender.send(message);
+//		} catch (Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//
+//	}
 	public void sendEmail(String to, String subject, String body,Boolean enableHtml) {
 
 		try {
@@ -27,7 +45,7 @@ public class MailService {
 			MimeMessageHelper helper = new MimeMessageHelper(message);
 
 			helper.setSubject(subject);
-			helper.setFrom("no-reply@nitsolution.in");
+			helper.setFrom("debanjan@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 //			helper.addAttachment(body, null);
