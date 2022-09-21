@@ -24,14 +24,26 @@ public class DesignerLoginEntity {
 	@Field(name = "profile_status") private String profileStatus;
 	@Field(name = "account_status") private String accountStatus;
 	@Field(name = "logins") private Json logins;
+	
+	@Field(name = "social_type")
+	private String socialType;
+	
+	@Field(name = "social_id")
+	private String socialId ;
+	private String name ;
 
 	public DesignerLoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
+
+
+
+
 	public DesignerLoginEntity(Object uid, String email, String password, String authToken, Boolean isDeleted,
-			String adminComment, String profileStatus, String accountStatus, Json logins) {
+			String adminComment, String profileStatus, String accountStatus, Json logins, String socialType,
+			String socialId, String name) {
 		super();
 		this.uid = uid;
 		this.email = email;
@@ -42,14 +54,26 @@ public class DesignerLoginEntity {
 		this.profileStatus = profileStatus;
 		this.accountStatus = accountStatus;
 		this.logins = logins;
+		this.socialType = socialType;
+		this.socialId = socialId;
+		this.name = name;
 	}
+
+
+
+
 
 	@Override
 	public String toString() {
 		return "DesignerLoginEntity [uid=" + uid + ", email=" + email + ", password=" + password + ", authToken="
 				+ authToken + ", isDeleted=" + isDeleted + ", adminComment=" + adminComment + ", profileStatus="
-				+ profileStatus + ", accountStatus=" + accountStatus + ", logins=" + logins + "]";
+				+ profileStatus + ", accountStatus=" + accountStatus + ", logins=" + logins + ", socialType="
+				+ socialType + ", socialId=" + socialId + ", name=" + name + "]";
 	}
+
+
+
+
 
 	public Object getUid() {
 		return uid;
@@ -141,6 +165,46 @@ public class DesignerLoginEntity {
 
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
+	}
+
+
+
+	public String getSocialType() {
+		return socialType;
+	}
+
+
+
+	public void setSocialType(String socialType) {
+		this.socialType = socialType;
+	}
+
+
+
+	public String getSocialId() {
+		return socialId;
+	}
+
+
+
+	public void setSocialId(String socialId) {
+		this.socialId = socialId;
+	}
+
+
+
+
+
+	public String getName() {
+		return name;
+	}
+
+
+
+
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	

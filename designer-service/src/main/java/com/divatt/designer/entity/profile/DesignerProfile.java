@@ -40,6 +40,15 @@ public class DesignerProfile {
 	@Field(name = "digital_signature")
 	private String digitalSignature;
 	
+	@Field(name = "country")
+	private String country;
+	
+	@Field(name = "state")
+	private String state;
+	
+	@Field(name = "city")
+	private String city;
+	
 	@NotNull
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	
@@ -64,9 +73,9 @@ public class DesignerProfile {
 
 	public DesignerProfile(@NotNull String email, @NotNull String password, @NotNull String firstName1,
 			@NotNull String lastName1, String firstName2, String lastName2, @NotNull String displayName,
-			@NotNull String mobileNo, String altMobileNo, String digitalSignature, @NotNull String dob,
-			@NotNull String gender, @NotNull(message = "User profile picture must not be null") String profilePic,
-			String designerCategory) {
+			@NotNull String mobileNo, String altMobileNo, String digitalSignature, String country, String state,
+			String city, @NotNull String dob, @NotNull String gender,
+			@NotNull(message = "User profile picture must not be null") String profilePic, String designerCategory) {
 		super();
 		this.email = email;
 		this.password = password;
@@ -78,6 +87,9 @@ public class DesignerProfile {
 		this.mobileNo = mobileNo;
 		this.altMobileNo = altMobileNo;
 		this.digitalSignature = digitalSignature;
+		this.country = country;
+		this.state = state;
+		this.city = city;
 		this.dob = dob;
 		this.gender = gender;
 		this.profilePic = profilePic;
@@ -89,8 +101,9 @@ public class DesignerProfile {
 		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
 				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
 				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
-				+ ", digitalSignature=" + digitalSignature + ", dob=" + dob + ", gender=" + gender + ", profilePic="
-				+ profilePic + ", designerCategory=" + designerCategory + "]";
+				+ ", digitalSignature=" + digitalSignature + ", country=" + country + ", state=" + state + ", city="
+				+ city + ", dob=" + dob + ", gender=" + gender + ", profilePic=" + profilePic + ", designerCategory="
+				+ designerCategory + "]";
 	}
 
 	public String getEmail() {
@@ -171,6 +184,30 @@ public class DesignerProfile {
 
 	public void setDigitalSignature(String digitalSignature) {
 		this.digitalSignature = digitalSignature;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 	public String getDob() {

@@ -120,16 +120,9 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postRazorpayOrderCreate()");
 
 		try {
-			String extractUsername = null;
-			try {
-				extractUsername = JwtUtil.extractUsername(token.substring(7));
-			} catch (Exception e) {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
 				throw new CustomException("Unauthorized");
-			}
-
-			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
-				throw new CustomException("Unauthorized");
-			}
 			return this.orderAndPaymentService.postRazorpayOrderCreateService(orderDetailsEntity);
 
 		} catch (Exception e) {
@@ -144,7 +137,9 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
 
 		try {
-			
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
 
 		} catch (Exception e) {
@@ -158,7 +153,12 @@ public class OrderAndPaymentContoller {
 			@Valid @RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderSKUDetails()");
 
+		
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
+			
 			return this.orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -185,7 +185,7 @@ public class OrderAndPaymentContoller {
 	}
 
 	@RequestMapping(value = { "/payment/list" }, method = RequestMethod.GET)
-	public Map<String, Object> getOrderPaymentDetails(@RequestParam(defaultValue = "0") int page,
+	public Map<String, Object> getOrderPaymentDetails(@RequestHeader("Authorization") String token, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
@@ -207,12 +207,7 @@ public class OrderAndPaymentContoller {
 		try {
 
 			Map<String, Object> map = new HashMap<>();
-			String extractUsername = null;
-			try {
-				extractUsername = JwtUtil.extractUsername(token.substring(7));
-			} catch (Exception e) {
-				throw new CustomException("Unauthorized");
-			}
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 
 			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
 
@@ -224,30 +219,12 @@ public class OrderAndPaymentContoller {
 				String format = formatter.format(date);
 				String formatDate = formatters.format(date);
 
-				OrderDetailsEntity OrderLastRow = orderDetailsRepo.findTopByOrderByIdDesc();
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderId("OR" + System.currentTimeMillis());
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderDate(formatDate);
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setCreatedOn(format);
 
-				String InvNumber = String.format("%014d", OrderLastRow.getId());
-
-				orderDetailsEntity.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
-				orderDetailsEntity.setInvoiceId("IV" + InvNumber);
-				orderDetailsEntity.setOrderId("OR" + System.currentTimeMillis());
-				orderDetailsEntity.setBillingAddress(orderDetailsEntity.getBillingAddress());
-				orderDetailsEntity.setOrderDate(formatDate);
-				orderDetailsEntity.setOrderStatus(orderDetailsEntity.getOrderStatus());
-				orderDetailsEntity.setDeliveryStatus(orderDetailsEntity.getDeliveryStatus());
-				orderDetailsEntity.setUserId(orderDetailsEntity.getUserId());
-				orderDetailsEntity.setShippingAddress(orderDetailsEntity.getShippingAddress());
-				orderDetailsEntity.setDeliveryMode(orderDetailsEntity.getDeliveryMode());
-				orderDetailsEntity.setDeliveryCheckUrl(orderDetailsEntity.getDeliveryCheckUrl());
-
-				orderDetailsEntity.setShippingCharges(orderDetailsEntity.getShippingCharges());
-				orderDetailsEntity.setTaxAmount(orderDetailsEntity.getTaxAmount());
-				orderDetailsEntity.setDiscount(orderDetailsEntity.getDiscount());
-				orderDetailsEntity.setMrp(orderDetailsEntity.getMrp());
-				orderDetailsEntity.setRazorpayOrderId(orderDetailsEntity.getRazorpayOrderId());
-				orderDetailsEntity.setCreatedOn(format);
-
-				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderDetailsEntity);
+				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderAndPaymentGlobalEntity.getOrderDetailsEntity());
 
 				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
 						.getOrderSKUDetailsEntity();
@@ -287,7 +264,7 @@ public class OrderAndPaymentContoller {
 	}
 
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
-	public Map<String, Object> getOrderDetails(@RequestParam(defaultValue = "0") int page,
+	public Map<String, Object> getOrderDetails(@RequestHeader("Authorization") String token, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
@@ -302,7 +279,7 @@ public class OrderAndPaymentContoller {
 	}
 
 	@GetMapping("/getOrder/{orderId}")
-	public ResponseEntity<?> getOrderDetails(@PathVariable() String orderId) {
+	public ResponseEntity<?> getOrderDetails(@RequestHeader("Authorization") String token,@PathVariable() String orderId) {
 
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()");
 
@@ -315,11 +292,14 @@ public class OrderAndPaymentContoller {
 	}
 
 	@GetMapping("/getUserOrder/{userId}")
-	public ResponseEntity<?> getOrderDetailsByuserId(@PathVariable() Integer userId) {
+	public ResponseEntity<?> getOrderDetailsByuserId(@RequestHeader("Authorization") String token,@PathVariable() Integer userId) {
 
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetailsByuserId()");
 
 		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
+				throw new CustomException("Unauthorized");
 			return this.orderAndPaymentService.getUserOrderDetailsService(userId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -328,7 +308,7 @@ public class OrderAndPaymentContoller {
 	}
 
 	@PutMapping("/updateOrder/{orderId}")
-	public GlobalResponse updateOrder(@RequestBody OrderDetailsEntity orderDetailsEntity,
+	public GlobalResponse updateOrder(@RequestHeader("Authorization") String token,@RequestBody OrderDetailsEntity orderDetailsEntity,
 			@PathVariable String orderId) {
 		try {
 			return this.orderAndPaymentService.orderUpdateService(orderDetailsEntity, orderId);
@@ -338,7 +318,7 @@ public class OrderAndPaymentContoller {
 	}
 
 	@RequestMapping(value = { "/list/{designerId}" }, method = RequestMethod.GET)
-	public Map<String, Object> getOrderByDesigner(@PathVariable int designerId,
+	public Map<String, Object> getOrderByDesigner(@RequestHeader("Authorization") String token,@PathVariable int designerId,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
@@ -450,7 +430,7 @@ public class OrderAndPaymentContoller {
 	}
 
 	@GetMapping("/orderProductDetails/{orderId}")
-	public Map<String, Object> getOrderproductDetails(@PathVariable String orderId,
+	public Map<String, Object> getOrderproductDetails(@RequestHeader("Authorization") String token,@PathVariable String orderId,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
@@ -463,11 +443,9 @@ public class OrderAndPaymentContoller {
 
 	@GetMapping("/invoice/{orderId1}")
 	File invGenarator(@PathVariable String orderId1) throws IOException {
-//		System.out.println("ok");
 		Query query = new Query();
 		query.addCriteria(Criteria.where("orderId").is(orderId1));
 		OrderDetailsEntity orderDetailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
-		/* first, get and initialize an engine */
 		VelocityEngine ve = new VelocityEngine();
 
 		/* next, get the Template */
@@ -573,9 +551,9 @@ public class OrderAndPaymentContoller {
 
 	@GetMapping("/getPdfByOrderId/{id}")
 	public ResponseEntity<byte[]> getPdfByOrderId(@PathVariable String id) throws IOException {
-		System.err.println(id);
+
 		List<OrderDetailsEntity> findByOrderId = orderDetailsRepo.findByOrderId(id);
-		System.out.println(findByOrderId.toString());
+
 		OrderDetailsEntity orderDetailsEntity = findByOrderId.get(0);
 		File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 
@@ -590,9 +568,6 @@ public class OrderAndPaymentContoller {
 		String filename = "Order.pdf";
 
 		headers.add("content-disposition", "inline;filename=" + filename);
-//		    headers.add("content-disposition", "attachment;filename=" + filename);
-
-		// headers.setContentDispositionFormData(filename, filename);
 		headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(arr, headers, HttpStatus.OK);
 		return response;
@@ -659,7 +634,7 @@ public class OrderAndPaymentContoller {
 				List<OrderDetailsEntity> orderList=sortingList;
 				for(OrderDetailsEntity detailsEntity:orderList) {
 					Row row= sheet.createRow(rowIndex++);
-					row.createCell(0).setCellValue(detailsEntity.getInvoiceId());
+					row.createCell(0).setCellValue(detailsEntity.getOrderId());
 					row.createCell(1).setCellValue(detailsEntity.getDeliveryDate());
 					row.createCell(2).setCellValue(detailsEntity.getOrderDate());
 					row.createCell(3).setCellValue(detailsEntity.getOrderId());
@@ -689,7 +664,6 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderInvoiceDetails()");
 
 		try {
-			
 			return this.orderAndPaymentService.postOrderInvoiceService(orderInvoiceEntity);
 
 		} catch (Exception e) {
@@ -703,9 +677,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.putOrderInvoiceDetails()");
 
 		try {
-			
 			return this.orderAndPaymentService.putOrderInvoiceService(invoiceId,orderInvoiceEntity);
-
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -713,7 +685,7 @@ public class OrderAndPaymentContoller {
 	}
 	
 	@GetMapping("/invoices/list")
-	public Map<String, Object> getOrderInvoiceDetails(
+	public Map<String, Object> getOrderInvoiceDetails(@RequestHeader("Authorization") String token,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "_id") String sortName,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
