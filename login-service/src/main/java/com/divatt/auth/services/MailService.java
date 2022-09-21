@@ -45,7 +45,7 @@ public class MailService {
 			MimeMessageHelper helper = new MimeMessageHelper(message);
 
 			helper.setSubject(subject);
-			helper.setFrom("debanjan@nitsolution.in");
+			helper.setFrom("no-reply@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 //			helper.addAttachment(body, null);

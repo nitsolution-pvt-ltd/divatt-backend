@@ -101,8 +101,8 @@ public class EcomOauthLoginApplication implements CommandLineRunner{
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setHost("smtp-relay.sendinblue.com");
 		mailSender.setPort(587);
-		mailSender.setUsername("debanjan@nitsolution.in");
-		mailSender.setPassword("yPkbps02h3AGfcjr");
+		mailSender.setUsername("no-reply@nitsolution.in");
+		mailSender.setPassword("1b4LGj6MCgIPafDN");
 		 
 		Properties properties = new Properties();
 		properties.setProperty("mail.smtp.auth", "true");
