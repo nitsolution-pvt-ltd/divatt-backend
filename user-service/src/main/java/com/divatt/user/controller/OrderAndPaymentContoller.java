@@ -235,7 +235,7 @@ public class OrderAndPaymentContoller {
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
 
-					postOrderSKUDetails(token, orderSKUDetailsEntityRow);
+					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
 				}
 
 				map.put("orderId", OrderData.getOrderId());

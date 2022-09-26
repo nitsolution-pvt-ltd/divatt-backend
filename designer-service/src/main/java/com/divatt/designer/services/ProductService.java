@@ -184,7 +184,6 @@ public class ProductService {
 					List<UserProfile> userProfiles = new ArrayList<UserProfile>();
 					List<ProductMasterEntity> productInfo = mongoOperations.find(query1, ProductMasterEntity.class);
 					if (productInfo.isEmpty()) {
-//					RestTemplate restTemplate = new RestTemplate();
 
 					ResponseEntity<String> categoryResponse = restTemplate.getForEntity(
 							"https://localhost:8084/dev/category/view/" + productData.getCategoryId(), String.class);

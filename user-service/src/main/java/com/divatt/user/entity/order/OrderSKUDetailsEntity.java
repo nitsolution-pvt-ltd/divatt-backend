@@ -9,11 +9,11 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "tbl_order_sku_details_new")
+@Document(collection = "tbl_order_sku_details")
 public class OrderSKUDetailsEntity {
 	
 	@Transient
-	public static final String SEQUENCE_NAME = "tbl_order_sku_details_new";
+	public static final String SEQUENCE_NAME = "tbl_order_sku_details";
 	 
 	@Id
 	private Integer id;

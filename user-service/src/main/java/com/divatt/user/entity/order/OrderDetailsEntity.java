@@ -11,10 +11,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.divatt.user.entity.BillingAddressEntity;
 
-@Document(collection = "tbl_order_details_new")
+@Document(collection = "tbl_order_details")
 public class OrderDetailsEntity {
 	@Transient
-	public static final String SEQUENCE_NAME = "tbl_order_details_new";
+	public static final String SEQUENCE_NAME = "tbl_order_details";
 	
 	@Id
 	private Integer id;
