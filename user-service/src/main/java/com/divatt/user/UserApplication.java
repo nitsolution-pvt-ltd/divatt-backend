@@ -80,10 +80,10 @@ public class UserApplication implements CommandLineRunner{
 	@Bean
     public JavaMailSender javaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost("smtp.hostinger.in");
+		mailSender.setHost("smtp-relay.sendinblue.com");
 		mailSender.setPort(587);
 		mailSender.setUsername("no-reply@nitsolution.in");
-		mailSender.setPassword("no-Reply@123");
+		mailSender.setPassword("1b4LGj6MCgIPafDN");
 		 
 		Properties properties = new Properties();
 		properties.setProperty("mail.smtp.auth", "true");
