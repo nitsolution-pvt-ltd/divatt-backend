@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.ws.rs.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -697,6 +698,13 @@ public class OrderAndPaymentContoller {
 		}
 	}
 
-	
+	@GetMapping("/designerOrderCount/{designerId}")
+	public Map<String, Integer> getDesignerOrderCount(@PathVariable int designerId){
+		try {
+			return this.orderAndPaymentService.getOrderCount(designerId);
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 	
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,5 +57,15 @@ public class OrderStatusController {
 			{
 				throw new CustomException(e.getMessage());
 			}
+	}
+	
+	@GetMapping("/getOrcerCount")
+	public Object getOrderCount(@RequestHeader("Authorization") String token){
+		try {
+			System.out.println(token);
+			return this.orderService.getCountOrderService(token);
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 }

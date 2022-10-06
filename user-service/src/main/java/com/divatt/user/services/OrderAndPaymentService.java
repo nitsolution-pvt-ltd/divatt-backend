@@ -62,6 +62,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.razorpay.Order;
@@ -1178,5 +1179,44 @@ public class OrderAndPaymentService {
 				throw new CustomException(e.getMessage());
 			}
 		
+	}
+
+	public Map<String, Integer> getOrderCount(int designerId) {
+		
+		try {
+			Map<String,Integer> countResponse=new HashMap<String, Integer>();
+//			int newOrder=0;
+//			int order=0;
+//			int packed=0;
+//			int shipped=0;
+//			int delivered=0;
+//			int retunrn=0;
+			List<OrderSKUDetailsEntity> findByDesignerId = orderSKUDetailsRepo.findByDesignerId(designerId);
+			findByDesignerId.stream().forEach(e->{
+				countResponse.put(e.getOrderItemStatus(), 0);
+			});
+			findByDesignerId.stream()
+			.forEach(e->{
+				try {
+						  int lastData=countResponse.get(e.getOrderItemStatus());
+						  countResponse.put(e.getOrderItemStatus(), lastData+1);
+				}catch(NullPointerException e1) {
+					throw new CustomException(e1.getMessage());
+				}
+			});
+			return countResponse;
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public OrderSKUDetailsEntity getOrderDetailsService(String orderId, String productId) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("orderId").is(orderId).and("productId").is(productId));
+			return mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 }

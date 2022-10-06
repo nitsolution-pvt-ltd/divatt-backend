@@ -6,11 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.controller.ProductController;
 import com.divatt.designer.entity.DesignerInvoiceReq;
 import com.divatt.designer.entity.DesignerIvoiceData;
@@ -49,6 +53,8 @@ public class OrderService {
 	
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
+	
+	@Autowired private JWTConfig jwtConfig;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderService.class);
 
@@ -200,6 +206,22 @@ public class OrderService {
 			return htmlContent;
 		}
 		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public Object getCountOrderService(String token) {
+		try {
+				LOGGER.info(jwtConfig.extractUsername(token.substring(7)));
+				
+				List<Long> collect = designerProfileRepo.findAll()
+				.stream()
+				.filter(e->jwtConfig.extractUsername(token.substring(7)).equals(e.getDesignerProfile().getEmail()))
+				.map(e->e.getDesignerId())
+				.collect(Collectors.toList());
+				LOGGER.info(collect.get(0)+"");
+				return restTemplate.getForEntity("https://localhost:9095/dev/userOrder/designerOrderCount/"+collect.get(0), Object.class).getBody();
+		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
