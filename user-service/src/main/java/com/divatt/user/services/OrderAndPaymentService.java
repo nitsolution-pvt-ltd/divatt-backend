@@ -720,7 +720,7 @@ public class OrderAndPaymentService {
 			if (!orderDetailsEntity2.equals(null)) {
 				OrderDetailsEntity orderDetailsEntity1 = orderDetailsRepo.findByOrderId(orderId).get(0);
 				orderDetailsEntity1.setOrderId(orderDetailsRepo.findByOrderId(orderId).get(0).getOrderId());
-				orderDetailsEntity1.setOrderStatus(orderDetailsEntity.getOrderStatus());
+				orderDetailsEntity1.setDeliveryStatus(orderDetailsEntity.getDeliveryStatus());
 				orderDetailsRepo.save(orderDetailsEntity1);
 				return new GlobalResponse("Success", "Order status updated", 200);
 			} else {
