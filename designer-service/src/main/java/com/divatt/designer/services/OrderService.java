@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -224,5 +226,32 @@ public class OrderService {
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+	
+	public GlobalResponce changeStatus(String orderId, String status,String Token) {
+		try {
+
+			LOGGER.info(orderId);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("Authorization", "Bearer " + Token);
+         
+			HttpEntity<OrderDetailsEntity> entity = new HttpEntity<OrderDetailsEntity>(headers);
+			
+			OrderDetailsEntity serviceResponse= restTemplate.exchange("https://localhost:8082/dev/userOrder/getOrder/"+orderId,HttpMethod.GET,entity,OrderDetailsEntity.class).getBody();
+			
+			LOGGER.info(serviceResponse.toString());
+			
+			serviceResponse.setOrderStatus(status);
+			
+			LOGGER.info(serviceResponse.toString());
+			HttpEntity<OrderDetailsEntity> entity1 = new HttpEntity<OrderDetailsEntity>(serviceResponse,headers);
+			restTemplate.exchange("https://localhost:8082/dev/userOrder/updateOrder/" + orderId,HttpMethod.PUT,entity1,OrderDetailsEntity.class);
+			return new GlobalResponce("Success", "Order status updated", 200);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
 	}
 }
