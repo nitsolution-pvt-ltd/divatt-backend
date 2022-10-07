@@ -3,6 +3,8 @@ package com.divatt.designer.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +28,8 @@ public class OrderStatusController {
 	
 	@Autowired
 	private OrderService orderService;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(OrderStatusController.class);
 
 	@PutMapping("/orderStatus/{orderId}/{statusKeyword}")
 	public GlobalResponce orderStatusUpdate(@PathVariable String orderId ,@PathVariable String statusKeyword)
@@ -62,9 +66,20 @@ public class OrderStatusController {
 	@GetMapping("/getOrcerCount")
 	public Object getOrderCount(@RequestHeader("Authorization") String token){
 		try {
-			System.out.println(token);
+			LOGGER.info(token);
 			return this.orderService.getCountOrderService(token);
 		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@PutMapping("/changeorderStatus/{orderId}/{status}")
+	public GlobalResponce orderStatusUpdate(@RequestHeader("Authorization") String token, @PathVariable String orderId ,@PathVariable String status)
+	{
+		try {
+			return this.orderService.changeStatus(orderId,status,token);
+		}
+		catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
