@@ -707,4 +707,13 @@ public class OrderAndPaymentContoller {
 		}
 	}
 	
+	@GetMapping("/orderDetails")
+	public OrderSKUDetailsEntity getOrderDetailsUpdated(@RequestParam String orderId,
+												@RequestParam String productId) {
+		try {
+			return this.orderAndPaymentService.getOrderDetailsService(orderId,productId);
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

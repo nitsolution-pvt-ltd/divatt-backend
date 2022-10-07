@@ -1185,25 +1185,27 @@ public class OrderAndPaymentService {
 		
 		try {
 			Map<String,Integer> countResponse=new HashMap<String, Integer>();
-//			int newOrder=0;
-//			int order=0;
-//			int packed=0;
-//			int shipped=0;
-//			int delivered=0;
-//			int retunrn=0;
+			List<String> orderIdList= new ArrayList<String>();
 			List<OrderSKUDetailsEntity> findByDesignerId = orderSKUDetailsRepo.findByDesignerId(designerId);
 			findByDesignerId.stream().forEach(e->{
-				countResponse.put(e.getOrderItemStatus(), 0);
+				if(!orderIdList.contains(e.getOrderId())) {
+					orderIdList.add(e.getOrderId());
+				}
 			});
-			findByDesignerId.stream()
+			List<OrderDetailsEntity> getOrderDetailsData=orderDetailsRepo.findByOrderIdIn(orderIdList);
+			getOrderDetailsData.stream().forEach(e->{
+				countResponse.put(e.getDeliveryStatus(), 0);
+			});
+			getOrderDetailsData.stream()
 			.forEach(e->{
 				try {
-						  int lastData=countResponse.get(e.getOrderItemStatus());
-						  countResponse.put(e.getOrderItemStatus(), lastData+1);
+						  int lastData=countResponse.get(e.getDeliveryStatus());
+						  countResponse.put(e.getDeliveryStatus(), lastData+1);
 				}catch(NullPointerException e1) {
 					throw new CustomException(e1.getMessage());
 				}
 			});
+			
 			return countResponse;
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());

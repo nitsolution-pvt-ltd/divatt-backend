@@ -62,7 +62,7 @@ public class OrderStatusController {
 	@GetMapping("/getOrcerCount")
 	public Object getOrderCount(@RequestHeader("Authorization") String token){
 		try {
-			System.out.println(token);
+			// System.out.println(token);
 			return this.orderService.getCountOrderService(token);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());

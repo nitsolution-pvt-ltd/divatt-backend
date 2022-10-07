@@ -39,6 +39,9 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 
 	@Query(value = "{ 'razorpay_order_id' : {$regex:?0,$options:'i'} }")
 	List<OrderDetailsEntity> findByRazorpayOrderId(String string);
+
+
+	List<OrderDetailsEntity> findByOrderIdIn(List<String> orderIdList);
 	
 //	Page<OrderDetailsEntity> findByDesignerId(int designerId,Pageable pageable);
 }

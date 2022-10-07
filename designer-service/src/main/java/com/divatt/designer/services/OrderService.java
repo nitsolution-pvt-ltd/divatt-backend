@@ -220,7 +220,7 @@ public class OrderService {
 				.map(e->e.getDesignerId())
 				.collect(Collectors.toList());
 				LOGGER.info(collect.get(0)+"");
-				return restTemplate.getForEntity("https://localhost:9095/dev/userOrder/designerOrderCount/"+collect.get(0), Object.class).getBody();
+				return restTemplate.getForEntity("https://localhost:8082/dev/userOrder/designerOrderCount/"+collect.get(0), Object.class).getBody();
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
