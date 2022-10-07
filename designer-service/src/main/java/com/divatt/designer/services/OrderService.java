@@ -242,7 +242,7 @@ public class OrderService {
 			
 			LOGGER.info(serviceResponse.toString());
 			
-			serviceResponse.set(status);
+			serviceResponse.setDelivaryStatus(status);
 			
 			LOGGER.info(serviceResponse.toString());
 			HttpEntity<OrderDetailsEntity> entity1 = new HttpEntity<OrderDetailsEntity>(serviceResponse,headers);
