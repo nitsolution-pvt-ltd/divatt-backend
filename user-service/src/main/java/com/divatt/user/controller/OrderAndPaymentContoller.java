@@ -11,7 +11,6 @@ import org.springframework.core.io.Resource;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.ws.rs.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +98,7 @@ public class OrderAndPaymentContoller {
 
 	@Autowired
 	private OrderDetailsRepo orderDetailsRepo;
-
+	
 	@Autowired
 	private OrderAndPaymentService orderAndPaymentService;
 
@@ -124,7 +123,7 @@ public class OrderAndPaymentContoller {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
 				throw new CustomException("Unauthorized");
-			return this.orderAndPaymentService.postRazorpayOrderCreateService(orderDetailsEntity);
+			return orderAndPaymentService.postRazorpayOrderCreateService(orderDetailsEntity);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -141,7 +140,7 @@ public class OrderAndPaymentContoller {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
 				throw new CustomException("Unauthorized");
-			return this.orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
+			return orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -160,7 +159,7 @@ public class OrderAndPaymentContoller {
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
 				throw new CustomException("Unauthorized");
 			
-			return this.orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
+			return orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -178,7 +177,7 @@ public class OrderAndPaymentContoller {
 					(Map) orderHandleDetails.get("payload"));
 			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) paymentE.get("payment"));
 
-			return this.orderAndPaymentService.postOrderHandleDetailsService(PayEntity);
+			return orderAndPaymentService.postOrderHandleDetailsService(PayEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -193,7 +192,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderPaymentDetails()");
 
 		try {
-			return this.orderAndPaymentService.getOrderPaymentService(page, limit, sort, sortName, keyword, sortBy);
+			return orderAndPaymentService.getOrderPaymentService(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -272,7 +271,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
 
 		try {
-			return this.orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy);
+			return orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -285,7 +284,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()");
 
 		try {
-			return this.orderAndPaymentService.getOrderDetailsService(orderId);
+			return orderAndPaymentService.getOrderDetailsService(orderId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -301,7 +300,7 @@ public class OrderAndPaymentContoller {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) 
 				throw new CustomException("Unauthorized");
-			return this.orderAndPaymentService.getUserOrderDetailsService(userId);
+			return orderAndPaymentService.getUserOrderDetailsService(userId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -312,7 +311,7 @@ public class OrderAndPaymentContoller {
 	public GlobalResponse updateOrder(@RequestHeader("Authorization") String token,@RequestBody OrderDetailsEntity orderDetailsEntity,
 			@PathVariable String orderId) {
 		try {
-			return this.orderAndPaymentService.orderUpdateService(orderDetailsEntity, orderId);
+			return orderAndPaymentService.orderUpdateService(orderDetailsEntity, orderId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -326,7 +325,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner() for Designer side listing");
 
 		try {
-			return this.orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword,
+			return orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword,
 					sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -375,9 +374,8 @@ public class OrderAndPaymentContoller {
 
 	public ByteArrayOutputStream generatePdf(String html) {
 
-		String pdfFilePath = "";
 		PdfWriter pdfWriter = null;
-
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		// create a new document
 		Document document = new Document();
 		try {
@@ -390,7 +388,7 @@ public class OrderAndPaymentContoller {
 			document.addTitle("Divatt");
 			document.setPageSize(PageSize.LETTER);
 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			
 			PdfWriter.getInstance(document, baos);
 
 			// open document
@@ -404,12 +402,11 @@ public class OrderAndPaymentContoller {
 			document.close();
 			System.out.println("PDF generated successfully");
 
-			return baos;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
-
+		return baos;
 	}
 
 	public void sendEmailWithAttachment(String to, String subject, String body, Boolean enableHtml, File file) {
@@ -436,7 +433,7 @@ public class OrderAndPaymentContoller {
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
 		try {
-			return this.orderAndPaymentService.getProductDetails(orderId, page, limit, sort, sortName, keyword, sortBy);
+			return orderAndPaymentService.getProductDetails(orderId, page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -498,7 +495,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderTracking()");
 
 		try {
-			return this.orderAndPaymentService.postOrderTrackingService(orderTrackingEntity);
+			return orderAndPaymentService.postOrderTrackingService(orderTrackingEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -511,7 +508,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.putOrderTracking()");
 
 		try {
-			return this.orderAndPaymentService.putOrderTrackingService(orderTrackingEntity, trackingId);
+			return orderAndPaymentService.putOrderTrackingService(orderTrackingEntity, trackingId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -525,7 +522,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderTrackingDetails()");
 
 		try {
-			return this.orderAndPaymentService.getOrderTrackingDetailsService(orderId, userId, designerId);
+			return orderAndPaymentService.getOrderTrackingDetailsService(orderId, userId, designerId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -535,7 +532,7 @@ public class OrderAndPaymentContoller {
 	@PutMapping("/cancelOrder/{orderId}/{productId}")
 	public GlobalResponse cancelOrder(@PathVariable String orderId, @PathVariable Integer productId) {
 		try {
-			return this.orderAndPaymentService.cancelOrderService(orderId, productId);
+			return orderAndPaymentService.cancelOrderService(orderId, productId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -544,7 +541,7 @@ public class OrderAndPaymentContoller {
 	@GetMapping("/getOrderByInvoiceId/{invoiceId}")
 	public ResponseEntity<?> getOrderByInvoiceId(@PathVariable String invoiceId) {
 		try {
-			return this.orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
+			return orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -665,7 +662,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderInvoiceDetails()");
 
 		try {
-			return this.orderAndPaymentService.postOrderInvoiceService(orderInvoiceEntity);
+			return orderAndPaymentService.postOrderInvoiceService(orderInvoiceEntity);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -678,7 +675,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.putOrderInvoiceDetails()");
 
 		try {
-			return this.orderAndPaymentService.putOrderInvoiceService(invoiceId,orderInvoiceEntity);
+			return orderAndPaymentService.putOrderInvoiceService(invoiceId,orderInvoiceEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -692,7 +689,7 @@ public class OrderAndPaymentContoller {
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderInvoiceDetails()");
 		try {
-			return this.orderAndPaymentService.getOrderInvoiceService(page, limit, sort, sortName, keyword, sortBy);
+			return orderAndPaymentService.getOrderInvoiceService(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -701,7 +698,7 @@ public class OrderAndPaymentContoller {
 	@GetMapping("/designerOrderCount/{designerId}")
 	public Map<String, Integer> getDesignerOrderCount(@PathVariable int designerId){
 		try {
-			return this.orderAndPaymentService.getOrderCount(designerId);
+			return orderAndPaymentService.getOrderCount(designerId);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -711,7 +708,7 @@ public class OrderAndPaymentContoller {
 	public OrderSKUDetailsEntity getOrderDetailsUpdated(@RequestParam String orderId,
 												@RequestParam String productId) {
 		try {
-			return this.orderAndPaymentService.getOrderDetailsService(orderId,productId);
+			return orderAndPaymentService.getOrderDetailsService(orderId,productId);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
