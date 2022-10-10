@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 
+import com.divatt.user.entity.DesignerLoginEntity;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
@@ -78,5 +79,7 @@ public interface UserService {
 	public Map<String, Object> getUserStatus();
 
 	public List<StateEntity> getStateDataService();
+
+	public List<Object> getListDesignerData(String token);
 
 }

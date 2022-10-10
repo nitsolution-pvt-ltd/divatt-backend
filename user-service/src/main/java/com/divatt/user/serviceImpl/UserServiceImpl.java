@@ -1,4 +1,4 @@
-package com.divatt.user.services;
+package com.divatt.user.serviceImpl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.user.entity.DesignerLoginEntity;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
@@ -47,8 +48,11 @@ import com.divatt.user.repo.cart.UserCartRepo;
 import com.divatt.user.repo.pCommentRepo.ProductCommentRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
+import com.divatt.user.services.SequenceGenerator;
+import com.divatt.user.services.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.mashape.unirest.http.JsonNode;
 import springfox.documentation.spring.web.json.Json;
 
@@ -781,6 +785,31 @@ public class UserServiceImpl implements UserService {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+
+	@Override
+	public List<Object> getListDesignerData(String token) {
+		try {
+			List<Object> designerList=new ArrayList<Object>();
+			if(!userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7))).isEmpty()) {
+				Long userId = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7))).get().getId();
+				LOGGER.info(userId+"");
+				Query query= new Query();
+				query.addCriteria(Criteria.where("userId").is(userId));
+				List<UserDesignerEntity> userDesignerList=mongoOperations.find(query, UserDesignerEntity.class);
+				userDesignerList
+				.stream()
+				.forEach(e->{
+					designerList.add(restTemplate.getForEntity("https://localhost:8083/dev/designer/"+e.getDesignerId(), Object.class).getBody());
+				});
+				//LOGGER.info(designerList+"");
+				return designerList;
+			}else {
+				throw new CustomException("User not found");
+			}
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 
 }
