@@ -788,11 +788,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<Object> getListDesignerData(String token) {
+	public List<Object> getListDesignerData(String userEmail) {
 		try {
 			List<Object> designerList=new ArrayList<Object>();
-			if(!userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7))).isEmpty()) {
-				Long userId = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7))).get().getId();
+				Long userId = userLoginRepo.findByEmail(userEmail).get().getId();
 				LOGGER.info(userId+"");
 				Query query= new Query();
 				query.addCriteria(Criteria.where("userId").is(userId));
@@ -804,9 +803,6 @@ public class UserServiceImpl implements UserService {
 				});
 				//LOGGER.info(designerList+"");
 				return designerList;
-			}else {
-				throw new CustomException("User not found");
-			}
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}

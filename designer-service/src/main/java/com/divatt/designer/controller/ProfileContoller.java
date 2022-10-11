@@ -3,6 +3,7 @@ package com.divatt.designer.controller;
 import java.lang.invoke.VarHandle;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -483,7 +484,9 @@ public class ProfileContoller {
 	public List<DesignerLoginEntity> getDesignerDetails(@RequestHeader("Authorization") String token,
 			@PathVariable String designerCategories) {
 		try {
-
+			DesignerProfileEntity[] body = restTemplate.getForEntity("https://localhost:8082/dev/user/followedDesigner/"+jwtConfig.extractUsername(token.substring(7)), DesignerProfileEntity[].class).getBody();
+			List<DesignerProfileEntity> designerList = Arrays.asList(body);
+			//LOGGER.info(asList+"");
 			if (!designerCategories.equals("all")) {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("categories").is(designerCategories));
@@ -499,7 +502,6 @@ public class ProfileContoller {
 					String followerCount = countData.get("FollowersData").toString();
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
 					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
-					
 				}
 				return designerData;
 			} else {
@@ -515,6 +517,15 @@ public class ProfileContoller {
 					String followerCount = countData.get("FollowersData").toString();
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
 					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
+				}
+				for(int a=0;a<designerData.size();a++) {
+					for(int i=0;i<designerList.size();i++) {
+						LOGGER.info("HI");
+						if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
+							LOGGER.info(designerList.get(i).getDesignerId()+"");
+							designerData.get(a).setIsFollowing(true);
+						}
+					}
 				}
 				return designerData;
 			}

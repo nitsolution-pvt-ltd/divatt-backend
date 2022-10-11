@@ -44,6 +44,7 @@ public class DesignerLoginEntity {
 	
 	private Integer follwerCount = 0;
 
+	private Boolean isFollowing=false;
 	
 	private String categories;
 	
@@ -54,24 +55,10 @@ public class DesignerLoginEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	
-
-	@Override
-	public String toString() {
-		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", userExist=" + userExist + ", password="
-				+ password + ", authToken=" + authToken + ", isDeleted=" + isDeleted + ", profileStatus="
-				+ profileStatus + ", accountStatus=" + accountStatus + ", adminComment=" + adminComment + ", logins="
-				+ logins + ", designerProfileEntity=" + designerProfileEntity + ", productCount=" + productCount
-				+ ", follwerCount=" + follwerCount + ", categories=" + categories + ", designerCurrentStatus="
-				+ designerCurrentStatus + "]";
-	}
-
-
-
 	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String userExist, String password,
 			String authToken, @NotNull Boolean isDeleted, @NotNull String profileStatus, String accountStatus,
 			String adminComment, Json logins, DesignerProfileEntity designerProfileEntity, Integer productCount,
-			Integer follwerCount, String categories, String designerCurrentStatus) {
+			Integer follwerCount, Boolean isFollowing, String categories, String designerCurrentStatus) {
 		super();
 		this.dId = dId;
 		this.email = email;
@@ -86,23 +73,20 @@ public class DesignerLoginEntity {
 		this.designerProfileEntity = designerProfileEntity;
 		this.productCount = productCount;
 		this.follwerCount = follwerCount;
+		this.isFollowing = isFollowing;
 		this.categories = categories;
 		this.designerCurrentStatus = designerCurrentStatus;
 	}
 
-
-
-	public String getUserExist() {
-		return userExist;
+	@Override
+	public String toString() {
+		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", userExist=" + userExist + ", password="
+				+ password + ", authToken=" + authToken + ", isDeleted=" + isDeleted + ", profileStatus="
+				+ profileStatus + ", accountStatus=" + accountStatus + ", adminComment=" + adminComment + ", logins="
+				+ logins + ", designerProfileEntity=" + designerProfileEntity + ", productCount=" + productCount
+				+ ", follwerCount=" + follwerCount + ", isFollowing=" + isFollowing + ", categories=" + categories
+				+ ", designerCurrentStatus=" + designerCurrentStatus + "]";
 	}
-
-
-
-	public void setUserExist(String userExist) {
-		this.userExist = userExist;
-	}
-
-
 
 	public Long getdId() {
 		return dId;
@@ -118,6 +102,14 @@ public class DesignerLoginEntity {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getUserExist() {
+		return userExist;
+	}
+
+	public void setUserExist(String userExist) {
+		this.userExist = userExist;
 	}
 
 	public String getPassword() {
@@ -200,6 +192,14 @@ public class DesignerLoginEntity {
 		this.follwerCount = follwerCount;
 	}
 
+	public Boolean getIsFollowing() {
+		return isFollowing;
+	}
+
+	public void setIsFollowing(Boolean isFollowing) {
+		this.isFollowing = isFollowing;
+	}
+
 	public String getCategories() {
 		return categories;
 	}
@@ -219,6 +219,6 @@ public class DesignerLoginEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
+
 	
 }
