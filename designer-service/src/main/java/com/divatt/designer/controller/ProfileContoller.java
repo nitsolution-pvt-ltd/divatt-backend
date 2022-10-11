@@ -502,6 +502,12 @@ public class ProfileContoller {
 					String followerCount = countData.get("FollowersData").toString();
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
 					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
+				}for(int a=0;a<designerData.size();a++) {
+					for(int i=0;i<designerList.size();i++) {
+						if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
+							designerData.get(a).setIsFollowing(true);
+						}
+					}
 				}
 				return designerData;
 			} else {
@@ -520,9 +526,7 @@ public class ProfileContoller {
 				}
 				for(int a=0;a<designerData.size();a++) {
 					for(int i=0;i<designerList.size();i++) {
-						LOGGER.info("HI");
 						if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
-							LOGGER.info(designerList.get(i).getDesignerId()+"");
 							designerData.get(a).setIsFollowing(true);
 						}
 					}
