@@ -25,60 +25,53 @@ import com.divatt.designer.services.OrderService;
 @RestController
 @RequestMapping("/order")
 public class OrderStatusController {
-	
+
 	@Autowired
 	private OrderService orderService;
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderStatusController.class);
 
 	@PutMapping("/orderStatus/{orderId}/{statusKeyword}")
-	public GlobalResponce orderStatusUpdate(@PathVariable String orderId ,@PathVariable String statusKeyword)
-	{
+	public GlobalResponce orderStatusUpdate(@PathVariable String orderId, @PathVariable String statusKeyword) {
 		try {
-			return this.orderService.changeStatus(orderId,statusKeyword);
-		}
-		catch(Exception e) {
+			return this.orderService.changeStatus(orderId, statusKeyword);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/genrateDesignerInvoice/{orderId}")
 	public ResponseEntity<?> genarateDesignerInvoice(@PathVariable String orderId) {
 		try {
 			return this.orderService.getDesignerInvoice(orderId);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/userSideInvoicePDF/{orderId}")
-		public String userSideInvoicePDF(@PathVariable String orderId) {
-			try {
-				return this.orderService.getUserPDFService(orderId);
-			}
-			catch(Exception e)
-			{
-				throw new CustomException(e.getMessage());
-			}
+	public String userSideInvoicePDF(@PathVariable String orderId) {
+		try {
+			return this.orderService.getUserPDFService(orderId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
-	
+
 	@GetMapping("/getOrcerCount")
-	public Object getOrderCount(@RequestHeader("Authorization") String token){
+	public Object getOrderCount(@RequestHeader("Authorization") String token) {
 		try {
 			return this.orderService.getCountOrderService(token);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	@PutMapping("/changeorderStatus/{orderId}/{status}")
-	public GlobalResponce orderStatusUpdate(@RequestHeader("Authorization") String token, @PathVariable String orderId ,@PathVariable String status)
-	{
+
+	@PutMapping("/changeorderitemStatus/{orderId}/{status}")
+	public GlobalResponce StatusUpdate(@PathVariable String orderId, @PathVariable String status) {
 		try {
-			return this.orderService.changeStatus(orderId,status,token);
-		}
-		catch(Exception e) {
+			return this.orderService.changeitemStatus(orderId, status);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

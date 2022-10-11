@@ -71,17 +71,16 @@ import com.razorpay.RazorpayException;
 
 import springfox.documentation.spring.web.json.Json;
 
-
 @Service
 public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentServiceImpl.class);
 
 	HttpResponse<String> response = null;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
+
 	@Autowired
 	private UserOrderPaymentRepo userOrderPaymentRepo;
 
@@ -108,11 +107,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Autowired
 	private TemplateEngine templateEngine;
-	
+
 	@Autowired
 	private OrderInvoiceRepo orderInvoiceRepo;
-
-	
 
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
@@ -557,14 +554,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			Page<OrderDetailsEntity> findAll = null;
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
-			if(keyword !=null || !"".equals(keyword)){
+			if (keyword != null || !"".equals(keyword)) {
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
 			}
 
 			List<Object> productId = new ArrayList<>();
 
-			List<String> OrderId = OrderSKUDetailsData.stream()
-					.map(c -> c.getOrderId()).collect(Collectors.toList());
+			List<String> OrderId = OrderSKUDetailsData.stream().map(c -> c.getOrderId()).collect(Collectors.toList());
 
 			findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
 
@@ -641,7 +637,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			query.addCriteria(Criteria.where("order_id").is(orderId));
 			OrderDetailsEntity detailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
 			if (detailsEntity != null) {
-				
+
 				InvoiceEntity invoiceEntity = new InvoiceEntity();
 				invoiceEntity.setOrderDetailsEntity(detailsEntity);
 				PDFRunner pdfRunner = new PDFRunner(invoiceEntity);
@@ -714,16 +710,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-	public GlobalResponse orderUpdateService(OrderDetailsEntity orderDetailsEntity, String orderId) {
+	public GlobalResponse orderUpdateService(OrderSKUDetailsEntity orderSKUDetailsEntity, String orderId) {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(orderId));
-			OrderDetailsEntity orderDetailsEntity2 = mongoOperations.findOne(query, OrderDetailsEntity.class);
-			if (!orderDetailsEntity2.equals(null)) {
-				OrderDetailsEntity orderDetailsEntity1 = orderDetailsRepo.findByOrderId(orderId).get(0);
-				orderDetailsEntity1.setOrderId(orderDetailsRepo.findByOrderId(orderId).get(0).getOrderId());
-				orderDetailsEntity1.setDeliveryStatus(orderDetailsEntity.getDeliveryStatus());
-				orderDetailsRepo.save(orderDetailsEntity1);
+			OrderSKUDetailsEntity orderSKUDetailsEntity2 = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+			if (!orderSKUDetailsEntity2.equals(null)) {
+				OrderSKUDetailsEntity orderSKUDetailsEntity1 = orderSKUDetailsRepo.findByOrderId(orderId).get(0);
+				orderSKUDetailsEntity1.setOrderId(orderDetailsRepo.findByOrderId(orderId).get(0).getOrderId());
+				orderSKUDetailsEntity1.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
+				orderSKUDetailsRepo.save(orderSKUDetailsEntity1);
 				return new GlobalResponse("Success", "Order status updated", 200);
 			} else {
 				return new GlobalResponse("Error", "Order not found", 400);
@@ -1093,34 +1089,36 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public ResponseEntity<?> postOrderInvoiceService(OrderInvoiceEntity orderInvoiceEntity) {
-			LOGGER.info("Inside - OrderAndPaymentService.postOrderInvoiceService()");
-			OrderInvoiceEntity saveData=null;
-			try {
-				List<OrderInvoiceEntity> findByCategoryName = orderInvoiceRepo.findByInvoiceId(orderInvoiceEntity.getInvoiceId());
-				if (findByCategoryName.size() > 0) {
-					throw new CustomException("Invoice already exist!");
-				} else { 
+		LOGGER.info("Inside - OrderAndPaymentService.postOrderInvoiceService()");
+		OrderInvoiceEntity saveData = null;
+		try {
+			List<OrderInvoiceEntity> findByCategoryName = orderInvoiceRepo
+					.findByInvoiceId(orderInvoiceEntity.getInvoiceId());
+			if (findByCategoryName.size() > 0) {
+				throw new CustomException("Invoice already exist!");
+			} else {
 				OrderInvoiceEntity OrderLastRow = orderInvoiceRepo.findTopByOrderByIdDesc();
 
 				String InvNumber = String.format("%014d", OrderLastRow.getId());
 				orderInvoiceEntity.setId((long) sequenceGenerator.getNextSequence(OrderInvoiceEntity.SEQUENCE_NAME));
 				orderInvoiceEntity.setInvoiceId("IV" + InvNumber);
 				saveData = orderInvoiceRepo.save(orderInvoiceEntity);
-				}
-				return ResponseEntity.ok(new GlobalResponse("SUCCESS","Invoice added succesfully",200));
-			} catch (Exception e) {
-				throw new CustomException(e.getMessage());
 			}
-
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Invoice added succesfully", 200));
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
 		}
 
-	public ResponseEntity<?> putOrderInvoiceService(@PathVariable String invoiceId, @Valid OrderInvoiceEntity orderInvoiceEntity) {
+	}
+
+	public ResponseEntity<?> putOrderInvoiceService(@PathVariable String invoiceId,
+			@Valid OrderInvoiceEntity orderInvoiceEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.putOrderInvoiceService()");
 		try {
 			List<OrderInvoiceEntity> findByInvId = orderInvoiceRepo.findByInvoiceId(invoiceId);
 			if (findByInvId.size() <= 0) {
-				throw new CustomException("Invoice not found"); 
-			} else { 
+				throw new CustomException("Invoice not found");
+			} else {
 				OrderInvoiceEntity orderInvoiceRow = findByInvId.get(0);
 				orderInvoiceRow.setInvoiceDatetime(orderInvoiceEntity.getInvoiceDatetime());
 				orderInvoiceRow.setDesignerDetails(orderInvoiceEntity.getDesignerDetails());
@@ -1128,98 +1126,106 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderInvoiceRow.setProductDetails(orderInvoiceEntity.getProductDetails());
 				orderInvoiceRow.setOrderId(orderInvoiceEntity.getOrderId());
 				orderInvoiceRow.setUserDetails(orderInvoiceEntity.getUserDetails());
-				
+
 				orderInvoiceRepo.save(orderInvoiceRow);
 			}
-			return ResponseEntity.ok(new GlobalResponse("SUCCESS","Invoice updated succesfully",200));
+			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Invoice updated succesfully", 200));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	public Map<String, Object> getOrderInvoiceService(int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy) {
+
+	public Map<String, Object> getOrderInvoiceService(int page, int limit, String sort, String sortName, String keyword,
+			Optional<String> sortBy) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrderInvoiceService()");
 
 		try {
-				
-				Pageable pagingSort = null;
 
-				if (sort.equals("ASC")) {
-					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
-				} else {
-					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-				}
+			Pageable pagingSort = null;
 
-				Page<OrderInvoiceEntity> findAll = null;
-
-				if (keyword.isEmpty()) {
-					findAll = orderInvoiceRepo.findAll(pagingSort);
-				}
-				else {
-					findAll = orderInvoiceRepo.SearchByKey(keyword,pagingSort);
-				}
-				int totalPage = findAll.getTotalPages() - 1;
-				if (totalPage < 0) {
-					totalPage = 0;
-				}
-
-				Map<String, Object> response = new HashMap<>();
-				response.put("data", findAll.getContent());
-				response.put("currentPage", findAll.getNumber());
-				response.put("total", findAll.getTotalElements());
-				response.put("totalPage", totalPage);
-				response.put("perPage", findAll.getSize());
-				response.put("perPageElement", findAll.getNumberOfElements());
-
-				if (findAll.getSize() <= 1) {
-					throw new CustomException("Invoice not found!");
-				} else {
-					return response;
-				}
-			} catch (Exception e) {
-				throw new CustomException(e.getMessage());
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
-		
+
+			Page<OrderInvoiceEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = orderInvoiceRepo.findAll(pagingSort);
+			} else {
+				findAll = orderInvoiceRepo.SearchByKey(keyword, pagingSort);
+			}
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (findAll.getSize() <= 1) {
+				throw new CustomException("Invoice not found!");
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 
 	public Map<String, Integer> getOrderCount(int designerId) {
-		
+
 		try {
-			Map<String,Integer> countResponse=new HashMap<String, Integer>();
-			List<String> orderIdList= new ArrayList<String>();
+			Map<String, Integer> countResponse = new HashMap<String, Integer>();
+			List<String> orderIdList = new ArrayList<String>();
 			List<OrderSKUDetailsEntity> findByDesignerId = orderSKUDetailsRepo.findByDesignerId(designerId);
-			findByDesignerId.stream().forEach(e->{
-				if(!orderIdList.contains(e.getOrderId())) {
+			findByDesignerId.stream().forEach(e -> {
+				if (!orderIdList.contains(e.getOrderId())) {
 					orderIdList.add(e.getOrderId());
 				}
 			});
-			List<OrderDetailsEntity> getOrderDetailsData=orderDetailsRepo.findByOrderIdIn(orderIdList);
-			getOrderDetailsData.stream().forEach(e->{
+			List<OrderDetailsEntity> getOrderDetailsData = orderDetailsRepo.findByOrderIdIn(orderIdList);
+			getOrderDetailsData.stream().forEach(e -> {
 				countResponse.put(e.getDeliveryStatus(), 0);
 			});
-			getOrderDetailsData.stream()
-			.forEach(e->{
+			getOrderDetailsData.stream().forEach(e -> {
 				try {
-						  int lastData=countResponse.get(e.getDeliveryStatus());
-						  countResponse.put(e.getDeliveryStatus(), lastData+1);
-				}catch(NullPointerException e1) {
+					int lastData = countResponse.get(e.getDeliveryStatus());
+					countResponse.put(e.getDeliveryStatus(), lastData + 1);
+				} catch (NullPointerException e1) {
 					throw new CustomException(e1.getMessage());
 				}
 			});
-			
+
 			return countResponse;
-		}catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public OrderSKUDetailsEntity getOrderDetailsService(String orderId, String productId) {
 		try {
-			Query query= new Query();
+			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(orderId).and("productId").is(productId));
 			return mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
-		}catch(Exception e) {
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public OrderSKUDetailsEntity getorderDetails(String orderId) {
+		try {
+			Query query = new Query();
+			query.addCriteria(Criteria.where("orderId").is(orderId));
+			return mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
