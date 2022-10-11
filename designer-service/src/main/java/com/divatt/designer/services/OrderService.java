@@ -246,29 +246,30 @@ public class OrderService {
 		try {
 
 			LOGGER.info(orderId);
-//			HttpHeaders headers = new HttpHeaders();
-//			headers.setContentType(MediaType.APPLICATION_JSON);
-//			headers.set("Authorization", "Bearer " + Token);
-
-//			HttpEntity<OrderSKUDetailsEntity> entity = new HttpEntity<OrderSKUDetailsEntity>(headers);
 
 			OrderSKUDetailsEntity serviceResponse = restTemplate.getForObject(
 					"https://localhost:8082/dev/userOrder/orderDetails/" + orderId, OrderSKUDetailsEntity.class);
+			String itemStatus = serviceResponse.getOrderItemStatus();
 
+			if (!serviceResponse.getOrderItemStatus().equals(status)) {
+
+				LOGGER.info(serviceResponse.toString());
+
+				serviceResponse.setOrderItemStatus(status);
+			} else {
+				throw new CustomException("ItemStatus already in " + status);
+
+			}
 			LOGGER.info(serviceResponse.toString());
-
-			serviceResponse.setOrderItemStatus(status);
-
-			LOGGER.info(serviceResponse.toString());
-//			HttpEntity<OrderDetailsEntity> entity1 = new HttpEntity<OrderDetailsEntity>(serviceResponse,headers);
 
 			restTemplate.put("https://localhost:8082/dev/userOrder/updateOrder/" + orderId, serviceResponse,
 					OrderSKUDetailsEntity.class);
 
-			return new GlobalResponce("Success", "Order status updated", 200);
+			return new GlobalResponce("Success", "Order status updated Change " + itemStatus + " to " + status, 200);
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
-		}
 
+		}
 	}
 }
