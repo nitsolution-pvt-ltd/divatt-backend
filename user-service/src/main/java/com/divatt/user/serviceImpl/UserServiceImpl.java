@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -514,20 +515,36 @@ public class UserServiceImpl implements UserService {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
-			userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e) -> {
-				userDesignerEntity.setId(e.getId());
-			}, () -> {
+//			userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e) -> {
+//				userDesignerEntity.setId(e.getId());
+//			}, () -> {
+//				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
+//			});
+//
+//			userDesignerEntity.setCreatedOn(date.toString());
+//			UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
+//			if (save != null && save.getIsFollowing() == true)
+//				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Follow successfully", 200));
+//			else if (save != null && save.getIsFollowing() == false)
+//				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Unfollow successfully", 200));
+//			else
+//				throw new CustomException("Something went wrong! try again later");
+			
+			Query query= new Query();
+			query.addCriteria(Criteria.where("userId").is(userDesignerEntity.getUserId()));
+			List<UserDesignerEntity> followDesignerList=mongoOperations.find(query, UserDesignerEntity.class);
+			List<UserDesignerEntity> collect = followDesignerList.stream().filter(e->e.getDesignerId().equals(userDesignerEntity.getDesignerId())).collect(Collectors.toList());
+			//LOGGER.info(collect+"");
+			if(collect.isEmpty()) {
 				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
-			});
-
-			userDesignerEntity.setCreatedOn(date.toString());
-			UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
-			if (save != null && save.getIsFollowing() == true)
-				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Follow successfully", 200));
-			else if (save != null && save.getIsFollowing() == false)
-				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Unfollow successfully", 200));
-			else
-				throw new CustomException("Something went wrong! try again later");
+				userDesignerEntity.setIsFollowing(true);
+				userDesignerEntity.setCreatedOn(date.toString());
+				userDesignerRepo.save(userDesignerEntity);
+				return ResponseEntity.ok(new GlobalResponse("Success", "Designer following successfully", 200));
+			}else {
+				userDesignerRepo.deleteById(collect.get(0).getId());
+				return ResponseEntity.ok(new GlobalResponse("Success", "Designer unfollowing successfully", 200));
+			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -801,7 +818,6 @@ public class UserServiceImpl implements UserService {
 				.forEach(e->{
 					designerList.add(restTemplate.getForEntity("https://localhost:8083/dev/designer/"+e.getDesignerId(), Object.class).getBody());
 				});
-				//LOGGER.info(designerList+"");
 				return designerList;
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
