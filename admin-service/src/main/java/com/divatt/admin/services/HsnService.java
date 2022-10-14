@@ -52,7 +52,7 @@ public class HsnService {
 			
 			Optional<HsnEntity> hsnlist = hsnRepo.findByhsnCode(hsnEntity.getHsnCode());
 			
-			if(!hsnlist.isEmpty()) {
+			if(hsnlist.isPresent()) {
 				
 				HsnEntity entity = hsnRepo.findByHsn(hsnEntity.getHsnCode());
 				if(entity.getIsDelete().equals(true)) {
@@ -90,7 +90,7 @@ public class HsnService {
 		
 		try {
 			Optional<HsnEntity> hsnlist = hsnRepo.findByhsnCode(hsnCode);
-			if(!hsnlist.isEmpty()) {
+			if(hsnlist.isPresent()) {
 				HsnEntity entity =  hsnRepo.findByHsn(hsnCode);
 				
 				if(entity.getIsDelete().equals(false)) {
@@ -185,7 +185,7 @@ public class HsnService {
 			
 			Optional<HsnEntity> hsnlist = hsnRepo.findByhsnCode(hsnCode);
 			
-			if(!hsnlist.isEmpty()) {
+			if(hsnlist.isPresent()) {
 				return hsnlist ;
 			}
 			else {
@@ -205,7 +205,7 @@ public class HsnService {
 		try {
 			
 			Optional<HsnEntity> hsnlist = hsnRepo.findById(id);
-			if(!hsnlist.isEmpty()) {
+			if(hsnlist.isPresent()) {
 				HsnEntity entity = hsnRepo.findById(id).get();
 				if(entity.getIsDelete().equals(false)) {
 					entity.setIsDelete(true);

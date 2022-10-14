@@ -42,6 +42,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.designerProductEntity.ProductMasterEntity;
 import com.divatt.user.entity.ProductEntity;
+import com.divatt.user.entity.DesignerLoginEntity;
 import com.divatt.user.entity.SendMail;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
@@ -49,24 +50,17 @@ import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
-import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
-import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserAddressRepo;
-import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
+
 
 @RestController
 @RequestMapping("/user")
@@ -84,9 +78,6 @@ public class UserController {
 	private WishlistRepo wishlistRepo;
 
 	@Autowired
-	private OrderDetailsRepo orderDetailsRepo;
-	
-	@Autowired
 	private UserAddressRepo userAddressRepo;
 	
 	@Autowired
@@ -102,31 +93,25 @@ public class UserController {
 	private SequenceGenerator sequenceGenerator;
 
 	@Autowired
-	private UserDesignerRepo userDesignerRepo;
-
-	@Autowired
 	private UserLoginRepo userLoginRepo;
 	
 	@Autowired
 	private JwtUtil jwtUtil;
-	
-	@Autowired
-	private OrderAndPaymentContoller orderAndPaymentContoller;
 
 	@PostMapping("/wishlist/add")
 	public GlobalResponse postWishlistDetails(@Valid @RequestBody ArrayList<WishlistEntity> wishlistEntity) {
 		LOGGER.info("Inside - UserController.postWishlistDetails()");
 
 		try {
-			return this.userService.postWishlistService(wishlistEntity);
+			return userService.postWishlistService(wishlistEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
 
+	@SuppressWarnings("all")
 	@Scheduled(cron = "0 10 22 * * *") //this method will call at Twice per Day at 10AM & 10PM....
-//	@Scheduled(cron = "* 1 * * * *")
 	@GetMapping("/notification")
 	public void sendNotification() {
 		
@@ -216,7 +201,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.getWishlistDetails()");
 
 		try {
-			return this.userService.getWishlistDetails(page, limit, sort, sortName, keyword, sortBy);
+			return userService.getWishlistDetails(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -228,7 +213,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.deleteWishlistDetails()");
 
 		try {
-			return this.userService.deleteWishlistService(wishlistEntity.getProductId(),wishlistEntity.getUserId());
+			return userService.deleteWishlistService(wishlistEntity.getProductId(),wishlistEntity.getUserId());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -244,7 +229,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.getWishlistRestDetails()");
 
 		try {			
-			return this.userService.getUserWishlistDetails(userId,page,limit);
+			return userService.getUserWishlistDetails(userId,page,limit);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -254,7 +239,7 @@ public class UserController {
 	@PostMapping("/followDesigner")
 	public ResponseEntity<?> followDesigner(@Valid @RequestBody UserDesignerEntity userDesignerEntity) {
 		try {
-			return this.userService.postfollowDesignerService(userDesignerEntity);
+			return userService.postfollowDesignerService(userDesignerEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -264,7 +249,7 @@ public class UserController {
 	@GetMapping("/followerCount/{designerId}")
 	public GlobalResponse followerCount(@PathVariable Long designerId) {
 		try {
-			return this.userService.getCountFollowers(designerId);
+			return userService.getCountFollowers(designerId);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
@@ -332,7 +317,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.postCartDetails()");
 
 		try {
-			return this.userService.postCartDetailsService(userCartEntity);
+			return userService.postCartDetailsService(userCartEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -344,7 +329,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.putCartDetails()");
 
 		try {
-			return this.userService.putCartDetailsService(userCartEntity);
+			return userService.putCartDetailsService(userCartEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -356,7 +341,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.deleteCartDetails()");
 
 		try {
-			return this.userService.deleteCartService(userCartEntity.getId());
+			return userService.deleteCartService(userCartEntity.getId());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -367,7 +352,7 @@ public class UserController {
 	public GlobalResponse multipleDelete(@PathVariable Integer userId)
 	{
 		try {
-			return this.userService.multipleDelete(userId);
+			return userService.multipleDelete(userId);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
@@ -381,7 +366,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.getUserCartRestDetails()");
 
 		try {
-			return this.userService.getUserCartDetailsService(userId,page,limit);
+			return userService.getUserCartDetailsService(userId,page,limit);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -393,7 +378,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.postProductCommentDetails()");
 
 		try {
-			return this.userService.postProductCommentService(productCommentEntity);
+			return userService.postProductCommentService(productCommentEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -405,7 +390,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.putProductCommentDetails()");
 
 		try {
-			return this.userService.putProductCommentService(productCommentEntity);
+			return userService.putProductCommentService(productCommentEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -416,7 +401,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.putProductCommentStatusDetails()");
 
 		try {
-			return this.userService.putProductCommentStatusService(productCommentEntity);
+			return userService.putProductCommentStatusService(productCommentEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -428,7 +413,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.deleteProductCommentDetails()");
 
 		try {
-			return this.userService.deleteProductCommentService(productCommentEntity.getId());
+			return userService.deleteProductCommentService(productCommentEntity.getId());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -487,7 +472,7 @@ public class UserController {
 	@GetMapping("/product/list")
 	public ResponseEntity<?> productListing() {
 		try {
-			return this.userService.getProductUser();
+			return userService.getProductUser();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -496,7 +481,7 @@ public class UserController {
 	@GetMapping("/designer/list")
 	public ResponseEntity<?> designerListing() {
 		try {
-			return this.userService.getDesignerUser();
+			return userService.getDesignerUser();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -511,7 +496,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.getDesignerProductDetails()");
 
 		try {
-			return this.userService.getDesignerDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);
+			return userService.getDesignerDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -541,8 +526,6 @@ public class UserController {
 			}catch(Exception e) {
 				
 			}
-				
-			
 			
 			return userService.getDesignerProfileDetailsService(designerId, userId);
 		} catch (Exception e) {
@@ -559,7 +542,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.getPerDesignerProductDetails()");
 
 		try {
-			return this.userService.getPerDesignerProductListService(page, limit, sort, sortName, isDeleted, keyword,
+			return userService.getPerDesignerProductListService(page, limit, sort, sortName, isDeleted, keyword,
 					sortBy, designerId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -703,7 +686,7 @@ public class UserController {
 	@GetMapping("/viewProductByOrderId/{orderId}")
 	public List<Integer> viewproductByOrderId(@PathVariable String orderId) {
 		try {
-			return this.userService.viewProductService(orderId);
+			return userService.viewProductService(orderId);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
@@ -719,7 +702,7 @@ public class UserController {
 		LOGGER.info("Inside - UserController.getPerDesignerProductDetails()");
 
 		try {
-			return this.userService.getUserListService(page, limit, sort, sortName, isDeleted, keyword,
+			return userService.getUserListService(page, limit, sort, sortName, isDeleted, keyword,
 					sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -731,7 +714,7 @@ public class UserController {
 	public List<UserDesignerEntity> followedUserList(@PathVariable Integer designerIdvalue)
 	{
 		try {
-			return this.userService.followedUserListService(designerIdvalue);
+			return userService.followedUserListService(designerIdvalue);
 		}
 		catch(Exception e) {
 			
@@ -742,7 +725,7 @@ public class UserController {
 	public UserLoginEntity getUserDetail(@PathVariable Long userId)
 	{
 		try {
-			return this.userService.getUserById(userId);
+			return userService.getUserById(userId);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
@@ -762,7 +745,7 @@ public class UserController {
 		try {
 			String extractedToken=token.substring(7);
 			LOGGER.info(extractedToken);
-			return this.userService.getUserDetailsService(extractedToken);
+			return userService.getUserDetailsService(extractedToken);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
@@ -774,7 +757,7 @@ public class UserController {
 
 		try {
 			LOGGER.info("Inside - ProductController.getUserStatus()");
-			return this.userService.getUserStatus();
+			return userService.getUserStatus();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 			}
@@ -784,7 +767,7 @@ public class UserController {
 	public List<StateEntity> getStateData() {
 		try {
 			LOGGER.info("Inside --> UserController.getStateData");
-			return this.userService.getStateDataService();
+			return userService.getStateDataService();
 		}
 		catch(Exception e) {
 
@@ -792,7 +775,13 @@ public class UserController {
 		}
 	}
 	
-
-	
+	@GetMapping("/followedDesigner/{userEmail}")
+	public List<Object> followedDesigner(@PathVariable String userEmail){
+		try {
+			return this.userService.getListDesignerData(userEmail);
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 	
 }

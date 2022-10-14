@@ -18,13 +18,14 @@ public class OrderDetailsEntity {
 	private String createdOn;
 	private String userInv;
 	private String orderStatus;
+	private String  delivaryStatus;
 	public OrderDetailsEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public OrderDetailsEntity(Integer id, Long userId, String orderId, Object shippingAddress, Object billingAddress,
-			List<Object> products, Long mrp, Long discount, Long netPrice, Long taxAmount,
-			Long totalAmount, String createdOn, String userInv, String orderStatus) {
+			List<Object> products, Long mrp, Long discount, Long netPrice, Long taxAmount, Long totalAmount,
+			String createdOn, String userInv, String orderStatus, String delivaryStatus) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -40,6 +41,7 @@ public class OrderDetailsEntity {
 		this.createdOn = createdOn;
 		this.userInv = userInv;
 		this.orderStatus = orderStatus;
+		this.delivaryStatus = delivaryStatus;
 	}
 	@Override
 	public String toString() {
@@ -47,7 +49,7 @@ public class OrderDetailsEntity {
 				+ shippingAddress + ", billingAddress=" + billingAddress + ", products=" + products + ", mrp=" + mrp
 				+ ", discount=" + discount + ", netPrice=" + netPrice + ", taxAmount=" + taxAmount + ", totalAmount="
 				+ totalAmount + ", createdOn=" + createdOn + ", userInv=" + userInv + ", orderStatus=" + orderStatus
-				+ "]";
+				+ ", delivaryStatus=" + delivaryStatus + "]";
 	}
 	public Integer getId() {
 		return id;
@@ -132,6 +134,12 @@ public class OrderDetailsEntity {
 	}
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
+	}
+	public String getDelivaryStatus() {
+		return delivaryStatus;
+	}
+	public void setDelivaryStatus(String delivaryStatus) {
+		this.delivaryStatus = delivaryStatus;
 	}
 	
 }
