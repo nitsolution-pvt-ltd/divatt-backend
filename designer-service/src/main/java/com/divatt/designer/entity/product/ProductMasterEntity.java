@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotEmpty;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -58,7 +59,7 @@ public class ProductMasterEntity {
 	//@NotEmpty(message = "Stock On Hand Required")
 	private List<StandardSOH> standeredSOH;
 	private Integer customizationSOH;
-	private Object extraSpecifications;
+	private JSONObject extraSpecifications;
 	//@NotEmpty(message = "Product Specification Required")
 	private Specification specifications;
 	//@NotEmpty(message = "Product Approval Required")
@@ -91,7 +92,7 @@ public class ProductMasterEntity {
 			Boolean customization, PurchaseEntity purchaseQuantity,
 			@NotEmpty(message = "Price Type Required") String priceType, Float taxPercentage, Boolean taxInclusive,
 			Boolean giftWrap, GiftEntity giftWrapAmount, PriceEntity price, ImagesEntity[] images,
-			List<StandardSOH> standeredSOH, Integer customizationSOH, Object extraSpecifications,
+			List<StandardSOH> standeredSOH, Integer customizationSOH, JSONObject extraSpecifications,
 			Specification specifications, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			Date adminStatusOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String sKQCode,
 			List<Object> comments, String adminStatus, Object hsnData) {
@@ -274,10 +275,10 @@ public class ProductMasterEntity {
 	public void setCustomizationSOH(Integer customizationSOH) {
 		this.customizationSOH = customizationSOH;
 	}
-	public Object getExtraSpecifications() {
+	public JSONObject getExtraSpecifications() {
 		return extraSpecifications;
 	}
-	public void setExtraSpecifications(Object extraSpecifications) {
+	public void setExtraSpecifications(JSONObject extraSpecifications) {
 		this.extraSpecifications = extraSpecifications;
 	}
 	public Specification getSpecifications() {

@@ -428,4 +428,15 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/searching")
+	public List<ProductMasterEntity> productSearching(@RequestParam (defaultValue = "")  String searchBy){
+		try {
+			LOGGER.info("Inside- ProductController.productSearching()");
+			return this.productService.productSearching(searchBy);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

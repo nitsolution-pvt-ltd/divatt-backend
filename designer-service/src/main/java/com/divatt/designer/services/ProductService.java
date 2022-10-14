@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.StringTokenizer;
+import java.util.StringTokenizer;import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +35,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.aggregation.StringOperators.RegexMatch;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +77,8 @@ import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.itextpdf.kernel.pdf.canvas.parser.listener.RegexBasedLocationExtractionStrategy;
 import com.mashape.unirest.http.JsonNode;
 
 import springfox.documentation.spring.web.json.Json;
@@ -1135,6 +1139,77 @@ public class ProductService {
 		}
 		
 	}
+
+public List<ProductMasterEntity> productSearching(String searchBy) {
+	
+	
+	try {
+		LOGGER.info("Inside- ProductService.productSearching()");
+		
+		List<ProductMasterEntity> updatedProductList= new ArrayList<>();
+		List<ProductMasterEntity> productList = productRepo.findAll();
+		
+	    List<ProductMasterEntity> filterByProductName = productList.stream()
+	    		.filter(e-> e.getProductName().toLowerCase().startsWith(searchBy.toLowerCase()) || e.getProductName().toLowerCase().contentEquals(searchBy.toLowerCase())).collect(Collectors.toList());
+	    
+	    
+	    List<ProductMasterEntity> filterByProductDescription = productList.stream()
+	    		.filter(e-> e.getProductDescription().toLowerCase().startsWith(searchBy.toLowerCase()) || e.getProductDescription().toLowerCase().endsWith(searchBy.toLowerCase())).collect(Collectors.toList());
+	    
+	    List<ProductMasterEntity> filterByProductDetails = productList.stream()
+	    		.filter(e-> e.getSpecifications().getProductDetails().toLowerCase().startsWith(searchBy.toLowerCase()) || e.getSpecifications().getProductDetails().toLowerCase().endsWith(searchBy.toLowerCase())).collect(Collectors.toList());
+	  
+	    
+	    List<ProductMasterEntity> filterByGender = productList.stream()
+	    		.filter(e-> e.getGender().toLowerCase().startsWith(searchBy.toLowerCase())).collect(Collectors.toList());
+	    List<ProductMasterEntity> filterBySize=new ArrayList<>();
+	    		productList.stream()
+	    		.forEach(e->{
+	    			e.getStanderedSOH()
+	    					.stream()
+	    					.filter(a->a.getSizeType().equals(searchBy))
+	    					.collect(Collectors.toList());
+	    			filterBySize.add(e);
+	    		});
+	    		List<ProductMasterEntity> filterBySleeveType= new ArrayList<>();
+	    productList.stream()
+	    		.forEach(e->{
+	    			org.json.simple.JSONObject extraSpec= e.getExtraSpecifications();
+	    			//LOGGER.info(extraSpec+"");
+	    			try {
+	    				if(extraSpec.get("Sleeve Type").toString().equals(searchBy)) {
+		    				filterBySleeveType.add(e);
+		    			}
+	    			}catch(Exception e1) {
+	    				for(ProductMasterEntity item: filterBySleeveType) {
+	    					  updatedProductList.add(item);
+	    				}
+	    			}
+	    		});
+	    
+	    				
+	    System.out.println("data " + filterBySleeveType);
+	     for(ProductMasterEntity item: filterByGender) {
+	    	updatedProductList.add(item);}
+		 for(ProductMasterEntity item: filterByProductName) {
+		  updatedProductList.add(item); } 
+		 for(ProductMasterEntity item: filterByProductDescription) {
+			  updatedProductList.add(item); }
+		 for(ProductMasterEntity item: filterByProductDetails) {
+			  updatedProductList.add(item); }
+		 for(ProductMasterEntity item: filterBySize) {
+			  updatedProductList.add(item); }
+		 for(ProductMasterEntity item: filterBySleeveType) {
+			  updatedProductList.add(item); }
+		 
+		List<ProductMasterEntity> update= updatedProductList.stream().distinct().collect(Collectors.toList());
+		return update;
+		
+	}catch (Exception e) {
+		throw new CustomException(e.getMessage());
+	}
+	
+}
 	
 	
 	
