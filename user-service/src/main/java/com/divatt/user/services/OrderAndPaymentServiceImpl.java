@@ -41,6 +41,7 @@ import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.divatt.user.config.JWTConfig;
 import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.InvoiceEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
@@ -110,6 +111,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Autowired
 	private OrderInvoiceRepo orderInvoiceRepo;
+	
+	@Autowired
+	private JWTConfig jwtconfig;
 
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
@@ -305,7 +309,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getOrders(int page, int limit, String sort, String sortName, String keyword,
-			Optional<String> sortBy) {
+			Optional<String> sortBy, String token) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 			int CountData = (int) orderDetailsRepo.count();
@@ -388,6 +392,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			if (productId.size() <= 0) {
 				throw new CustomException("Order not found!");
 			} else {
+				if(!restTemplate.getForEntity("https://localhost:8080/dev/auth/info/ADMIN/"+jwtconfig.extractUsername(token.substring(7)), Object.class).toString().isBlank()) {
+					Map<String, Integer> orderCount = getOrderCount(0,true);
+					response.put("orderCount", orderCount);
+					return response;
+				}
 				return response;
 			}
 		} catch (Exception e) {
@@ -406,6 +415,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			findById.forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
+				LOGGER.info("Data for order id: " + e.toString());
 				String productIdFilter = null;
 				try {
 					productIdFilter = obj.writeValueAsString(e);
@@ -417,14 +427,19 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 
 				OrderSKUDetailsRow.forEach(D -> {
-
+					LOGGER.info("Data in for each method" + D.getProductId());
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
 
 					try {
+						// Get data for product by id
+						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity("https://localhost:8083/dev//designerProduct/view/"+D.getProductId(), org.json.simple.JSONObject.class);
+						LOGGER.info(productById.getBody().get("hsnData").toString());
+						D.setHsn(productById.getBody().get("hsnData"));
+						// End
+						
 						productIdFilters = objs.writeValueAsString(D);
 						Integer i = (int) (long) D.getUserId();
-
 						List<OrderTrackingEntity> findByIdTracking = this.orderTrackingRepo
 								.findByOrderIdAndUserIdAndDesignerIdAndProductId(orderId, i, D.getDesignerId(),
 										D.getProductId());
@@ -465,12 +480,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
 				objects.put("paymentData", payJson);
+				LOGGER.info(productIds.get(0).toString());
 				objects.put("OrderSKUDetails", productIds);
 
 				productId.add(objects);
 
 			});
-
+			//LOGGER.info(productId.get(0).toString());
 			return ResponseEntity.ok(new Json(productId.get(0).toString()));
 		} catch (Exception e2) {
 			return ResponseEntity.ok(e2.getMessage());
@@ -497,6 +513,18 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
+				
+				// get HSN for product
+				
+				OrderSKUDetailsRow.forEach(order -> {
+					try {
+						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity("https://localhost:8083/dev//designerProduct/view/"+order.getProductId(), org.json.simple.JSONObject.class);
+						LOGGER.info(getProductByID.getBody().get("hsnData").toString());
+						order.setHsn(getProductByID.getBody().get("hsnData"));
+					} catch (Exception e2) {
+						e2.printStackTrace();
+					}
+				});
 
 				String writeValueAsString = null;
 
@@ -1180,36 +1208,51 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
-	public Map<String, Integer> getOrderCount(int designerId) {
+	public Map<String, Integer> getOrderCount(int designerId,Boolean adminstatus) {
 
 		try {
 			Map<String, Integer> countResponse = new HashMap<String, Integer>();
 			List<String> orderIdList = new ArrayList<String>();
-			List<OrderSKUDetailsEntity> findByDesignerId = orderSKUDetailsRepo.findByDesignerId(designerId);
-			findByDesignerId.stream().forEach(e -> {
-				if (!orderIdList.contains(e.getOrderId())) {
-					orderIdList.add(e.getOrderId());
-				}
-			});
-			List<OrderDetailsEntity> getOrderDetailsData = orderDetailsRepo.findByOrderIdIn(orderIdList);
-			getOrderDetailsData.stream().forEach(e -> {
-				countResponse.put(e.getDeliveryStatus(), 0);
-			});
-			getOrderDetailsData.stream().forEach(e -> {
-				try {
-					int lastData = countResponse.get(e.getDeliveryStatus());
-					countResponse.put(e.getDeliveryStatus(), lastData + 1);
-				} catch (NullPointerException e1) {
-					throw new CustomException(e1.getMessage());
-				}
-			});
+			if(adminstatus) {
+				List<OrderSKUDetailsEntity> allOrderList = orderSKUDetailsRepo.findAll();
+				allOrderList.stream().forEach(e -> {
+					countResponse.put(e.getOrderItemStatus(), 0);
+				});
+				allOrderList.stream().forEach(e -> {
+					try {
+						int lastData = countResponse.get(e.getOrderItemStatus());
+						countResponse.put(e.getOrderItemStatus(), lastData + 1);
+					} catch (NullPointerException e1) {
+						throw new CustomException(e1.getMessage());
+					}
+				});
+				return countResponse;
+			}else {
+				List<OrderSKUDetailsEntity> findByDesignerId = orderSKUDetailsRepo.findByDesignerId(designerId);
+				findByDesignerId.stream().forEach(e -> {
+					if (!orderIdList.contains(e.getOrderId())) {
+						orderIdList.add(e.getOrderId());
+					}
+				});
+				List<OrderDetailsEntity> getOrderDetailsData = orderDetailsRepo.findByOrderIdIn(orderIdList);
+				getOrderDetailsData.stream().forEach(e -> {
+					countResponse.put(e.getDeliveryStatus(), 0);
+				});
+				getOrderDetailsData.stream().forEach(e -> {
+					try {
+						int lastData = countResponse.get(e.getDeliveryStatus());
+						countResponse.put(e.getDeliveryStatus(), lastData + 1);
+					} catch (NullPointerException e1) {
+						throw new CustomException(e1.getMessage());
+					}
+				});
 
-			return countResponse;
+				return countResponse;
+			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 	public OrderSKUDetailsEntity getOrderDetailsService(String orderId, String productId) {
 		try {
 			Query query = new Query();
