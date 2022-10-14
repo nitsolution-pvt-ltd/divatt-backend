@@ -29,7 +29,7 @@ public interface OrderAndPaymentService {
 			Optional<String> sortBy);
 
 	public Map<String, Object> getOrders(int page, int limit, String sort, String sortName, String keyword,
-			Optional<String> sortBy);
+			Optional<String> sortBy, String token);
 
 	public ResponseEntity<?> getOrderDetailsService(String orderId);
 
@@ -69,7 +69,7 @@ public interface OrderAndPaymentService {
 	public Map<String, Object> getOrderInvoiceService(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy);
 
-	public Map<String, Integer> getOrderCount(int designerId);
+	public Map<String, Integer> getOrderCount(int designerId, Boolean adminStatus);
 
 	public OrderSKUDetailsEntity getOrderDetailsService(String orderId, String productId);
 
