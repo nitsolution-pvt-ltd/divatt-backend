@@ -350,10 +350,11 @@ public class UserServiceImpl implements UserService {
 
 				List<Object> l1 = new ArrayList<>();
 				object1.forEach(e -> {
-
 					JsonNode jn = new JsonNode(e.toString());
 					JSONObject object = jn.getObject();
-
+					LOGGER.info("Designer id is: " + object.get("designerId").toString());
+					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity("https://localhost:8083/dev/designer/"+object.get("designerId"), org.json.simple.JSONObject.class);
+					LOGGER.info("get designer by id: " + getDesignerById.getBody().get("designerProfile").toString());
 					UserCartEntity cart = userCartRepo
 							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
 							.get(0);
@@ -371,6 +372,7 @@ public class UserServiceImpl implements UserService {
 					JSONObject cartObject = cartJN.getObject();
 					object.put("cartData", cartObject);
 					object.put("selectedSize", selectedSize);
+					object.put("designerProfile", getDesignerById.getBody().get("designerProfile"));
 					l1.add(object);
 				});
 
