@@ -773,10 +773,10 @@ public class UserController {
 		}
 	}
 	
-	@GetMapping("/followedDesigner")
-	public List<Object> followedDesigner(@RequestHeader("Authorization") String token){
+	@GetMapping("/followedDesigner/{userEmail}")
+	public List<Object> followedDesigner(@PathVariable String userEmail){
 		try {
-			return this.userService.getListDesignerData(token);
+			return this.userService.getListDesignerData(userEmail);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}

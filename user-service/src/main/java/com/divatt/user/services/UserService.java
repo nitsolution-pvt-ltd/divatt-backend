@@ -80,6 +80,6 @@ public interface UserService {
 
 	public List<StateEntity> getStateDataService();
 
-	public List<Object> getListDesignerData(String token);
+	public List<Object> getListDesignerData(String userEmail);
 
 }
