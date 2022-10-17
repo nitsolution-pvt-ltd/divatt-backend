@@ -74,7 +74,9 @@ import com.divatt.designer.helper.EmailSenderThread;
 import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepository;
+import com.divatt.designer.requestDTO.SearchingFilterDTO;
 import com.divatt.designer.response.GlobalResponce;
+import com.divatt.designer.utill.UtillClass;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -1140,12 +1142,14 @@ public class ProductService {
 		
 	}
 
-public List<ProductMasterEntity> productSearching(String searchBy) {
+public List<ProductMasterEntity> productSearching
+(String searchBy, String designerId, String categoryId, String subCategoryId, String colour, Boolean cod, Boolean returnStatus, String maxPrice, String minPrice, String size) {
 	
 	
 	try {
 		LOGGER.info("Inside- ProductService.productSearching()");
-		
+		SearchingFilterDTO filterObject= UtillClass.searchingFilter
+				(designerId,categoryId,subCategoryId,colour,cod,returnStatus,maxPrice,minPrice,size);
 		List<ProductMasterEntity> updatedProductList= new ArrayList<>();
 		List<ProductMasterEntity> productList = productRepo.findAll();
 		
@@ -1201,9 +1205,19 @@ public List<ProductMasterEntity> productSearching(String searchBy) {
 			  updatedProductList.add(item); }
 		 for(ProductMasterEntity item: filterBySleeveType) {
 			  updatedProductList.add(item); }
-		 
-		List<ProductMasterEntity> update= updatedProductList.stream().distinct().collect(Collectors.toList());
-		return update;
+		 List<ProductMasterEntity> filtered= new ArrayList<ProductMasterEntity>();
+		updatedProductList.stream().distinct()
+		.forEach(e->{
+			filterObject.getDesignerIdList().stream()
+			.mapToInt(a->Integer.parseInt(a))
+			.forEach(a->{
+				if(Integer.compare(a, e.getDesignerId())==0) {
+					filtered.add(e);
+				}
+			});
+			
+		});
+		return filtered;
 		
 	}catch (Exception e) {
 		throw new CustomException(e.getMessage());
