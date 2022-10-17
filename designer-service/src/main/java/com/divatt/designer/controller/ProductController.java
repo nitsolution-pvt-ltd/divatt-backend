@@ -436,6 +436,8 @@ public class ProductController implements ProductServiceImp {
 													  @RequestParam(defaultValue = "") String subCategoryId,
 													  @RequestParam(defaultValue = "") String colour,
 													  @RequestParam(defaultValue = "") Boolean cod,
+													  @RequestParam(defaultValue = "") Boolean customization,
+													  @RequestParam(defaultValue = "") Boolean priceType,
 													  @RequestParam(defaultValue = "") Boolean returnStatus,
 													  @RequestParam(defaultValue = "") String maxPrice,
 													  @RequestParam(defaultValue = "") String minPrice,
@@ -443,7 +445,7 @@ public class ProductController implements ProductServiceImp {
 		try {
 			LOGGER.info("Inside- ProductController.productSearching()");
 			return this.productService.productSearching
-					(searchBy,designerId,categoryId,subCategoryId,colour,cod,returnStatus,maxPrice,minPrice,size);
+					(searchBy,designerId,categoryId,subCategoryId,colour,cod,customization,priceType,returnStatus,maxPrice,minPrice,size);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

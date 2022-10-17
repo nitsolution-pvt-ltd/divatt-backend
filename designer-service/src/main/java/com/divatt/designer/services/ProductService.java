@@ -1143,13 +1143,14 @@ public class ProductService {
 	}
 
 public List<ProductMasterEntity> productSearching
-(String searchBy, String designerId, String categoryId, String subCategoryId, String colour, Boolean cod, Boolean returnStatus, String maxPrice, String minPrice, String size) {
+(String searchBy, String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,Boolean customization,Boolean priceType, Boolean returnStatus, String maxPrice, String minPrice, String size) {
 	
 	
 	try {
 		LOGGER.info("Inside- ProductService.productSearching()");
-		SearchingFilterDTO filterObject= UtillClass.searchingFilter
-				(designerId,categoryId,subCategoryId,colour,cod,returnStatus,maxPrice,minPrice,size);
+		SearchingFilterDTO filterObject= UtillClass.searchingFilter(designerId, categoryId, subCategoryId, colour, cod, customization, returnStatus, priceType, maxPrice, minPrice,size);
+				/*searchingFilter
+				//(designerId,categoryId,subCategoryId,colour,cod,returnStatus,maxPrice,minPrice,size);*/
 		List<ProductMasterEntity> updatedProductList= new ArrayList<>();
 		List<ProductMasterEntity> productList = productRepo.findAll();
 		
@@ -1214,7 +1215,7 @@ public List<ProductMasterEntity> productSearching
 				if(Integer.compare(a, e.getDesignerId())==0) {
 					filtered.add(e);
 				}
-			});
+			});	
 			
 		});
 		return filtered;
