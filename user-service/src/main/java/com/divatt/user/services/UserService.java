@@ -7,14 +7,17 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Page;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.response.GlobalResponse;
 
@@ -80,6 +83,10 @@ public interface UserService {
 
 	public List<StateEntity> getStateDataService();
 
-	public List<Object> getListDesignerData(String userEmail);
+	public String complaintMail(String token, Integer productId);
 
+	public Map<String, Object> findListorderItemStatus(int page, int limit, String sort,
+			String orderItemStatus, Boolean isDeleted, String keyword, Optional<String> sortBy);
+
+	public List<Object> getListDesignerData(String userEmail);
 }

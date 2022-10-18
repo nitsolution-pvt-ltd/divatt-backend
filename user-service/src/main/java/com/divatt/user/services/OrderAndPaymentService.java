@@ -1,11 +1,13 @@
 package com.divatt.user.services;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.json.simple.JSONObject;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
+import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.response.GlobalResponse;
 
 public interface OrderAndPaymentService {
@@ -78,5 +81,9 @@ public interface OrderAndPaymentService {
 	public Resource getClassPathFile(String filename, HttpServletResponse response);
 
 	public OrderSKUDetailsEntity getorderDetails(String orderId);
+
+	public List<OrderDetailsEntity> getOrderListService(ListResponseDTO jsonObject);
+
+	public List<OrderDetailsEntity> findByOrderId(String orderId);
 
 }
