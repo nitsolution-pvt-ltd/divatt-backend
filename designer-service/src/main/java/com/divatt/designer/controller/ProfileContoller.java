@@ -481,10 +481,10 @@ public class ProfileContoller {
 	}
 
 	@GetMapping("/getDesignerDetails/{designerCategories}")
-	public List<DesignerLoginEntity> getDesignerDetails(@RequestHeader("Authorization") String token,
+	public List<DesignerLoginEntity> getDesignerDetails(@RequestParam(defaultValue = "") String usermail,
 			@PathVariable String designerCategories) {
 		try {
-			DesignerProfileEntity[] body = restTemplate.getForEntity("https://localhost:8082/dev/user/followedDesigner/"+jwtConfig.extractUsername(token.substring(7)), DesignerProfileEntity[].class).getBody();
+			DesignerProfileEntity[] body = restTemplate.getForEntity("https://localhost:8082/dev/user/followedDesigner/"+usermail, DesignerProfileEntity[].class).getBody();
 			List<DesignerProfileEntity> designerList = Arrays.asList(body);
 			//LOGGER.info(asList+"");
 			if (!designerCategories.equals("all")) {
@@ -502,14 +502,19 @@ public class ProfileContoller {
 					String followerCount = countData.get("FollowersData").toString();
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
 					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
-				}for(int a=0;a<designerData.size();a++) {
-					for(int i=0;i<designerList.size();i++) {
-						if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
-							designerData.get(a).setIsFollowing(true);
+				}if(usermail.isBlank()) {
+					return designerData;
+				}else {
+					for(int a=0;a<designerData.size();a++) {
+						for(int i=0;i<designerList.size();i++) {
+							if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
+								designerData.get(a).setIsFollowing(true);
+							}
 						}
 					}
+					return designerData;
 				}
-				return designerData;
+				
 			} else {
 				List<DesignerLoginEntity> designerData = designerLoginRepo.findAll();
 				for (int i = 0; i < designerData.size(); i++) {
@@ -524,14 +529,18 @@ public class ProfileContoller {
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
 					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
 				}
-				for(int a=0;a<designerData.size();a++) {
-					for(int i=0;i<designerList.size();i++) {
-						if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
-							designerData.get(a).setIsFollowing(true);
+				if(usermail.isBlank()) {
+					return designerData;
+				}else {
+					for(int a=0;a<designerData.size();a++) {
+						for(int i=0;i<designerList.size();i++) {
+							if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
+								designerData.get(a).setIsFollowing(true);
+							}
 						}
 					}
+					return designerData;
 				}
-				return designerData;
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
