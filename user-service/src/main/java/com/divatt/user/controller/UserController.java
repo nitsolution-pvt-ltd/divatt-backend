@@ -805,6 +805,8 @@ public class UserController {
 	public Map<String, Object> findorderitemStatus(@RequestParam String orderItemStatus,@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,@RequestParam (defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy){
+		LOGGER.info("Inside UserController - findorderitemStatus()");
+		LOGGER.info("orderItemStatus={}, page={}, limit={}, sort={}, isDeleted={}, keyword={}, sortBy={}", orderItemStatus, page, limit, sort, isDeleted, keyword, sortBy.get());
 		return this.userService.findListorderItemStatus(page, limit,sort, orderItemStatus,isDeleted,keyword,sortBy);
 		
 	}

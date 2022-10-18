@@ -3,12 +3,14 @@ package com.divatt.designer.services;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -268,24 +270,34 @@ public class OrderService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object getorderItemStatus(int page, int limit,  String orderItemStatus2, Boolean isDeleted, Optional<String> sortBy) {
+	public Object getorderItemStatus(String orderItemStatus, int page, int limit,  String sort, Boolean isDeleted, Optional<String> sortBy) {
 		try {
 
-			
-			LOGGER.info(orderItemStatus2);
-			JSONObject[] body = restTemplate
-					.getForEntity("https://localhost:8082/dev/user/findorderitemStatus",
-							JSONObject[].class)
+			LOGGER.info("Inside OrderService - getorderItemStatus()");
+			LOGGER.info(orderItemStatus);
+			String url = "https://localhost:8082/dev/user/findorderitemStatus?orderItemStatus="+ orderItemStatus + "&page=" + page + "&limit=" + limit + "&sort=" + sort + "&isDeleted=" + isDeleted + "&keyword=" + "&sortBy=" + sortBy.get();
+			LOGGER.info("Final URL is: {}", url);
+			JSONObject body = restTemplate
+					.getForEntity(url,
+							JSONObject.class)
 					.getBody();
-			List<String> orderIdList = new ArrayList<String>();
-			List<JSONObject> orderList = Arrays.asList(body);
-			for (JSONObject order : orderList) {
-				orderIdList.add(order.get("orderId").toString());
-			}
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("orderList", orderIdList);
-			return restTemplate.postForEntity("https://localhost:8082/dev/userOrder/getOrderList", jsonObject,
-					Object.class);
+			LOGGER.info("get data from 1st REST call: " + body.toString());
+			LOGGER.info("Only data " + body.get("data").toString());
+//			List<JSONObject> object = (List<JSONObject>) body.get("data");
+//			
+//			for(JSONObject jsonObject : object) {
+//				LOGGER.info("Order id is: {}",jsonObject.get("orderId").toString());
+//			}
+			
+			
+			org.json.simple.JSONArray jsonArray = (org.json.simple.JSONArray) body.get("data");
+			
+			LOGGER.info("data forrrrrr" + jsonArray.toJSONString());
+			
+			List<JSONObject> jsonObjects= new ArrayList<>();
+			//return restTemplate.postForEntity("https://localhost:8082/dev/userOrder/getOrderList", jsonObject,
+			//		Object.class);	
+			return null;
 //		List<OrderSKUDetailsEntity> order = (List<OrderSKUDetailsEntity>) body;
 //		List<ProductMasterEntity> list=new ArrayList<>();
 //	LOGGER.info(order.get(0).getOrderId());
@@ -296,7 +308,7 @@ public class OrderService {
 ////			list.add(forObject);
 //		 });
 			// LOGGER.info(list.toString());
-			// return null;
+			 
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
