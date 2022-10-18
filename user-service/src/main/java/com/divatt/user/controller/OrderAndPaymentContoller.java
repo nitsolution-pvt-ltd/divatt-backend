@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.ws.rs.GET;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,7 @@ import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
+import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
@@ -75,6 +77,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.json.simple.JSONObject;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -721,4 +724,22 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
+
+	@PostMapping("/getOrderList")
+	public List<OrderDetailsEntity> getOrderListAPI(@RequestBody ListResponseDTO jsonObject) {
+		try {
+			return this.orderAndPaymentService.getOrderListService(jsonObject);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/getorderByid/{orderId}")
+	public List<OrderDetailsEntity> getorderByid(@PathVariable String orderId){
+		try {
+			return this.orderAndPaymentService.findByOrderId(orderId);
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+	}
+}
 }

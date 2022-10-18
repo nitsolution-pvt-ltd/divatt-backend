@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.MeasurementService;
-import com.netflix.discovery.converters.Auto;
 
 @RestController
 public class MeasurementController {

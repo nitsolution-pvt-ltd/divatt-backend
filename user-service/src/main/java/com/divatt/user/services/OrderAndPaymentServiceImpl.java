@@ -3,6 +3,7 @@ package com.divatt.user.services;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,7 @@ import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
+import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.helper.PDFRunner;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.OrderInvoiceRepo;
@@ -1228,6 +1230,26 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	@Override
+	public List<OrderDetailsEntity> getOrderListService(ListResponseDTO jsonObject) {
+		try {
+			List<String> orderIdList = jsonObject.getOrderList();
+			return orderDetailsRepo.findByOrderIdIn(orderIdList);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@Override
+	public List<OrderDetailsEntity> findByOrderId(String orderId) {
+		try {
+			return this.orderDetailsRepo.findByOrderId(orderId);
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+		
 	}
 
 }

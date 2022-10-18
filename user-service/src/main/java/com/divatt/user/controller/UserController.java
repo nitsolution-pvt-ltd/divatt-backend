@@ -48,9 +48,11 @@ import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
+import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
@@ -95,6 +97,8 @@ public class UserController {
 	
 	@Autowired
 	private JwtUtil jwtUtil;
+	
+
 
 	@PostMapping("/wishlist/add")
 	public GlobalResponse postWishlistDetails(@Valid @RequestBody ArrayList<WishlistEntity> wishlistEntity) {
@@ -780,6 +784,27 @@ public class UserController {
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+	
+	@GetMapping("/complaintMail/{productId}")
+	public String ComplaintMail(@RequestHeader("Authorization") String token,@PathVariable Integer productId) {
+		try {
+		 return this.userService.complaintMail(token, productId);
+		
+	}catch (Exception e) {
+		throw new CustomException(e.getMessage());
+	}
+		
+
+
+}
+	
+	@GetMapping("/findorderitemStatus")
+	public Map<String, Object> findorderitemStatus(@RequestParam String orderItemStatus,@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,@RequestParam (defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy){
+		return this.userService.findListorderItemStatus(page, limit,sort, orderItemStatus,isDeleted,keyword,sortBy);
+		
 	}
 	
 }

@@ -2,6 +2,7 @@ package com.divatt.designer.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.designer.entity.InvoiceMainData;
+import com.divatt.designer.entity.OrderSKUDetailsEntity;
 import com.divatt.designer.entity.ProductInvoice;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
@@ -74,5 +77,17 @@ public class OrderStatusController {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	@GetMapping("/getlistItemStatus/{orderItemStatus}/{sortBy}")
+	public Object getlistItemStatus(@RequestParam String orderItemStatus,@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,@RequestParam (defaultValue = "false") Boolean isDeleted,
+			@RequestParam Optional<String> sortBy) {
+		try {
+			return orderService.getorderItemStatus(page, limit,sort, isDeleted,sortBy);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 }

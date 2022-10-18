@@ -2,6 +2,7 @@ package com.divatt.designer.services;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +13,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,25 +22,20 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.designer.config.JWTConfig;
-import com.divatt.designer.controller.ProductController;
 import com.divatt.designer.entity.DesignerInvoiceReq;
 import com.divatt.designer.entity.DesignerIvoiceData;
 import com.divatt.designer.entity.DesignerProductList;
 import com.divatt.designer.entity.InvoiceMainData;
-import com.divatt.designer.entity.InvoiceProductList;
 import com.divatt.designer.entity.OrderDetailsEntity;
 import com.divatt.designer.entity.OrderSKUDetailsEntity;
-import com.divatt.designer.entity.ProductInvoice;
 import com.divatt.designer.entity.UserAddressEntity;
-import com.divatt.designer.entity.UserSideProductData;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.repo.DesignerProfileRepo;
+
 import com.divatt.designer.response.GlobalResponce;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
-import com.sun.tools.sjavac.Log;
 
 @Service
 public class OrderService {
@@ -58,6 +50,8 @@ public class OrderService {
 
 	@Autowired
 	private JWTConfig jwtConfig;
+	
+	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderService.class);
 
@@ -270,6 +264,42 @@ public class OrderService {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public Object getorderItemStatus(int page, int limit,  String orderItemStatus2, Boolean isDeleted, Optional<String> sortBy) {
+		try {
+
+			
+			LOGGER.info(orderItemStatus2);
+			JSONObject[] body = restTemplate
+					.getForEntity("https://localhost:8082/dev/user/findorderitemStatus",
+							JSONObject[].class)
+					.getBody();
+			List<String> orderIdList = new ArrayList<String>();
+			List<JSONObject> orderList = Arrays.asList(body);
+			for (JSONObject order : orderList) {
+				orderIdList.add(order.get("orderId").toString());
+			}
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("orderList", orderIdList);
+			return restTemplate.postForEntity("https://localhost:8082/dev/userOrder/getOrderList", jsonObject,
+					Object.class);
+//		List<OrderSKUDetailsEntity> order = (List<OrderSKUDetailsEntity>) body;
+//		List<ProductMasterEntity> list=new ArrayList<>();
+//	LOGGER.info(order.get(0).getOrderId());
+//		 order.forEach(o -> {
+//			 LOGGER.info(o.getOrderId());
+//			 
+////			ProductMasterEntity forObject = restTemplate.getForObject( "https://65.1.190.195:8082/dev/userOrder/orderDetails/"+o.getOrderId(), ProductMasterEntity.class);
+////			list.add(forObject);
+//		 });
+			// LOGGER.info(list.toString());
+			// return null;
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
 		}
 	}
 }
