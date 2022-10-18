@@ -428,4 +428,28 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/searching")
+	public List<ProductMasterEntity> productSearching(@RequestParam (defaultValue = "")  String searchBy,
+													  @RequestParam(defaultValue = "") String designerId,
+													  @RequestParam(defaultValue = "") String categoryId,
+													  @RequestParam(defaultValue = "") String subCategoryId,
+													  @RequestParam(defaultValue = "") String colour,
+													  @RequestParam(defaultValue = "") Boolean cod,
+													  @RequestParam(defaultValue = "") Boolean customization,
+													  @RequestParam(defaultValue = "") Boolean priceType,
+													  @RequestParam(defaultValue = "") Boolean returnStatus,
+													  @RequestParam(defaultValue = "") String maxPrice,
+													  @RequestParam(defaultValue = "") String minPrice,
+													  @RequestParam(defaultValue = "") String size,
+													  @RequestParam Boolean isFilter){
+		try {
+			LOGGER.info("Inside- ProductController.productSearching()");
+			return this.productService.productSearching
+					(searchBy,designerId,categoryId,subCategoryId,colour,cod,customization,priceType,returnStatus,maxPrice,minPrice,size,isFilter);
+		}
+		catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

@@ -40,6 +40,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.user.designerProductEntity.ProductMasterEntity;
+import com.divatt.user.entity.ProductEntity;
 import com.divatt.user.entity.DesignerLoginEntity;
 import com.divatt.user.entity.SendMail;
 import com.divatt.user.entity.StateEntity;
@@ -777,10 +779,10 @@ public class UserController {
 		}
 	}
 	
-	@GetMapping("/followedDesigner")
-	public List<Object> followedDesigner(@RequestHeader("Authorization") String token){
+	@GetMapping("/followedDesigner/{userEmail}")
+	public List<Object> followedDesigner(@PathVariable String userEmail){
 		try {
-			return this.userService.getListDesignerData(token);
+			return this.userService.getListDesignerData(userEmail);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}

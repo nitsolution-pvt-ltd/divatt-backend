@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +36,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.aggregation.StringOperators.RegexMatch;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
@@ -72,9 +75,13 @@ import com.divatt.designer.helper.EmailSenderThread;
 import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepository;
+import com.divatt.designer.requestDTO.SearchingFilterDTO;
 import com.divatt.designer.response.GlobalResponce;
+import com.divatt.designer.utill.UtillClass;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.itextpdf.kernel.pdf.canvas.parser.listener.RegexBasedLocationExtractionStrategy;
 import com.mashape.unirest.http.JsonNode;
 
 import springfox.documentation.spring.web.json.Json;
@@ -1135,18 +1142,92 @@ public class ProductService {
 		}
 		
 	}
+
+public List<ProductMasterEntity> productSearching
+(String searchBy, String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,Boolean customization,Boolean priceType, Boolean returnStatus, String maxPrice, String minPrice, String size,Boolean isFilter) {
 	
 	
+	try {
+		LOGGER.info("Inside- ProductService.productSearching()");
+				/*searchingFilter
+				//(designerId,categoryId,subCategoryId,colour,cod,returnStatus,maxPrice,minPrice,size);*/
+		List<ProductMasterEntity> updatedProductList= new ArrayList<>();
+		List<ProductMasterEntity> productList = productRepo.findAll();
+		
+	    List<ProductMasterEntity> filterByProductName = productList.stream()
+	    		.filter(e-> e.getProductName().toLowerCase().startsWith(searchBy.toLowerCase()) || e.getProductName().toLowerCase().contentEquals(searchBy.toLowerCase())).collect(Collectors.toList());
+	    
+	    
+	    List<ProductMasterEntity> filterByProductDescription = productList.stream()
+	    		.filter(e-> e.getProductDescription().toLowerCase().startsWith(searchBy.toLowerCase()) || e.getProductDescription().toLowerCase().endsWith(searchBy.toLowerCase())).collect(Collectors.toList());
+	    
+	    List<ProductMasterEntity> filterByProductDetails = productList.stream()
+	    		.filter(e-> e.getSpecifications().getProductDetails().toLowerCase().startsWith(searchBy.toLowerCase()) || e.getSpecifications().getProductDetails().toLowerCase().endsWith(searchBy.toLowerCase())).collect(Collectors.toList());
+	  
+	    
+	    List<ProductMasterEntity> filterByGender = productList.stream()
+	    		.filter(e-> e.getGender().toLowerCase().startsWith(searchBy.toLowerCase())).collect(Collectors.toList());
+	    List<ProductMasterEntity> filterBySize=new ArrayList<>();
+	    		productList.stream()
+	    		.forEach(e->{
+	    			e.getStanderedSOH()
+	    					.stream()
+	    					.filter(a->a.getSizeType().equals(searchBy))
+	    					.collect(Collectors.toList());
+	    			filterBySize.add(e);
+	    		});
+	    		List<ProductMasterEntity> filterBySleeveType= new ArrayList<>();
+	    productList.stream()
+	    		.forEach(e->{
+	    			org.json.simple.JSONObject extraSpec= e.getExtraSpecifications();
+	    			try {
+	    				if(extraSpec.get("Sleeve Type").toString().equals(searchBy)) {
+		    				filterBySleeveType.add(e);
+		    			}
+	    			}catch(Exception e1) {
+	    				for(ProductMasterEntity item: filterBySleeveType) {
+	    					  updatedProductList.add(item);
+	    				}
+	    			}
+	    		});
+	     for(ProductMasterEntity item: filterByGender) {
+	    	updatedProductList.add(item);}
+		 for(ProductMasterEntity item: filterByProductName) {
+		  updatedProductList.add(item); } 
+		 for(ProductMasterEntity item: filterByProductDescription) {
+			  updatedProductList.add(item); }
+		 for(ProductMasterEntity item: filterByProductDetails) {
+			  updatedProductList.add(item); }
+		 for(ProductMasterEntity item: filterBySize) {
+			  updatedProductList.add(item); }
+		 for(ProductMasterEntity item: filterBySleeveType) {
+			  updatedProductList.add(item); }
+		// LOGGER.info(updatedProductList+"");
+		 if(isFilter) {
+			 List<ProductMasterEntity> designerIdFilteredData= new ArrayList<ProductMasterEntity>();
+			 List<ProductMasterEntity> categoryIdFilteredData= new ArrayList<ProductMasterEntity>();
+			 List<ProductMasterEntity> filteredData= new ArrayList<ProductMasterEntity>();
+				SearchingFilterDTO filterObject= UtillClass.searchingFilter
+						(designerId, categoryId, subCategoryId, colour, cod, customization, returnStatus, priceType, maxPrice, minPrice,size);
+				try {
+					designerIdFilteredData=UtillClass.productListByDrsignerId(updatedProductList, filterObject.getDesignerIdList());
+				}catch(Exception e) {
+					categoryIdFilteredData=UtillClass.productListByCategory(updatedProductList, filterObject.getCategoryList());
+					UtillClass.productListColour(updatedProductList, filterObject.getColour());
+					return categoryIdFilteredData;
+				}
+				try {
+					categoryIdFilteredData=UtillClass.productListByCategory(designerIdFilteredData, filterObject.getCategoryList());
+				}catch(Exception e) {
+					return designerIdFilteredData;
+				}
+				return categoryIdFilteredData;
+		 }else {
+			return updatedProductList.stream().distinct().collect(Collectors.toList());
+		 }
+	}catch (Exception e) {
+		throw new CustomException(e.getMessage());
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+}	
 }

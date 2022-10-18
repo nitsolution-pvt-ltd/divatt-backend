@@ -8,10 +8,10 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.divatt.user.entity.DesignerLoginEntity;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
@@ -83,11 +83,10 @@ public interface UserService {
 
 	public List<StateEntity> getStateDataService();
 
-	public List<Object> getListDesignerData(String token);
-	
-	public String complaintMail(String token,Integer productId);
+	public String complaintMail(String token, Integer productId);
 
 	public Map<String, Object> findListorderItemStatus(int page, int limit, String sort,
-			String orderItemStatus, Boolean isDeleted,  String keyword,Optional<String> sortBy);
+			String orderItemStatus, Boolean isDeleted, String keyword, Optional<String> sortBy);
 
+	public List<Object> getListDesignerData(String userEmail);
 }

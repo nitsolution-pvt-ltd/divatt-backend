@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -117,7 +118,7 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private OrderSKUDetailsRepo orderSKUDetailsRepo;
-	
+
 	@Autowired
 	private OrderDetailsRepo detailsRepo;
 
@@ -379,10 +380,13 @@ public class UserServiceImpl implements UserService {
 
 				List<Object> l1 = new ArrayList<>();
 				object1.forEach(e -> {
-
 					JsonNode jn = new JsonNode(e.toString());
 					JSONObject object = jn.getObject();
-
+					LOGGER.info("Designer id is: " + object.get("designerId").toString());
+					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity(
+							"https://localhost:8083/dev/designer/" + object.get("designerId"),
+							org.json.simple.JSONObject.class);
+					LOGGER.info("get designer by id: " + getDesignerById.getBody().get("designerProfile").toString());
 					UserCartEntity cart = userCartRepo
 							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
 							.get(0);
@@ -400,6 +404,7 @@ public class UserServiceImpl implements UserService {
 					JSONObject cartObject = cartJN.getObject();
 					object.put("cartData", cartObject);
 					object.put("selectedSize", selectedSize);
+					object.put("designerProfile", getDesignerById.getBody().get("designerProfile"));
 					l1.add(object);
 				});
 
@@ -544,20 +549,41 @@ public class UserServiceImpl implements UserService {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
-			userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e) -> {
-				userDesignerEntity.setId(e.getId());
-			}, () -> {
-				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
-			});
+			// userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e)
+			// -> {
+			// userDesignerEntity.setId(e.getId());
+			// }, () -> {
+			// userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
+			// });
+			//
+			// userDesignerEntity.setCreatedOn(date.toString());
+			// UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
+			// if (save != null && save.getIsFollowing() == true)
+			// return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Follow successfully",
+			// 200));
+			// else if (save != null && save.getIsFollowing() == false)
+			// return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Unfollow
+			// successfully", 200));
+			// else
+			// throw new CustomException("Something went wrong! try again later");
 
-			userDesignerEntity.setCreatedOn(date.toString());
-			UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
-			if (save != null && save.getIsFollowing() == true)
-				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Follow successfully", 200));
-			else if (save != null && save.getIsFollowing() == false)
-				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Unfollow successfully", 200));
-			else
-				throw new CustomException("Something went wrong! try again later");
+			Query query = new Query();
+			query.addCriteria(Criteria.where("userId").is(userDesignerEntity.getUserId()));
+			List<UserDesignerEntity> followDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
+			List<UserDesignerEntity> collect = followDesignerList.stream()
+					.filter(e -> e.getDesignerId().equals(userDesignerEntity.getDesignerId()))
+					.collect(Collectors.toList());
+			// LOGGER.info(collect+"");
+			if (collect.isEmpty()) {
+				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
+				userDesignerEntity.setIsFollowing(true);
+				userDesignerEntity.setCreatedOn(date.toString());
+				userDesignerRepo.save(userDesignerEntity);
+				return ResponseEntity.ok(new GlobalResponse("Success", "Designer following successfully", 200));
+			} else {
+				userDesignerRepo.deleteById(collect.get(0).getId());
+				return ResponseEntity.ok(new GlobalResponse("Success", "Designer unfollowing successfully", 200));
+			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -818,25 +844,22 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<Object> getListDesignerData(String token) {
+	public List<Object> getListDesignerData(String userEmail) {
 		try {
 			List<Object> designerList = new ArrayList<Object>();
-			if (!userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7))).isEmpty()) {
-				Long userId = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7))).get().getId();
-				LOGGER.info(userId + "");
-				Query query = new Query();
-				query.addCriteria(Criteria.where("userId").is(userId));
-				List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
-				userDesignerList.stream().forEach(e -> {
-					designerList.add(restTemplate
-							.getForEntity("https://localhost:8083/dev/designer/" + e.getDesignerId(), Object.class)
-							.getBody());
-				});
-				// LOGGER.info(designerList+"");
-				return designerList;
-			} else {
-				throw new CustomException("User not found");
-			}
+			Long userId = userLoginRepo.findByEmail(userEmail).get().getId();
+			LOGGER.info(userId + "");
+			Query query = new Query();
+			query.addCriteria(Criteria.where("userId").is(userId));
+			List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
+			userDesignerList
+					.stream()
+					.forEach(e -> {
+						designerList.add(restTemplate
+								.getForEntity("https://localhost:8083/dev/designer/" + e.getDesignerId(), Object.class)
+								.getBody());
+					});
+			return designerList;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -885,33 +908,34 @@ public class UserServiceImpl implements UserService {
 					String productName = entity2.getProductName();
 					LOGGER.info(productName);
 					try {
-					Optional<OrderSKUDetailsEntity> findByProductId = orderSKUDetailsRepo.findByProductId(productId);
-					Long mrp = findByProductId.get().getMrp();
-					String size = findByProductId.get().getSize();
-					Long units = findByProductId.get().getUnits();
-//					Double igst = findByProductId.get().getIgst();
-//					if(igst==null) {
-//						throw new CustomException("Igst is null");
-//					}else {
-//					Double cgst = findByProductId.get().getCgst();
-//					if(igst==null) {
-//						throw new CustomException("igst  not found ");
-//					}else if(cgst==null) {
-//						throw new CustomException("cgst  not found ");
-//					}else {
-//						context.setVariable("GST", cgst);
-//					}
-					LOGGER.info(mrp.toString());
-					LOGGER.info(units.toString());
-					LOGGER.info(size);
-					// LOGGER.info(igst.toString());
-					context.setVariable("Product", productId);
-					context.setVariable("Description", productDescription);
-					context.setVariable("MRP", mrp);
-					context.setVariable("Unit", units);
-					context.setVariable("Size", size);
-					// context.setVariable("igst", igst);
-					}catch (Exception e) {
+						Optional<OrderSKUDetailsEntity> findByProductId = orderSKUDetailsRepo
+								.findByProductId(productId);
+						Long mrp = findByProductId.get().getMrp();
+						String size = findByProductId.get().getSize();
+						Long units = findByProductId.get().getUnits();
+						// Double igst = findByProductId.get().getIgst();
+						// if(igst==null) {
+						// throw new CustomException("Igst is null");
+						// }else {
+						// Double cgst = findByProductId.get().getCgst();
+						// if(igst==null) {
+						// throw new CustomException("igst not found ");
+						// }else if(cgst==null) {
+						// throw new CustomException("cgst not found ");
+						// }else {
+						// context.setVariable("GST", cgst);
+						// }
+						LOGGER.info(mrp.toString());
+						LOGGER.info(units.toString());
+						LOGGER.info(size);
+						// LOGGER.info(igst.toString());
+						context.setVariable("Product", productId);
+						context.setVariable("Description", productDescription);
+						context.setVariable("MRP", mrp);
+						context.setVariable("Unit", units);
+						context.setVariable("Size", size);
+						// context.setVariable("igst", igst);
+					} catch (Exception e) {
 						throw new CustomException(e.getMessage());
 					}
 					try {
@@ -924,8 +948,8 @@ public class UserServiceImpl implements UserService {
 
 						Long designerId = profile.getDesignerId();
 						LOGGER.info(designerId.toString());
-//						String designerName = profile.getDesignerName();
-//						String displayName = profile.getDesignerProfile().getDisplayName();
+						// String designerName = profile.getDesignerName();
+						// String displayName = profile.getDesignerProfile().getDisplayName();
 						String name = profile.getDesignerName();
 						// assertEquals(designerProfileEntity.getDesignerProfile().getDisplayName(),
 						// designerProfile.getDisplayName());
@@ -963,12 +987,11 @@ public class UserServiceImpl implements UserService {
 
 	}
 
-	
-
 	@Override
-	public Map<String, Object> findListorderItemStatus(int page, int limit, String sort, String orderItemStatus,Boolean isDeleted,String keyword, Optional<String> sortBy) {
+	public Map<String, Object> findListorderItemStatus(int page, int limit, String sort, String orderItemStatus,
+			Boolean isDeleted, String keyword, Optional<String> sortBy) {
 		try {
-			List<OrderDetailsEntity> detailsEntities1=new ArrayList<>();
+			List<OrderDetailsEntity> detailsEntities1 = new ArrayList<>();
 			int CountData = (int) orderSKUDetailsRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
@@ -976,28 +999,24 @@ public class UserServiceImpl implements UserService {
 			}
 
 			if (sort.equals("ASC")) {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC , sortBy.orElse(keyword));
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(keyword));
 			} else {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC,sortBy.orElse(keyword));
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(keyword));
 			}
 
 			Page<OrderSKUDetailsEntity> findAll = null;
 
-		
-				findAll = orderSKUDetailsRepo.Search(orderItemStatus,pagingSort);
-				List<OrderDetailsEntity> x=new ArrayList<>();
-				List<OrderSKUDetailsEntity> detailsEntities =orderSKUDetailsRepo.findByOrder(orderItemStatus);
-				for(OrderSKUDetailsEntity order :detailsEntities) {
-					
-					for(OrderDetailsEntity iteam : x) {
-						detailsRepo.findByOrderId(order.getOrderId());
-						  detailsEntities1.add(iteam);
-					}
+			findAll = orderSKUDetailsRepo.Search(orderItemStatus, pagingSort);
+			List<OrderDetailsEntity> x = new ArrayList<>();
+			List<OrderSKUDetailsEntity> detailsEntities = orderSKUDetailsRepo.findByOrder(orderItemStatus);
+			for (OrderSKUDetailsEntity order : detailsEntities) {
+
+				for (OrderDetailsEntity iteam : x) {
+					detailsRepo.findByOrderId(order.getOrderId());
+					detailsEntities1.add(iteam);
 				}
-				
-               
-             
-			
+			}
+
 			System.out.println(findAll.toString());
 
 			int totalPage = findAll.getTotalPages() - 1;
@@ -1016,14 +1035,13 @@ public class UserServiceImpl implements UserService {
 			if (findAll.getSize() <= 1) {
 				throw new CustomException("Product not found!");
 			} else {
-				
+
 				return response;
-				
+
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
-	
 }

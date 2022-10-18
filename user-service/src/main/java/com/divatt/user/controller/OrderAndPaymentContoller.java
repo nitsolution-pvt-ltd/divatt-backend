@@ -274,7 +274,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
 
 		try {
-			return orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy);
+			return orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy,token);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -698,9 +698,10 @@ public class OrderAndPaymentContoller {
 	}
 
 	@GetMapping("/designerOrderCount/{designerId}")
-	public Map<String, Integer> getDesignerOrderCount(@PathVariable int designerId) {
+	public Map<String, Integer> getDesignerOrderCount(@PathVariable int designerId,
+			@RequestParam(defaultValue = "false") Boolean adminStatus) {
 		try {
-			return orderAndPaymentService.getOrderCount(designerId);
+			return orderAndPaymentService.getOrderCount(designerId,adminStatus);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
