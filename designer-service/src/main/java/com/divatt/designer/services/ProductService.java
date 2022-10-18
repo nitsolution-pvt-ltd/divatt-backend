@@ -19,7 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.StringTokenizer;import java.util.stream.Collector;
+import java.util.StringTokenizer;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1143,12 +1144,11 @@ public class ProductService {
 	}
 
 public List<ProductMasterEntity> productSearching
-(String searchBy, String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,Boolean customization,Boolean priceType, Boolean returnStatus, String maxPrice, String minPrice, String size) {
+(String searchBy, String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,Boolean customization,Boolean priceType, Boolean returnStatus, String maxPrice, String minPrice, String size,Boolean isFilter) {
 	
 	
 	try {
 		LOGGER.info("Inside- ProductService.productSearching()");
-		SearchingFilterDTO filterObject= UtillClass.searchingFilter(designerId, categoryId, subCategoryId, colour, cod, customization, returnStatus, priceType, maxPrice, minPrice,size);
 				/*searchingFilter
 				//(designerId,categoryId,subCategoryId,colour,cod,returnStatus,maxPrice,minPrice,size);*/
 		List<ProductMasterEntity> updatedProductList= new ArrayList<>();
@@ -1180,7 +1180,6 @@ public List<ProductMasterEntity> productSearching
 	    productList.stream()
 	    		.forEach(e->{
 	    			org.json.simple.JSONObject extraSpec= e.getExtraSpecifications();
-	    			//LOGGER.info(extraSpec+"");
 	    			try {
 	    				if(extraSpec.get("Sleeve Type").toString().equals(searchBy)) {
 		    				filterBySleeveType.add(e);
@@ -1191,9 +1190,6 @@ public List<ProductMasterEntity> productSearching
 	    				}
 	    			}
 	    		});
-	    
-	    				
-	    System.out.println("data " + filterBySleeveType);
 	     for(ProductMasterEntity item: filterByGender) {
 	    	updatedProductList.add(item);}
 		 for(ProductMasterEntity item: filterByProductName) {
@@ -1206,37 +1202,32 @@ public List<ProductMasterEntity> productSearching
 			  updatedProductList.add(item); }
 		 for(ProductMasterEntity item: filterBySleeveType) {
 			  updatedProductList.add(item); }
-		 List<ProductMasterEntity> filtered= new ArrayList<ProductMasterEntity>();
-		updatedProductList.stream().distinct()
-		.forEach(e->{
-			filterObject.getDesignerIdList().stream()
-			.mapToInt(a->Integer.parseInt(a))
-			.forEach(a->{
-				if(Integer.compare(a, e.getDesignerId())==0) {
-					filtered.add(e);
+		// LOGGER.info(updatedProductList+"");
+		 if(isFilter) {
+			 List<ProductMasterEntity> designerIdFilteredData= new ArrayList<ProductMasterEntity>();
+			 List<ProductMasterEntity> categoryIdFilteredData= new ArrayList<ProductMasterEntity>();
+			 List<ProductMasterEntity> filteredData= new ArrayList<ProductMasterEntity>();
+				SearchingFilterDTO filterObject= UtillClass.searchingFilter
+						(designerId, categoryId, subCategoryId, colour, cod, customization, returnStatus, priceType, maxPrice, minPrice,size);
+				try {
+					designerIdFilteredData=UtillClass.productListByDrsignerId(updatedProductList, filterObject.getDesignerIdList());
+				}catch(Exception e) {
+					categoryIdFilteredData=UtillClass.productListByCategory(updatedProductList, filterObject.getCategoryList());
+					UtillClass.productListColour(updatedProductList, filterObject.getColour());
+					return categoryIdFilteredData;
 				}
-			});	
-			
-		});
-		return filtered;
-		
+				try {
+					categoryIdFilteredData=UtillClass.productListByCategory(designerIdFilteredData, filterObject.getCategoryList());
+				}catch(Exception e) {
+					return designerIdFilteredData;
+				}
+				return categoryIdFilteredData;
+		 }else {
+			return updatedProductList.stream().distinct().collect(Collectors.toList());
+		 }
 	}catch (Exception e) {
 		throw new CustomException(e.getMessage());
 	}
 	
-}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+}	
 }

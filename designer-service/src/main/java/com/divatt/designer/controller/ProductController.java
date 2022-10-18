@@ -441,11 +441,12 @@ public class ProductController implements ProductServiceImp {
 													  @RequestParam(defaultValue = "") Boolean returnStatus,
 													  @RequestParam(defaultValue = "") String maxPrice,
 													  @RequestParam(defaultValue = "") String minPrice,
-													  @RequestParam(defaultValue = "") String size){
+													  @RequestParam(defaultValue = "") String size,
+													  @RequestParam Boolean isFilter){
 		try {
 			LOGGER.info("Inside- ProductController.productSearching()");
 			return this.productService.productSearching
-					(searchBy,designerId,categoryId,subCategoryId,colour,cod,customization,priceType,returnStatus,maxPrice,minPrice,size);
+					(searchBy,designerId,categoryId,subCategoryId,colour,cod,customization,priceType,returnStatus,maxPrice,minPrice,size,isFilter);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());
