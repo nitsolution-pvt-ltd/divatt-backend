@@ -48,12 +48,15 @@ public class UtillClass {
 						.anyMatch(designerId->product.getDesignerId()==Integer.parseInt(designerId)))
 				.collect(Collectors.toList());
 	}
-	public static List<ProductMasterEntity> productListColour(List<ProductMasterEntity> filteredProduct,List<String> colore){
+	public static void productListColour(List<ProductMasterEntity> filteredProduct,List<String> colore){
 		List<ImagesEntity> imagesEntities= new ArrayList<>();
+		List<String> coloreList= new ArrayList<>();
 		 filteredProduct
 				.stream()
 				.filter(product->
 					Collections.addAll(imagesEntities, product.getImages())).close();
-		 
+		 for(ImagesEntity imagesEntity :imagesEntities) {
+			 
+		 }
 	}
 }
