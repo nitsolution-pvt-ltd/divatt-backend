@@ -802,13 +802,26 @@ public class UserController {
 }
 	
 	@GetMapping("/findorderitemStatus")
-	public Map<String, Object> findorderitemStatus(@RequestParam String orderItemStatus,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,@RequestParam (defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+	public Map<String, Object> findorderitemStatus(@RequestParam String orderId,@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,@RequestParam (defaultValue = "false") Boolean isDeleted,
 			@RequestParam Optional<String> sortBy){
+	    try {
 		LOGGER.info("Inside UserController - findorderitemStatus()");
-		LOGGER.info("orderItemStatus={}, page={}, limit={}, sort={}, isDeleted={}, keyword={}, sortBy={}", orderItemStatus, page, limit, sort, isDeleted, keyword, sortBy.get());
-		return this.userService.findListorderItemStatus(page, limit,sort, orderItemStatus,isDeleted,keyword,sortBy);
-		
+		LOGGER.info("orderItemStatus={}, page={}, limit={}, sort={}, isDeleted={}, keyword={}, sortBy={}", orderId, page, limit, sort, isDeleted, sortBy.get());
+		return this.userService.findListorderId(page, limit,sort, orderId,isDeleted,sortBy);
+	    }catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+	    
+	    
 	}
+	@GetMapping("/findorderItemStatus/{orderItemStatus}")
+	public List<OrderSKUDetailsEntity> findorderItemStatus(@PathVariable String orderItemStatus) {
+        try {
+            return this.userService.findOrderItemStatus(orderItemStatus);
+        }catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+    }
 	
 }

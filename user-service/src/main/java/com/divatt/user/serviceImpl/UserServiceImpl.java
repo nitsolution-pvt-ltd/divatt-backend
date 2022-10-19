@@ -988,8 +988,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Map<String, Object> findListorderItemStatus(int page, int limit, String sort, String orderItemStatus,
-			Boolean isDeleted, String keyword, Optional<String> sortBy) {
+	public Map<String, Object> findListorderId(int page, int limit, String sort,
+            String orderId, Boolean isDeleted, Optional<String> sortBy) {
 		try {
 			List<OrderDetailsEntity> detailsEntities1 = new ArrayList<>();
 			int CountData = (int) orderSKUDetailsRepo.count();
@@ -999,17 +999,17 @@ public class UserServiceImpl implements UserService {
 			}
 
 			if (sort.equals("ASC")) {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(keyword));
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderId));
 			} else {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(keyword));
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderId));
 			}
 
-			Page<OrderSKUDetailsEntity> findAll = null;
+			Page<OrderDetailsEntity> findAll = null;
 
-			findAll = orderSKUDetailsRepo.Search(orderItemStatus, pagingSort);
+			findAll = detailsRepo.SearchorderItemStatus(orderId, pagingSort);
 			List<OrderDetailsEntity> x = new ArrayList<>();
-			List<OrderSKUDetailsEntity> detailsEntities = orderSKUDetailsRepo.findByOrder(orderItemStatus);
-			for (OrderSKUDetailsEntity order : detailsEntities) {
+			List<OrderDetailsEntity> detailsEntities = detailsRepo.findByOrder(orderId);
+			for (OrderDetailsEntity order : detailsEntities) {
 
 				for (OrderDetailsEntity iteam : x) {
 					detailsRepo.findByOrderId(order.getOrderId());
@@ -1043,5 +1043,18 @@ public class UserServiceImpl implements UserService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+    @Override
+    public List<OrderSKUDetailsEntity> findOrderItemStatus(String orderItemStatus) {
+       
+       try {
+           return this.orderSKUDetailsRepo.findByOrder(orderItemStatus);
+       }catch (Exception e) {
+        throw new CustomException(e.getMessage());
+    }
+       
+    }
+
+   
 
 }

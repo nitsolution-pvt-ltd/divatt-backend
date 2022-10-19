@@ -85,8 +85,10 @@ public interface UserService {
 
 	public String complaintMail(String token, Integer productId);
 
-	public Map<String, Object> findListorderItemStatus(int page, int limit, String sort,
-			String orderItemStatus, Boolean isDeleted, String keyword, Optional<String> sortBy);
+	public Map<String, Object> findListorderId(int page, int limit, String sort,
+			String orderId, Boolean isDeleted, Optional<String> sortBy);
 
 	public List<Object> getListDesignerData(String userEmail);
+
+    public List<OrderSKUDetailsEntity> findOrderItemStatus(String orderItemStatus);
 }

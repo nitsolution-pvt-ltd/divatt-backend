@@ -1289,10 +1289,32 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	public List<OrderDetailsEntity> findByOrderId(String orderId) {
 		try {
 			return this.orderDetailsRepo.findByOrderId(orderId);
+			
 		}catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 		
 	}
 
-}
+    @Override
+    public Optional<OrderPaymentEntity> getgetorderByid1(String orderId) {
+        try {
+            return this.userOrderPaymentRepo.findByOrderId(orderId);
+        }catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+        
+    }
+    
+    public Optional<OrderDetailsEntity> findByorderIds(String orderId){
+        try {
+            return this.orderDetailsRepo.findByOrderIds(orderId);
+        }catch (Exception e) {
+            throw  new CustomException(e.getMessage());
+        }
+    }
+
+  
+    }
+
+

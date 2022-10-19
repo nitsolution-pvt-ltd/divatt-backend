@@ -86,4 +86,11 @@ public interface OrderAndPaymentService {
 
 	public List<OrderDetailsEntity> findByOrderId(String orderId);
 
+   
+
+    public Optional<OrderPaymentEntity> getgetorderByid1(String orderId);
+
+	
+   
+
 }
