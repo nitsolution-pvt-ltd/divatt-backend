@@ -484,8 +484,7 @@ public class ProfileContoller {
 	public List<DesignerLoginEntity> getDesignerDetails(@RequestParam(defaultValue = "") String usermail,
 			@PathVariable String designerCategories) {
 		try {
-			DesignerProfileEntity[] body = restTemplate.getForEntity("https://localhost:8082/dev/user/followedDesigner/"+usermail, DesignerProfileEntity[].class).getBody();
-			List<DesignerProfileEntity> designerList = Arrays.asList(body);
+			
 			//LOGGER.info(asList+"");
 			if (!designerCategories.equals("all")) {
 				Query query = new Query();
@@ -505,6 +504,8 @@ public class ProfileContoller {
 				}if(usermail.isBlank()) {
 					return designerData;
 				}else {
+					DesignerProfileEntity[] body = restTemplate.getForEntity("https://localhost:8082/dev/user/followedDesigner/"+usermail, DesignerProfileEntity[].class).getBody();
+					List<DesignerProfileEntity> designerList = Arrays.asList(body);
 					for(int a=0;a<designerData.size();a++) {
 						for(int i=0;i<designerList.size();i++) {
 							if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
@@ -532,6 +533,8 @@ public class ProfileContoller {
 				if(usermail.isBlank()) {
 					return designerData;
 				}else {
+					DesignerProfileEntity[] body = restTemplate.getForEntity("https://localhost:8082/dev/user/followedDesigner/"+usermail, DesignerProfileEntity[].class).getBody();
+					List<DesignerProfileEntity> designerList = Arrays.asList(body);
 					for(int a=0;a<designerData.size();a++) {
 						for(int i=0;i<designerList.size();i++) {
 							if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {

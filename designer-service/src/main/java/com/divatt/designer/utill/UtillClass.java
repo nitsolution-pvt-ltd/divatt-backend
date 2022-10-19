@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.divatt.designer.entity.product.ImagesEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
@@ -14,6 +18,8 @@ import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.requestDTO.SearchingFilterDTO;
 
 public class UtillClass {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(UtillClass.class);
 
 	private UtillClass() {
 		super();
@@ -51,6 +57,17 @@ public class UtillClass {
 	public static void productListColour(List<ProductMasterEntity> filteredProduct,List<String> colore){
 		List<ImagesEntity> imagesEntities= new ArrayList<>();
 		List<String> coloreList= new ArrayList<>();
+//		List<ImagesEntity[]> images = filteredProduct.stream().map(product -> product.getImages()).collect(Collectors.toList());
+		filteredProduct.stream().map(product -> product.getImages()).forEach(image ->{
+			for(int i=0; i<image.length; i++) {
+				if(!StringUtils.equals(image[i].getColour(), null)) {
+					coloreList.add(image[i].getColour().substring(1));	
+				}
+			}
+		});
+		coloreList.forEach(color -> LOGGER.info("Color={}",color));
+//		images.forEach(image -> LOGGER.info("Image Data={}",image));
+		
 		 filteredProduct
 				.stream()
 				.filter(product->
