@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -448,8 +449,8 @@ public class ProductService {
 		}
 	}
 
-	public Map<String, Object> designerIdListPage(Integer designerId, Optional<String> sortBy, int page, String sort,
-			String sortName, Boolean isDeleted, int limit, String keyword) {
+	public Map<String, Object> designerIdListPage(Integer designerId, String status, Optional<String> sortBy, int page, String sort,
+			String sortName, Boolean isDeleted, int limit, String keyword, Boolean isActive) {
 		try {
 			int CountData = (int) productRepo.count();
 			Pageable pagingSort = null;
@@ -464,11 +465,43 @@ public class ProductService {
 			}
 
 			Page<ProductMasterEntity> findAll = null;
-
+			Integer live = 0;
+			Integer pending = 0;
+			Integer reject = 0;
+			Integer ls = 0;
+			Integer oos = 0;
+			
+			live = productRepo.countByIsDeletedAndDesignerIdAndIsActive(isDeleted, designerId, isActive);
+			pending = productRepo.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive, "Pending");
+			reject = productRepo.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive, "Reject");
+			// need to do get count for low stock and out of stock
 			if (keyword.isEmpty()) {
-				findAll = productRepo.findByIsDeletedAndDesignerId(isDeleted, designerId, pagingSort);
+				if(StringUtils.equals(status, "live")) {
+					findAll = productRepo.findByIsDeletedAndDesignerId(isDeleted, designerId, pagingSort);
+				} else if(StringUtils.equals(status, "pending")) {
+					LOGGER.info("Status Datata={}", status);
+					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatus(isDeleted, designerId, "Pending", pagingSort);
+					LOGGER.info("Data for finf all={}", findAll.getContent());
+				} else if(StringUtils.equals(status, "reject")) {
+					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatus(isDeleted, designerId, "Reject", pagingSort);
+				} else if(StringUtils.equals(status, "ls")) {
+					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatus(isDeleted, designerId, status, pagingSort);
+				} else if(StringUtils.equals(status, "oos")) {
+					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatus(isDeleted, designerId, status, pagingSort);
+				}
 			} else {
-				findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId, pagingSort);
+//				findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId, pagingSort);
+				if(StringUtils.equals(status, "live")) {
+					findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId, pagingSort);
+				} else if(StringUtils.equals(status, "prnding")) {
+					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, status, pagingSort);
+				} else if(StringUtils.equals(status, "reject")) {
+					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, status, pagingSort);
+				} else if(StringUtils.equals(status, "ls")) {
+					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, status, pagingSort);
+				} else if(StringUtils.equals(status, "oos")) {
+					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, status, pagingSort);
+				}
 
 			}
 
@@ -484,6 +517,12 @@ public class ProductService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
+			response.put("live", live);
+			response.put("pending", pending);
+			response.put("reject", reject);
+			response.put("reject", reject);
+			response.put("ls", ls);
+			response.put("oos", oos);
 
 			if (findAll.getSize() <= 1) {
 				throw new CustomException("Product not found!");
