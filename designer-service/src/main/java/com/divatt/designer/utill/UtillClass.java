@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.json.simple.JSONObject;
@@ -54,26 +56,38 @@ public class UtillClass {
 						.anyMatch(designerId->product.getDesignerId()==Integer.parseInt(designerId)))
 				.collect(Collectors.toList());
 	}
-	public static void productListColour(List<ProductMasterEntity> filteredProduct,List<String> colore){
-		List<ImagesEntity> imagesEntities= new ArrayList<>();
-		List<String> coloreList= new ArrayList<>();
-//		List<ImagesEntity[]> images = filteredProduct.stream().map(product -> product.getImages()).collect(Collectors.toList());
-		filteredProduct.stream().map(product -> product.getImages()).forEach(image ->{
-			for(int i=0; i<image.length; i++) {
-				if(!StringUtils.equals(image[i].getColour(), null)) {
-					coloreList.add(image[i].getColour().substring(1));	
-				}
-			}
-		});
-		coloreList.forEach(color -> LOGGER.info("Color={}",color));
-//		images.forEach(image -> LOGGER.info("Image Data={}",image));
+	public static void productListColour(List<ProductMasterEntity> filteredProducts,List<String> colore){
 		
-		 filteredProduct
-				.stream()
-				.filter(product->
-					Collections.addAll(imagesEntities, product.getImages())).close();
-		 for(ImagesEntity imagesEntity :imagesEntities) {
-			 
-		 }
+		LOGGER.info("Inside - UtillClass.productListColour()");
+		LOGGER.info("count of the data = {}",filteredProducts.size());
+//		colore.stream()
+//				.filter(color -> filteredProducts.stream()
+//						.anyMatch(product -> Arrays.asList(product.getImages()).stream().anyMatch(image -> Optional
+//								.ofNullable(image.getColour()).filter(image1 -> image1.equals("#"+color)).isPresent()))).forEach(System.out::println);
+		
+		List<ProductMasterEntity> collect = filteredProducts.stream().filter(product -> colore.stream()
+				.anyMatch(color -> Arrays.asList(product.getImages()).stream().anyMatch(image -> Optional
+						.ofNullable(image.getColour()).filter(image1 -> image1.equals("#" + color)).isPresent())))
+		.collect(Collectors.toList());
+		
+		List<String> color1 = colore.stream().map(color -> "#" + color).collect(Collectors.toList());
+		
+		long count = filteredProducts.stream()
+				.filter(product -> Arrays.asList(product.getImages()).stream().anyMatch(
+						image -> color1.stream().filter(colour2 -> colour2.equals(image.getColour())).count() > 0))
+				.count();
+	
+	LOGGER.info("Count = {}", count);
+		
+//		Product.stream.filter(prod->
+//        Prod.getimage.stream.filter(color->
+//                  Colorarray.contain(color)
+//        
+//        )
+//)
 	}
+	
+//	public static void productListBySize(List<ProductMasterEntity> filteredProducts, ) {
+//		
+//	}
 }

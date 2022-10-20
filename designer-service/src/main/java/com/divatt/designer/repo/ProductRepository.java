@@ -92,6 +92,9 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	Page<ProductMasterEntity> findNotify(LocalDate date, Pageable pagingSort);
 
 	List<ProductMasterEntity> findByDesignerId(Integer integer);
+	
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.mrp' : {$regex:?0,$options:'i'} },{ 'designerName' : {$regex:?0,$options:'i'} },{ 'price.usPrice.mrp' : {$regex:?0,$options:'i'} } ]}")
+	List<ProductMasterEntity> findbySearchKey(String searchKey);
 
 //	Page<ProductMasterEntity> findByStanderedSOHNotifySohGreaterThan(Pageable pagingSort);
 
