@@ -1305,14 +1305,29 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
         }
         
     }
-    
-    public Optional<OrderDetailsEntity> findByorderIds(String orderId){
+
+    @Override
+    public Page<OrderDetailsEntity> findByOrderIds(int page, int limit, String sort, String orderId, Boolean isDeleted,
+            Optional<String> sortBy) {
         try {
-            return this.orderDetailsRepo.findByOrderIds(orderId);
+            int CountData = (int) orderDetailsRepo.count();
+            Pageable pagingSort = null;
+            if (limit == 0) {
+                limit = CountData;
+            }
+
+            if (sort.equals("ASC")) {
+                pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderId));
+            } else {
+                pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderId));
+            }
+            return this.orderDetailsRepo.findOrderId(orderId,pagingSort );
         }catch (Exception e) {
-            throw  new CustomException(e.getMessage());
+            throw new CustomException(e.getMessage());
         }
     }
+    
+  
 
   
     }

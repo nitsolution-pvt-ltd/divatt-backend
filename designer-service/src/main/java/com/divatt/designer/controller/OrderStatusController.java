@@ -79,17 +79,5 @@ public class OrderStatusController {
 		}
 	}
 
-	@GetMapping("/getlistItemStatus")
-	public Object getlistItemStatus(@RequestParam String orderItemStatus,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,@RequestParam (defaultValue = "false") Boolean isDeleted,
-			@RequestParam Optional<String> sortBy) {
-		try {
-			LOGGER.info("Inside OrderStatusController - getlistItemStatus()");
-			LOGGER.info("orderItemStatus={}, page={}, limit={}, sort={}, isDeleted={}, sortBy={}", orderItemStatus, page, limit, sort, isDeleted, sortBy.get());
-			return orderService.getorderItemStatus(orderItemStatus, page, limit,sort, isDeleted,sortBy);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-
-	}
+	
 }

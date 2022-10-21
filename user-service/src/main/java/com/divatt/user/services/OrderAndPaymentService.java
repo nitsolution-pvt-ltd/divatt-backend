@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.json.simple.JSONObject;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -89,6 +90,9 @@ public interface OrderAndPaymentService {
    
 
     public Optional<OrderPaymentEntity> getgetorderByid1(String orderId);
+
+    public Page<OrderDetailsEntity> findByOrderIds(int page, int limit, String sort, String orderId,
+            Boolean isDeleted, Optional<String> sortBy);
 
 	
    

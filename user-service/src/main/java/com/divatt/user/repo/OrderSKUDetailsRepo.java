@@ -28,7 +28,7 @@ public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEnti
 
 	Page<OrderSKUDetailsEntity> findByOrderItemStatus(Pageable pageable,String orderItemStatus);
 	@Query("{ 'orderItemStatus' : ?0}")
-	Page<OrderSKUDetailsEntity> Search(String orderItemStatus,  Pageable pagingSort);
+	Page<OrderSKUDetailsEntity> Search(String orderItemStatus,Pageable pagingSort);
 	@Query("{ 'orderItemStatus' : ?0}")
 	List<OrderSKUDetailsEntity> findByOrder(String orderItemStatus);
 	
