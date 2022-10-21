@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.entity.SendMail;
+import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
@@ -122,6 +123,12 @@ public class ProfileContoller {
 				designerProfileEntity.setIsDeleted(designerLoginEntity.getIsDeleted());
 				designerProfileEntity
 						.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
+				designerProfileEntity.setProductCount(productRepo.findByDesignerId(id.intValue()).size());
+		
+				org.json.simple.JSONObject countData = countData(id);
+				String followerCount = countData.get("FollowersData").toString();
+				designerProfileEntity.setFollowerCount(Integer.parseInt(followerCount));
+
 			} catch (Exception e) {
 
 			}

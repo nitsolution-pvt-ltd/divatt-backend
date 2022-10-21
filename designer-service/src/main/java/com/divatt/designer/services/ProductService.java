@@ -494,14 +494,14 @@ public class ProductService {
 //				findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId, pagingSort);
 				if(StringUtils.equals(status, "live")) {
 					findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId, pagingSort);
-				} else if(StringUtils.equals(status, "prnding")) {
-					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, status, pagingSort);
+				} else if(StringUtils.equals(status, "pending")) {
+					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Pending", pagingSort);
 				} else if(StringUtils.equals(status, "reject")) {
-					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, status, pagingSort);
+					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Reject", pagingSort);
 				} else if(StringUtils.equals(status, "ls")) {
-					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, status, pagingSort);
+					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Ls", pagingSort);
 				} else if(StringUtils.equals(status, "oos")) {
-					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, status, pagingSort);
+					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Oos", pagingSort);
 				}
 
 			}
