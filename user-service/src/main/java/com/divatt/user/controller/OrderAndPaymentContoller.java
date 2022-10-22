@@ -81,6 +81,7 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.json.simple.JSONObject;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -749,7 +750,7 @@ public class OrderAndPaymentContoller {
     }
     
     @GetMapping("/getorderByid1/{orderId}")
-    public Object getdetails (@PathVariable String orderId){
+    public Optional<OrderPaymentEntity> getdetails (@PathVariable String orderId){
         try {
            
              return this.orderAndPaymentService.getgetorderByid1(orderId);
@@ -759,10 +760,12 @@ public class OrderAndPaymentContoller {
         }
         
     }
-    @GetMapping("/findbyOrderIds/{orderId}")
-    public Optional<OrderDetailsEntity> findbyOrderIds(@PathVariable String orderId){
+    @GetMapping("/findbyOrderIds")
+    public Page<OrderDetailsEntity> findbyOrderIds(@RequestParam String orderId,@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,@RequestParam (defaultValue = "false") Boolean isDeleted,
+            @RequestParam Optional<String> sortBy){
         try {
-            return this.orderDetailsRepo.findByOrderIds(orderId);
+            return this.orderAndPaymentService.findByOrderIds(page, limit,sort, orderId,  isDeleted,  sortBy);
         }catch (Exception e) {
             throw new CustomException(e.getMessage());
         }

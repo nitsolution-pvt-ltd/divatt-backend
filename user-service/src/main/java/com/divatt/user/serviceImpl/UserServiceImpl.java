@@ -34,6 +34,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
@@ -671,10 +672,13 @@ public class UserServiceImpl implements UserService {
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
 			if (userId != 0) {
-				Optional<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
-				if (findByUserId.isPresent()) {
-					object.put("isFollowing", findByUserId.get().getIsFollowing());
-					object.put("rating", findByUserId.get().getRaiting());
+			    Query query= new Query();
+			    query.addCriteria(Criteria.where("designerId").is(designerId));
+			    List<UserDesignerEntity> userDesignerList=mongoOperations.find(query, UserDesignerEntity.class);
+				//List<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
+				if (!userDesignerList.isEmpty()) {
+					object.put("isFollowing", userDesignerList.get(0).getIsFollowing());
+					object.put("rating", userDesignerList.get(0).getRaiting());
 				} else {
 					object.put("isFollowing", false);
 					object.put("rating", 0);
@@ -988,73 +992,85 @@ public class UserServiceImpl implements UserService {
 
 	}
 
-	@Override
-	public Map<String, Object> findListorderId(int page, int limit, String sort,
-            String orderId, Boolean isDeleted, Optional<String> sortBy) {
-		try {
-			List<OrderDetailsEntity> detailsEntities1 = new ArrayList<>();
-			int CountData = (int) orderSKUDetailsRepo.count();
-			Pageable pagingSort = null;
-			if (limit == 0) {
-				limit = CountData;
-			}
-
-			if (sort.equals("ASC")) {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderId));
-			} else {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderId));
-			}
-
-			Page<OrderDetailsEntity> findAll = null;
-
-			findAll = detailsRepo.SearchorderItemStatus(orderId, pagingSort);
-			List<OrderDetailsEntity> x = new ArrayList<>();
-			List<OrderDetailsEntity> detailsEntities = detailsRepo.findByOrder(orderId);
-			for (OrderDetailsEntity order : detailsEntities) {
-
-				for (OrderDetailsEntity iteam : x) {
-					detailsRepo.findByOrderId(order.getOrderId());
-					detailsEntities1.add(iteam);
-				}
-			}
-
-			System.out.println(findAll.toString());
-
-			int totalPage = findAll.getTotalPages() - 1;
-			if (totalPage < 0) {
-				totalPage = 0;
-			}
-
-			Map<String, Object> response = new HashMap<>();
-			response.put("data", findAll.getContent());
-			response.put("currentPage", findAll.getNumber());
-			response.put("total", findAll.getTotalElements());
-			response.put("totalPage", totalPage);
-			response.put("perPage", findAll.getSize());
-			response.put("perPageElement", findAll.getNumberOfElements());
-
-			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
-			} else {
-
-				return response;
-
-			}
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
 
     @Override
-    public List<OrderSKUDetailsEntity> findOrderItemStatus(String orderItemStatus) {
+    public Page<OrderDetailsEntity> findByOrder(int page, int limit, String sort, String orderId, Boolean isDeleted,
+            Optional<String> sortBy) {
+        try {
+            int CountData = (int) detailsRepo.count();
+            Pageable pagingSort = null;
+            if (limit == 0) {
+                limit = CountData;
+            }
+
+            if (sort.equals("ASC")) {
+                pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderId));
+            } else {
+                pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderId));
+            }
+            return this.detailsRepo.findOrderId(orderId,pagingSort );
+        }catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
        
-       try {
-           return this.orderSKUDetailsRepo.findByOrder(orderItemStatus);
-       }catch (Exception e) {
-        throw new CustomException(e.getMessage());
     }
+
+    @Override
+    public Map<String, Object> find(int page, int limit, String sort, String orderItemStatus, Boolean isDeleted,
+            Optional<String> sortBy) {
+        try {
+            int CountData = (int) orderSKUDetailsRepo.count();
+            Pageable pagingSort = null;
+            if (limit == 0) {
+                limit = CountData;
+            }
+
+            if (sort.equals("ASC")) {
+                pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderItemStatus));
+            } else {
+                pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderItemStatus));
+            }
+            Page<OrderSKUDetailsEntity> findAll=null;
+            if(orderItemStatus.isEmpty()) {
+                findAll=orderSKUDetailsRepo.findAll(pagingSort);
+            }else {
+            findAll= orderSKUDetailsRepo.Search(orderItemStatus,pagingSort );
+            }
+            int totalPage=findAll.getTotalPages()-1;
+            if(totalPage<0) {
+                totalPage=0;
+            }
+            Map<String, Object> response = new HashMap<>();
+            response.put("data", findAll.getContent());
+            response.put("currentPage", findAll.getNumber());
+            response.put("total", findAll.getTotalElements());
+            response.put("totalPage", totalPage);
+            response.put("perPage", findAll.getSize());
+            response.put("perPageElement", findAll.getNumberOfElements());
+
+            if (findAll.getSize() <= 1) {
+                throw new CustomException("Invoice not found!");
+            } else {
+                return response;
+            }
+        }catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+    
+    }
+    
+    public List<OrderSKUDetailsEntity> findByorderID( String orderId){
+        try {
+           return this.orderSKUDetailsRepo.findByOrderId(orderId);
+        }catch (Exception e) {
+           throw new CustomException(e.getMessage());
+        }
        
     }
+
+ 
+
+    
 
    
 
