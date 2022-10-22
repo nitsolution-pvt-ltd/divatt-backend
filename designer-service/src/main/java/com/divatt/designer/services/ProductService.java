@@ -1205,6 +1205,7 @@ public class ProductService {
 							.ofNullable(image.getColour()).filter(image1 -> image1.equals("#" + color)).isPresent())) : true)
 					.filter(product -> !categoryId.equals("") ? Arrays.asList(categoryId.split(",")).stream().anyMatch(category -> category.equals(product.getCategoryId().toString())): true)
 					.filter(product -> !subCategoryId.equals("") ? Arrays.asList(subCategoryId.split(",")).stream().anyMatch(subCategory -> subCategory.equals(product.getSubCategoryId().toString())) : true)
+					.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream().anyMatch(dId -> dId.equals(product.getDesignerId().toString())) : true)
 			.collect(Collectors.toList());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

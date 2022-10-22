@@ -121,6 +121,7 @@ public class ProfileContoller {
 				designerProfileEntity.setAccountStatus(designerLoginEntity.getAccountStatus());
 				designerProfileEntity.setProfileStatus(designerLoginEntity.getProfileStatus());
 				designerProfileEntity.setIsDeleted(designerLoginEntity.getIsDeleted());
+				designerLoginEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
 				designerProfileEntity
 						.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
 				designerProfileEntity.setProductCount(productRepo.findByDesignerId(id.intValue()).size());
