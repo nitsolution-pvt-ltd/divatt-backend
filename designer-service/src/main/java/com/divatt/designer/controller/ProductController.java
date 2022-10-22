@@ -217,6 +217,7 @@ public class ProductController implements ProductServiceImp {
 			LOGGER.info("Status Datata={}", status);
 			return this.productService.designerIdListPage(designerId, status, sortBy, page, sort, sortName, isDeleted, limit,
 					keyword, isActive,sortDateType);
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -440,15 +441,18 @@ public class ProductController implements ProductServiceImp {
 													  @RequestParam(defaultValue = "") String colour,
 													  @RequestParam(defaultValue = "") Boolean cod,
 													  @RequestParam(defaultValue = "") Boolean customization,
-													  @RequestParam(defaultValue = "") Boolean priceType,
+													  @RequestParam(defaultValue = "") String priceType,
 													  @RequestParam(defaultValue = "") Boolean returnStatus,
-													  @RequestParam(defaultValue = "") String maxPrice,
-													  @RequestParam(defaultValue = "") String minPrice,
-													  @RequestParam(defaultValue = "") String size){
+													  @RequestParam(defaultValue = "-1") String maxPrice,
+													  @RequestParam(defaultValue = "-1") String minPrice,
+													  @RequestParam(defaultValue = "") String size,
+													  @RequestParam(defaultValue = "") Boolean giftWrap,
+													  @RequestParam(defaultValue = "") String searchKey){
 		try {
 			LOGGER.info("Inside- ProductController.productSearching()");
+			LOGGER.info("COD data = {}", cod);
 			return this.productService.productSearching
-					(searchBy,designerId,categoryId,subCategoryId,colour,cod,customization,priceType,returnStatus,maxPrice,minPrice,size);
+					(searchBy,designerId,categoryId,subCategoryId,colour,cod,customization,priceType,returnStatus,maxPrice,minPrice,size, giftWrap, searchKey);
 		}
 		catch(Exception e) {
 			throw new CustomException(e.getMessage());

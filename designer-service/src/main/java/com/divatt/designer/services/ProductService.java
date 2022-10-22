@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.StringTokenizer;import java.util.stream.Collector;
+import java.util.StringTokenizer;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -1195,102 +1197,32 @@ public class ProductService {
 		
 	}
 
-public List<ProductMasterEntity> productSearching
-(String searchBy, String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,Boolean customization,Boolean priceType, Boolean returnStatus, String maxPrice, String minPrice, String size) {
-	
-	
-	try {
-		LOGGER.info("Inside- ProductService.productSearching()");
-		SearchingFilterDTO filterObject= UtillClass.searchingFilter(designerId, categoryId, subCategoryId, colour, cod, customization, returnStatus, priceType, maxPrice, minPrice,size);
-				/*searchingFilter
-				//(designerId,categoryId,subCategoryId,colour,cod,returnStatus,maxPrice,minPrice,size);*/
-		List<ProductMasterEntity> updatedProductList= new ArrayList<>();
-		List<ProductMasterEntity> productList = productRepo.findAll();
-		
-	    List<ProductMasterEntity> filterByProductName = productList.stream()
-	    		.filter(e-> e.getProductName().toLowerCase().startsWith(searchBy.toLowerCase()) || e.getProductName().toLowerCase().contentEquals(searchBy.toLowerCase())).collect(Collectors.toList());
-	    
-	    
-	    List<ProductMasterEntity> filterByProductDescription = productList.stream()
-	    		.filter(e-> e.getProductDescription().toLowerCase().startsWith(searchBy.toLowerCase()) || e.getProductDescription().toLowerCase().endsWith(searchBy.toLowerCase())).collect(Collectors.toList());
-	    
-	    List<ProductMasterEntity> filterByProductDetails = productList.stream()
-	    		.filter(e-> e.getSpecifications().getProductDetails().toLowerCase().startsWith(searchBy.toLowerCase()) || e.getSpecifications().getProductDetails().toLowerCase().endsWith(searchBy.toLowerCase())).collect(Collectors.toList());
-	  
-	    
-	    List<ProductMasterEntity> filterByGender = productList.stream()
-	    		.filter(e-> e.getGender().toLowerCase().startsWith(searchBy.toLowerCase())).collect(Collectors.toList());
-	    List<ProductMasterEntity> filterBySize=new ArrayList<>();
-	    		productList.stream()
-	    		.forEach(e->{
-	    			e.getStanderedSOH()
-	    					.stream()
-	    					.filter(a->a.getSizeType().equals(searchBy))
-	    					.collect(Collectors.toList());
-	    			filterBySize.add(e);
-	    		});
-	    		List<ProductMasterEntity> filterBySleeveType= new ArrayList<>();
-	    productList.stream()
-	    		.forEach(e->{
-	    			org.json.simple.JSONObject extraSpec= e.getExtraSpecifications();
-	    			//LOGGER.info(extraSpec+"");
-	    			try {
-	    				if(extraSpec.get("Sleeve Type").toString().equals(searchBy)) {
-		    				filterBySleeveType.add(e);
-		    			}
-	    			}catch(Exception e1) {
-	    				for(ProductMasterEntity item: filterBySleeveType) {
-	    					  updatedProductList.add(item);
-	    				}
-	    			}
-	    		});
-	    
-	    				
-	    System.out.println("data " + filterBySleeveType);
-	     for(ProductMasterEntity item: filterByGender) {
-	    	updatedProductList.add(item);}
-		 for(ProductMasterEntity item: filterByProductName) {
-		  updatedProductList.add(item); } 
-		 for(ProductMasterEntity item: filterByProductDescription) {
-			  updatedProductList.add(item); }
-		 for(ProductMasterEntity item: filterByProductDetails) {
-			  updatedProductList.add(item); }
-		 for(ProductMasterEntity item: filterBySize) {
-			  updatedProductList.add(item); }
-		 for(ProductMasterEntity item: filterBySleeveType) {
-			  updatedProductList.add(item); }
-		 List<ProductMasterEntity> filtered= new ArrayList<ProductMasterEntity>();
-		updatedProductList.stream().distinct()
-		.forEach(e->{
-			filterObject.getDesignerIdList().stream()
-			.mapToInt(a->Integer.parseInt(a))
-			.forEach(a->{
-				if(Integer.compare(a, e.getDesignerId())==0) {
-					filtered.add(e);
-				}
-			});	
+  public List<ProductMasterEntity> productSearching(String searchBy, String designerId, String categoryId,
+			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
+			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey) {
+
+		try {
+			LOGGER.info("Inside ProductService.productSearching()");
+			LOGGER.info("priceType = {}",priceType);
+			LOGGER.info("subCategoryId = {}", subCategoryId);
 			
-			
-		});
-		return filtered;
-		
-	}catch (Exception e) {
-		throw new CustomException(e.getMessage());
-	}
-	
-}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+			return !searchKey.equals("") ? productRepo.findbySearchKey(searchKey) : productRepo.findAll().stream()
+					.filter(product -> !searchBy.equals("") ? product.getGender().equals(searchBy) : true)
+					.filter(product -> cod != null ? product.getCod() == cod : true)
+					.filter(product -> customization != null ? product.getCustomization() == customization : true)
+					.filter(product -> !priceType.equals("") ? product.getPriceType().equals(priceType) : true)
+					.filter(product -> giftWrap != null ? product.getGiftWrap() == giftWrap : true)
+					.filter(product -> !maxPrice.equals("-1") ? product.getPrice().getIndPrice().getMrp() <= Long.parseLong(maxPrice) : true)
+					.filter(product -> !minPrice.equals("-1") ? product.getPrice().getIndPrice().getMrp() >= Long.parseLong(minPrice) : true)
+					.filter(product -> !size.equals("") ? product.getStanderedSOH().stream().anyMatch(soh -> Arrays.asList(size.split(",")).contains(soh.getSizeType())) : true)
+					.filter(product -> !colour.equals("") ? Arrays.asList(colour.split(",")).stream().anyMatch(color -> Arrays.asList(product.getImages()).stream().anyMatch(image -> Optional
+							.ofNullable(image.getColour()).filter(image1 -> image1.equals("#" + color)).isPresent())) : true)
+					.filter(product -> !categoryId.equals("") ? Arrays.asList(categoryId.split(",")).stream().anyMatch(category -> category.equals(product.getCategoryId().toString())): true)
+					.filter(product -> !subCategoryId.equals("") ? Arrays.asList(subCategoryId.split(",")).stream().anyMatch(subCategory -> subCategory.equals(product.getSubCategoryId().toString())) : true)
+			.collect(Collectors.toList());
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}	
 }

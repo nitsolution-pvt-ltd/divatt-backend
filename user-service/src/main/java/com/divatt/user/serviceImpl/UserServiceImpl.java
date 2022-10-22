@@ -1,5 +1,7 @@
 package com.divatt.user.serviceImpl;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +16,8 @@ import javax.validation.Valid;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.modelmapper.ModelMapper;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.STBorderId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +34,34 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import com.divatt.user.designerProductEntity.DesignerProfile;
+import com.divatt.user.designerProductEntity.DesignerProfileEntity;
+import com.divatt.user.designerProductEntity.ProductMasterEntity;
+import com.divatt.user.designerProductEntity.PurchaseEntity;
 import com.divatt.user.entity.DesignerLoginEntity;
+import com.divatt.user.entity.ProductEntity;
+
 import com.divatt.user.entity.StateEntity;
+import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
+import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
+import com.divatt.user.repo.OrderDetailsRepo;
+import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.StateRepo;
+import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.repo.UserDesignerRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.repo.cart.UserCartRepo;
@@ -91,6 +110,18 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private StateRepo stateRepo;
+
+	@Autowired
+	private UserAddressRepo addressRepo;
+
+	@Autowired
+	private TemplateEngine engine;
+
+	@Autowired
+	private OrderSKUDetailsRepo orderSKUDetailsRepo;
+
+	@Autowired
+	private OrderDetailsRepo detailsRepo;
 
 	public GlobalResponse postWishlistService(ArrayList<WishlistEntity> wishlistEntity) {
 
@@ -244,7 +275,8 @@ public class UserServiceImpl implements UserService {
 						filterCatDetails.setQty(getRow.getQty());
 						filterCatDetails.setAddedOn(new Date());
 						filterCatDetails.setSelectedSize(getRow.getSelectedSize());
-
+						filterCatDetails.setCustomization(getRow.getCustomization());
+						
 						userCartRepo.save(filterCatDetails);
 					}
 				}
@@ -353,7 +385,9 @@ public class UserServiceImpl implements UserService {
 					JsonNode jn = new JsonNode(e.toString());
 					JSONObject object = jn.getObject();
 					LOGGER.info("Designer id is: " + object.get("designerId").toString());
-					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity("https://localhost:8083/dev/designer/"+object.get("designerId"), org.json.simple.JSONObject.class);
+					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity(
+							"https://localhost:8083/dev/designer/" + object.get("designerId"),
+							org.json.simple.JSONObject.class);
 					LOGGER.info("get designer by id: " + getDesignerById.getBody().get("designerProfile").toString());
 					UserCartEntity cart = userCartRepo
 							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
@@ -517,33 +551,38 @@ public class UserServiceImpl implements UserService {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
-//			userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e) -> {
-//				userDesignerEntity.setId(e.getId());
-//			}, () -> {
-//				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
-//			});
-//
-//			userDesignerEntity.setCreatedOn(date.toString());
-//			UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
-//			if (save != null && save.getIsFollowing() == true)
-//				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Follow successfully", 200));
-//			else if (save != null && save.getIsFollowing() == false)
-//				return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Unfollow successfully", 200));
-//			else
-//				throw new CustomException("Something went wrong! try again later");
-			
-			Query query= new Query();
+			// userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e)
+			// -> {
+			// userDesignerEntity.setId(e.getId());
+			// }, () -> {
+			// userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
+			// });
+			//
+			// userDesignerEntity.setCreatedOn(date.toString());
+			// UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
+			// if (save != null && save.getIsFollowing() == true)
+			// return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Follow successfully",
+			// 200));
+			// else if (save != null && save.getIsFollowing() == false)
+			// return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Unfollow
+			// successfully", 200));
+			// else
+			// throw new CustomException("Something went wrong! try again later");
+
+			Query query = new Query();
 			query.addCriteria(Criteria.where("userId").is(userDesignerEntity.getUserId()));
-			List<UserDesignerEntity> followDesignerList=mongoOperations.find(query, UserDesignerEntity.class);
-			List<UserDesignerEntity> collect = followDesignerList.stream().filter(e->e.getDesignerId().equals(userDesignerEntity.getDesignerId())).collect(Collectors.toList());
-			//LOGGER.info(collect+"");
-			if(collect.isEmpty()) {
+			List<UserDesignerEntity> followDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
+			List<UserDesignerEntity> collect = followDesignerList.stream()
+					.filter(e -> e.getDesignerId().equals(userDesignerEntity.getDesignerId()))
+					.collect(Collectors.toList());
+			// LOGGER.info(collect+"");
+			if (collect.isEmpty()) {
 				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
 				userDesignerEntity.setIsFollowing(true);
 				userDesignerEntity.setCreatedOn(date.toString());
 				userDesignerRepo.save(userDesignerEntity);
 				return ResponseEntity.ok(new GlobalResponse("Success", "Designer following successfully", 200));
-			}else {
+			} else {
 				userDesignerRepo.deleteById(collect.get(0).getId());
 				return ResponseEntity.ok(new GlobalResponse("Success", "Designer unfollowing successfully", 200));
 			}
@@ -633,10 +672,13 @@ public class UserServiceImpl implements UserService {
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
 			if (userId != 0) {
-				Optional<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
-				if (findByUserId.isPresent()) {
-					object.put("isFollowing", findByUserId.get().getIsFollowing());
-					object.put("rating", findByUserId.get().getRaiting());
+			    Query query= new Query();
+			    query.addCriteria(Criteria.where("designerId").is(designerId));
+			    List<UserDesignerEntity> userDesignerList=mongoOperations.find(query, UserDesignerEntity.class);
+				//List<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
+				if (!userDesignerList.isEmpty()) {
+					object.put("isFollowing", userDesignerList.get(0).getIsFollowing());
+					object.put("rating", userDesignerList.get(0).getRaiting());
 				} else {
 					object.put("isFollowing", false);
 					object.put("rating", 0);
@@ -809,21 +851,227 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<Object> getListDesignerData(String userEmail) {
 		try {
-			List<Object> designerList=new ArrayList<Object>();
-				Long userId = userLoginRepo.findByEmail(userEmail).get().getId();
-				LOGGER.info(userId+"");
-				Query query= new Query();
-				query.addCriteria(Criteria.where("userId").is(userId));
-				List<UserDesignerEntity> userDesignerList=mongoOperations.find(query, UserDesignerEntity.class);
-				userDesignerList
-				.stream()
-				.forEach(e->{
-					designerList.add(restTemplate.getForEntity("https://localhost:8083/dev/designer/"+e.getDesignerId(), Object.class).getBody());
-				});
-				return designerList;
-		}catch(Exception e) {
+			List<Object> designerList = new ArrayList<Object>();
+			Long userId = userLoginRepo.findByEmail(userEmail).get().getId();
+			LOGGER.info(userId + "");
+			Query query = new Query();
+			query.addCriteria(Criteria.where("userId").is(userId));
+			List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
+			userDesignerList
+					.stream()
+					.forEach(e -> {
+						designerList.add(restTemplate
+								.getForEntity("https://localhost:8083/dev/designer/" + e.getDesignerId(), Object.class)
+								.getBody());
+					});
+			return designerList;
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	public String complaintMail(String token, Integer productId) {
+
+		Context context = new Context();
+		try {
+
+			LOGGER.info(jwtUtil.extractUsername(token.substring(7)));
+			LOGGER.info(token.substring(7));
+			Optional<UserAddressEntity> byUserEmail = addressRepo
+					.findByUserEmail(jwtUtil.extractUsername(token.substring(7)));
+			String fullName = byUserEmail.get().getFullName();
+			LOGGER.info(fullName);
+			String email = byUserEmail.get().getEmail();
+			LOGGER.info(email);
+			String mobile = byUserEmail.get().getMobile();
+			LOGGER.info(mobile);
+			Long id = byUserEmail.get().getUserId();
+			LOGGER.info(id.toString());
+
+			try {
+				UserLoginEntity entity = restTemplate.getForObject("https://localhost:8082/dev/user/getUserId/" + id,
+						UserLoginEntity.class);
+
+				String dob = entity.getDob();
+				LOGGER.info(dob);
+
+				LOGGER.info(productId.toString());
+				context.setVariable("Username", fullName);
+				context.setVariable("Useremail", email);
+				context.setVariable("Usermobileno", mobile);
+				context.setVariable("Userdob", dob);
+				try {
+
+					ProductMasterEntity entity2;
+					entity2 = restTemplate.getForEntity("https://localhost:8083/dev/designerProduct/view/" + productId,
+							ProductMasterEntity.class).getBody();
+
+					LOGGER.info(entity2.getDesignerName());
+
+					String productDescription = entity2.getProductDescription();
+					LOGGER.info(productDescription);
+					String productName = entity2.getProductName();
+					LOGGER.info(productName);
+					try {
+						Optional<OrderSKUDetailsEntity> findByProductId = orderSKUDetailsRepo
+								.findByProductId(productId);
+						Long mrp = findByProductId.get().getMrp();
+						String size = findByProductId.get().getSize();
+						Long units = findByProductId.get().getUnits();
+						// Double igst = findByProductId.get().getIgst();
+						// if(igst==null) {
+						// throw new CustomException("Igst is null");
+						// }else {
+						// Double cgst = findByProductId.get().getCgst();
+						// if(igst==null) {
+						// throw new CustomException("igst not found ");
+						// }else if(cgst==null) {
+						// throw new CustomException("cgst not found ");
+						// }else {
+						// context.setVariable("GST", cgst);
+						// }
+						LOGGER.info(mrp.toString());
+						LOGGER.info(units.toString());
+						LOGGER.info(size);
+						// LOGGER.info(igst.toString());
+						context.setVariable("Product", productId);
+						context.setVariable("Description", productDescription);
+						context.setVariable("MRP", mrp);
+						context.setVariable("Unit", units);
+						context.setVariable("Size", size);
+						// context.setVariable("igst", igst);
+					} catch (Exception e) {
+						throw new CustomException(e.getMessage());
+					}
+					try {
+						// ModelMapper mapper = new ModelMapper();
+						// DesignerProfile designerProfile = mapper.map(mapper, DesignerProfile.class);
+						LOGGER.info(entity2.getDesignerId().toString());
+						DesignerProfileEntity profile = restTemplate.getForObject(
+								"https://localhost:8083/dev/designer/" + entity2.getDesignerId(),
+								DesignerProfileEntity.class);
+
+						Long designerId = profile.getDesignerId();
+						LOGGER.info(designerId.toString());
+						// String designerName = profile.getDesignerName();
+						// String displayName = profile.getDesignerProfile().getDisplayName();
+						String name = profile.getDesignerName();
+						// assertEquals(designerProfileEntity.getDesignerProfile().getDisplayName(),
+						// designerProfile.getDisplayName());
+						String dob2 = profile.getDesignerProfile().getDob();
+						String email2 = profile.getDesignerProfile().getEmail();
+						String gender = profile.getDesignerProfile().getGender();
+						String mobileNo = profile.getDesignerProfile().getMobileNo();
+						LOGGER.info(profile.toString());
+						LOGGER.info(name);
+						LOGGER.info(dob2);
+						LOGGER.info(gender);
+						LOGGER.info(mobileNo);
+						LOGGER.info(email2);
+						context.setVariable("Designername", name);
+						context.setVariable("Designeremail", email2);
+						context.setVariable("Designermobileno", mobileNo);
+						context.setVariable("Designergender", gender);
+						context.setVariable("Designerdob", dob2);
+
+					} catch (Exception e) {
+						throw new CustomException(e.getMessage());
+					}
+
+				} catch (Exception e) {
+					throw new CustomException(e.getMessage());
+				}
+			} catch (Exception e) {
+				throw new CustomException(e.getMessage());
+			}
+			return engine.process("complaintMail.html", context);
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+
+    @Override
+    public Page<OrderDetailsEntity> findByOrder(int page, int limit, String sort, String orderId, Boolean isDeleted,
+            Optional<String> sortBy) {
+        try {
+            int CountData = (int) detailsRepo.count();
+            Pageable pagingSort = null;
+            if (limit == 0) {
+                limit = CountData;
+            }
+
+            if (sort.equals("ASC")) {
+                pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderId));
+            } else {
+                pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderId));
+            }
+            return this.detailsRepo.findOrderId(orderId,pagingSort );
+        }catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+       
+    }
+
+    @Override
+    public Map<String, Object> find(int page, int limit, String sort, String orderItemStatus, Boolean isDeleted,
+            Optional<String> sortBy) {
+        try {
+            int CountData = (int) orderSKUDetailsRepo.count();
+            Pageable pagingSort = null;
+            if (limit == 0) {
+                limit = CountData;
+            }
+
+            if (sort.equals("ASC")) {
+                pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderItemStatus));
+            } else {
+                pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderItemStatus));
+            }
+            Page<OrderSKUDetailsEntity> findAll=null;
+            if(orderItemStatus.isEmpty()) {
+                findAll=orderSKUDetailsRepo.findAll(pagingSort);
+            }else {
+            findAll= orderSKUDetailsRepo.Search(orderItemStatus,pagingSort );
+            }
+            int totalPage=findAll.getTotalPages()-1;
+            if(totalPage<0) {
+                totalPage=0;
+            }
+            Map<String, Object> response = new HashMap<>();
+            response.put("data", findAll.getContent());
+            response.put("currentPage", findAll.getNumber());
+            response.put("total", findAll.getTotalElements());
+            response.put("totalPage", totalPage);
+            response.put("perPage", findAll.getSize());
+            response.put("perPageElement", findAll.getNumberOfElements());
+
+            if (findAll.getSize() <= 1) {
+                throw new CustomException("Invoice not found!");
+            } else {
+                return response;
+            }
+        }catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+    
+    }
+    
+    public List<OrderSKUDetailsEntity> findByorderID( String orderId){
+        try {
+           return this.orderSKUDetailsRepo.findByOrderId(orderId);
+        }catch (Exception e) {
+           throw new CustomException(e.getMessage());
+        }
+       
+    }
+
+ 
+
+    
+
+   
 
 }

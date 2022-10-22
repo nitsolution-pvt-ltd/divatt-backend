@@ -41,6 +41,10 @@ public class UserCartEntity {
 	@Field("size")
 	@NotNull(message ="size is required")
 	private String selectedSize;
+	
+	@Field("customization")
+	@NotNull(message = "Customization is required")
+	private Boolean customization;
 
 	public UserCartEntity() {
 		super();
@@ -50,7 +54,7 @@ public class UserCartEntity {
 	public UserCartEntity(Integer id, @NotNull(message = "Username is required!") Integer userId,
 			@NotNull(message = "Product name is required!") Integer productId,
 			@NotNull(message = "Quantity is required!") Integer qty, Date addedOn,
-			@NotNull(message = "size is required") String selectedSize) {
+			@NotNull(message = "size is required") String selectedSize, @NotNull(message = "Customization is required") Boolean customization) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -58,12 +62,13 @@ public class UserCartEntity {
 		this.qty = qty;
 		this.addedOn = addedOn;
 		this.selectedSize = selectedSize;
+		this.customization = customization;
 	}
 
 	@Override
 	public String toString() {
 		return "UserCartEntity [id=" + id + ", userId=" + userId + ", productId=" + productId + ", qty=" + qty
-				+ ", addedOn=" + addedOn + ", selectedSize=" + selectedSize + "]";
+				+ ", addedOn=" + addedOn + ", selectedSize=" + selectedSize + ", customization=" + customization +"]";
 	}
 
 	public Integer getId() {
@@ -112,6 +117,14 @@ public class UserCartEntity {
 
 	public void setSelectedSize(String selectedSize) {
 		this.selectedSize = selectedSize;
+	}
+	
+	public Boolean getCustomization() {
+		return customization;
+	}
+
+	public void setCustomization(Boolean customization) {
+		this.customization = customization;
 	}
 
 	public static String getSequenceName() {

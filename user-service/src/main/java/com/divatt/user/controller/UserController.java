@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.ws.rs.GET;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -50,9 +53,12 @@ import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.order.OrderDetailsEntity;
+import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
+import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
@@ -97,6 +103,11 @@ public class UserController {
 	
 	@Autowired
 	private JwtUtil jwtUtil;
+	
+	@Autowired
+	private OrderSKUDetailsRepo detailsRepo;
+	
+
 
 	@PostMapping("/wishlist/add")
 	public GlobalResponse postWishlistDetails(@Valid @RequestBody ArrayList<WishlistEntity> wishlistEntity) {
@@ -782,6 +793,41 @@ public class UserController {
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+	
+	@GetMapping("/complaintMail/{productId}")
+	public String ComplaintMail(@RequestHeader("Authorization") String token,@PathVariable Integer productId) {
+		try {
+		 return this.userService.complaintMail(token, productId);
+		
+	}catch (Exception e) {
+		throw new CustomException(e.getMessage());
+	}
+		
+
+
+}
+	
+
+	
+	@GetMapping("/find")
+	public Map<String, Object> find(@RequestParam String orderItemStatus,@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,@RequestParam (defaultValue = "false") Boolean isDeleted,
+            @RequestParam Optional<String> sortBy){
+	    try {
+	        return this.userService.find ( page, limit,sort, orderItemStatus,  isDeleted,  sortBy);
+	    }catch (Exception e) {
+         throw new CustomException(e.getMessage());
+        }
+	}
+	
+	@GetMapping("/findByorderID/{orderId}")
+	public List<OrderSKUDetailsEntity> findByorderID(@PathVariable String orderId){
+	    try {
+	        return this.userService.findByorderID(orderId);
+	    }catch (Exception e) {
+           throw new CustomException(e.getMessage());
+        }
 	}
 	
 }

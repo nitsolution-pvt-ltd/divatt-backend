@@ -1,6 +1,8 @@
 package com.divatt.user.repo;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,23 +19,29 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 	Page<OrderDetailsEntity> Search(String sortKey, Pageable pageable);
 	
 	
+	
 	List<OrderDetailsEntity> findByOrderId(String orderId);	
+	
+	@Query("{ 'orderId' : ?0}")
+	Optional<OrderDetailsEntity> findByOrderIds(int page, int limit, String orderId, Boolean isDeleted, Optional<String> sortBy);
 	
 	List<OrderDetailsEntity> findByUserIdOrderByIdDesc(Integer UserId);
 	
 	@Query(value = "{ 'products': { $elemMatch: { 'designerId' : ?0 } }}")
 	Page<OrderDetailsEntity> findDesigner(Integer designerId, Pageable pagingSort);
 
-	
+	@Query("{ 'orderId' : ?0}")
 	Page<OrderDetailsEntity> findByOrderId(String orderId, Pageable pagingSort);
 
 	@Query(value = "{ $or: [ { 'user_id' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} }],$and: [ {  'order_id' : ?1}]}")
 	Page<OrderDetailsEntity> SearchByOrderId( String keyword, String orderId, Pageable pagingSort);
 
+	@Query("{ 'orderItemStatus' : ?0}")
+    Page<OrderDetailsEntity> SearchorderItemStatus(String orderItemStatus,  Pageable pagingSort);
 
 	OrderDetailsEntity findTopByOrderByIdDesc();
 
-
+	
 	Page<OrderDetailsEntity> findByOrderIdIn(List<String> orderId, Pageable pagingSort);
 
 
@@ -42,6 +50,12 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 
 
 	List<OrderDetailsEntity> findByOrderIdIn(List<String> orderIdList);
+
+
+	
+
+    @Query("{ 'orderId' : ?0}")
+    Page<OrderDetailsEntity> findOrderId(String orderId,Pageable pagingSort);
 	
 //	Page<OrderDetailsEntity> findByDesignerId(int designerId,Pageable pageable);
 }

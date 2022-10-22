@@ -41,6 +41,11 @@ public class DesignerProfileEntity {
 	
 	private DesignerPersonalInfoEntity designerPersonalInfoEntity;
 	private String designerLevel;
+	
+	private Integer followerCount;
+	
+	private Integer productCount;
+	
 	public DesignerProfileEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -48,7 +53,7 @@ public class DesignerProfileEntity {
 	public DesignerProfileEntity(Long id, Long designerId, @NotNull DesignerProfile designerProfile,
 			@NotNull BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName,
 			String profileStatus, String accountStatus, Boolean isDeleted,
-			DesignerPersonalInfoEntity designerPersonalInfoEntity, String designerLevel) {
+			DesignerPersonalInfoEntity designerPersonalInfoEntity, String designerLevel, Integer followerCount, Integer productCount) {
 		super();
 		this.id = id;
 		this.designerId = designerId;
@@ -61,6 +66,8 @@ public class DesignerProfileEntity {
 		this.isDeleted = isDeleted;
 		this.designerPersonalInfoEntity = designerPersonalInfoEntity;
 		this.designerLevel = designerLevel;
+		this.followerCount = followerCount;
+		this.productCount = productCount;
 	}
 	@Override
 	public String toString() {
@@ -68,7 +75,7 @@ public class DesignerProfileEntity {
 				+ ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile + ", designerName="
 				+ designerName + ", profileStatus=" + profileStatus + ", accountStatus=" + accountStatus
 				+ ", isDeleted=" + isDeleted + ", designerPersonalInfoEntity=" + designerPersonalInfoEntity
-				+ ", designerLevel=" + designerLevel + "]";
+				+ ", designerLevel=" + designerLevel + ", productCount=" + productCount + ", followerCount=" + followerCount +"]";
 	}
 	public Long getId() {
 		return id;
@@ -139,6 +146,16 @@ public class DesignerProfileEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
-	
+	public Integer getFollowerCount() {
+		return followerCount;
+	}
+	public void setFollowerCount(Integer followerCount) {
+		this.followerCount = followerCount;
+	}
+	public Integer getProductCount() {
+		return productCount;
+	}
+	public void setProductCount(Integer productCount) {
+		this.productCount = productCount;
+	}
 }

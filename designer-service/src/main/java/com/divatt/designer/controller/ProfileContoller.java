@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.entity.SendMail;
+import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
@@ -122,6 +123,12 @@ public class ProfileContoller {
 				designerProfileEntity.setIsDeleted(designerLoginEntity.getIsDeleted());
 				designerProfileEntity
 						.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
+				designerProfileEntity.setProductCount(productRepo.findByDesignerId(id.intValue()).size());
+		
+				org.json.simple.JSONObject countData = countData(id);
+				String followerCount = countData.get("FollowersData").toString();
+				designerProfileEntity.setFollowerCount(Integer.parseInt(followerCount));
+
 			} catch (Exception e) {
 
 			}
@@ -481,11 +488,10 @@ public class ProfileContoller {
 	}
 
 	@GetMapping("/getDesignerDetails/{designerCategories}")
-	public List<DesignerLoginEntity> getDesignerDetails(@RequestHeader("Authorization") String token,
+	public List<DesignerLoginEntity> getDesignerDetails(@RequestParam(defaultValue = "") String usermail,
 			@PathVariable String designerCategories) {
 		try {
-			DesignerProfileEntity[] body = restTemplate.getForEntity("https://localhost:8082/dev/user/followedDesigner/"+jwtConfig.extractUsername(token.substring(7)), DesignerProfileEntity[].class).getBody();
-			List<DesignerProfileEntity> designerList = Arrays.asList(body);
+			
 			//LOGGER.info(asList+"");
 			if (!designerCategories.equals("all")) {
 				Query query = new Query();
@@ -502,14 +508,21 @@ public class ProfileContoller {
 					String followerCount = countData.get("FollowersData").toString();
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
 					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
-				}for(int a=0;a<designerData.size();a++) {
-					for(int i=0;i<designerList.size();i++) {
-						if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
-							designerData.get(a).setIsFollowing(true);
+				}if(usermail.isBlank()) {
+					return designerData;
+				}else {
+					DesignerProfileEntity[] body = restTemplate.getForEntity("https://localhost:8082/dev/user/followedDesigner/"+usermail, DesignerProfileEntity[].class).getBody();
+					List<DesignerProfileEntity> designerList = Arrays.asList(body);
+					for(int a=0;a<designerData.size();a++) {
+						for(int i=0;i<designerList.size();i++) {
+							if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
+								designerData.get(a).setIsFollowing(true);
+							}
 						}
 					}
+					return designerData;
 				}
-				return designerData;
+				
 			} else {
 				List<DesignerLoginEntity> designerData = designerLoginRepo.findAll();
 				for (int i = 0; i < designerData.size(); i++) {
@@ -524,14 +537,20 @@ public class ProfileContoller {
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
 					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
 				}
-				for(int a=0;a<designerData.size();a++) {
-					for(int i=0;i<designerList.size();i++) {
-						if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
-							designerData.get(a).setIsFollowing(true);
+				if(usermail.isBlank()) {
+					return designerData;
+				}else {
+					DesignerProfileEntity[] body = restTemplate.getForEntity("https://localhost:8082/dev/user/followedDesigner/"+usermail, DesignerProfileEntity[].class).getBody();
+					List<DesignerProfileEntity> designerList = Arrays.asList(body);
+					for(int a=0;a<designerData.size();a++) {
+						for(int i=0;i<designerList.size();i++) {
+							if(designerList.get(i).getDesignerId().equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
+								designerData.get(a).setIsFollowing(true);
+							}
 						}
 					}
+					return designerData;
 				}
-				return designerData;
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
