@@ -451,7 +451,7 @@ public class ProductService {
 	}
 
 	public Map<String, Object> designerIdListPage(Integer designerId, String status, Optional<String> sortBy, int page, String sort,
-			String sortName, Boolean isDeleted, int limit, String keyword, Boolean isActive) {
+			String sortName, Boolean isDeleted, int limit, String keyword, Boolean isActive,String sortDateType) {
 		try {
 			int CountData = (int) productRepo.count();
 			Pageable pagingSort = null;
@@ -464,6 +464,20 @@ public class ProductService {
 			} else {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
+			
+			
+			if (!sortDateType.equals(null)) {
+
+				if (sortDateType.equalsIgnoreCase("new")) {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, "createdOn");
+
+				} else if (sortDateType.equalsIgnoreCase("old")) {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, "createdOn");
+
+				}
+			}
+			
+			
 
 			Page<ProductMasterEntity> findAll = null;
 			Integer live = 0;
@@ -1183,7 +1197,7 @@ public class ProductService {
 		
 	}
 
-	public List<ProductMasterEntity> productSearching(String searchBy, String designerId, String categoryId,
+  public List<ProductMasterEntity> productSearching(String searchBy, String designerId, String categoryId,
 			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
 			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey) {
 
@@ -1205,6 +1219,7 @@ public class ProductService {
 							.ofNullable(image.getColour()).filter(image1 -> image1.equals("#" + color)).isPresent())) : true)
 					.filter(product -> !categoryId.equals("") ? Arrays.asList(categoryId.split(",")).stream().anyMatch(category -> category.equals(product.getCategoryId().toString())): true)
 					.filter(product -> !subCategoryId.equals("") ? Arrays.asList(subCategoryId.split(",")).stream().anyMatch(subCategory -> subCategory.equals(product.getSubCategoryId().toString())) : true)
+					.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream().anyMatch(dId -> dId.equals(product.getDesignerId().toString())) : true)
 			.collect(Collectors.toList());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

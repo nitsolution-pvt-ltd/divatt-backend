@@ -212,11 +212,12 @@ public class ProductController implements ProductServiceImp {
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
-			@RequestParam Optional<String> sortBy) {
+			@RequestParam Optional<String> sortBy,@RequestParam(defaultValue = "") String sortDateType) {
 		try {
 			LOGGER.info("Status Datata={}", status);
 			return this.productService.designerIdListPage(designerId, status, sortBy, page, sort, sortName, isDeleted, limit,
-					keyword, isActive);
+					keyword, isActive,sortDateType);
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
