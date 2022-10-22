@@ -332,11 +332,11 @@ public class OrderAndPaymentContoller {
             @PathVariable int designerId, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
             @RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
-            @RequestParam Optional<String> sortBy,@RequestParam (defaultValue = "") String orderIteamStatus) {
+            @RequestParam Optional<String> sortBy,@RequestParam (defaultValue = "") String orderItemStatus) {
         LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner() for Designer side listing");
 
         try {
-            return orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword, sortBy,orderIteamStatus);
+            return orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword, sortBy,orderItemStatus);
         } catch (Exception e) {
             throw new CustomException(e.getMessage());
         }
@@ -740,36 +740,6 @@ public class OrderAndPaymentContoller {
         }
     }
 
-    @GetMapping("/getorderByid/{orderId}")
-    public List<OrderDetailsEntity> getorderByid(@PathVariable String orderId) {
-        try {
-            return this.orderAndPaymentService.findByOrderId(orderId);
-        } catch (Exception e) {
-            throw new CustomException(e.getMessage());
-        }
-    }
-    
-    @GetMapping("/getorderByid1/{orderId}")
-    public Optional<OrderPaymentEntity> getdetails (@PathVariable String orderId){
-        try {
-           
-             return this.orderAndPaymentService.getgetorderByid1(orderId);
-             
-        }catch (Exception e) {
-           throw new CustomException(e.getMessage());
-        }
-        
-    }
-    @GetMapping("/findbyOrderIds")
-    public Page<OrderDetailsEntity> findbyOrderIds(@RequestParam String orderId,@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,@RequestParam (defaultValue = "false") Boolean isDeleted,
-            @RequestParam Optional<String> sortBy){
-        try {
-            return this.orderAndPaymentService.findByOrderIds(page, limit,sort, orderId,  isDeleted,  sortBy);
-        }catch (Exception e) {
-            throw new CustomException(e.getMessage());
-        }
-    }
     
     @GetMapping("/designerSideOrderList")
     public Object designerSideOrderList(@RequestHeader("Authorization") String token,

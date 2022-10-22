@@ -577,7 +577,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy,String orderIteamStatus) {
+			String keyword, Optional<String> sortBy,String orderItemStatus) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 			int CountData = (int) orderDetailsRepo.count();
@@ -600,8 +600,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			List<Object> productId = new ArrayList<>();
 			
-            if(!orderIteamStatus.isEmpty()) {
-            	List<String> OrderId1 =	OrderSKUDetailsData.stream().filter(e-> e.getOrderItemStatus().equals(orderIteamStatus)).map(c -> c.getOrderId()).collect(Collectors.toList()); 
+            if(!orderItemStatus.isEmpty()) {
+            	List<String> OrderId1 =	OrderSKUDetailsData.stream().filter(e-> e.getOrderItemStatus().equals(orderItemStatus)).map(c -> c.getOrderId()).collect(Collectors.toList()); 
             	findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
             }else {
             	List<String> OrderId = OrderSKUDetailsData.stream().map(c -> c.getOrderId()).collect(Collectors.toList());
@@ -672,7 +672,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrderTotal(designerId,orderIteamStatus).size());
 			response.put("New", orderSKUDetailsRepo.findByOrderTotal(designerId,"New").size());
 			response.put("Packed", orderSKUDetailsRepo.findByOrderTotal(designerId,"Packed").size());
 			response.put("Shipped", orderSKUDetailsRepo.findByOrderTotal(designerId,"Shipped").size());
@@ -1314,47 +1313,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-	@Override
-	public List<OrderDetailsEntity> findByOrderId(String orderId) {
-		try {
-			return this.orderDetailsRepo.findByOrderId(orderId);
 
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-
-	}
-
-	@Override
-	public Optional<OrderPaymentEntity> getgetorderByid1(String orderId) {
-		try {
-			return this.userOrderPaymentRepo.findByOrderId(orderId);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-
-	}
-
-	@Override
-	public Page<OrderDetailsEntity> findByOrderIds(int page, int limit, String sort, String orderId, Boolean isDeleted,
-			Optional<String> sortBy) {
-		try {
-			int CountData = (int) orderDetailsRepo.count();
-			Pageable pagingSort = null;
-			if (limit == 0) {
-				limit = CountData;
-			}
-
-			if (sort.equals("ASC")) {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderId));
-			} else {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderId));
-			}
-			return this.orderDetailsRepo.findOrderId(orderId, pagingSort);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
 
 	@Override
 	public Object getDesignerSideOrderListService(String token, String orderStatus) {

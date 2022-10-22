@@ -40,7 +40,7 @@ public interface OrderAndPaymentService {
 	public ResponseEntity<?> getUserOrderDetailsService(Integer userId);
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy,String orderIteamStatus);
+			String keyword, Optional<String> sortBy,String orderItemStatus);
 
 	public GlobalResponse invoiceGenarator(String orderId);
 
@@ -84,15 +84,6 @@ public interface OrderAndPaymentService {
 	public OrderSKUDetailsEntity getorderDetails(String orderId);
 
 	public List<OrderDetailsEntity> getOrderListService(ListResponseDTO jsonObject);
-
-	public List<OrderDetailsEntity> findByOrderId(String orderId);
-
-   
-
-    public Optional<OrderPaymentEntity> getgetorderByid1(String orderId);
-
-    public Page<OrderDetailsEntity> findByOrderIds(int page, int limit, String sort, String orderId,
-            Boolean isDeleted, Optional<String> sortBy);
 
 	public Object getDesignerSideOrderListService(String token, String orderStatus);
 
