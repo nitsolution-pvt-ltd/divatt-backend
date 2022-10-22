@@ -1,4 +1,4 @@
-package com.divatt.user.services;
+package com.divatt.user.serviceImpl;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -60,6 +60,8 @@ import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.OrderTrackingRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.response.GlobalResponse;
+import com.divatt.user.services.OrderAndPaymentService;
+import com.divatt.user.services.SequenceGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -113,7 +115,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Autowired
 	private OrderInvoiceRepo orderInvoiceRepo;
-	
+
 	@Autowired
 	private JWTConfig jwtconfig;
 
@@ -394,8 +396,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			if (productId.size() <= 0) {
 				throw new CustomException("Order not found!");
 			} else {
-				if(!restTemplate.getForEntity("https://localhost:8080/dev/auth/info/ADMIN/"+jwtconfig.extractUsername(token.substring(7)), Object.class).toString().isBlank()) {
-					Map<String, Integer> orderCount = getOrderCount(0,true);
+				if (!restTemplate.getForEntity(
+						"https://localhost:8080/dev/auth/info/ADMIN/" + jwtconfig.extractUsername(token.substring(7)),
+						Object.class).toString().isBlank()) {
+					Map<String, Integer> orderCount = getOrderCount(0, true);
 					response.put("orderCount", orderCount);
 					return response;
 				}
@@ -435,11 +439,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 					try {
 						// Get data for product by id
-						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity("https://localhost:8083/dev//designerProduct/view/"+D.getProductId(), org.json.simple.JSONObject.class);
+						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
+								"https://localhost:8083/dev//designerProduct/view/" + D.getProductId(),
+								org.json.simple.JSONObject.class);
 						LOGGER.info(productById.getBody().get("hsnData").toString());
 						D.setHsn(productById.getBody().get("hsnData"));
 						// End
-						
+
 						productIdFilters = objs.writeValueAsString(D);
 						Integer i = (int) (long) D.getUserId();
 						List<OrderTrackingEntity> findByIdTracking = this.orderTrackingRepo
@@ -488,7 +494,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				productId.add(objects);
 
 			});
-			//LOGGER.info(productId.get(0).toString());
+			// LOGGER.info(productId.get(0).toString());
 			return ResponseEntity.ok(new Json(productId.get(0).toString()));
 		} catch (Exception e2) {
 			return ResponseEntity.ok(e2.getMessage());
@@ -515,12 +521,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
-				
+
 				// get HSN for product
-				
+
 				OrderSKUDetailsRow.forEach(order -> {
 					try {
-						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity("https://localhost:8083/dev//designerProduct/view/"+order.getProductId(), org.json.simple.JSONObject.class);
+						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(
+								"https://localhost:8083/dev//designerProduct/view/" + order.getProductId(),
+								org.json.simple.JSONObject.class);
 						LOGGER.info(getProductByID.getBody().get("hsnData").toString());
 						order.setHsn(getProductByID.getBody().get("hsnData"));
 					} catch (Exception e2) {
@@ -1210,12 +1218,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
-	public Map<String, Integer> getOrderCount(int designerId,Boolean adminstatus) {
+	public Map<String, Integer> getOrderCount(int designerId, Boolean adminstatus) {
 
 		try {
 			Map<String, Integer> countResponse = new HashMap<String, Integer>();
 			List<String> orderIdList = new ArrayList<String>();
-			if(adminstatus) {
+			if (adminstatus) {
 				List<OrderSKUDetailsEntity> allOrderList = orderSKUDetailsRepo.findAll();
 				allOrderList.stream().forEach(e -> {
 					countResponse.put(e.getOrderItemStatus(), 0);
@@ -1229,7 +1237,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					}
 				});
 				return countResponse;
-			}else {
+			} else {
 				List<OrderSKUDetailsEntity> findByDesignerId = orderSKUDetailsRepo.findByDesignerId(designerId);
 				findByDesignerId.stream().forEach(e -> {
 					if (!orderIdList.contains(e.getOrderId())) {
@@ -1255,6 +1263,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	public OrderSKUDetailsEntity getOrderDetailsService(String orderId, String productId) {
 		try {
 			Query query = new Query();
@@ -1289,47 +1298,61 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	public List<OrderDetailsEntity> findByOrderId(String orderId) {
 		try {
 			return this.orderDetailsRepo.findByOrderId(orderId);
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
+
 	}
 
-    @Override
-    public Optional<OrderPaymentEntity> getgetorderByid1(String orderId) {
-        try {
-            return this.userOrderPaymentRepo.findByOrderId(orderId);
-        }catch (Exception e) {
-            throw new CustomException(e.getMessage());
-        }
-        
-    }
+	@Override
+	public Optional<OrderPaymentEntity> getgetorderByid1(String orderId) {
+		try {
+			return this.userOrderPaymentRepo.findByOrderId(orderId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 
-    @Override
-    public Page<OrderDetailsEntity> findByOrderIds(int page, int limit, String sort, String orderId, Boolean isDeleted,
-            Optional<String> sortBy) {
-        try {
-            int CountData = (int) orderDetailsRepo.count();
-            Pageable pagingSort = null;
-            if (limit == 0) {
-                limit = CountData;
-            }
+	}
 
-            if (sort.equals("ASC")) {
-                pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderId));
-            } else {
-                pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderId));
-            }
-            return this.orderDetailsRepo.findOrderId(orderId,pagingSort );
-        }catch (Exception e) {
-            throw new CustomException(e.getMessage());
-        }
-    }
-    
-  
+	@Override
+	public Page<OrderDetailsEntity> findByOrderIds(int page, int limit, String sort, String orderId, Boolean isDeleted,
+			Optional<String> sortBy) {
+		try {
+			int CountData = (int) orderDetailsRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
 
-  
-    }
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderId));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderId));
+			}
+			return this.orderDetailsRepo.findOrderId(orderId, pagingSort);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
-
+	@Override
+	public Object getDesignerSideOrderListService(String token, String orderStatus) {
+		try {
+			LOGGER.info(jwtconfig.extractUsername(token.substring(7)));
+			org.json.simple.JSONObject designerObject = restTemplate
+					.getForEntity("https://localhost:8080/dev/auth/info/DESIGNER/"
+							+ jwtconfig.extractUsername(token.substring(7)), org.json.simple.JSONObject.class)
+					.getBody();
+			Integer designerId=Integer.parseInt(designerObject.get("designerId").toString());
+			LOGGER.info(designerId+"");
+			return orderSKUDetailsRepo.findByDesignerId(designerId)
+			.stream()
+			.filter(designerOrder->designerOrder.getOrderItemStatus().equals(orderStatus))
+			.collect(Collectors.toList());
+			//return orderStatusFiltered;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+}

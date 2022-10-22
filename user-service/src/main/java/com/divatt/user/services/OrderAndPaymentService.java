@@ -94,6 +94,8 @@ public interface OrderAndPaymentService {
     public Page<OrderDetailsEntity> findByOrderIds(int page, int limit, String sort, String orderId,
             Boolean isDeleted, Optional<String> sortBy);
 
+	public Object getDesignerSideOrderListService(String token, String orderStatus);
+
 	
    
 

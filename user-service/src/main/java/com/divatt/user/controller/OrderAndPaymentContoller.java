@@ -771,6 +771,14 @@ public class OrderAndPaymentContoller {
         }
     }
     
-
-   
+    @GetMapping("/designerSideOrderList")
+    public Object designerSideOrderList(@RequestHeader("Authorization") String token,
+    		@RequestParam(defaultValue = "") String orderStatus){
+    	try {
+    		LOGGER.info(orderStatus);
+    		return this.orderAndPaymentService.getDesignerSideOrderListService(token,orderStatus);
+    	}catch(Exception e) {
+    		throw new CustomException(e.getMessage());
+    	}
+    }
 }
