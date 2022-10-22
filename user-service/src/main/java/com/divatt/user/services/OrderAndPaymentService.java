@@ -40,7 +40,7 @@ public interface OrderAndPaymentService {
 	public ResponseEntity<?> getUserOrderDetailsService(Integer userId);
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy);
+			String keyword, Optional<String> sortBy,String orderIteamStatus);
 
 	public GlobalResponse invoiceGenarator(String orderId);
 

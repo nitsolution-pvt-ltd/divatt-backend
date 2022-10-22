@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 
 public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEntity,Integer>{
@@ -31,6 +32,10 @@ public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEnti
 	Page<OrderSKUDetailsEntity> Search(String orderItemStatus,Pageable pagingSort);
 	@Query("{ 'orderItemStatus' : ?0}")
 	List<OrderSKUDetailsEntity> findByOrder(String orderItemStatus);
+	@Query("{ 'orderItemStatus' : ?0,'designerId': ?1}")
+	Page<OrderDetailsEntity> findByOrderItem(int designerId,String orderIteamStatus, Pageable pagingSort);
+	@Query("{'designerId': ?0,'orderItemStatus' : ?1}")
+	List<OrderSKUDetailsEntity> findByOrderTotal(int designerId, String orderIteamStatus);
 	
 	
 

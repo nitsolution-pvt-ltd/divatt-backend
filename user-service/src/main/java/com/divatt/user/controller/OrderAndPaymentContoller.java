@@ -279,7 +279,7 @@ public class OrderAndPaymentContoller {
         LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
 
         try {
-            return orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy, token);
+            return orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy, token );
         } catch (Exception e) {
             throw new CustomException(e.getMessage());
         }
@@ -332,11 +332,11 @@ public class OrderAndPaymentContoller {
             @PathVariable int designerId, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
             @RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
-            @RequestParam Optional<String> sortBy) {
+            @RequestParam Optional<String> sortBy,@RequestParam (defaultValue = "") String orderIteamStatus) {
         LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner() for Designer side listing");
 
         try {
-            return orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword, sortBy);
+            return orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword, sortBy,orderIteamStatus);
         } catch (Exception e) {
             throw new CustomException(e.getMessage());
         }

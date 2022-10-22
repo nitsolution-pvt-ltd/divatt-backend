@@ -334,6 +334,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				findAll = orderDetailsRepo.Search(keyword, pagingSort);
 
 			}
+			
 
 			List<Object> productId = new ArrayList<>();
 
@@ -390,6 +391,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
+			//response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderIteamStatus).size());
 
 			if (productId.size() <= 0) {
 				throw new CustomException("Order not found!");
@@ -567,7 +569,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy) {
+			String keyword, Optional<String> sortBy,String orderIteamStatus) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 			int CountData = (int) orderDetailsRepo.count();
@@ -589,10 +591,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 
 			List<Object> productId = new ArrayList<>();
+			
+            if(!orderIteamStatus.isEmpty()) {
+            	List<String> OrderId1 =	OrderSKUDetailsData.stream().filter(e-> e.getOrderItemStatus().equals(orderIteamStatus)).map(c -> c.getOrderId()).collect(Collectors.toList()); 
+            	findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
+            }else {
+            	List<String> OrderId = OrderSKUDetailsData.stream().map(c -> c.getOrderId()).collect(Collectors.toList());
+            	findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
+            }
+			//List<String> OrderId = OrderSKUDetailsData.stream().filter(e-> e.getOrderItemStatus().equals(orderIteamStatus)).map(c -> c.getOrderId()).collect(Collectors.toList());
 
-			List<String> OrderId = OrderSKUDetailsData.stream().map(c -> c.getOrderId()).collect(Collectors.toList());
-
-			findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
+			
 
 			List<OrderDetailsEntity> content = findAll.getContent();
 
@@ -637,7 +646,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				productId.add(object);
 
 			});
-
+            
+			/*
+			 * if(!orderIteamStatus.isEmpty()) { findAll =
+			 * orderSKUDetailsRepo.findByOrderItem(designerId,orderIteamStatus, pagingSort);
+			 * }
+			 */
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
@@ -650,7 +664,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-
+			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrderTotal(designerId,orderIteamStatus).size());
+			response.put("New", orderSKUDetailsRepo.findByOrderTotal(designerId,"New").size());
+			response.put("Packed", orderSKUDetailsRepo.findByOrderTotal(designerId,"Packed").size());
+			response.put("Shipped", orderSKUDetailsRepo.findByOrderTotal(designerId,"Shipped").size());
+			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId,"Delivered").size());
+			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId,"Return").size());
+			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId,"Active").size());	
 			if (productId.size() <= 0) {
 				throw new CustomException("Order not found!");
 			} else {
