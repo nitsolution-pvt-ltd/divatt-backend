@@ -38,6 +38,7 @@ public class ProductMasterEntity {
 	private String productName;
 	@NotEmpty(message = "Product Description Required")
 	private String productDescription;
+	
 	private AgeEntity age;
 	//@NotEmpty(message = "COD Status Required")
 	private Boolean cod;
@@ -81,6 +82,10 @@ public class ProductMasterEntity {
 	 
 	private String adminStatus;
 	private Object hsnData;
+	
+	private Boolean designCustomization ;
+	private Boolean returnAccept ;
+	private Boolean cancelAccept ;
 	public ProductMasterEntity() {
 		super();
 		// TODO Auto-generated constructor stub
