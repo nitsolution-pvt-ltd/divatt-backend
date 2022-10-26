@@ -535,7 +535,6 @@ public class ProductService {
 			response.put("live", live);
 			response.put("pending", pending);
 			response.put("reject", reject);
-			response.put("reject", reject);
 			response.put("ls", ls);
 			response.put("oos", oos);
 
