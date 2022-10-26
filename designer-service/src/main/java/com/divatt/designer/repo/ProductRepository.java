@@ -50,7 +50,7 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	
 	Page<ProductMasterEntity> findByIsDeletedAndDesignerId(Boolean isDeleted, Integer designerId,Pageable pagingSort);
-	Page<ProductMasterEntity> findByIsDeletedAndDesignerIdAndAdminStatus(Boolean isDeleted, Integer designerId, String adminStatus, Pageable pagingSort);
+	Page<ProductMasterEntity> findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(Boolean isDeleted, Integer designerId, String adminStatus, Boolean isActive,Pageable pagingSort);
 	
 	
 

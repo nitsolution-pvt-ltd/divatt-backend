@@ -486,28 +486,28 @@ public class ProductService {
 			Integer ls = 0;
 			Integer oos = 0;
 			
-			live = productRepo.countByIsDeletedAndDesignerIdAndIsActive(isDeleted, designerId, isActive);
+			live = productRepo.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive, "Approved");
 			pending = productRepo.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive, "Pending");
-			reject = productRepo.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive, "Reject");
+			reject = productRepo.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive, "Rejected");
 			// need to do get count for low stock and out of stock
 			if (keyword.isEmpty()) {
 				if(StringUtils.equals(status, "live")) {
-					findAll = productRepo.findByIsDeletedAndDesignerId(isDeleted, designerId, pagingSort);
+					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId, "Approved", isActive, pagingSort);
 				} else if(StringUtils.equals(status, "pending")) {
 					LOGGER.info("Status Datata={}", status);
-					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatus(isDeleted, designerId, "Pending", pagingSort);
+					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId, "Pending", isActive, pagingSort);
 					LOGGER.info("Data for finf all={}", findAll.getContent());
 				} else if(StringUtils.equals(status, "reject")) {
-					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatus(isDeleted, designerId, "Reject", pagingSort);
+					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId, "Rejected", isActive, pagingSort);
 				} else if(StringUtils.equals(status, "ls")) {
-					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatus(isDeleted, designerId, status, pagingSort);
+					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId, status, isActive, pagingSort);
 				} else if(StringUtils.equals(status, "oos")) {
-					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatus(isDeleted, designerId, status, pagingSort);
+					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId, status, isActive, pagingSort);
 				}
 			} else {
 //				findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId, pagingSort);
 				if(StringUtils.equals(status, "live")) {
-					findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId, pagingSort);
+					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Approved", pagingSort);
 				} else if(StringUtils.equals(status, "pending")) {
 					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Pending", pagingSort);
 				} else if(StringUtils.equals(status, "reject")) {
