@@ -35,13 +35,12 @@ public class ProductServiceImp2 implements ProductService2 {
 	@Override
 	public GlobalResponce addProductData(ProductMasterEntity2 productMasterEntity2) {
 		try {
-			productMasterEntity2.setProductId(sequenceGenerator.getNextSequence(ProductMasterEntity2.SEQUENCE_NAME));
-			productRepo2.save(productMasterEntity2);
+			LOGGER.info("Inside-ProductServiceImp2.addProductMasterData()");
+			productRepo2.save(customFunction.addProductMasterData(productMasterEntity2));
 			return new GlobalResponce("Success!!", "Product added successfully", 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-
 	}
 
 //	@Override
@@ -73,4 +72,5 @@ public class ProductServiceImp2 implements ProductService2 {
 		}
 
 	}
+
 }

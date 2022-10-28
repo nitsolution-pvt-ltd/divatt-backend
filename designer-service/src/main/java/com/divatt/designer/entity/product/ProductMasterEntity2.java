@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
+import javax.ws.rs.DefaultValue;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -75,6 +76,9 @@ public class ProductMasterEntity2 {
 	private String priceCode;
 	@Field(name = "MRP")
 	private Integer mrp;
+	@Field(name = "adminStatus")
+	@DefaultValue(value = "Pending")
+	private String adminStatus;
 	@Field(name = "deal")
 	private Deal deal;
 	@Field(name = "gift_wrap_amount")
@@ -123,7 +127,7 @@ public class ProductMasterEntity2 {
 			Integer notify, String priceCode, Integer mrp, Deal deal, Integer giftWrapAmount,
 			ExtraSpecifications extraSpecifications, String productWeight, String shipmentTime, ImageEntity[] image,
 			Boolean isActive, Boolean isDeleted, String productStage, ProductStageDetails productStageDetails,
-			Date createdOn, String createdBy, Date updatedOn, String updatedBy) {
+			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String adminstatus) {
 		super();
 		this.productId = productId;
 		this.sku = sku;
@@ -163,6 +167,7 @@ public class ProductMasterEntity2 {
 		this.createdBy = createdBy;
 		this.updatedOn = updatedOn;
 		this.updatedBy = updatedBy;
+		this.adminStatus = adminstatus;
 	}
 
 	public Integer getProductId() {
@@ -469,13 +474,21 @@ public class ProductMasterEntity2 {
 		this.updatedBy = updatedBy;
 	}
 
+	public String getadminStatus() {
+		return adminStatus;
+	}
+
+	public void setadminStatus(String adminStatus) {
+		this.adminStatus = adminStatus;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
 	@Override
 	public String toString() {
-		return "ProductMasterEntity_2 [productId=" + productId + ", sku=" + sku + ", designerId=" + designerId
+		return "ProductMasterEntity2 [productId=" + productId + ", sku=" + sku + ", designerId=" + designerId
 				+ ", categoryId=" + categoryId + ", subCategoryId=" + subCategoryId + ", purchaseMinQuantity="
 				+ purchaseMinQuantity + ", purchaseMaxQuantity=" + purchaseMaxQuantity + ", hsnCode=" + hsnCode
 				+ ", productDetails=" + productDetails + ", designCustomizationFeatures=" + designCustomizationFeatures
@@ -483,12 +496,12 @@ public class ProductMasterEntity2 {
 				+ ", withGiftWrap=" + withGiftWrap + ", returnAcceptable=" + returnAcceptable + ", cancelAcceptable="
 				+ cancelAcceptable + ", cod=" + cod + ", priceType=" + priceType + ", colour=" + colour + ", sizes="
 				+ sizes + ", soh=" + soh + ", oos=" + oos + ", notify=" + notify + ", priceCode=" + priceCode + ", mrp="
-				+ mrp + ", deal=" + deal + ", giftWrapAmount=" + giftWrapAmount + ", extraSpecifications="
-				+ extraSpecifications + ", productWeight=" + productWeight + ", shipmentTime=" + shipmentTime
-				+ ", image=" + Arrays.toString(image) + ", isActive=" + isActive + ", isDeleted=" + isDeleted
-				+ ", productStage=" + productStage + ", productStageDetails=" + productStageDetails + ", createdOn="
-				+ createdOn + ", createdBy=" + createdBy + ", updatedOn=" + updatedOn + ", updatedBy=" + updatedBy
-				+ "]";
+				+ mrp + ", adminStatus=" + adminStatus + ", deal=" + deal + ", giftWrapAmount=" + giftWrapAmount
+				+ ", extraSpecifications=" + extraSpecifications + ", productWeight=" + productWeight
+				+ ", shipmentTime=" + shipmentTime + ", image=" + Arrays.toString(image) + ", isActive=" + isActive
+				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", productStageDetails="
+				+ productStageDetails + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", updatedOn="
+				+ updatedOn + ", updatedBy=" + updatedBy + "]";
 	}
 
 }

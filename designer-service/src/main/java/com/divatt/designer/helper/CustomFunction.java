@@ -189,12 +189,10 @@ public class CustomFunction {
 			updateMasterEntity.setSku(productMasterEntity2.getSku());
 			updateMasterEntity.setDesignerId(productMasterEntity2.getDesignerId());
 			updateMasterEntity.setCategoryId(productMasterEntity2.getCategoryId());
-
 			updateMasterEntity.setSubCategoryId(productMasterEntity2.getSubCategoryId());
 			updateMasterEntity.setPurchaseMinQuantity(productMasterEntity2.getPurchaseMinQuantity());
 			updateMasterEntity.setPurchaseMaxQuantity(productMasterEntity2.getPurchaseMaxQuantity());
 			updateMasterEntity.setHsnCode(productMasterEntity2.getHsnCode());
-
 			updateMasterEntity.setProductDetails(productMasterEntity2.getProductDetails());
 			updateMasterEntity.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
 			updateMasterEntity.setWithCustomization(productMasterEntity2.getWithCustomization());
@@ -212,9 +210,60 @@ public class CustomFunction {
 			updateMasterEntity.setPriceCode(productMasterEntity2.getPriceCode());
 			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
 			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
+			updateMasterEntity.setadminStatus("Pending");
 
 			LOGGER.info(updateMasterEntity.toString());
 			return updateMasterEntity;
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public ProductMasterEntity2 addProductMasterData(ProductMasterEntity2 productMasterEntity2) {
+
+		try {
+			ProductMasterEntity2 filterProductEntity = new ProductMasterEntity2();
+			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity2.SEQUENCE_NAME));
+			filterProductEntity.setSku(randomString.getAlphaNumericString(10));
+			filterProductEntity.setDesignerId(productMasterEntity2.getDesignerId());
+			filterProductEntity.setCategoryId(productMasterEntity2.getCategoryId());
+			filterProductEntity.setSubCategoryId(productMasterEntity2.getSubCategoryId());
+			filterProductEntity.setPurchaseMinQuantity(productMasterEntity2.getPurchaseMinQuantity());
+			filterProductEntity.setPurchaseMaxQuantity(productMasterEntity2.getPurchaseMaxQuantity());
+			filterProductEntity.setHsnCode(productMasterEntity2.getHsnCode());
+			filterProductEntity.setProductDetails(productMasterEntity2.getProductDetails());
+			filterProductEntity.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
+			filterProductEntity.setWithCustomization(productMasterEntity2.getWithCustomization());
+			filterProductEntity.setWithDesignCustomization(productMasterEntity2.getWithDesignCustomization());
+			filterProductEntity.setWithGiftWrap(productMasterEntity2.getWithGiftWrap());
+			filterProductEntity.setReturnAcceptable(productMasterEntity2.getReturnAcceptable());
+			filterProductEntity.setCancelAcceptable(productMasterEntity2.getCancelAcceptable());
+			filterProductEntity.setCod(productMasterEntity2.getCod());
+			filterProductEntity.setPriceType(productMasterEntity2.getPriceType());
+			filterProductEntity.setColour(productMasterEntity2.getColour());
+			filterProductEntity.setSizes(productMasterEntity2.getSizes());
+			filterProductEntity.setSoh(productMasterEntity2.getSoh());
+			filterProductEntity.setOos(productMasterEntity2.getOos());
+			filterProductEntity.setNotify(productMasterEntity2.getNotify());
+			filterProductEntity.setPriceCode(productMasterEntity2.getPriceCode());
+			filterProductEntity.setMrp(productMasterEntity2.getMrp());
+			filterProductEntity.setDeal(productMasterEntity2.getDeal());
+			filterProductEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
+			filterProductEntity.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
+			filterProductEntity.setProductWeight(productMasterEntity2.getProductWeight());
+			filterProductEntity.setShipmentTime(productMasterEntity2.getShipmentTime());
+			filterProductEntity.setImage(productMasterEntity2.getImage());
+			filterProductEntity.setIsActive(productMasterEntity2.getIsActive());
+			filterProductEntity.setIsDeleted(productMasterEntity2.getIsDeleted());
+			filterProductEntity.setProductStage(productMasterEntity2.getProductStage());
+			filterProductEntity.setProductStageDetails(productMasterEntity2.getProductStageDetails());
+			filterProductEntity.setCreatedOn(productMasterEntity2.getCreatedOn());
+			filterProductEntity.setCreatedBy(productMasterEntity2.getCreatedBy());
+			filterProductEntity.setUpdatedOn(productMasterEntity2.getUpdatedOn());
+			filterProductEntity.setUpdatedBy(productMasterEntity2.getUpdatedBy());
+			filterProductEntity.setadminStatus("Pending");
+			return filterProductEntity;
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
