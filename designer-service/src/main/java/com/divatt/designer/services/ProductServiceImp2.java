@@ -27,8 +27,22 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	@Autowired
 	private CustomFunction customFunction;
+	@Autowired
+	private SequenceGenerator sequenceGenerator;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImp2.class);
+
+	@Override
+	public GlobalResponce addProductData(ProductMasterEntity2 productMasterEntity2) {
+		try {
+			productMasterEntity2.setProductId(sequenceGenerator.getNextSequence(ProductMasterEntity2.SEQUENCE_NAME));
+			productRepo2.save(productMasterEntity2);
+			return new GlobalResponce("Success!!", "Product added successfully", 200);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
 
 //	@Override
 //	public ProductMasterEntity2 getAllProduct() {
