@@ -1,6 +1,7 @@
 package com.divatt.designer.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,5 +73,23 @@ public class ProductServiceImp2 implements ProductService2 {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+
+	@Override
+	public List<ProductMasterEntity2> getAllProduct() {
+		try {
+			return productRepo2.findAll();
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@Override
+	public ProductMasterEntity2 getProduct(Integer productId) {
+		try {
+			return productRepo2.findById(productId).get();
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 }

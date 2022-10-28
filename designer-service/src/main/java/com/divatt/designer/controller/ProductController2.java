@@ -1,5 +1,8 @@
 package com.divatt.designer.controller;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +41,7 @@ public class ProductController2 implements ProductService2 {
 //
 //	}
 
-	@PostMapping("/addData")
+	@PostMapping("/addProduct")
 	@Override
 	public GlobalResponce addProductData(@RequestBody ProductMasterEntity2 productMasterEntity2) {
 		LOGGER.info("Inside ProductController2.addProductData()");
@@ -60,5 +63,27 @@ public class ProductController2 implements ProductService2 {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+
+	@Override
+	@GetMapping("/productList")
+	public List<ProductMasterEntity2> getAllProduct() {
+		try {
+			return productServiceImp2.getAllProduct();
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@Override
+	@GetMapping("/productList/{productId}")
+	public ProductMasterEntity2 getProduct(@PathVariable Integer productId) {
+		try {
+			LOGGER.info("Inside- ProductController2.getProduct()");
+			return productServiceImp2.getProduct(productId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 }
