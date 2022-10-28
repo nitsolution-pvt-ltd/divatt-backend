@@ -21,7 +21,7 @@ import com.divatt.designer.services.ProductService2;
 import com.divatt.designer.services.ProductServiceImp2;
 
 @RestController
-@RequestMapping("/designerProduct")
+@RequestMapping("/designerProducts")
 public class ProductController2 implements ProductService2 {
 	@Autowired
 	private ProductServiceImp2 productServiceImp2;
