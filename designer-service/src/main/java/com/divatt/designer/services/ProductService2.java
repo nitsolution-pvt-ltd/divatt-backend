@@ -1,5 +1,5 @@
 package com.divatt.designer.services;
 
-public interface ProductServiceImp_2 {
+public interface ProductService2 {
 
 }

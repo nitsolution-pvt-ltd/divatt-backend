@@ -6,15 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.divatt.designer.services.ProductServiceImp_2;
-import com.divatt.designer.services.ProductService_2;
+import com.divatt.designer.services.ProductService2;
+import com.divatt.designer.services.ProductServiceImp2;
+
 
 @RestController
 @RequestMapping("/designerProduct")
-public class ProductController_2 implements ProductServiceImp_2{
+public class ProductController2 implements ProductService2{
 	@Autowired
-	private ProductService_2 productService_2;
+	private ProductServiceImp2 productServiceImp2;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController_2.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController2.class);
 
 }

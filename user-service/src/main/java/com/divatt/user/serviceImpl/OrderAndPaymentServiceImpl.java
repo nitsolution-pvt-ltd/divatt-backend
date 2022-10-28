@@ -414,7 +414,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	public ResponseEntity<?> getOrderDetailsService(String orderId) {
 		try {
+			
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
+			LOGGER.info("inside findbyid "+findById.toString());
 			if (findById.size() <= 0) {
 				throw new CustomException("Order not found");
 			}
@@ -438,13 +440,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					LOGGER.info("Data in for each method" + D.getProductId());
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
+					LOGGER.info("Top of try catch");
 
 					try {
-						// Get data for product by id
+						LOGGER.info(D.getProductId()+" inside productid");
 						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
 								"https://localhost:8083/dev//designerProduct/view/" + D.getProductId(),
 								org.json.simple.JSONObject.class);
-						LOGGER.info(productById.getBody().get("hsnData").toString());
+						LOGGER.info(productById.toString());
+						LOGGER.info("inside Restcall"+productById.getBody().get("hsnData"));
 						D.setHsn(productById.getBody().get("hsnData"));
 						// End
 
@@ -600,6 +604,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			List<Object> productId = new ArrayList<>();
 			
+		
+			
             if(!orderItemStatus.isEmpty()) {
             	List<String> OrderId1 =	OrderSKUDetailsData.stream().filter(e-> e.getOrderItemStatus().equals(orderItemStatus)).map(c -> c.getOrderId()).collect(Collectors.toList()); 
             	findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
@@ -655,6 +661,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			});
             
+			LOGGER.info(productId.toString());
+
+			
 			/*
 			 * if(!orderIteamStatus.isEmpty()) { findAll =
 			 * orderSKUDetailsRepo.findByOrderItem(designerId,orderIteamStatus, pagingSort);
@@ -679,7 +688,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId,"Return").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId,"Active").size());	
 			if (productId.size() <= 0) {
-				throw new CustomException("Order not found!");
+				throw new CustomException("[]");
 			} else {
 				return response;
 			}

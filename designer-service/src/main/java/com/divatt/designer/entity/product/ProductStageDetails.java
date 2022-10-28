@@ -1,60 +1,73 @@
 package com.divatt.designer.entity.product;
 
+import java.util.Date;
+
 public class ProductStageDetails {
-	private String comment ;
-	private String submitted_on ;
-	private String submitted_by ;
-	private String approved_on ;
-	private String approved_by ;
+	private String comment;
+	private Date submittedOn;
+	private String submittedBy;
+	private Date approvedOn;
+	private String approvedBy;
+
 	public ProductStageDetails() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public ProductStageDetails(String comment, String submitted_on, String submitted_by, String approved_on,
-			String approved_by) {
+
+	public ProductStageDetails(String comment, Date submittedOn, String submittedBy, Date approvedOn,
+			String approvedBy) {
 		super();
 		this.comment = comment;
-		this.submitted_on = submitted_on;
-		this.submitted_by = submitted_by;
-		this.approved_on = approved_on;
-		this.approved_by = approved_by;
+		this.submittedOn = submittedOn;
+		this.submittedBy = submittedBy;
+		this.approvedOn = approvedOn;
+		this.approvedBy = approvedBy;
 	}
-	@Override
-	public String toString() {
-		return "ProductStageDetails [comment=" + comment + ", submitted_on=" + submitted_on + ", submitted_by="
-				+ submitted_by + ", approved_on=" + approved_on + ", approved_by=" + approved_by + "]";
-	}
+
 	public String getComment() {
 		return comment;
 	}
+
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	public String getSubmitted_on() {
-		return submitted_on;
+
+	public Date getSubmittedOn() {
+		return submittedOn;
 	}
-	public void setSubmitted_on(String submitted_on) {
-		this.submitted_on = submitted_on;
+
+	public void setSubmittedOn(Date submittedOn) {
+		this.submittedOn = submittedOn;
 	}
-	public String getSubmitted_by() {
-		return submitted_by;
+
+	public String getSubmittedBy() {
+		return submittedBy;
 	}
-	public void setSubmitted_by(String submitted_by) {
-		this.submitted_by = submitted_by;
+
+	public void setSubmittedBy(String submittedBy) {
+		this.submittedBy = submittedBy;
 	}
-	public String getApproved_on() {
-		return approved_on;
+
+	public Date getApprovedOn() {
+		return approvedOn;
 	}
-	public void setApproved_on(String approved_on) {
-		this.approved_on = approved_on;
+
+	public void setApprovedOn(Date approvedOn) {
+		this.approvedOn = approvedOn;
 	}
-	public String getApproved_by() {
-		return approved_by;
+
+	public String getApprovedBy() {
+		return approvedBy;
 	}
-	public void setApproved_by(String approved_by) {
-		this.approved_by = approved_by;
+
+	public void setApprovedBy(String approvedBy) {
+		this.approvedBy = approvedBy;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "ProductStageDetails [comment=" + comment + ", submittedOn=" + submittedOn + ", submittedBy="
+				+ submittedBy + ", approvedOn=" + approvedOn + ", approvedBy=" + approvedBy + "]";
+	}
 
 }
