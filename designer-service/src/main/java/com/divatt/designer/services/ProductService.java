@@ -489,6 +489,7 @@ public class ProductService {
 			live = productRepo.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive, "Approved");
 			pending = productRepo.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive, "Pending");
 			reject = productRepo.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive, "Rejected");
+			oos = productRepo.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, false, "Approved");
 			// need to do get count for low stock and out of stock
 			if (keyword.isEmpty()) {
 				if(StringUtils.equals(status, "live")) {
@@ -502,7 +503,7 @@ public class ProductService {
 				} else if(StringUtils.equals(status, "ls")) {
 					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId, status, isActive, pagingSort);
 				} else if(StringUtils.equals(status, "oos")) {
-					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId, status, isActive, pagingSort);
+					findAll = productRepo.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId, "Approved", false, pagingSort);
 				}
 			} else {
 //				findAll = productRepo.listDesignerProductsearch(keyword, isDeleted, designerId, pagingSort);
@@ -515,7 +516,7 @@ public class ProductService {
 				} else if(StringUtils.equals(status, "ls")) {
 					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Ls", pagingSort);
 				} else if(StringUtils.equals(status, "oos")) {
-					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Oos", pagingSort);
+					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Approved", pagingSort);
 				}
 
 			}
