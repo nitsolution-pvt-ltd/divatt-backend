@@ -83,9 +83,6 @@ public class ProductMasterEntity {
 	private String adminStatus;
 	private Object hsnData;
 	
-	private Boolean designCustomization ;
-	private Boolean returnAccept ;
-	private Boolean cancelAccept ;
 	public ProductMasterEntity() {
 		super();
 		// TODO Auto-generated constructor stub
