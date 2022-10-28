@@ -516,7 +516,7 @@ public class ProductService {
 				} else if(StringUtils.equals(status, "ls")) {
 					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Ls", pagingSort);
 				} else if(StringUtils.equals(status, "oos")) {
-					findAll = productRepo.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Approved", pagingSort);
+					findAll = productRepo.listDesignerProductsearchByAdminStatusForOos(keyword, isDeleted, designerId, "Approved", false, pagingSort);
 				}
 
 			}
