@@ -1,17 +1,12 @@
 package com.divatt.designer.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
@@ -24,12 +19,7 @@ public class ProductServiceImp2 implements ProductService2 {
 	private ProductRepo2 productRepo2;
 
 	@Autowired
-	private MongoOperations mongoOperations;
-
-	@Autowired
 	private CustomFunction customFunction;
-	@Autowired
-	private SequenceGenerator sequenceGenerator;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImp2.class);
 
