@@ -27,142 +27,119 @@ import com.divatt.admin.services.HsnService;
 @RestController
 @RequestMapping("/hsn")
 public class HsnController {
-	
+
 	@Autowired
-	private HsnService hsnService ;
+	private HsnService hsnService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(HsnController.class);
-	
-	
+
 	@PostMapping("/add")
 	public GlobalResponse postHsnDetails(@Valid @RequestBody HsnEntity hsnEntity) {
 		LOGGER.info("Inside - HsnController.postHsnDetails()");
 
 		try {
-			 return this.hsnService.postHsnDetails(hsnEntity);
+			return this.hsnService.postHsnDetails(hsnEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
-		} 
+		}
 
 	}
-	
-	
-	
-	
-	
+
 	@PutMapping("/update/{hsnCode}")
-	public GlobalResponse updatetHsnDetailsByHsnCode(@Valid @RequestBody HsnEntity hsnEntity,@PathVariable (value="hsnCode") Integer hsnCode ) {
+	public GlobalResponse updatetHsnDetailsByHsnCode(@Valid @RequestBody HsnEntity hsnEntity,
+			@PathVariable(value = "hsnCode") Integer hsnCode) {
 		LOGGER.info("Inside - HsnController.updatetHsnDetailsByHsnCode()");
 
 		try {
-			 return this.hsnService.updatetHsnDetailsByHsnCode(hsnEntity,hsnCode);
+			return this.hsnService.updatetHsnDetailsByHsnCode(hsnEntity, hsnCode);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
-		} 
+		}
 
 	}
-	
+
 	@GetMapping("/list")
-	public Map<String, Object> getHsnDetails(			
-			@RequestParam(defaultValue = "0") int page, 
-			@RequestParam(defaultValue = "10") int limit,
-			@RequestParam(defaultValue = "DESC") String sort, 
+	public Map<String, Object> getHsnDetails(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "hsnCode") String sortName,
-			@RequestParam(defaultValue = "false")  Boolean isDelete, 			
-			@RequestParam(defaultValue = "") String keyword,
-			@RequestParam Optional<String> sortBy){
-		
+			@RequestParam(defaultValue = "false") Boolean isDelete, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+
 		LOGGER.info("Inside - HsnController.getHsnDetailse()");
 
 		try {
-			 return this.hsnService.getHsnDetails(page,limit,sort,sortName,isDelete,keyword,sortBy);
+			return this.hsnService.getHsnDetails(page, limit, sort, sortName, isDelete, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
-		} 
-		
-		
+		}
+
 	}
-	
-	
+
 	@GetMapping("/view/{hsnCode}")
-	public Optional<HsnEntity> viewByHsnCode(@PathVariable (value="hsnCode") Integer hsnCode) {
+	public Optional<HsnEntity> viewByHsnCode(@PathVariable(value = "hsnCode") Integer hsnCode) {
 		LOGGER.info("Inside - HsnController.viewByHsnCode()");
 
 		try {
-			 return this.hsnService.viewByHsnCode(hsnCode);
+			return this.hsnService.viewByHsnCode(hsnCode);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
-		} 
+		}
 
 	}
-	
-	
+
 	@PutMapping("/deleteHsnCode")
 	public GlobalResponse deleteHsnCode(@RequestBody() HsnEntity hsnEntity) {
 		LOGGER.info("Inside - HsnController.deleteHsnCode()");
 
 		try {
-			if(hsnEntity.getId()!=null) {
+			if (hsnEntity.getId() != null) {
 				return this.hsnService.deleteHsnCode(hsnEntity.getId());
-			}
-			else {
+			} else {
 				throw new CustomException("Hsn not found");
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
-		} 
+		}
 
 	}
-	
+
 	@PutMapping("/muldeleteHsnCode")
 	public GlobalResponse muldeleteHsnCode(@RequestBody() List<Integer> hsnId) {
 		LOGGER.info("Inside - HsnController.muldeleteHsnCode()");
 
 		try {
-			if(!hsnId.equals(null)) {
+			if (!hsnId.equals(null)) {
 				return this.hsnService.muldeleteHsnCode(hsnId);
-			}
-			else {
+			} else {
 				throw new CustomException("Hsn id not found");
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
-		} 
+		}
 
 	}
-	
-	
+
 	@PutMapping("/setStatus")
 	public GlobalResponse setStatus(@RequestBody() HsnEntity hsnEntity) {
 		LOGGER.info("Inside - HsnController.setStatus()");
 
 		try {
-			
-			if(hsnEntity.getId() !=null) {
+
+			if (hsnEntity.getId() != null) {
 				return this.hsnService.setStatus(hsnEntity.getId());
-			}
-			else {
+			} else {
 				throw new CustomException("Hsn Not Found");
 			}
-			 
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-//	@GetMapping("/getactiveHSNList")
-//	public List<HsnEntity> getactiveHSNList(){
-//		try {
-//			return this.hsnService.getActiveHSNListService();
-//		}catch(Exception e) {
-//			throw new CustomException(e.getMessage());
-//		}
-//	}
-	
+
 	@GetMapping("/getactiveHSNList")
-	public List<HsnEntity> getactiveHSNList(@RequestParam(defaultValue = "") String searchKeyword){
+	public List<HsnEntity> getactiveHSNList(@RequestParam(defaultValue = "") String searchKeyword) {
 		try {
 			return this.hsnService.getActiveHSNListService(searchKeyword);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
