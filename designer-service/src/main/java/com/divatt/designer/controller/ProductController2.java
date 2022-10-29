@@ -1,6 +1,6 @@
 package com.divatt.designer.controller;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.designer.entity.product.ProductMasterEntity2;
@@ -23,55 +26,77 @@ import com.divatt.designer.services.ProductServiceImp2;
 @RestController
 @RequestMapping("/designerProducts")
 public class ProductController2 implements ProductService2 {
-	@Autowired
-	private ProductServiceImp2 productServiceImp2;
+    @Autowired
+    private ProductServiceImp2 productServiceImp2;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController2.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductController2.class);
 
-	@PostMapping("/addProduct")
-	@Override
-	public GlobalResponce addProductData(@RequestBody ProductMasterEntity2 productMasterEntity2) {
-		LOGGER.info("Inside ProductController2.addProductData()");
-		try {
-			return this.productServiceImp2.addProductData(productMasterEntity2);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
+    @Override
+    @PostMapping("/addProduct")
+    public GlobalResponce addProductData(@RequestBody ProductMasterEntity2 productMasterEntity2) {
+        LOGGER.info("Inside - designer -> ProductController2.addProductData()");
+        try {
+            return this.productServiceImp2.addProductData(productMasterEntity2);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+    }
 
-	@Override
-	@PutMapping("/updateProduct/{productId}")
-	public GlobalResponce updateProduct(@RequestBody ProductMasterEntity2 productMasterEntity2,
-			@PathVariable Integer productId) {
-		try {
-			LOGGER.info("Inside- ProductController2.updateProduct()");
-			return productServiceImp2.updateProduct(productMasterEntity2, productId);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
+    @Override
+    @PutMapping("/updateProduct/{productId}")
+    public GlobalResponce updateProduct(@RequestBody ProductMasterEntity2 productMasterEntity2,
+            @PathVariable Integer productId) {
+        try {
+            LOGGER.info("Inside - designer -> ProductController2.updateProduct()");
+            return productServiceImp2.updateProduct(productMasterEntity2, productId);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
 
-	}
+    }
 
-	@Override
-	@GetMapping("/productList")
-	public List<ProductMasterEntity2> getAllProduct() {
-		try {
-			return productServiceImp2.getAllProduct();
+    @Override
+    @GetMapping("/productList")
+    public Map<String, Object> getAllProduct(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+            @RequestParam(defaultValue = "createdOn") String sortName,
+            @RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+            @RequestParam Optional<String> sortBy) {
+        try {
+            LOGGER.info("Inside - designer -> ProductController2.getAllProduct()");
+            return productServiceImp2.getAllProduct(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+    }
 
-	@Override
-	@GetMapping("/productList/{productId}")
-	public ProductMasterEntity2 getProduct(@PathVariable Integer productId) {
-		try {
-			LOGGER.info("Inside- ProductController2.getProduct()");
-			return productServiceImp2.getProduct(productId);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
+    @Override
+    @GetMapping("/productList/{productId}")
+    public ProductMasterEntity2 getProduct(@PathVariable Integer productId) {
+        try {
+            LOGGER.info("Inside- ProductController2.getProduct()");
+            return productServiceImp2.getProduct(productId);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+    }
+
+    @Override
+    @GetMapping("/listPeradminStatus")
+    public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "All") String adminStatus,
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
+            @RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+            @RequestParam Optional<String> sortBy) {
+        try {
+            LOGGER.info("Inside - designer -> ProductController2.getProductDetailsallStatus()");
+            return this.productServiceImp2.getProductDetailsallStatus(adminStatus, page, limit, sort, sortName,
+                    isDeleted,
+                    keyword, sortBy);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+    }
 
 }
