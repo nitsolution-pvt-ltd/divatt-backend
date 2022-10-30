@@ -13,7 +13,7 @@
 	<artifactId>designer-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>designer-service</name>
-	<description>Designer project of Daivatt.</description>
+	<description>Designer service of Divatt</description>
 	<properties>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>2021.0.1</spring-cloud.version>
