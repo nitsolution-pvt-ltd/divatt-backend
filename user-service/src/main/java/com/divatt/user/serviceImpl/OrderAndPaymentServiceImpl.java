@@ -511,11 +511,18 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
                 productId.add(objects);
 
             });
-            // LOGGER.info(productId.get(0).toString());
             return ResponseEntity.ok(new Json(productId.get(0).toString()));
-        } catch (Exception e2) {
-            return ResponseEntity.ok(e2.getMessage());
-        }
+        } catch (HttpStatusCodeException ex) {
+			if(LOGGER.isErrorEnabled()) {
+			LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>","Designer Service",host+contextPath+"/userOrder/getOrder/"+orderId,ex.getResponseBodyAsString(),ex.getStatusCode());
+			}
+			return new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
+		} catch (Exception exception) {
+			if(LOGGER.isErrorEnabled()) {
+				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>","Designer Service",host+contextPath+"/userOrder/getOrder/"+orderId,exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
     }
 
     public ResponseEntity<?> getUserOrderDetailsService(Integer userId) {
