@@ -83,8 +83,8 @@ public class ProductController2 implements ProductService2 {
     }
 
     @Override
-    @GetMapping("/listPeradminStatus")
-    public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "Live") String adminStatus,
+    @GetMapping("/getProductDetailsallStatus")
+    public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "live") String adminStatus,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
             @RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
@@ -102,7 +102,7 @@ public class ProductController2 implements ProductService2 {
     @Override
     @GetMapping("/getDesignerProductByDesignerId/{designerId}")
     public Map<String, Object> getDesignerProductByDesignerId(@PathVariable Integer designerId,
-            @RequestParam(defaultValue = "Live") String adminStatus,
+            @RequestParam(defaultValue = "live") String adminStatus,
             @RequestParam(defaultValue = "true") Boolean isActive,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,

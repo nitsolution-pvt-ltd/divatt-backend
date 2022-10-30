@@ -136,45 +136,45 @@ public class ProductServiceImp2 implements ProductService2 {
             }
 
             Page<ProductMasterEntity2> findAll = null;
-            Integer Live = 0;
-            Integer Pending = 0;
-            Integer Approved = 0;
-            Integer Rejected = 0;
+            Integer live = 0;
+            Integer pending = 0;
+            Integer approved = 0;
+            Integer rejected = 0;
 
-            Live = productRepo2.countByIsDeleted(isDeleted);
-            Pending = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Pending");
-            Approved = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Approved");
-            Rejected = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Rejected");
+            live = productRepo2.countByIsDeleted(isDeleted);
+            pending = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Pending");
+            approved = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Approved");
+            rejected = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Rejected");
 
             LOGGER.info(adminStatus);
             if (keyword.isEmpty()) {
-                if (adminStatus.equals("Live")) {
-                    LOGGER.info("Behind Live");
+                if (adminStatus.equals("live")) {
+                    LOGGER.info("Behind live");
                     findAll = productRepo2.findByIsDeleted(isDeleted, pagingSort);
-                } else if (adminStatus.equals("Pending")) {
-                    LOGGER.info("Behind Pending");
+                } else if (adminStatus.equals("pending")) {
+                    LOGGER.info("Behind pending");
                     findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Pending", pagingSort);
-                } else if (adminStatus.equals("Approved")) {
-                    LOGGER.info("Behind Approved");
+                } else if (adminStatus.equals("approved")) {
+                    LOGGER.info("Behind approved");
                     findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Approved", pagingSort);
-                } else if (adminStatus.equals("Rejected")) {
-                    LOGGER.info("Behind Rejected");
+                } else if (adminStatus.equals("rejected")) {
+                    LOGGER.info("Behind rejected");
                     findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Rejected", pagingSort);
                 }
             } else {
-                if (adminStatus.equals("Live")) {
-                    LOGGER.info("Behind into else Live");
+                if (adminStatus.equals("live")) {
+                    LOGGER.info("Behind into else live");
                     findAll = productRepo2.SearchAndfindByIsDeleted(keyword, isDeleted, pagingSort);
-                } else if (adminStatus.equals("Pending")) {
-                    LOGGER.info("Behind into else Pending");
+                } else if (adminStatus.equals("pending")) {
+                    LOGGER.info("Behind into else pending");
                     findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Pending",
                             pagingSort);
-                } else if (adminStatus.equals("Approved")) {
-                    LOGGER.info("Behind into else Approved");
+                } else if (adminStatus.equals("approved")) {
+                    LOGGER.info("Behind into else approved");
                     findAll = productRepo2.SearchAppAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",
                             pagingSort);
-                } else if (adminStatus.equals("Rejected")) {
-                    LOGGER.info("Behind into else Rejected");
+                } else if (adminStatus.equals("rejected")) {
+                    LOGGER.info("Behind into else rejected");
                     findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Rejected",
                             pagingSort);
                 }
@@ -191,10 +191,10 @@ public class ProductServiceImp2 implements ProductService2 {
             response.put("totalPage", totalPage);
             response.put("perPage", findAll.getSize());
             response.put("perPageElement", findAll.getNumberOfElements());
-            response.put("Live", Live);
-            response.put("Pending", Pending);
-            response.put("Approved", Approved);
-            response.put("Rejected", Rejected);
+            response.put("live", live);
+            response.put("pending", pending);
+            response.put("approved", approved);
+            response.put("rejected", rejected);
 
             if (findAll.getSize() < 1) {
                 throw new CustomException("Product not found!");
@@ -208,9 +208,9 @@ public class ProductServiceImp2 implements ProductService2 {
     }
 
     @Override
-    public Map<String, Object> getDesignerProductByDesignerId(Integer designerId, String adminStatus,Boolean isActive,
-            int page,  int limit,String sort, String sortName, Boolean isDeleted,
-            String keyword,  Optional<String> sortBy) {
+    public Map<String, Object> getDesignerProductByDesignerId(Integer designerId, String adminStatus, Boolean isActive,
+            int page, int limit, String sort, String sortName, Boolean isDeleted,
+            String keyword, Optional<String> sortBy) {
         try {
             int CountData = (int) productRepo2.count();
             Pageable pagingSort = null;
@@ -225,31 +225,32 @@ public class ProductServiceImp2 implements ProductService2 {
             }
 
             Page<ProductMasterEntity2> findAll = null;
-            Integer Live = 0;
-            Integer Pending = 0;
-            Integer Reject = 0;
+            Integer live = 0;
+            Integer pending = 0;
+            Integer reject = 0;
             Integer ls = 0;
             Integer oos = 0;
 
-            Live = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive,
+            live = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive,
                     "Approved");
-            Pending = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId,
+            LOGGER.info("Behind live "+live);
+            pending = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId,
                     isActive, "Pending");
-            Reject = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive,
+            LOGGER.info("Behind Pending "+pending);
+            reject = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId,
+                    isActive,
                     "Rejected");
+            LOGGER.info("Behind Reject "+reject);
             oos = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, false,
                     "Approved");
-            // need to do get count for low stock and out of stock
             if (keyword.isEmpty()) {
-                if (StringUtils.equals(adminStatus, "Live")) {
+                if (StringUtils.equals(adminStatus, "live")) {
                     findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
                             "Approved", isActive, pagingSort);
-                } else if (StringUtils.equals(adminStatus, "Pending")) {
-                    LOGGER.info("Status Datata={}", adminStatus);
+                } else if (StringUtils.equals(adminStatus, "pending")) {
                     findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
                             "Pending", isActive, pagingSort);
-                    LOGGER.info("Data for find all={}", findAll.getContent());
-                } else if (StringUtils.equals(adminStatus, "Reject")) {
+                } else if (StringUtils.equals(adminStatus, "reject")) {
                     findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
                             "Rejected", isActive, pagingSort);
                 } else if (StringUtils.equals(adminStatus, "ls")) {
@@ -260,13 +261,13 @@ public class ProductServiceImp2 implements ProductService2 {
                             "Approved", false, pagingSort);
                 }
             } else {
-                if (StringUtils.equals(adminStatus, "Live")) {
+                if (StringUtils.equals(adminStatus, "live")) {
                     findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
                             "Approved", pagingSort);
-                } else if (StringUtils.equals(adminStatus, "Pending")) {
+                } else if (StringUtils.equals(adminStatus, "pending")) {
                     findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
                             "Pending", pagingSort);
-                } else if (StringUtils.equals(adminStatus, "Reject")) {
+                } else if (StringUtils.equals(adminStatus, "reject")) {
                     findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
                             "Reject", pagingSort);
                 } else if (StringUtils.equals(adminStatus, "ls")) {
@@ -291,9 +292,9 @@ public class ProductServiceImp2 implements ProductService2 {
             response.put("totalPage", totalPage);
             response.put("perPage", findAll.getSize());
             response.put("perPageElement", findAll.getNumberOfElements());
-            response.put("Live", Live);
-            response.put("Pending", Pending);
-            response.put("Reject", Reject);
+            response.put("live", live);
+            response.put("pending", pending);
+            response.put("reject", reject);
             response.put("ls", ls);
             response.put("oos", oos);
 
@@ -306,7 +307,5 @@ public class ProductServiceImp2 implements ProductService2 {
             throw new CustomException(e.getMessage());
         }
     }
-
-
 
 }
