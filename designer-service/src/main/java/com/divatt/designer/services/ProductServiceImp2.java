@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
@@ -119,10 +118,10 @@ public class ProductServiceImp2 implements ProductService2 {
     public Map<String, Object> getProductDetailsallStatus(String adminStatus, int page, int limit, String sort,
             String sortName, Boolean isDeleted, String keyword, Optional<String> sortBy) {
         try {
-            int CountData = (int) productRepo2.count();
+            int Count = (int) productRepo2.count();
             Pageable pagingSort = null;
             if (limit == 0) {
-                limit = CountData;
+                limit = Count;
             }
 
             if (sort.equals("ASC")) {
@@ -208,10 +207,10 @@ public class ProductServiceImp2 implements ProductService2 {
             int page, int limit, String sort, String sortName, Boolean isDeleted,
             String keyword, Optional<String> sortBy) {
         try {
-            int CountData = (int) productRepo2.count();
+            int Count = (int) productRepo2.count();
             Pageable pagingSort = null;
             if (limit == 0) {
-                limit = CountData;
+                limit = Count;
             }
 
             if (sort.equals("ASC")) {
@@ -238,40 +237,40 @@ public class ProductServiceImp2 implements ProductService2 {
                     "Rejected");
             LOGGER.info("Behind Reject "+reject);
             oos = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, false,
-                    "Approved");
+                    "oos");
             if (keyword.isEmpty()) {
-                if (StringUtils.equals(adminStatus, "live")) {
+                if (adminStatus.equals("live")) {
                     findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
                             "Approved", isActive, pagingSort);
-                } else if (StringUtils.equals(adminStatus, "pending")) {
+                } else if (adminStatus.equals("pending")) {
                     findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
                             "Pending", isActive, pagingSort);
-                } else if (StringUtils.equals(adminStatus, "reject")) {
+                } else if (adminStatus.equals("reject")) {
                     findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
                             "Rejected", isActive, pagingSort);
-                } else if (StringUtils.equals(adminStatus, "ls")) {
+                } else if (adminStatus.equals("ls")) {
                     findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
-                            adminStatus, isActive, pagingSort);
-                } else if (StringUtils.equals(adminStatus, "oos")) {
+                            "ls", isActive, pagingSort);
+                } else if (adminStatus.equals("oos")) {
                     findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
-                            "Approved", false, pagingSort);
+                            "oos", false, pagingSort);
                 }
             } else {
-                if (StringUtils.equals(adminStatus, "live")) {
+                if (adminStatus.equals("live")) {
                     findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
                             "Approved", pagingSort);
-                } else if (StringUtils.equals(adminStatus, "pending")) {
+                } else if (adminStatus.equals("pending")) {
                     findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
                             "Pending", pagingSort);
-                } else if (StringUtils.equals(adminStatus, "reject")) {
+                } else if (adminStatus.equals("reject")) {
                     findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
                             "Reject", pagingSort);
-                } else if (StringUtils.equals(adminStatus, "ls")) {
-                    findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "Ls",
+                } else if (adminStatus.equals("ls")) {
+                    findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "notify",
                             pagingSort);
-                } else if (StringUtils.equals(adminStatus, "oos")) {
+                } else if (adminStatus.equals("oos")) {
                     findAll = productRepo2.listDesignerProductsearchByAdminStatusForOos(keyword, isDeleted, designerId,
-                            "Approved", false, pagingSort);
+                            "oos", false, pagingSort);
                 }
 
             }
@@ -294,7 +293,7 @@ public class ProductServiceImp2 implements ProductService2 {
             response.put("ls", ls);
             response.put("oos", oos);
 
-            if (findAll.getSize() <= 1) {
+            if (findAll.getSize() < 1) {
                 throw new CustomException("Product not found!");
             } else {
                 return response;

@@ -14,7 +14,7 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
 
     Integer countByIsDeleted(Boolean isDeleted);
 
-    Integer countByIsDeletedAndAdminStatus(Boolean isDeleted, String string);
+    Integer countByIsDeletedAndAdminStatus(Boolean isDeleted, String adminStatus);
 
     Page<ProductMasterEntity2> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
 
@@ -36,13 +36,11 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
     @Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1 }]}")
     Page<ProductMasterEntity2> findByKeyword(String keyword, Boolean isDeleted, Pageable pageable);
 
-    Integer countByDesignerIdAndAdminStatus(Boolean isDeleted, Integer designerId, Boolean isActive, String adminStatus);
-
     Page<ProductMasterEntity2> findByDesignerIdAndAdminStatus(Boolean isDeleted, Integer designerId, String adminStatus,
             Boolean isActive, Pageable pagingSort);
-    
+
     Integer countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(Boolean isDeleted, Integer designerId,
-            Boolean isActive, String adminStatus);
+            Boolean isActive, String string);
 
     Page<ProductMasterEntity2> findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(Boolean isDeleted,
             Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
