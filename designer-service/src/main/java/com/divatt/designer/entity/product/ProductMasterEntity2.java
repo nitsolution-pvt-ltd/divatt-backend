@@ -77,7 +77,6 @@ public class ProductMasterEntity2 {
 	@Field(name = "MRP")
 	private Integer mrp;
 	@Field(name = "adminStatus")
-	@DefaultValue(value = "Pending")
 	private String adminStatus;
 	@Field(name = "deal")
 	private Deal deal;

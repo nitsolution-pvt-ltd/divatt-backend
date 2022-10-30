@@ -210,7 +210,7 @@ public class CustomFunction {
 			updateMasterEntity.setPriceCode(productMasterEntity2.getPriceCode());
 			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
 			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
-			updateMasterEntity.setadminStatus("Pending");
+			updateMasterEntity.setadminStatus("Rejected");
 
 			LOGGER.info(updateMasterEntity.toString());
 			return updateMasterEntity;
