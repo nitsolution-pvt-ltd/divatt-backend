@@ -84,7 +84,7 @@ public class ProductController2 implements ProductService2 {
 
     @Override
     @GetMapping("/listPeradminStatus")
-    public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "All") String adminStatus,
+    public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "Live") String adminStatus,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
             @RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
@@ -94,6 +94,26 @@ public class ProductController2 implements ProductService2 {
             return this.productServiceImp2.getProductDetailsallStatus(adminStatus, page, limit, sort, sortName,
                     isDeleted,
                     keyword, sortBy);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+    }
+
+    @Override
+    @GetMapping("/getDesignerProductByDesignerId/{designerId}")
+    public Map<String, Object> getDesignerProductByDesignerId(@PathVariable Integer designerId,
+            @RequestParam(defaultValue = "Live") String adminStatus,
+            @RequestParam(defaultValue = "true") Boolean isActive,
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
+            @RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+            @RequestParam Optional<String> sortBy) {
+        try {
+            LOGGER.info("Inside - designer -> ProductController2.designerProductByDesignerId()");
+            return this.productServiceImp2.getDesignerProductByDesignerId(designerId, adminStatus, isActive, page,
+                    limit, sort, sortName, isDeleted,
+                    keyword, sortBy);
+
         } catch (Exception e) {
             throw new CustomException(e.getMessage());
         }

@@ -23,4 +23,8 @@ public interface ProductService2 {
     Map<String, Object> getProductDetailsallStatus(String adminStatus, int page, int limit, String sort,
             String sortName, Boolean isDeleted, String keyword, Optional<String> sortBy);
 
+    Map<String, Object> getDesignerProductByDesignerId(Integer designerId, String adminStatus, Boolean isActive,
+            int page, int limit, String sort, String sortName, Boolean isDeleted, String keyword,
+            Optional<String> sortBy);
+
 }
