@@ -16,7 +16,7 @@ public class OrderInvoiceEntity {
 	public static final String SEQUENCE_NAME = "tbl_invoices";
 	
 	@Id
-	private Long id;
+	private Integer id;
 	
 	@Field(name = "invoice_id") 
 	private String invoiceId;
@@ -47,21 +47,6 @@ public class OrderInvoiceEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public OrderInvoiceEntity(Long id, String invoiceId, String invoiceDatetime,
-			@NotEmpty(message = "Order id is required") String orderId,
-			@NotEmpty(message = "Order datetime is required") String orderDatetime, Object designerDetails,
-			Object userDetails, Object productDetails) {
-		super();
-		this.id = id;
-		this.invoiceId = invoiceId;
-		this.invoiceDatetime = invoiceDatetime;
-		this.orderId = orderId;
-		this.orderDatetime = orderDatetime;
-		this.designerDetails = designerDetails;
-		this.userDetails = userDetails;
-		this.productDetails = productDetails;
-	}
-
 	@Override
 	public String toString() {
 		return "OrderInvoiceEntity [id=" + id + ", invoiceId=" + invoiceId + ", invoiceDatetime=" + invoiceDatetime
@@ -69,11 +54,11 @@ public class OrderInvoiceEntity {
 				+ ", userDetails=" + userDetails + ", productDetails=" + productDetails + "]";
 	}
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -136,6 +121,22 @@ public class OrderInvoiceEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+
+	public OrderInvoiceEntity(Integer id, String invoiceId, String invoiceDatetime,
+			@NotEmpty(message = "Order id is required") String orderId,
+			@NotEmpty(message = "Order datetime is required") String orderDatetime, Object designerDetails,
+			Object userDetails, Object productDetails) {
+		super();
+		this.id = id;
+		this.invoiceId = invoiceId;
+		this.invoiceDatetime = invoiceDatetime;
+		this.orderId = orderId;
+		this.orderDatetime = orderDatetime;
+		this.designerDetails = designerDetails;
+		this.userDetails = userDetails;
+		this.productDetails = productDetails;
+	}
+
 	
 	
 

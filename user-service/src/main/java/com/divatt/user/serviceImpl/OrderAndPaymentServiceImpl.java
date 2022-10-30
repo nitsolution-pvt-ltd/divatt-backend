@@ -125,12 +125,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
-
+	
 	@Value("${spring.profiles.active}")
 	private String contextPath;
-
+	
 	@Value("${host}")
 	private String host;
+	
+	
+	
 
 	protected String getRandomString() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -426,7 +429,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
-			LOGGER.info("inside findbyid " + findById.toString());
 			if (findById.size() <= 0) {
 				throw new CustomException("Order not found");
 			}
@@ -455,12 +457,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					try {
 						LOGGER.info(D.getProductId() + " inside productid");
 						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
-								"https://localhost:8083/dev//designerProduct/view/" + D.getProductId(),
+								"https://localhost:8083/dev/designerProduct/view/" + D.getProductId(),
 								org.json.simple.JSONObject.class);
-						LOGGER.info(productById.toString());
-						LOGGER.info("inside Restcall" + productById.getBody().get("hsnData"));
+
+						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));
 						D.setHsn(productById.getBody().get("hsnData"));
-						// End
 
 						productIdFilters = objs.writeValueAsString(D);
 						Integer i = (int) (long) D.getUserId();
@@ -512,17 +513,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			});
 			return ResponseEntity.ok(new Json(productId.get(0).toString()));
 		} catch (HttpStatusCodeException ex) {
-			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>",
-						"Designer Service", host + contextPath + "/userOrder/getOrder/" + orderId,
-						ex.getResponseBodyAsString(), ex.getStatusCode());
+			if(LOGGER.isErrorEnabled()) {
+			LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>","Designer Service",host+contextPath+"/userOrder/getOrder/"+orderId,ex.getResponseBodyAsString(),ex.getStatusCode());
 			}
 			return new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
 		} catch (Exception exception) {
-			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>",
-						"Designer Service", host + contextPath + "/userOrder/getOrder/" + orderId,
-						exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			if(LOGGER.isErrorEnabled()) {
+				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>","Designer Service",host+contextPath+"/userOrder/getOrder/"+orderId,exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -1187,7 +1184,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				OrderInvoiceEntity OrderLastRow = orderInvoiceRepo.findTopByOrderByIdDesc();
 
 				String InvNumber = String.format("%014d", OrderLastRow.getId());
-				orderInvoiceEntity.setId((long) sequenceGenerator.getNextSequence(OrderInvoiceEntity.SEQUENCE_NAME));
+				orderInvoiceEntity.setId(sequenceGenerator.getNextSequence(OrderInvoiceEntity.SEQUENCE_NAME));
 				orderInvoiceEntity.setInvoiceId("IV" + InvNumber);
 				saveData = orderInvoiceRepo.save(orderInvoiceEntity);
 			}
