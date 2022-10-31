@@ -117,5 +117,15 @@ public class ProductController2 implements ProductService2 {
             throw new CustomException(e.getMessage());
         }
     }
+    @Override
+    @PutMapping("/delete/{productId}")
+    public GlobalResponce productDeleteByproductId(@PathVariable Integer productId) {
+        try {
+            LOGGER.info("Inside- ProductController2.productDeleteByproductId()");
+            return this.productServiceImp2.productDeleteByproductId(productId);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+    }
 
 }

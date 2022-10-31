@@ -4,6 +4,9 @@ package com.divatt.designer.services;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.response.GlobalResponce;
 
@@ -19,5 +22,5 @@ public interface ProductService2 {
     Map<String, Object> getDesignerProductByDesignerId(Integer designerId, String adminStatus, Boolean isActive,
             int page, int limit, String sort, String sortName, Boolean isDeleted, String keyword,
             Optional<String> sortBy);
-
+    public GlobalResponce productDeleteByproductId(@PathVariable Integer productId);
 }

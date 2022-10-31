@@ -1,5 +1,6 @@
 package com.divatt.designer.services;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
@@ -228,14 +230,14 @@ public class ProductServiceImp2 implements ProductService2 {
 
             live = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, isActive,
                     "Approved");
-            LOGGER.info("Behind live "+live);
+            LOGGER.info("Behind live " + live);
             pending = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId,
                     isActive, "Pending");
-            LOGGER.info("Behind Pending "+pending);
+            LOGGER.info("Behind Pending " + pending);
             reject = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId,
                     isActive,
                     "Rejected");
-            LOGGER.info("Behind Reject "+reject);
+            LOGGER.info("Behind Reject " + reject);
             oos = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, false,
                     "oos");
             if (keyword.isEmpty()) {
@@ -266,7 +268,8 @@ public class ProductServiceImp2 implements ProductService2 {
                     findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
                             "Reject", pagingSort);
                 } else if (adminStatus.equals("ls")) {
-                    findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId, "notify",
+                    findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
+                            "notify",
                             pagingSort);
                 } else if (adminStatus.equals("oos")) {
                     findAll = productRepo2.listDesignerProductsearchByAdminStatusForOos(keyword, isDeleted, designerId,
@@ -303,4 +306,30 @@ public class ProductServiceImp2 implements ProductService2 {
         }
     }
 
+    @Override
+    public GlobalResponce productDeleteByproductId(Integer productId) {
+        try {
+            LOGGER.info("Inside - ProductServiceImp2.productDeleteByproductId()");
+            if (productRepo2.existsById(productId)) {
+                Boolean isDelete = false;
+                Optional<ProductMasterEntity2> productData = productRepo2.findById(productId);
+                ProductMasterEntity2 productMasterEntity2 = productData.get();
+                if (productMasterEntity2.getIsDeleted().equals(false)) {
+                    isDelete = true;
+                } else {
+                    return new GlobalResponce("Bad request!!", "Product allready deleted", 400);
+                }
+                productMasterEntity2.setIsDeleted(isDelete);
+                productMasterEntity2.setUpdatedBy(productMasterEntity2.getDesignerId().toString());
+                productMasterEntity2.setUpdatedOn(new Date());
+                productRepo2.save(productMasterEntity2);
+                return new GlobalResponce("Success", "Deleted successfully", 200);
+            } else {
+                return new GlobalResponce("Bad request", "Product does not exist", 400);
+            }
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage());
+        }
+
+    }
 }
