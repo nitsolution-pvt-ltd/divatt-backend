@@ -33,7 +33,7 @@ public interface OrderAndPaymentService {
 			Optional<String> sortBy);
 
 	public Map<String, Object> getOrders(int page, int limit, String sort, String sortName, String keyword,
-			Optional<String> sortBy, String token);
+			Optional<String> sortBy, String token, String orderStatus);
 
 	public ResponseEntity<?> getOrderDetailsService(String orderId);
 

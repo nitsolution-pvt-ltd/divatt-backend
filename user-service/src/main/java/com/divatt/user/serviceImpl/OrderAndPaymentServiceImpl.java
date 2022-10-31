@@ -326,7 +326,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getOrders(int page, int limit, String sort, String sortName, String keyword,
-			Optional<String> sortBy, String token) {
+			Optional<String> sortBy, String token, String orderStatus) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 			int CountData = (int) orderDetailsRepo.count();
@@ -343,7 +343,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			Page<OrderDetailsEntity> findAll = null;
 
-			if (keyword.isEmpty()) {
+			if(!orderStatus.equals("All")) {
+				findAll=orderDetailsRepo.findOrderStatus(orderStatus,pagingSort);
+			}
+			else if (keyword.isEmpty()) {
 				findAll = orderDetailsRepo.findAll(pagingSort);
 			} else {
 				findAll = orderDetailsRepo.Search(keyword, pagingSort);
@@ -409,7 +412,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			// orderSKUDetailsRepo.findByOrder(orderIteamStatus).size());
 
 			if (productId.size() <= 0) {
-				throw new CustomException("Order not found!");
+				Map<String, Integer> orderCount = getOrderCount(0, true);
+				response.put("orderCount", orderCount);
+				response.put("Error", "Order not found");
+				return response;
 			} else {
 				if (!restTemplate.getForEntity(
 						"https://localhost:8080/dev/auth/info/ADMIN/" + jwtconfig.extractUsername(token.substring(7)),
@@ -418,7 +424,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					response.put("orderCount", orderCount);
 					return response;
 				}
-				return response;
+			return response;
+				
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1270,18 +1277,25 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			Map<String, Integer> countResponse = new HashMap<String, Integer>();
 			List<String> orderIdList = new ArrayList<String>();
 			if (adminstatus) {
-				List<OrderSKUDetailsEntity> allOrderList = orderSKUDetailsRepo.findAll();
-				allOrderList.stream().forEach(e -> {
-					countResponse.put(e.getOrderItemStatus(), 0);
+//				List<OrderDetailsEntity> findByDesignerId = orderDetailsRepo.findAll();
+//				findByDesignerId.stream().forEach(e -> {
+//					if (!orderIdList.contains(e.getOrderId())) {
+//						orderIdList.add(e.getOrderId());
+//					}
+//				});
+				List<OrderDetailsEntity> getOrderDetailsData = orderDetailsRepo.findAll();
+				getOrderDetailsData.stream().forEach(e -> {
+					countResponse.put(e.getOrderStatus(), 0);
 				});
-				allOrderList.stream().forEach(e -> {
+				getOrderDetailsData.stream().forEach(e -> {
 					try {
-						int lastData = countResponse.get(e.getOrderItemStatus());
-						countResponse.put(e.getOrderItemStatus(), lastData + 1);
+						int lastData = countResponse.get(e.getOrderStatus());
+						countResponse.put(e.getOrderStatus(), lastData + 1);
 					} catch (NullPointerException e1) {
 						throw new CustomException(e1.getMessage());
 					}
 				});
+
 				return countResponse;
 			} else {
 				List<OrderSKUDetailsEntity> findByDesignerId = orderSKUDetailsRepo.findByDesignerId(designerId);

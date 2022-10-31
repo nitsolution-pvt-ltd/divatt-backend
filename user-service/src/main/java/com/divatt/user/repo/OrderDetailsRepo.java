@@ -56,6 +56,10 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 
     @Query("{ 'orderId' : ?0}")
     Page<OrderDetailsEntity> findOrderId(String orderId,Pageable pagingSort);
+
+
+    @Query("{ 'order_status' : ?0}")
+	Page<OrderDetailsEntity> findOrderStatus(String orderStatus, Pageable pagingSort);
 	
 //	Page<OrderDetailsEntity> findByDesignerId(int designerId,Pageable pageable);
 }
