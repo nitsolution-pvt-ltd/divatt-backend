@@ -268,7 +268,7 @@ public class CustomFunction {
 			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setProductStage(productMasterEntity2.getProductStage());
 			filterProductEntity.setProductStageDetails(productMasterEntity2.getProductStageDetails());
-			filterProductEntity.setCreatedOn(productMasterEntity2.getCreatedOn());
+			filterProductEntity.setCreatedOn(new Date());
 			filterProductEntity.setCreatedBy(productMasterEntity2.getCreatedBy());
 			filterProductEntity.setUpdatedOn(productMasterEntity2.getUpdatedOn());
 			filterProductEntity.setUpdatedBy(productMasterEntity2.getUpdatedBy());

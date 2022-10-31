@@ -208,7 +208,7 @@ public class ProductServiceImp2 implements ProductService2 {
     @Override
     public Map<String, Object> getDesignerProductByDesignerId(Integer designerId, String adminStatus, Boolean isActive,
             int page, int limit, String sort, String sortName, Boolean isDeleted,
-            String keyword, Optional<String> sortBy) {
+            String keyword, Optional<String> sortBy,String sortDateType) {
         try {
             int Count = (int) productRepo2.count();
             Pageable pagingSort = null;
@@ -220,6 +220,16 @@ public class ProductServiceImp2 implements ProductService2 {
                 pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
             } else {
                 pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+            }
+            if (!sortDateType.equals(null)) {
+
+                if (sortDateType.equalsIgnoreCase("new")) {
+                    pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, "createdOn");
+
+                } else if (sortDateType.equalsIgnoreCase("old")) {
+                    pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, "createdOn");
+
+                }
             }
 
             Page<ProductMasterEntity2> findAll = null;
