@@ -82,7 +82,7 @@ public class ProductController2 implements ProductService2 {
 
     @Override
     @GetMapping("/getProductDetailsallStatus")
-    public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "live") String adminStatus,
+    public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "all") String adminStatus,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
             @RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
