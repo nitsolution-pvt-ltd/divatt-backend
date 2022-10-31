@@ -210,7 +210,9 @@ public class CustomFunction {
 			updateMasterEntity.setPriceCode(productMasterEntity2.getPriceCode());
 			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
 			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
-			updateMasterEntity.setadminStatus("Rejected");
+			updateMasterEntity.setadminStatus(masterEntity2.getadminStatus());
+			updateMasterEntity.setIsActive(true);
+			updateMasterEntity.setIsDeleted(false);
 
 			LOGGER.info(updateMasterEntity.toString());
 			return updateMasterEntity;
@@ -254,8 +256,8 @@ public class CustomFunction {
 			filterProductEntity.setProductWeight(productMasterEntity2.getProductWeight());
 			filterProductEntity.setShipmentTime(productMasterEntity2.getShipmentTime());
 			filterProductEntity.setImage(productMasterEntity2.getImage());
-			filterProductEntity.setIsActive(productMasterEntity2.getIsActive());
-			filterProductEntity.setIsDeleted(productMasterEntity2.getIsDeleted());
+			filterProductEntity.setIsActive(true);
+			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setProductStage(productMasterEntity2.getProductStage());
 			filterProductEntity.setProductStageDetails(productMasterEntity2.getProductStageDetails());
 			filterProductEntity.setCreatedOn(productMasterEntity2.getCreatedOn());
