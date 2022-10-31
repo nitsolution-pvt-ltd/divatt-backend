@@ -413,7 +413,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			if (productId.size() <= 0) {
 				Map<String, Integer> orderCount = getOrderCount(0, true);
-				response.put("OrderCount", orderCount);
+				response.put("orderCount", orderCount);
 				response.put("Error", "Order not found");
 				return response;
 			} else {
