@@ -412,7 +412,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			// orderSKUDetailsRepo.findByOrder(orderIteamStatus).size());
 
 			if (productId.size() <= 0) {
-				throw new CustomException("Order not found!");
+				Map<String, Integer> orderCount = getOrderCount(0, true);
+				response.put("OrderCount", orderCount);
+				response.put("Error", "Order not found");
+				return response;
 			} else {
 				if (!restTemplate.getForEntity(
 						"https://localhost:8080/dev/auth/info/ADMIN/" + jwtconfig.extractUsername(token.substring(7)),
@@ -421,7 +424,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					response.put("orderCount", orderCount);
 					return response;
 				}
-				return response;
+			return response;
+				
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1273,20 +1277,25 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			Map<String, Integer> countResponse = new HashMap<String, Integer>();
 			List<String> orderIdList = new ArrayList<String>();
 			if (adminstatus) {
+//				List<OrderDetailsEntity> findByDesignerId = orderDetailsRepo.findAll();
+//				findByDesignerId.stream().forEach(e -> {
+//					if (!orderIdList.contains(e.getOrderId())) {
+//						orderIdList.add(e.getOrderId());
+//					}
+//				});
 				List<OrderDetailsEntity> getOrderDetailsData = orderDetailsRepo.findAll();
 				getOrderDetailsData.stream().forEach(e -> {
-					countResponse.put(e.getDeliveryStatus(), 0);
+					countResponse.put(e.getOrderStatus(), 0);
 				});
-				LOGGER.info(countResponse+"");
 				getOrderDetailsData.stream().forEach(e -> {
 					try {
-						int lastData = countResponse.get(e.getDeliveryStatus());
-						countResponse.put(e.getDeliveryStatus(), lastData + 1);
+						int lastData = countResponse.get(e.getOrderStatus());
+						countResponse.put(e.getOrderStatus(), lastData + 1);
 					} catch (NullPointerException e1) {
 						throw new CustomException(e1.getMessage());
 					}
 				});
-				LOGGER.info(countResponse+"");
+
 				return countResponse;
 			} else {
 				List<OrderSKUDetailsEntity> findByDesignerId = orderSKUDetailsRepo.findByDesignerId(designerId);
