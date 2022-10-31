@@ -275,11 +275,12 @@ public class OrderAndPaymentContoller {
     public Map<String, Object> getOrderDetails(@RequestHeader("Authorization") String token,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
-            @RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
+            @RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy,
+            @RequestParam(defaultValue = "All") String orderStatus) {
         LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
 
         try {
-            return orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy, token );
+            return orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy, token,orderStatus);
         } catch (Exception e) {
             throw new CustomException(e.getMessage());
         }
@@ -336,7 +337,8 @@ public class OrderAndPaymentContoller {
         LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner() for Designer side listing");
 
         try {
-            return orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword, sortBy,orderItemStatus);
+            return orderAndPaymentService.getDesigerOrders
+            		(designerId, page, limit, sort, sortName, keyword, sortBy,orderItemStatus);
         } catch (Exception e) {
             throw new CustomException(e.getMessage());
         }

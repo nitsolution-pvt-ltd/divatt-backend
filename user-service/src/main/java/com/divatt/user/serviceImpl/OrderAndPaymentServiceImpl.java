@@ -313,7 +313,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getOrders(int page, int limit, String sort, String sortName, String keyword,
-			Optional<String> sortBy, String token) {
+			Optional<String> sortBy, String token, String orderStatus) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 			int CountData = (int) orderDetailsRepo.count();
@@ -330,7 +330,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			Page<OrderDetailsEntity> findAll = null;
 
-			if (keyword.isEmpty()) {
+			if(!orderStatus.equals("All")) {
+				findAll=orderDetailsRepo.findOrderStatus(orderStatus,pagingSort);
+			}
+			else if (keyword.isEmpty()) {
 				findAll = orderDetailsRepo.findAll(pagingSort);
 			} else {
 				findAll = orderDetailsRepo.Search(keyword, pagingSort);
@@ -1243,18 +1246,20 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			Map<String, Integer> countResponse = new HashMap<String, Integer>();
 			List<String> orderIdList = new ArrayList<String>();
 			if (adminstatus) {
-				List<OrderSKUDetailsEntity> allOrderList = orderSKUDetailsRepo.findAll();
-				allOrderList.stream().forEach(e -> {
-					countResponse.put(e.getOrderItemStatus(), 0);
+				List<OrderDetailsEntity> getOrderDetailsData = orderDetailsRepo.findAll();
+				getOrderDetailsData.stream().forEach(e -> {
+					countResponse.put(e.getDeliveryStatus(), 0);
 				});
-				allOrderList.stream().forEach(e -> {
+				LOGGER.info(countResponse+"");
+				getOrderDetailsData.stream().forEach(e -> {
 					try {
-						int lastData = countResponse.get(e.getOrderItemStatus());
-						countResponse.put(e.getOrderItemStatus(), lastData + 1);
+						int lastData = countResponse.get(e.getDeliveryStatus());
+						countResponse.put(e.getDeliveryStatus(), lastData + 1);
 					} catch (NullPointerException e1) {
 						throw new CustomException(e1.getMessage());
 					}
 				});
+				LOGGER.info(countResponse+"");
 				return countResponse;
 			} else {
 				List<OrderSKUDetailsEntity> findByDesignerId = orderSKUDetailsRepo.findByDesignerId(designerId);
