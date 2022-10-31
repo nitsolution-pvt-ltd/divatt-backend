@@ -108,6 +108,7 @@ public class ProductServiceImp2 implements ProductService2 {
     @Override
     public ProductMasterEntity2 getProduct(Integer productId) {
         try {
+        	LOGGER.info("Product data by product ID = {}",productRepo2.findById(productId).get().toString());
             return productRepo2.findById(productId).get();
         } catch (Exception e) {
             throw new CustomException(e.getMessage());

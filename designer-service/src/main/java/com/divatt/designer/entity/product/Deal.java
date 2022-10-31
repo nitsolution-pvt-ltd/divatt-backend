@@ -2,11 +2,16 @@ package com.divatt.designer.entity.product;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+
 public class Deal {
 	private String dealName;
 	private String dealType;
 	private Integer dealValue;
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
 	private Date dealStart;
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
 	private Date dealEnd;
 	private Integer salePrice;
 	public Deal() {
