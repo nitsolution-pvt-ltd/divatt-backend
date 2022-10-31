@@ -72,6 +72,10 @@ spring:
         uri: https://localhost:8085/dev/measurement
         id: Designer
         predicates[0]: Path=/dev/measurement/**
+      routes[17]:
+        uri: https://localhost:8083/dev/designerProducts
+        id: Designer
+        predicates[0]: Path=/dev/designerProducts/**
       globalcors:
         corsConfigurations:
           '[/**]':

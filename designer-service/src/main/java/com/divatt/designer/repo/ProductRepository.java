@@ -50,7 +50,7 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	
 	Page<ProductMasterEntity> findByIsDeletedAndDesignerId(Boolean isDeleted, Integer designerId,Pageable pagingSort);
-	Page<ProductMasterEntity> findByIsDeletedAndDesignerIdAndAdminStatus(Boolean isDeleted, Integer designerId, String adminStatus, Pageable pagingSort);
+	Page<ProductMasterEntity> findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(Boolean isDeleted, Integer designerId, String adminStatus, Boolean isActive,Pageable pagingSort);
 	
 	
 
@@ -59,6 +59,9 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 	
 	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'gender' : {$regex:?0,$options:'i'} },{ 'productDescription' : {$regex:?0,$options:'i'} },{ 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'age.min' : {$regex:?0,$options:'i'} },{ 'price.indPrice.mrp' : {$regex:?0,$options:'i'} },{ 'price.usPrice.mrp' : {$regex:?0,$options:'i'} }, { 'designer_name' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2, 'adminStatus' : ?3 }]}")
 	Page<ProductMasterEntity> listDesignerProductsearchByAdminStatus(String keyword, Boolean isDeleted, Integer designerId, String adminStatus, Pageable pagingSort);
+	
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'gender' : {$regex:?0,$options:'i'} },{ 'productDescription' : {$regex:?0,$options:'i'} },{ 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'age.min' : {$regex:?0,$options:'i'} },{ 'price.indPrice.mrp' : {$regex:?0,$options:'i'} },{ 'price.usPrice.mrp' : {$regex:?0,$options:'i'} }, { 'designer_name' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2, 'adminStatus' : ?3, 'isActive' : ?4 }]}")
+	Page<ProductMasterEntity> listDesignerProductsearchByAdminStatusForOos(String keyword, Boolean isDeleted, Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
 	
 	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'gender' : {$regex:?0,$options:'i'} },{ 'productDescription' : {$regex:?0,$options:'i'} },{ 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'age.min' : {$regex:?0,$options:'i'} },{ 'price.indPrice.mrp' : {$regex:?0,$options:'i'} },{ 'price.usPrice.mrp' : {$regex:?0,$options:'i'} },{ 'designer_name' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2 }]}")
 	Page<ProductMasterEntity> DesignerSearchfindByIsDeletedAndAdminStatus(String keyword, Boolean isDeleted, String AdminStatus,Pageable pagingSort);

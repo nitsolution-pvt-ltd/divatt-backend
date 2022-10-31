@@ -34,10 +34,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -121,6 +125,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
+	
+	@Value("${spring.profiles.active}")
+	private String contextPath;
+	
+	@Value("${host}")
+	private String host;
+	
+	
+	
 
 	protected String getRandomString() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -339,7 +352,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				findAll = orderDetailsRepo.Search(keyword, pagingSort);
 
 			}
-			
 
 			List<Object> productId = new ArrayList<>();
 
@@ -396,7 +408,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			//response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderIteamStatus).size());
+			// response.put("totalIteamStatus",
+			// orderSKUDetailsRepo.findByOrder(orderIteamStatus).size());
 
 			if (productId.size() <= 0) {
 				throw new CustomException("Order not found!");
@@ -417,6 +430,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	public ResponseEntity<?> getOrderDetailsService(String orderId) {
 		try {
+
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
 			if (findById.size() <= 0) {
 				throw new CustomException("Order not found");
@@ -441,15 +455,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					LOGGER.info("Data in for each method" + D.getProductId());
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
+					LOGGER.info("Top of try catch");
 
 					try {
-						// Get data for product by id
+						LOGGER.info(D.getProductId() + " inside productid");
 						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
-								"https://localhost:8083/dev//designerProduct/view/" + D.getProductId(),
+								"https://localhost:8083/dev/designerProduct/view/" + D.getProductId(),
 								org.json.simple.JSONObject.class);
-						LOGGER.info(productById.getBody().get("hsnData").toString());
+
+						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));
 						D.setHsn(productById.getBody().get("hsnData"));
-						// End
 
 						productIdFilters = objs.writeValueAsString(D);
 						Integer i = (int) (long) D.getUserId();
@@ -499,10 +514,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				productId.add(objects);
 
 			});
-			// LOGGER.info(productId.get(0).toString());
 			return ResponseEntity.ok(new Json(productId.get(0).toString()));
-		} catch (Exception e2) {
-			return ResponseEntity.ok(e2.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			if(LOGGER.isErrorEnabled()) {
+			LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>","Designer Service",host+contextPath+"/userOrder/getOrder/"+orderId,ex.getResponseBodyAsString(),ex.getStatusCode());
+			}
+			return new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
+		} catch (Exception exception) {
+			if(LOGGER.isErrorEnabled()) {
+				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>","Designer Service",host+contextPath+"/userOrder/getOrder/"+orderId,exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -580,7 +602,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy,String orderItemStatus) {
+			String keyword, Optional<String> sortBy, String orderItemStatus) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 			int CountData = (int) orderDetailsRepo.count();
@@ -602,17 +624,20 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 
 			List<Object> productId = new ArrayList<>();
-			
-            if(!orderItemStatus.isEmpty()) {
-            	List<String> OrderId1 =	OrderSKUDetailsData.stream().filter(e-> e.getOrderItemStatus().equals(orderItemStatus)).map(c -> c.getOrderId()).collect(Collectors.toList()); 
-            	findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
-            }else {
-            	List<String> OrderId = OrderSKUDetailsData.stream().map(c -> c.getOrderId()).collect(Collectors.toList());
-            	findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
-            }
-			//List<String> OrderId = OrderSKUDetailsData.stream().filter(e-> e.getOrderItemStatus().equals(orderIteamStatus)).map(c -> c.getOrderId()).collect(Collectors.toList());
 
-			
+			if (!orderItemStatus.isEmpty()) {
+				List<String> OrderId1 = OrderSKUDetailsData.stream()
+						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus)).map(c -> c.getOrderId())
+						.collect(Collectors.toList());
+				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
+			} else {
+				List<String> OrderId = OrderSKUDetailsData.stream().map(c -> c.getOrderId())
+						.collect(Collectors.toList());
+				findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
+			}
+			// List<String> OrderId = OrderSKUDetailsData.stream().filter(e->
+			// e.getOrderItemStatus().equals(orderIteamStatus)).map(c ->
+			// c.getOrderId()).collect(Collectors.toList());
 
 			List<OrderDetailsEntity> content = findAll.getContent();
 
@@ -657,7 +682,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				productId.add(object);
 
 			});
-            
+
+			LOGGER.info(productId.toString());
+
 			/*
 			 * if(!orderIteamStatus.isEmpty()) { findAll =
 			 * orderSKUDetailsRepo.findByOrderItem(designerId,orderIteamStatus, pagingSort);
@@ -675,14 +702,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("New", orderSKUDetailsRepo.findByOrderTotal(designerId,"New").size());
-			response.put("Packed", orderSKUDetailsRepo.findByOrderTotal(designerId,"Packed").size());
-			response.put("Shipped", orderSKUDetailsRepo.findByOrderTotal(designerId,"Shipped").size());
-			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId,"Delivered").size());
-			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId,"Return").size());
-			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId,"Active").size());	
+			response.put("New", orderSKUDetailsRepo.findByOrderTotal(designerId, "New").size());
+			response.put("Packed", orderSKUDetailsRepo.findByOrderTotal(designerId, "Packed").size());
+			response.put("Shipped", orderSKUDetailsRepo.findByOrderTotal(designerId, "Shipped").size());
+			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered").size());
+			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "Return").size());
+			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId, "Active").size());
 			if (productId.size() <= 0) {
-				throw new CustomException("Order not found!");
+				throw new CustomException("[]");
 			} else {
 				return response;
 			}
@@ -1160,7 +1187,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				OrderInvoiceEntity OrderLastRow = orderInvoiceRepo.findTopByOrderByIdDesc();
 
 				String InvNumber = String.format("%014d", OrderLastRow.getId());
-				orderInvoiceEntity.setId((long) sequenceGenerator.getNextSequence(OrderInvoiceEntity.SEQUENCE_NAME));
+				orderInvoiceEntity.setId(sequenceGenerator.getNextSequence(OrderInvoiceEntity.SEQUENCE_NAME));
 				orderInvoiceEntity.setInvoiceId("IV" + InvNumber);
 				saveData = orderInvoiceRepo.save(orderInvoiceEntity);
 			}
@@ -1318,8 +1345,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-
-
 	@Override
 	public Object getDesignerSideOrderListService(String token, String orderStatus) {
 		try {
@@ -1328,13 +1353,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					.getForEntity("https://localhost:8080/dev/auth/info/DESIGNER/"
 							+ jwtconfig.extractUsername(token.substring(7)), org.json.simple.JSONObject.class)
 					.getBody();
-			Integer designerId=Integer.parseInt(designerObject.get("designerId").toString());
-			LOGGER.info(designerId+"");
-			return orderSKUDetailsRepo.findByDesignerId(designerId)
-			.stream()
-			.filter(designerOrder->designerOrder.getOrderItemStatus().equals(orderStatus))
-			.collect(Collectors.toList());
-			//return orderStatusFiltered;
+			Integer designerId = Integer.parseInt(designerObject.get("designerId").toString());
+			LOGGER.info(designerId + "");
+			return orderSKUDetailsRepo.findByDesignerId(designerId).stream()
+					.filter(designerOrder -> designerOrder.getOrderItemStatus().equals(orderStatus))
+					.collect(Collectors.toList());
+			// return orderStatusFiltered;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

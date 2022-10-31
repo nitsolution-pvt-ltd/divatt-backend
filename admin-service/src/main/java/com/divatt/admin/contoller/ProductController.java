@@ -1,4 +1,5 @@
 package com.divatt.admin.contoller;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -39,14 +40,14 @@ public class ProductController {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
-	
+
 	@PutMapping("/changeProductApprovalStatus")
 	public GlobalResponse changeProductApprovalStatus(@RequestBody CommentEntity comment) {
 		try {
 			int productId = comment.getProductId();
 			int designerId = comment.getDesignerId();
 			String adminStatus = comment.getAdminStatus();
-			List<Object> commString = comment.getComments(); 			
+			List<Object> commString = comment.getComments();
 			String ApprovedBy = comment.getApprovedBy();
 
 			return this.productService.productApproval(productId, designerId, commString, ApprovedBy, adminStatus);
@@ -65,14 +66,12 @@ public class ProductController {
 	}
 
 	@GetMapping("/getReportSheet/{startDate}/{endDate}")
-	public List<JSONObject> getReportSheetAPI(@PathVariable Date startDate,
-											  @PathVariable Date endDate){
+	public List<JSONObject> getReportSheetAPI(@PathVariable Date startDate, @PathVariable Date endDate) {
 		try {
-			return this.productService.getReportSheet(startDate,endDate);
-		}
-		catch(Exception e) {
+			return this.productService.getReportSheet(startDate, endDate);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	}
+
+}
