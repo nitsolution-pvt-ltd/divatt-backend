@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.product.ProductEntity;
+import com.divatt.admin.entity.product.ProductEntity2;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.ProductRepo;
 import com.divatt.admin.services.ProductService;
@@ -40,28 +41,28 @@ public class ProductServiceImpl implements ProductService {
 	public GlobalResponse productApproval(int productId, int designerId, List<Object> commString,
 			String ApprovedBy, String adminStatus) {
 		try {
-			ResponseEntity<ProductEntity> exchange = restTemplate.exchange(
-					"https://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null,
-					ProductEntity.class);
-			ProductEntity productdata = exchange.getBody();
+			ResponseEntity<ProductEntity2> exchange = restTemplate.exchange(
+					"https://localhost:8083/dev/designerProducts/productList/" + productId, HttpMethod.GET, null,
+					ProductEntity2.class);
+			ProductEntity2 productdata = exchange.getBody();
 			if (productdata.getDesignerId().equals(designerId)) {
 
-				productdata.setApprovedBy(ApprovedBy);
-				productdata.setApprovedOn(new Date());
-				productdata.setComments(commString);
+				productdata.getProductStageDetails().setApprovedBy(ApprovedBy);;
+				productdata.getProductStageDetails().setApprovedOn(new Date());
+				productdata.getProductStageDetails().setComment(commString);
 				productdata.setIsActive(true);
 				productdata.setAdminStatus(adminStatus);
-				productdata.setAdminStatusOn(new Date());
+				productdata.setProductStage(adminStatus+" By Admin");
 
-				String status = null;
-				if (adminStatus.equals("Approved")) {
-					status = "approved";
-				} else if (adminStatus.equals("Rejected")) {
-					status = "rejected";
-				} else {
-					status = "pending";
-				}
-				restTemplate.put("https://localhost:8083/dev/designerProduct/approval/" + productId, productdata,
+//				String status = null;
+//				if (adminStatus.equals("Approved")) {
+//					status = "approved";
+//				} else if (adminStatus.equals("Rejected")) {
+//					status = "rejected";
+//				} else {
+//					status = "pending";
+//				}
+				restTemplate.put("https://localhost:8083/dev/designerProducts/approvalUpdate/" + productId, productdata,
 						String.class);
 
 				return new GlobalResponse("Status Updated", "Product " + "" + " successfully", 200);
