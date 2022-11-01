@@ -2,10 +2,15 @@ package com.divatt.designer.entity.product;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+
 public class ProductStageDetails {
 	private String comment;
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
 	private Date submittedOn;
 	private String submittedBy;
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
 	private Date approvedOn;
 	private String approvedBy;
 

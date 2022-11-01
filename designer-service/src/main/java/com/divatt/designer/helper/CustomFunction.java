@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
+import com.divatt.designer.entity.product.ProductStageDetails;
 import com.divatt.designer.exception.*;
 import com.divatt.designer.repo.ProductRepo2;
 import com.divatt.designer.repo.ProductRepository;
@@ -185,6 +186,7 @@ public class CustomFunction {
 			ProductMasterEntity2 masterEntity2 = productRepo2.findById(productId).get();
 			LOGGER.info("inside updateproductdata master" + masterEntity2);
 			ProductMasterEntity2 updateMasterEntity = new ProductMasterEntity2();
+			ProductStageDetails productStageDetails = new ProductStageDetails();
 			updateMasterEntity.setProductId(productId);
 			updateMasterEntity.setSku(productMasterEntity2.getSku());
 			updateMasterEntity.setDesignerId(productMasterEntity2.getDesignerId());
@@ -222,6 +224,15 @@ public class CustomFunction {
 			updateMasterEntity.setIsActive(true);
 			updateMasterEntity.setIsDeleted(false);
 
+			// Product stage
+			productStageDetails.setSubmittedBy(productMasterEntity2.getProductStageDetails().getSubmittedBy());
+			productStageDetails.setSubmittedOn(masterEntity2.getProductStageDetails().getSubmittedOn());
+			productStageDetails.setApprovedBy(masterEntity2.getProductStageDetails().getApprovedBy());
+			productStageDetails.setApprovedOn(masterEntity2.getProductStageDetails().getApprovedOn());
+
+			updateMasterEntity.setProductStage(masterEntity2.getProductStage());
+			updateMasterEntity.setProductStageDetails(productStageDetails);
+
 			LOGGER.info(updateMasterEntity.toString());
 			return updateMasterEntity;
 
@@ -234,6 +245,7 @@ public class CustomFunction {
 
 		try {
 			ProductMasterEntity2 filterProductEntity = new ProductMasterEntity2();
+			ProductStageDetails productStageDetails = new ProductStageDetails();
 			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity2.SEQUENCE_NAME));
 			filterProductEntity.setSku(randomString.getAlphaNumericString(10));
 			filterProductEntity.setDesignerId(productMasterEntity2.getDesignerId());
@@ -273,6 +285,15 @@ public class CustomFunction {
 			filterProductEntity.setUpdatedOn(productMasterEntity2.getUpdatedOn());
 			filterProductEntity.setUpdatedBy(productMasterEntity2.getUpdatedBy());
 			filterProductEntity.setadminStatus("Pending");
+			
+			// Product stage
+			productStageDetails.setSubmittedBy(productMasterEntity2.getProductStageDetails().getSubmittedBy());
+			productStageDetails.setSubmittedOn(new Date());
+			productStageDetails.setApprovedBy(productMasterEntity2.getProductStageDetails().getApprovedBy());
+			productStageDetails.setApprovedOn(productMasterEntity2.getProductStageDetails().getApprovedOn());
+			
+			filterProductEntity.setProductStage("new");
+			filterProductEntity.setProductStageDetails(productStageDetails);
 			return filterProductEntity;
 
 		} catch (Exception e) {
