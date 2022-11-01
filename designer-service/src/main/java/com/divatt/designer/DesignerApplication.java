@@ -37,11 +37,16 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.divatt.designer.config.YMLConfig;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication
-@EnableWebMvc
-@EnableSwagger2
+@SpringBootApplication(scanBasePackages = { "com.divatt.designer" })
+@OpenAPIDefinition(info = @Info(title = "DIVATT DESIGNER", version = "3.0", description = "Designer"))
+@SecurityScheme(name = "javainuseapi", scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 @EnableEurekaClient
 @EnableScheduling
 public class DesignerApplication implements CommandLineRunner{

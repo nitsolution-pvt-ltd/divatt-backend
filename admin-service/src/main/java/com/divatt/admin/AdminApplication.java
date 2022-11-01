@@ -36,11 +36,16 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.divatt.admin.config.YMLConfig;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication
-@EnableWebMvc
-@EnableSwagger2
+@SpringBootApplication(scanBasePackages = { "com.divatt.admin" })
+@OpenAPIDefinition(info = @Info(title = "DIVATT ADMIN", version = "3.0", description = "Admin"))
+@SecurityScheme(name = "javainuseapi", scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 public class AdminApplication implements CommandLineRunner{
 
 	@Autowired

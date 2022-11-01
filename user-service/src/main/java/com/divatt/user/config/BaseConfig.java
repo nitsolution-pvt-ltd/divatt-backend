@@ -22,6 +22,7 @@ import org.apache.http.ssl.TrustStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -39,9 +40,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 
 @Configuration
-@EnableConfigurationProperties
-@EnableWebMvc
-@EnableSwagger2
+//@EnableConfigurationProperties
+//@EnableWebMvc
+//@EnableSwagger2
 @EnableScheduling
 public class BaseConfig implements CommandLineRunner{
 	
