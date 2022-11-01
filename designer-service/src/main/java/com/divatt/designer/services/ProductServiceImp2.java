@@ -134,20 +134,20 @@ public class ProductServiceImp2 implements ProductService2 {
             }
 
             Page<ProductMasterEntity2> findAll = null;
-            Integer live = 0;
+            Integer all = 0;
             Integer pending = 0;
             Integer approved = 0;
             Integer rejected = 0;
 
-            live = productRepo2.countByIsDeleted(isDeleted);
+            all = productRepo2.countByIsDeleted(isDeleted);
             pending = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Pending");
             approved = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Approved");
             rejected = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Rejected");
 
             LOGGER.info(adminStatus);
             if (keyword.isEmpty()) {
-                if (adminStatus.equals("live")) {
-                    LOGGER.info("Behind live");
+                if (adminStatus.equals("all")) {
+                    LOGGER.info("Behind all");
                     findAll = productRepo2.findByIsDeleted(isDeleted, pagingSort);
                 } else if (adminStatus.equals("pending")) {
                     LOGGER.info("Behind pending");
@@ -160,8 +160,8 @@ public class ProductServiceImp2 implements ProductService2 {
                     findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Rejected", pagingSort);
                 }
             } else {
-                if (adminStatus.equals("live")) {
-                    LOGGER.info("Behind into else live");
+                if (adminStatus.equals("all")) {
+                    LOGGER.info("Behind into else all");
                     findAll = productRepo2.SearchAndfindByIsDeleted(keyword, isDeleted, pagingSort);
                 } else if (adminStatus.equals("pending")) {
                     LOGGER.info("Behind into else pending");
@@ -189,7 +189,7 @@ public class ProductServiceImp2 implements ProductService2 {
             response.put("totalPage", totalPage);
             response.put("perPage", findAll.getSize());
             response.put("perPageElement", findAll.getNumberOfElements());
-            response.put("live", live);
+            response.put("all", all);
             response.put("pending", pending);
             response.put("approved", approved);
             response.put("rejected", rejected);
@@ -208,7 +208,7 @@ public class ProductServiceImp2 implements ProductService2 {
     @Override
     public Map<String, Object> getDesignerProductByDesignerId(Integer designerId, String adminStatus, Boolean isActive,
             int page, int limit, String sort, String sortName, Boolean isDeleted,
-            String keyword, Optional<String> sortBy) {
+            String keyword, Optional<String> sortBy,String sortDateType) {
         try {
             int Count = (int) productRepo2.count();
             Pageable pagingSort = null;
@@ -220,6 +220,16 @@ public class ProductServiceImp2 implements ProductService2 {
                 pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
             } else {
                 pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+            }
+            if (!sortDateType.equals(null)) {
+
+                if (sortDateType.equalsIgnoreCase("new")) {
+                    pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, "createdOn");
+
+                } else if (sortDateType.equalsIgnoreCase("old")) {
+                    pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, "createdOn");
+
+                }
             }
 
             Page<ProductMasterEntity2> findAll = null;

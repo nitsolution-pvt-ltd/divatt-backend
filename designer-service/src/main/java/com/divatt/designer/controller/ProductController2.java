@@ -1,6 +1,5 @@
 package com.divatt.designer.controller;
 
-
 import java.util.Map;
 import java.util.Optional;
 
@@ -83,7 +82,7 @@ public class ProductController2 implements ProductService2 {
 
     @Override
     @GetMapping("/getProductDetailsallStatus")
-    public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "live") String adminStatus,
+    public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "all") String adminStatus,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
             @RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
@@ -106,17 +105,18 @@ public class ProductController2 implements ProductService2 {
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
             @RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
-            @RequestParam Optional<String> sortBy) {
+            @RequestParam Optional<String> sortBy, @RequestParam(defaultValue = "") String sortDateType) {
         try {
             LOGGER.info("Inside - designer -> ProductController2.designerProductByDesignerId()");
             return this.productServiceImp2.getDesignerProductByDesignerId(designerId, adminStatus, isActive, page,
                     limit, sort, sortName, isDeleted,
-                    keyword, sortBy);
+                    keyword, sortBy, sortDateType);
 
         } catch (Exception e) {
             throw new CustomException(e.getMessage());
         }
     }
+
     @Override
     @PutMapping("/delete/{productId}")
     public GlobalResponce productDeleteByproductId(@PathVariable Integer productId) {
