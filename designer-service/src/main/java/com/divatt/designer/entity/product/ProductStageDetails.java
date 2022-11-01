@@ -1,12 +1,13 @@
 package com.divatt.designer.entity.product;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 public class ProductStageDetails {
-	private String comment;
+	private List<Object> comment;
 	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
 	private Date submittedOn;
 	private String submittedBy;
@@ -19,7 +20,7 @@ public class ProductStageDetails {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ProductStageDetails(String comment, Date submittedOn, String submittedBy, Date approvedOn,
+	public ProductStageDetails(List<Object> comment, Date submittedOn, String submittedBy, Date approvedOn,
 			String approvedBy) {
 		super();
 		this.comment = comment;
@@ -29,11 +30,11 @@ public class ProductStageDetails {
 		this.approvedBy = approvedBy;
 	}
 
-	public String getComment() {
+	public List<Object> getComment() {
 		return comment;
 	}
 
-	public void setComment(String comment) {
+	public void setComment(List<Object> comment) {
 		this.comment = comment;
 	}
 

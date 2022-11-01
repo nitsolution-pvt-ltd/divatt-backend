@@ -216,8 +216,6 @@ public class CustomFunction {
 			updateMasterEntity.setImage(productMasterEntity2.getImage());
 			updateMasterEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
 			updateMasterEntity.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
-			updateMasterEntity.setProductStage(productMasterEntity2.getProductStage());
-			updateMasterEntity.setProductStageDetails(productMasterEntity2.getProductStageDetails());
 			updateMasterEntity.setProductWeight(productMasterEntity2.getProductWeight());
 			updateMasterEntity.setShipmentTime(productMasterEntity2.getShipmentTime());
 //			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
@@ -226,11 +224,12 @@ public class CustomFunction {
 
 			// Product stage
 			productStageDetails.setSubmittedBy(productMasterEntity2.getProductStageDetails().getSubmittedBy());
-			productStageDetails.setSubmittedOn(masterEntity2.getProductStageDetails().getSubmittedOn());
-			productStageDetails.setApprovedBy(masterEntity2.getProductStageDetails().getApprovedBy());
-			productStageDetails.setApprovedOn(masterEntity2.getProductStageDetails().getApprovedOn());
+			productStageDetails.setSubmittedOn(productMasterEntity2.getProductStageDetails().getSubmittedOn());
+			productStageDetails.setApprovedBy(productMasterEntity2.getProductStageDetails().getApprovedBy());
+			productStageDetails.setApprovedOn(productMasterEntity2.getProductStageDetails().getApprovedOn());
+			productStageDetails.setComment(productMasterEntity2.getProductStageDetails().getComment());
 
-			updateMasterEntity.setProductStage(masterEntity2.getProductStage());
+			updateMasterEntity.setProductStage(productMasterEntity2.getProductStage());
 			updateMasterEntity.setProductStageDetails(productStageDetails);
 
 			LOGGER.info(updateMasterEntity.toString());
@@ -278,8 +277,6 @@ public class CustomFunction {
 			filterProductEntity.setImage(productMasterEntity2.getImage());
 			filterProductEntity.setIsActive(true);
 			filterProductEntity.setIsDeleted(false);
-			filterProductEntity.setProductStage(productMasterEntity2.getProductStage());
-			filterProductEntity.setProductStageDetails(productMasterEntity2.getProductStageDetails());
 			filterProductEntity.setCreatedOn(new Date());
 			filterProductEntity.setCreatedBy(productMasterEntity2.getCreatedBy());
 			filterProductEntity.setUpdatedOn(productMasterEntity2.getUpdatedOn());
@@ -291,6 +288,7 @@ public class CustomFunction {
 			productStageDetails.setSubmittedOn(new Date());
 			productStageDetails.setApprovedBy(productMasterEntity2.getProductStageDetails().getApprovedBy());
 			productStageDetails.setApprovedOn(productMasterEntity2.getProductStageDetails().getApprovedOn());
+			productStageDetails.setComment(productMasterEntity2.getProductStageDetails().getComment());
 			
 			filterProductEntity.setProductStage("new");
 			filterProductEntity.setProductStageDetails(productStageDetails);
