@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.entity.SendMail;
+import com.divatt.designer.entity.WomenMeasurement;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
@@ -96,6 +97,12 @@ public class ProfileContoller {
 	
 	@Autowired
 	private ProductRepo2 productRepo2;
+	
+	@Autowired
+	private MeasurementMenRepo measurementMenRepo;
+	
+	@Autowired
+	private MeasurementWomenRepo measurementWomenRepo;
 
 	@Autowired
 	private MongoOperations mongoOperations;
