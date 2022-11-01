@@ -93,6 +93,9 @@ public class ProfileContoller {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private ProductRepo2 productRepo2;
 
 	@Autowired
 	private MongoOperations mongoOperations;
@@ -125,7 +128,7 @@ public class ProfileContoller {
 				designerLoginEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
 				designerProfileEntity
 						.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
-				designerProfileEntity.setProductCount(productRepo.findByDesignerId(id.intValue()).size());
+				designerProfileEntity.setProductCount(productRepo2.countByIsDeletedAndAdminStatusAndDesignerId(false, "Approved", id.intValue()));
 				designerProfileEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
 				org.json.simple.JSONObject countData = countData(id);
 				String followerCount = countData.get("FollowersData").toString();

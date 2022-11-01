@@ -15,6 +15,8 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
     Integer countByIsDeleted(Boolean isDeleted);
 
     Integer countByIsDeletedAndAdminStatus(Boolean isDeleted, String adminStatus);
+    
+    Integer countByIsDeletedAndAdminStatusAndDesignerId(Boolean isDeleted, String adminStatus, Integer designerId);
 
     Page<ProductMasterEntity2> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
 
