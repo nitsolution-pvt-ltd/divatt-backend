@@ -138,7 +138,7 @@ public class ProfileContoller {
 				designerLoginEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
 				designerProfileEntity
 						.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
-				designerProfileEntity.setProductCount(productRepo2.countByIsDeletedAndAdminStatusAndDesignerId(false, "Approved", id.intValue()));
+				designerProfileEntity.setProductCount(productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false, "Approved", id.intValue(), true));
 				designerProfileEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
 				org.json.simple.JSONObject countData = countData(id);
 				String followerCount = countData.get("FollowersData").toString();
@@ -290,6 +290,8 @@ public class ProfileContoller {
 			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
 			
 			// start designer measurement 
+			LOGGER.info("Men Chart data is ={}",designerProfileEntity.getMenChartData());
+			LOGGER.info("Women Chart data is ={}",designerProfileEntity.getWomenChartData());
 			Measurement menChartData = designerProfileEntity.getMenChartData();
 			Measurement womenChartData = designerProfileEntity.getWomenChartData();
 			measurementRepo.save(menChartData);
