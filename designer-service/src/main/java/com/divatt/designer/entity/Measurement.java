@@ -1,6 +1,8 @@
 package com.divatt.designer.entity;
 
-import java.sql.Date;
+
+
+import java.util.Date;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -11,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 @Document(collection ="tbl_designer_measurements")
-public class WomenMeasurement {
+public class Measurement {
 
     @Id
     @Field(name ="_id")
@@ -23,25 +25,27 @@ public class WomenMeasurement {
     @Field(name ="chat_name")
     private String chartName;
     @Field(name ="measurements")
-    private WomenSizeMeasurements measurements;
+    private WomenSizeMeasurements measurementsWomen;
     @Field(name ="size_type")
     private String sizeType;
+    private MenMeasurement measurementsMen;
     @JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
     @Field(name ="created_on")
     private Date createdOn;
-	public WomenMeasurement() {
+	public Measurement() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public WomenMeasurement(Integer id, Integer designerId, String chartName, WomenSizeMeasurements measurements,
-			String sizeType, Date createdOn) {
+	public Measurement(Integer id, Integer designerId, String chartName, WomenSizeMeasurements measurementsWomen,
+			String sizeType, MenMeasurement measurementsMen, Date createdOn) {
 		super();
 		Id = id;
 		this.designerId = designerId;
 		this.chartName = chartName;
-		this.measurements = measurements;
+		this.measurementsWomen = measurementsWomen;
 		this.sizeType = sizeType;
 		this.createdOn = createdOn;
+		this.measurementsMen = measurementsMen;
 	}
 	public Integer getId() {
 		return Id;
@@ -61,11 +65,11 @@ public class WomenMeasurement {
 	public void setChartName(String chartName) {
 		this.chartName = chartName;
 	}
-	public WomenSizeMeasurements getMeasurements() {
-		return measurements;
+	public WomenSizeMeasurements getMeasurementsWomen() {
+		return measurementsWomen;
 	}
-	public void setMeasurements(WomenSizeMeasurements measurements) {
-		this.measurements = measurements;
+	public void setMeasurements(WomenSizeMeasurements measurementsWomen) {
+		this.measurementsWomen = measurementsWomen;
 	}
 	public String getSizeType() {
 		return sizeType;
@@ -82,10 +86,16 @@ public class WomenMeasurement {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+	public MenMeasurement getMeasurementsMen() {
+		return measurementsMen;
+	}
+	public void setMeasurementsMen(MenMeasurement measurementsMen) {
+		this.measurementsMen = measurementsMen;
+	}
 	@Override
 	public String toString() {
-		return "WomenMeasurement [Id=" + Id + ", designerId=" + designerId + ", chartName=" + chartName + ", sizeType="
-				+ sizeType + ", createdOn=" + createdOn + "]";
+		return "Measurement [Id=" + Id + ", designerId=" + designerId + ", chartName=" + chartName + ", sizeType="
+				+ sizeType + ", measurementsMen=" + measurementsMen + ", createdOn=" + createdOn + "]";
 	}
     
 

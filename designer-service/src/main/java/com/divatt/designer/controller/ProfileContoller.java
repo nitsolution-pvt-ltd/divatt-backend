@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -40,8 +42,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import com.divatt.designer.config.JWTConfig;
+import com.divatt.designer.entity.Measurement;
+import com.divatt.designer.entity.MenMeasurement;
 import com.divatt.designer.entity.SendMail;
-import com.divatt.designer.entity.WomenMeasurement;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
@@ -98,11 +101,11 @@ public class ProfileContoller {
 	@Autowired
 	private ProductRepo2 productRepo2;
 	
-	@Autowired
-	private MeasurementMenRepo measurementMenRepo;
+//	@Autowired
+//	private MeasurementMenRepo measurementMenRepo;
 	
 	@Autowired
-	private MeasurementWomenRepo measurementWomenRepo;
+	private MeasurementRepo measurementRepo;
 
 	@Autowired
 	private MongoOperations mongoOperations;
@@ -144,9 +147,20 @@ public class ProfileContoller {
 			} catch (Exception e) {
 
 			}
-			// 
-			designerProfileEntity.setMenMeasurement(measurementMenRepo.findByDesignerId(id.intValue()).get());
-			designerProfileEntity.setWomenMeasurement(measurementWomenRepo.findByDesignerId(id.intValue()).get());
+			List<Measurement> findByDesignerId = measurementRepo.findByDesignerId(id.intValue());
+			if(findByDesignerId.size() > 0) {
+				findByDesignerId.stream().forEach(measurement -> {
+					if(measurement.getMeasurementsMen() != null) {
+						designerProfileEntity.setWomenChartData(measurement);
+					} else if(measurement.getMeasurementsWomen() != null) {
+						designerProfileEntity.setMenChartData(measurement);
+					}
+				});
+			}
+			else {
+				designerProfileEntity.setWomenChartData(null);
+				designerProfileEntity.setMenChartData(null);
+			}
 			return ResponseEntity.ok(designerProfileEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -276,8 +290,10 @@ public class ProfileContoller {
 			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
 			
 			// start designer measurement 
-			measurementMenRepo.save(designerProfileEntity.getMenMeasurement());
-			measurementWomenRepo.save(designerProfileEntity.getWomenMeasurement());
+			Measurement menChartData = designerProfileEntity.getMenChartData();
+			Measurement womenChartData = designerProfileEntity.getWomenChartData();
+			measurementRepo.save(menChartData);
+			measurementRepo.save(womenChartData);
 			// End designer measurement
 		} catch (Exception e) {
 			throw new CustomException("Please check the fields");

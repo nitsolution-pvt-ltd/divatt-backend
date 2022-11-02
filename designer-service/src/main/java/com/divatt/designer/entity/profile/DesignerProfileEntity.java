@@ -6,8 +6,8 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.divatt.designer.entity.Measurement;
 import com.divatt.designer.entity.MenMeasurement;
-import com.divatt.designer.entity.WomenMeasurement;
 
 import nonapi.io.github.classgraph.json.Id;
 
@@ -51,8 +51,8 @@ public class DesignerProfileEntity {
 	
 	private String designerCurrentStatus;
 	
-	private MenMeasurement menMeasurement;
-	private WomenMeasurement womenMeasurement;
+	private Measurement menChartData;
+	private Measurement womenChartData;
 
 	public DesignerProfileEntity() {
 		super();
@@ -63,7 +63,7 @@ public class DesignerProfileEntity {
 			@NotNull BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName,
 			String profileStatus, String accountStatus, Boolean isDeleted,
 			DesignerPersonalInfoEntity designerPersonalInfoEntity, String designerLevel, Integer followerCount,
-			Integer productCount, String designerCurrentStatus, MenMeasurement menMeasurement, WomenMeasurement womenMeasurement) {
+			Integer productCount, String designerCurrentStatus, Measurement menMeasurement, Measurement womenMeasurement) {
 		super();
 		this.id = id;
 		this.designerId = designerId;
@@ -79,8 +79,8 @@ public class DesignerProfileEntity {
 		this.followerCount = followerCount;
 		this.productCount = productCount;
 		this.designerCurrentStatus = designerCurrentStatus;
-		this.menMeasurement = menMeasurement;
-		this.womenMeasurement = womenMeasurement;
+		this.menChartData = menMeasurement;
+		this.womenChartData = womenMeasurement;
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class DesignerProfileEntity {
 				+ designerName + ", profileStatus=" + profileStatus + ", accountStatus=" + accountStatus
 				+ ", isDeleted=" + isDeleted + ", designerPersonalInfoEntity=" + designerPersonalInfoEntity
 				+ ", designerLevel=" + designerLevel + ", followerCount=" + followerCount + ", productCount="
-				+ productCount + ", designerCurrentStatus=" + designerCurrentStatus + ", menMeasurement=" + menMeasurement +", womenMeasurement=" + womenMeasurement +"]";
+				+ productCount + ", designerCurrentStatus=" + designerCurrentStatus + ", menMeasurement=" + menChartData +", womenMeasurement=" + womenChartData +"]";
 	}
 
 	public Long getId() {
@@ -209,20 +209,19 @@ public class DesignerProfileEntity {
 		return SEQUENCE_NAME;
 	}
 
-	public MenMeasurement getMenMeasurement() {
-		return menMeasurement;
+	public Measurement getMenChartData() {
+		return menChartData;
 	}
 
-	public void setMenMeasurement(MenMeasurement menMeasurement) {
-		this.menMeasurement = menMeasurement;
+	public void setMenChartData(Measurement menChartData) {
+		this.menChartData = menChartData;
 	}
 
-	public WomenMeasurement getWomenMeasurement() {
-		return womenMeasurement;
+	public Measurement getWomenChartData() {
+		return womenChartData;
 	}
 
-	public void setWomenMeasurement(WomenMeasurement womenMeasurement) {
-		this.womenMeasurement = womenMeasurement;
+	public void setWomenChartData(Measurement womenChartData) {
+		this.womenChartData = womenChartData;
 	}
-	
 }
