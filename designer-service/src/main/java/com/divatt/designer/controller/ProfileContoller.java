@@ -144,7 +144,9 @@ public class ProfileContoller {
 			} catch (Exception e) {
 
 			}
-
+			// 
+			designerProfileEntity.setMenMeasurement(measurementMenRepo.findByDesignerId(id.intValue()).get());
+			designerProfileEntity.setWomenMeasurement(measurementWomenRepo.findByDesignerId(id.intValue()).get());
 			return ResponseEntity.ok(designerProfileEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -272,6 +274,11 @@ public class ProfileContoller {
 			designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
 
 			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+			
+			// start designer measurement 
+			measurementMenRepo.save(designerProfileEntity.getMenMeasurement());
+			measurementWomenRepo.save(designerProfileEntity.getWomenMeasurement());
+			// End designer measurement
 		} catch (Exception e) {
 			throw new CustomException("Please check the fields");
 		}

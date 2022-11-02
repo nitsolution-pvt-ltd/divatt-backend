@@ -6,6 +6,9 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.divatt.designer.entity.MenMeasurement;
+import com.divatt.designer.entity.WomenMeasurement;
+
 import nonapi.io.github.classgraph.json.Id;
 
 @Document(collection = "tbl_designer_profile")
@@ -47,6 +50,9 @@ public class DesignerProfileEntity {
 	private Integer productCount;
 	
 	private String designerCurrentStatus;
+	
+	private MenMeasurement menMeasurement;
+	private WomenMeasurement womenMeasurement;
 
 	public DesignerProfileEntity() {
 		super();
@@ -57,7 +63,7 @@ public class DesignerProfileEntity {
 			@NotNull BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName,
 			String profileStatus, String accountStatus, Boolean isDeleted,
 			DesignerPersonalInfoEntity designerPersonalInfoEntity, String designerLevel, Integer followerCount,
-			Integer productCount, String designerCurrentStatus) {
+			Integer productCount, String designerCurrentStatus, MenMeasurement menMeasurement, WomenMeasurement womenMeasurement) {
 		super();
 		this.id = id;
 		this.designerId = designerId;
@@ -73,6 +79,8 @@ public class DesignerProfileEntity {
 		this.followerCount = followerCount;
 		this.productCount = productCount;
 		this.designerCurrentStatus = designerCurrentStatus;
+		this.menMeasurement = menMeasurement;
+		this.womenMeasurement = womenMeasurement;
 	}
 
 	@Override
@@ -82,7 +90,7 @@ public class DesignerProfileEntity {
 				+ designerName + ", profileStatus=" + profileStatus + ", accountStatus=" + accountStatus
 				+ ", isDeleted=" + isDeleted + ", designerPersonalInfoEntity=" + designerPersonalInfoEntity
 				+ ", designerLevel=" + designerLevel + ", followerCount=" + followerCount + ", productCount="
-				+ productCount + ", designerCurrentStatus=" + designerCurrentStatus + "]";
+				+ productCount + ", designerCurrentStatus=" + designerCurrentStatus + ", menMeasurement=" + menMeasurement +", womenMeasurement=" + womenMeasurement +"]";
 	}
 
 	public Long getId() {
@@ -199,6 +207,22 @@ public class DesignerProfileEntity {
 
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
+	}
+
+	public MenMeasurement getMenMeasurement() {
+		return menMeasurement;
+	}
+
+	public void setMenMeasurement(MenMeasurement menMeasurement) {
+		this.menMeasurement = menMeasurement;
+	}
+
+	public WomenMeasurement getWomenMeasurement() {
+		return womenMeasurement;
+	}
+
+	public void setWomenMeasurement(WomenMeasurement womenMeasurement) {
+		this.womenMeasurement = womenMeasurement;
 	}
 	
 }
