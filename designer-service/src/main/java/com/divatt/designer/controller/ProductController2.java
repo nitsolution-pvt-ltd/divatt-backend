@@ -138,5 +138,15 @@ public class ProductController2 implements ProductService2 {
 		}
 
 	}
+	@Override
+	@PutMapping("/changeAdminStatus/{productId}")
+	public GlobalResponce changeAdminStatus(@PathVariable Integer productId) {
+		try {
+			LOGGER.info("Inside- ProductController.changeStatus()");
+			return this.productServiceImp2.changeAdminStatus(productId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
 }

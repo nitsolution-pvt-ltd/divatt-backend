@@ -249,7 +249,7 @@ public class ProductServiceImp2 implements ProductService2 {
 					isActive, "Rejected");
 			LOGGER.info("Behind Reject " + reject);
 			oos = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, false,
-					"oos");
+					"Approved");
 			if (keyword.isEmpty()) {
 				if (adminStatus.equals("live")) {
 					findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
@@ -265,7 +265,7 @@ public class ProductServiceImp2 implements ProductService2 {
 							"ls", isActive, pagingSort);
 				} else if (adminStatus.equals("oos")) {
 					findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
-							"oos", false, pagingSort);
+							"Approved", false, pagingSort);
 				}
 			} else {
 				if (adminStatus.equals("live")) {
@@ -282,7 +282,7 @@ public class ProductServiceImp2 implements ProductService2 {
 							"notify", pagingSort);
 				} else if (adminStatus.equals("oos")) {
 					findAll = productRepo2.listDesignerProductsearchByAdminStatusForOos(keyword, isDeleted, designerId,
-							"oos", false, pagingSort);
+							"Approved", false, pagingSort);
 				}
 
 			}
@@ -352,4 +352,36 @@ public class ProductServiceImp2 implements ProductService2 {
 		}
 		return new GlobalResponce("Sucess", "Product Approved", 200);
 	}
+
+	@Override
+		public GlobalResponce changeAdminStatus(Integer productId) {
+			try {
+				LOGGER.info("Inside - ProductServiceImpl.changeStatus()");
+				if (productRepo2.existsById(productId)) {
+					Boolean adminStatus;
+					Optional<ProductMasterEntity2> productData = productRepo2.findById(productId);
+					ProductMasterEntity2 productEntity = productData.get();
+					if (productEntity.getIsActive().equals(true)) {
+						adminStatus = false;
+						productEntity.setIsActive(adminStatus);
+						productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
+						productEntity.setUpdatedOn(new Date());
+						productRepo2.save(productEntity);
+						return new GlobalResponce("Success", "Status Inactive successfully", 200);
+					} else {
+						adminStatus = true;
+						productEntity.setIsActive(adminStatus);
+						productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
+						productEntity.setUpdatedOn(new Date());
+						productRepo2.save(productEntity);
+						return new GlobalResponce("Success", "Status Active successfully", 200);
+					}
+
+				} else {
+					return new GlobalResponce("Bad request", "Product does not exist", 400);
+				}
+			} catch (Exception e) {
+				throw new CustomException(e.getMessage());
+			}
+		}
 }

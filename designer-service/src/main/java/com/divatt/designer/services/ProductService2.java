@@ -29,4 +29,6 @@ public interface ProductService2 {
 	public GlobalResponce productDeleteByproductId(Integer productId);
 
 	GlobalResponce adminApprovalUpdate(Integer productId, ProductMasterEntity2 entity2);
+	
+	GlobalResponce changeAdminStatus(Integer productId);
 }
