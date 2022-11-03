@@ -294,8 +294,13 @@ public class ProfileContoller {
 			LOGGER.info("Women Chart data is ={}",designerProfileEntity.getWomenChartData());
 			Measurement menChartData = designerProfileEntity.getMenChartData();
 			Measurement womenChartData = designerProfileEntity.getWomenChartData();
-			measurementRepo.save(menChartData);
-			measurementRepo.save(womenChartData);
+			measurementRepo.save(new Measurement());
+//			Measurement save = measurementRepo.save(menChartData);
+//			
+//			LOGGER.info("After save the data in database for Men={}",save);
+//			
+//			Measurement save2 = measurementRepo.save(womenChartData);
+//			LOGGER.info("After save the data in database for Women={}",save2);
 			// End designer measurement
 		} catch (Exception e) {
 			throw new CustomException("Please check the fields");
