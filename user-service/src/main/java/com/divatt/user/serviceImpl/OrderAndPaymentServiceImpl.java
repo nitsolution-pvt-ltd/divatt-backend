@@ -643,7 +643,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			if (keyword != null || !"".equals(keyword)) {
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
 				LOGGER.info(OrderSKUDetailsData + "InsideSku");
-				OrderSKUDetailsData.forEach(e -> System.out.println(e.getProductId()));
 			}
 			List<Object> productId = new ArrayList<>();
 
@@ -685,7 +684,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						ResponseEntity<org.json.simple.JSONObject> getProductid = restTemplate.getForEntity(
 								"https://localhost:8083/dev//designerProducts/productList/" + id.getProductId(),
 								org.json.simple.JSONObject.class);
-						LOGGER.info(getProductid + " Inside ProductId hi");
+						LOGGER.info(getProductid + " Inside ProductId ");
 						object.put("withGiftWrap", getProductid.getBody().get("withGiftWrap"));
 
 					} catch (Exception ex) {
