@@ -7,6 +7,7 @@ import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -15,42 +16,31 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 public class Measurement {
 
     @Id
-//    @Field(name ="_id")
-    private Integer Id;
+    @Field(name ="_id")
+    private Integer _id;
     @Transient
     public static final String SEQUENCE_NAME = "tbl_designer_measurements";
-//    @Field(name = "designer_id")
+    @Field(name = "designer_id")
     private Integer designerId;
-//    @Field(name ="chat_name")
+    @Field(name ="chat_name")
     private String chartName;
-//    @Field(name ="measurements")
+    @Field(name ="measurements")
     private WomenSizeMeasurements measurementsWomen;
-//    @Field(name ="size_type")
+    @Field(name ="size_type")
     private String sizeType;
     private MenandKidsMeasurements measurementsMen;
     @JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
-//    @Field(name ="created_on")
+    @Field(name ="created_on")
     private Date createdOn;
 	public Measurement() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Measurement(Integer id, Integer designerId, String chartName, WomenSizeMeasurements measurementsWomen,
-			String sizeType, MenandKidsMeasurements measurementsMen, Date createdOn) {
-		super();
-		Id = id;
-		this.designerId = designerId;
-		this.chartName = chartName;
-		this.measurementsWomen = measurementsWomen;
-		this.sizeType = sizeType;
-		this.measurementsMen = measurementsMen;
-		this.createdOn = createdOn;
+	public Integer get_id() {
+		return _id;
 	}
-	public Integer getId() {
-		return Id;
-	}
-	public void setId(Integer id) {
-		Id = id;
+	public void set_id(Integer _id) {
+		this._id = _id;
 	}
 	public Integer getDesignerId() {
 		return designerId;
@@ -93,9 +83,21 @@ public class Measurement {
 	}
 	@Override
 	public String toString() {
-		return "Measurement [Id=" + Id + ", designerId=" + designerId + ", chartName=" + chartName
+		return "Measurement [_id=" + _id + ", designerId=" + designerId + ", chartName=" + chartName
 				+ ", measurementsWomen=" + measurementsWomen + ", sizeType=" + sizeType + ", measurementsMen="
 				+ measurementsMen + ", createdOn=" + createdOn + "]";
 	}
+	public Measurement(Integer _id, Integer designerId, String chartName, WomenSizeMeasurements measurementsWomen,
+			String sizeType, MenandKidsMeasurements measurementsMen, Date createdOn) {
+		super();
+		this._id = _id;
+		this.designerId = designerId;
+		this.chartName = chartName;
+		this.measurementsWomen = measurementsWomen;
+		this.sizeType = sizeType;
+		this.measurementsMen = measurementsMen;
+		this.createdOn = createdOn;
+	}
+	
 	
 }
