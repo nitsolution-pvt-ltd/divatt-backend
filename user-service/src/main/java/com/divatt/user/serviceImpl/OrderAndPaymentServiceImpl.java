@@ -690,7 +690,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
-
 				});
 
 				String writeValueAsString = null;
