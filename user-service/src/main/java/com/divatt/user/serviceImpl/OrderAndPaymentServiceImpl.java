@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -432,6 +433,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
+			LOGGER.info(findById + " Inside FindBYid");
 			if (findById.size() <= 0) {
 				throw new CustomException("Order not found");
 			}
@@ -444,13 +446,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String productIdFilter = null;
 				try {
 					productIdFilter = obj.writeValueAsString(e);
+					LOGGER.info(productIdFilter + "Inside ProductIdfilter");
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+				LOGGER.info(e.getOrderId() + "Inside OrderId");
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 
+				LOGGER.info(OrderPaymentRow + " Inside PaymentRow");
+				LOGGER.info(OrderSKUDetailsRow + " Inside OrderSku");
 				OrderSKUDetailsRow.forEach(D -> {
 					LOGGER.info("Data in for each method" + D.getProductId());
 					ObjectMapper objs = new ObjectMapper();
@@ -463,16 +469,24 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								"https://localhost:8083/dev/designerProduct/view/" + D.getProductId(),
 								org.json.simple.JSONObject.class);
 
+						LOGGER.info(productById + "Inside Productbyid");
 						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));
 						D.setHsn(productById.getBody().get("hsnData"));
 
 						productIdFilters = objs.writeValueAsString(D);
 						Integer i = (int) (long) D.getUserId();
+						LOGGER.info(i + "Inside i");
+						LOGGER.info(D.getDesignerId() + "Inside DesignerId");
+						LOGGER.info(D.getProductId() + "Inside ProductId");
 						List<OrderTrackingEntity> findByIdTracking = this.orderTrackingRepo
 								.findByOrderIdAndUserIdAndDesignerIdAndProductId(orderId, i, D.getDesignerId(),
 										D.getProductId());
+						LOGGER.info(findByIdTracking + "Inside Tracking");
 						JsonNode cartJNs = new JsonNode(productIdFilters);
+
 						JSONObject objectss = cartJNs.getObject();
+						LOGGER.info(objectss + "Inside objectss");
+						objectss.put("Customization", productById.getBody().get("customization"));
 
 						if (findByIdTracking.size() > 0) {
 							String writeValueAsStringd = null;
@@ -484,8 +498,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 							JsonNode TrackingJson = new JsonNode(writeValueAsStringd);
 
+							LOGGER.info(TrackingJson + "Inside TrackingJson");
 							objectss.put("TrackingData", TrackingJson.getObject());
-							objectss.put("Customization", productById.getBody().get("customization"));
+							LOGGER.info(TrackingJson.getObject() + "Inside Trackingjson 33");
 
 						}
 						productIds.add(objectss);
@@ -610,6 +625,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			String keyword, Optional<String> sortBy, String orderItemStatus) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
+
 			int CountData = (int) orderDetailsRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
@@ -626,31 +642,26 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
 			if (keyword != null || !"".equals(keyword)) {
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
+				LOGGER.info(OrderSKUDetailsData + "InsideSku");
+				OrderSKUDetailsData.forEach(e -> System.out.println(e.getProductId()));
 			}
-
 			List<Object> productId = new ArrayList<>();
 
 			if (!orderItemStatus.isEmpty()) {
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
-						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus)).map(c -> c.getOrderId())
-						.collect(Collectors.toList());
+						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus))
+						.filter(e -> !keyword.isBlank() ? e.getOrderId().equals(keyword) : true)
+						.map(c -> c.getOrderId()).collect(Collectors.toList());
+
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
-				if (!keyword.isEmpty()) {
-					List<String> collect = OrderSKUDetailsData.stream().filter(e -> e.getOrderId().equals(keyword))
-							.map(c -> c.getOrderId()).collect(Collectors.toList());
-					findAll = orderDetailsRepo.findByOrderIdIn(collect, pagingSort);
-				}
+
 			} else {
-				List<String> OrderId = OrderSKUDetailsData.stream().map(c -> c.getOrderId())
-						.collect(Collectors.toList());
+				List<String> OrderId = OrderSKUDetailsData.stream()
+						.filter(e -> !keyword.isBlank() ? e.getOrderId().equals(keyword) : true)
+						.map(c -> c.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
-				if (!keyword.isEmpty()) {
-					List<String> collect = OrderSKUDetailsData.stream().filter(e -> e.getOrderId().equals(keyword))
-							.map(c -> c.getOrderId()).collect(Collectors.toList());
-					findAll = orderDetailsRepo.findByOrderIdIn(collect, pagingSort);
-				}
 			}
-		
+
 			List<OrderDetailsEntity> content = findAll.getContent();
 
 			content.forEach(e -> {
@@ -668,6 +679,20 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
+
+				OrderSKUDetailsRow.forEach(id -> {
+					try {
+						ResponseEntity<org.json.simple.JSONObject> getProductid = restTemplate.getForEntity(
+								"https://localhost:8083/dev//designerProducts/productList/" + id.getProductId(),
+								org.json.simple.JSONObject.class);
+						LOGGER.info(getProductid + " Inside ProductId hi");
+						object.put("withGiftWrap", getProductid.getBody().get("withGiftWrap"));
+
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+
+				});
 
 				String writeValueAsString = null;
 				JSONObject payRow = null;
@@ -695,7 +720,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			});
 
-			LOGGER.info(productId.toString());
+			LOGGER.info(productId.toString() + "inside ProductId");
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
