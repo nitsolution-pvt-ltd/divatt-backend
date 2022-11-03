@@ -125,15 +125,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
-	
+
 	@Value("${spring.profiles.active}")
 	private String contextPath;
-	
+
 	@Value("${host}")
 	private String host;
-	
-	
-	
 
 	protected String getRandomString() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -343,10 +340,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			Page<OrderDetailsEntity> findAll = null;
 
-			if(!orderStatus.equals("All")) {
-				findAll=orderDetailsRepo.findOrderStatus(orderStatus,pagingSort);
-			}
-			else if (keyword.isEmpty()) {
+			if (!orderStatus.equals("All")) {
+				findAll = orderDetailsRepo.findOrderStatus(orderStatus, pagingSort);
+			} else if (keyword.isEmpty()) {
 				findAll = orderDetailsRepo.findAll(pagingSort);
 			} else {
 				findAll = orderDetailsRepo.Search(keyword, pagingSort);
@@ -424,8 +420,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					response.put("orderCount", orderCount);
 					return response;
 				}
-			return response;
-				
+				return response;
+
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -489,6 +485,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							JsonNode TrackingJson = new JsonNode(writeValueAsStringd);
 
 							objectss.put("TrackingData", TrackingJson.getObject());
+							objectss.put("Customization", productById.getBody().get("customization"));
 
 						}
 						productIds.add(objectss);
@@ -520,13 +517,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			});
 			return ResponseEntity.ok(new Json(productId.get(0).toString()));
 		} catch (HttpStatusCodeException ex) {
-			if(LOGGER.isErrorEnabled()) {
-			LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>","Designer Service",host+contextPath+"/userOrder/getOrder/"+orderId,ex.getResponseBodyAsString(),ex.getStatusCode());
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>",
+						"Designer Service", host + contextPath + "/userOrder/getOrder/" + orderId,
+						ex.getResponseBodyAsString(), ex.getStatusCode());
 			}
 			return new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
 		} catch (Exception exception) {
-			if(LOGGER.isErrorEnabled()) {
-				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>","Designer Service",host+contextPath+"/userOrder/getOrder/"+orderId,exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>",
+						"Designer Service", host + contextPath + "/userOrder/getOrder/" + orderId,
+						exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -634,15 +635,22 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus)).map(c -> c.getOrderId())
 						.collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
+				if (!keyword.isEmpty()) {
+					List<String> collect = OrderSKUDetailsData.stream().filter(e -> e.getOrderId().equals(keyword))
+							.map(c -> c.getOrderId()).collect(Collectors.toList());
+					findAll = orderDetailsRepo.findByOrderIdIn(collect, pagingSort);
+				}
 			} else {
 				List<String> OrderId = OrderSKUDetailsData.stream().map(c -> c.getOrderId())
 						.collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
+				if (!keyword.isEmpty()) {
+					List<String> collect = OrderSKUDetailsData.stream().filter(e -> e.getOrderId().equals(keyword))
+							.map(c -> c.getOrderId()).collect(Collectors.toList());
+					findAll = orderDetailsRepo.findByOrderIdIn(collect, pagingSort);
+				}
 			}
-			// List<String> OrderId = OrderSKUDetailsData.stream().filter(e->
-			// e.getOrderItemStatus().equals(orderIteamStatus)).map(c ->
-			// c.getOrderId()).collect(Collectors.toList());
-
+		
 			List<OrderDetailsEntity> content = findAll.getContent();
 
 			content.forEach(e -> {
@@ -688,19 +696,18 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			});
 
 			LOGGER.info(productId.toString());
-
-			/*
-			 * if(!orderIteamStatus.isEmpty()) { findAll =
-			 * orderSKUDetailsRepo.findByOrderItem(designerId,orderIteamStatus, pagingSort);
-			 * }
-			 */
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
 			}
 
 			Map<String, Object> response = new HashMap<>();
-			response.put("data", new Json(productId.toString()));
+
+			if (!productId.isEmpty()) {
+				response.put("data", new Json(productId.toString()));
+			} else {
+				response.put("data", productId);
+			}
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
 			response.put("totalPage", totalPage);
@@ -712,11 +719,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered").size());
 			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "Return").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId, "Active").size());
-			if (productId.size() <= 0) {
-				throw new CustomException("[]");
-			} else {
-				return response;
-			}
+
+			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
