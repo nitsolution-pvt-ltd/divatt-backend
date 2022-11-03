@@ -70,6 +70,9 @@ import com.divatt.designer.repo.*;
 @RestController
 @RequestMapping("/designer")
 public class ProfileContoller {
+	
+	@Autowired
+	private SequenceGenerator sequenceGenarator;
 
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
@@ -292,9 +295,13 @@ public class ProfileContoller {
 			// start designer measurement 
 			LOGGER.info("Men Chart data is ={}",designerProfileEntity.getMenChartData());
 			LOGGER.info("Women Chart data is ={}",designerProfileEntity.getWomenChartData());
+			;
 			Measurement menChartData = designerProfileEntity.getMenChartData();
+			menChartData.set_id(sequenceGenarator.getNextSequence(Measurement.SEQUENCE_NAME));
 			Measurement womenChartData = designerProfileEntity.getWomenChartData();
-			measurementRepo.save(new Measurement());
+			womenChartData.set_id(sequenceGenarator.getNextSequence(Measurement.SEQUENCE_NAME));
+			measurementRepo.save(menChartData);
+			measurementRepo.save(womenChartData);
 //			Measurement save = measurementRepo.save(menChartData);
 //			
 //			LOGGER.info("After save the data in database for Men={}",save);
