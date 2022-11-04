@@ -625,7 +625,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy, String orderItemStatus) {
+			String keyword, Optional<String> sortBy, String orderItemStatus,String sortDateType) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 
@@ -641,6 +641,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
 
+			if (!sortDateType.equals(null)) {
+
+				if (sortDateType.equalsIgnoreCase("new")) {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, "createdOn");
+
+				} else if (sortDateType.equalsIgnoreCase("old")) {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, "createdOn");
+
+				}
+			}
 			Page<OrderDetailsEntity> findAll = null;
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
 			if (keyword != null || !"".equals(keyword)) {
