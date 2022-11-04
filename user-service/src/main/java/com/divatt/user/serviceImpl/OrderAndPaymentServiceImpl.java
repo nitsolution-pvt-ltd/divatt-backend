@@ -473,6 +473,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));
 						D.setHsn(productById.getBody().get("hsnData"));
 
+						LOGGER.info(productById.getBody().get("withGiftWrap") + "Inside gift wrap");
 						productIdFilters = objs.writeValueAsString(D);
 						Integer i = (int) (long) D.getUserId();
 						LOGGER.info(i + "Inside i");
@@ -486,7 +487,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 						JSONObject objectss = cartJNs.getObject();
 						LOGGER.info(objectss + "Inside objectss");
-						objectss.put("Customization", productById.getBody().get("customization"));
+						objectss.put("customization", productById.getBody().get("customization"));
+						objectss.put("withGiftWrap", productById.getBody().get("giftWrap"));
+						LOGGER.info(objectss + "Inside objectss");
 
 						if (findByIdTracking.size() > 0) {
 							String writeValueAsStringd = null;
@@ -678,20 +681,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
-
-				OrderSKUDetailsRow.forEach(id -> {
-					try {
-						ResponseEntity<org.json.simple.JSONObject> getProductid = restTemplate.getForEntity(
-								"https://localhost:8083/dev//designerProducts/productList/" + id.getProductId(),
-								org.json.simple.JSONObject.class);
-						LOGGER.info(getProductid + " Inside ProductId ");
-						object.put("withGiftWrap", getProductid.getBody().get("withGiftWrap"));
-
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				});
-
 				String writeValueAsString = null;
 				JSONObject payRow = null;
 				if (!OrderPaymentRow.isEmpty()) {

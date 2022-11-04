@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,9 +155,9 @@ public class ProfileContoller {
 			if(findByDesignerId.size() > 0) {
 				findByDesignerId.stream().forEach(measurement -> {
 					if(measurement.getMeasurementsMen() != null) {
-						designerProfileEntity.setWomenChartData(measurement);
-					} else if(measurement.getMeasurementsWomen() != null) {
 						designerProfileEntity.setMenChartData(measurement);
+					} else if(measurement.getMeasurementsWomen() != null) {
+						designerProfileEntity.setWomenChartData(measurement);
 					}
 				});
 			}
@@ -298,8 +299,10 @@ public class ProfileContoller {
 			;
 			Measurement menChartData = designerProfileEntity.getMenChartData();
 			menChartData.set_id(sequenceGenarator.getNextSequence(Measurement.SEQUENCE_NAME));
+			menChartData.setCreatedOn(new Date());
 			Measurement womenChartData = designerProfileEntity.getWomenChartData();
 			womenChartData.set_id(sequenceGenarator.getNextSequence(Measurement.SEQUENCE_NAME));
+			womenChartData.setCreatedOn(new Date());
 			measurementRepo.save(menChartData);
 			measurementRepo.save(womenChartData);
 //			Measurement save = measurementRepo.save(menChartData);

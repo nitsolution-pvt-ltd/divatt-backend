@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -138,12 +139,23 @@ public class ProductController2 implements ProductService2 {
 		}
 
 	}
+
 	@Override
 	@PutMapping("/changeAdminStatus/{productId}")
 	public GlobalResponce changeAdminStatus(@PathVariable Integer productId) {
 		try {
 			LOGGER.info("Inside- ProductController.changeStatus()");
 			return this.productServiceImp2.changeAdminStatus(productId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@Override
+	@GetMapping("/productListUser")
+	public ResponseEntity<?> productListUser() {
+		try {
+			return this.productServiceImp2.productListUser();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

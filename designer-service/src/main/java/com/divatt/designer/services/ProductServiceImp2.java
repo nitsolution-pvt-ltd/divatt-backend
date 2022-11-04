@@ -1,9 +1,12 @@
 package com.divatt.designer.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.divatt.designer.entity.product.ProductMasterEntity;
@@ -29,6 +33,9 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	@Autowired
 	private CustomFunction customFunction;
+
+	@Autowired
+	private SequenceGenerator sequenceGenarator;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImp2.class);
 
@@ -354,34 +361,65 @@ public class ProductServiceImp2 implements ProductService2 {
 	}
 
 	@Override
-		public GlobalResponce changeAdminStatus(Integer productId) {
-			try {
-				LOGGER.info("Inside - ProductServiceImpl.changeStatus()");
-				if (productRepo2.existsById(productId)) {
-					Boolean adminStatus;
-					Optional<ProductMasterEntity2> productData = productRepo2.findById(productId);
-					ProductMasterEntity2 productEntity = productData.get();
-					if (productEntity.getIsActive().equals(true)) {
-						adminStatus = false;
-						productEntity.setIsActive(adminStatus);
-						productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
-						productEntity.setUpdatedOn(new Date());
-						productRepo2.save(productEntity);
-						return new GlobalResponce("Success", "Status Inactive successfully", 200);
-					} else {
-						adminStatus = true;
-						productEntity.setIsActive(adminStatus);
-						productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
-						productEntity.setUpdatedOn(new Date());
-						productRepo2.save(productEntity);
-						return new GlobalResponce("Success", "Status Active successfully", 200);
-					}
-
+	public GlobalResponce changeAdminStatus(Integer productId) {
+		try {
+			LOGGER.info("Inside - ProductServiceImpl.changeStatus()");
+			if (productRepo2.existsById(productId)) {
+				Boolean adminStatus;
+				Optional<ProductMasterEntity2> productData = productRepo2.findById(productId);
+				ProductMasterEntity2 productEntity = productData.get();
+				if (productEntity.getIsActive().equals(true)) {
+					adminStatus = false;
+					productEntity.setIsActive(adminStatus);
+					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
+					productEntity.setUpdatedOn(new Date());
+					productRepo2.save(productEntity);
+					return new GlobalResponce("Success", "Status Inactive successfully", 200);
 				} else {
-					return new GlobalResponce("Bad request", "Product does not exist", 400);
+					adminStatus = true;
+					productEntity.setIsActive(adminStatus);
+					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
+					productEntity.setUpdatedOn(new Date());
+					productRepo2.save(productEntity);
+					return new GlobalResponce("Success", "Status Active successfully", 200);
 				}
-			} catch (Exception e) {
-				throw new CustomException(e.getMessage());
+
+			} else {
+				return new GlobalResponce("Bad request", "Product does not exist", 400);
 			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
 		}
+	}
+
+	@Override
+	public ResponseEntity<?> productListUser() {
+		try {
+			long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity2.SEQUENCE_NAME);
+			Random random = new Random();
+			List<ProductMasterEntity2> findall = productRepo2.findByIsDeletedAndAdminStatusAndIsActive(false,
+					"Approved", true);
+			if (findall.size() <= 15) {
+				return ResponseEntity.ok(findall);
+			}
+			List<ProductMasterEntity2> productMasterEntity2 = new ArrayList<>();
+			Boolean check = true;
+			while (check) {
+				int nextInt = random.nextInt((int) count);
+				for (ProductMasterEntity2 prod : findall) {
+					if (prod.getProductId() == nextInt) {
+						productMasterEntity2.add(prod);
+					}
+					if (productMasterEntity2.size() > 14)
+						check = false;
+				}
+			}
+			return ResponseEntity.ok(productMasterEntity2);
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
 }

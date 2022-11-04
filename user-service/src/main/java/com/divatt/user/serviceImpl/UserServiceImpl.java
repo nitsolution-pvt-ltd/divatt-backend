@@ -536,7 +536,7 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> getProductUser() {
 		try {
 			String body = restTemplate
-					.getForEntity("https://localhost:8083/dev/designerProduct/userProductList", String.class).getBody();
+					.getForEntity("https://localhost:8083/dev/designerProducts/productListUser", String.class).getBody();
 
 			Json js = new Json(body);
 			return ResponseEntity.ok(js);
