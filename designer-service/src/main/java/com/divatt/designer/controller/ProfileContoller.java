@@ -236,7 +236,7 @@ public class ProfileContoller {
 
 			SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
 					"Successfully Registration",
-					"Welcome " + designerProfileEntity.getDesignerProfile().getEmail() + "" + ",\n   "
+					"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
 							+ ",\n                           "
 							+ " you have been register successfully. Please active your account by clicking the bellow link "
 							+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
@@ -294,7 +294,10 @@ public class ProfileContoller {
 						.setId((long) sequenceGenerator.getNextSequence(DesignerPersonalInfoEntity.SEQUENCE_NAME));
 			designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
 
+		
+			designerProfileEntity.setDesignerCurrentStatus("ProfileUpdated");
 			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+			designerProfileRepo.save(designerProfileEntity);
 
 			// start designer measurement
 			LOGGER.info("Men Chart data is ={}", designerProfileEntity.getMenChartData());
