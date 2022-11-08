@@ -625,7 +625,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType) {
+			String keyword, Optional<String> sortBy, String orderItemStatus,String sortDateType) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 
@@ -659,18 +659,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			List<Object> productId = new ArrayList<>();
 
-			if (!orderItemStatus.isEmpty()&& !orderItemStatus.equals("Orders")) {
+			if (!orderItemStatus.isEmpty()) {
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
 						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus))
-						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword) : true)
+						.filter(e -> !keyword.isBlank() ? e.getOrderId().equals(keyword) : true)
 						.map(c -> c.getOrderId()).collect(Collectors.toList());
+
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
 
-			}
-			else
-			{
+			} else {
 				List<String> OrderId = OrderSKUDetailsData.stream()
-						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword) : true)
+						.filter(e -> !keyword.isBlank() ? e.getOrderId().equals(keyword) : true)
 						.map(c -> c.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
 			}
@@ -686,10 +685,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					e1.printStackTrace();
 				}
 
-				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());				
-				
-				  List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
-				  .findByOrderIdAndDesignerId(e.getOrderId(), designerId);			 
+				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
+						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
 
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
@@ -706,16 +704,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 				String OrderSKUD = null;
 				try {
-                    if(!orderItemStatus.isEmpty() && !orderItemStatus.equals("Orders")) {
-                    	OrderSKUD = obj.writeValueAsString(orderSKUDetailsRepo.findByOrderIdAndDesignerIdAndorderItemStatus(e.getOrderId(), designerId, orderItemStatus));
-                    }
-                    else if(!orderItemStatus.isEmpty() && orderItemStatus.equals("Orders")){
-                    	OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
-                    }
-                    else{
-                    	OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
-                    }
-					
+					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
 				} catch (JsonProcessingException e2) {
 					e2.printStackTrace();
 				}
@@ -758,6 +747,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
 
 	public GlobalResponse invoiceGenarator(String orderId) {
 		try {
