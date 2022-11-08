@@ -45,6 +45,7 @@ import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
+import com.divatt.user.serviceDTO.CancelationRequestDTO;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
 
@@ -753,4 +754,28 @@ public class OrderAndPaymentContoller {
     		throw new CustomException(e.getMessage());
     	}
     }
+    
+    @PostMapping("/cancelOrder")
+    public GlobalResponse cancellOrder(@RequestParam String orderId, 
+    		@RequestParam String productId,
+    		@RequestHeader("Authorization") String token,
+    		@RequestBody CancelationRequestDTO cancelationRequestDTO) {
+    	try {
+    		return orderAndPaymentService.cancelOrderService(orderId,productId,token,cancelationRequestDTO);
+    	}catch(Exception e) {
+    		throw new CustomException(e.getMessage());
+    	}
+    }
+    
+    @PostMapping("/adminApprovalCancelation")
+    public GlobalResponse cancelationApproval(@RequestParam String designerId, @RequestParam String orderId, @RequestParam String productId,
+    		@RequestBody CancelationRequestDTO cancelationRequestDTO) {
+    	
+   try {
+	   return orderAndPaymentService.cancelApproval(designerId,orderId,productId,cancelationRequestDTO);
+   }
+   catch(Exception e) {
+	   throw new CustomException(e.getMessage()); 
+   }
+ }
 }

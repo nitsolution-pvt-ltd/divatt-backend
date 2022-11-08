@@ -46,7 +46,6 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
 import com.divatt.user.config.JWTConfig;
 import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.InvoiceEntity;
@@ -55,6 +54,7 @@ import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.ProductInvoice;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
+import com.divatt.user.entity.order.OrderStatusDetails;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.ListResponseDTO;
@@ -63,10 +63,16 @@ import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.OrderInvoiceRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.OrderTrackingRepo;
+import com.divatt.user.repo.UserDesignerRepo;
+import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.response.GlobalResponse;
+import com.divatt.user.serviceDTO.CancelEmailJSON;
+import com.divatt.user.serviceDTO.CancelationRequestDTO;
+import com.divatt.user.serviceDTO.DesignerRequestDTO;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
+import com.divatt.user.utill.EmailSenderThread;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -132,6 +138,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Value("${host}")
 	private String host;
+	
+	@Autowired
+	private UserLoginRepo userloginRepo;
 
 	protected String getRandomString() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -1395,6 +1404,113 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					.collect(Collectors.toList());
 			// return orderStatusFiltered;
 		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public GlobalResponse cancelOrderService(String orderId, String productId,String token,CancelationRequestDTO cancelationRequestDTO) {
+		// TODO Auto-generated method stub
+		try {
+			String designerEmail= jwtconfig.extractUsername(token.substring(7));
+			LOGGER.info(designerEmail);
+			String designerId=restTemplate
+					.getForEntity("https://localhost:8080/dev/auth/info/DESIGNER/"+designerEmail, org.json.simple.JSONObject.class)
+					.getBody()
+					.get("designerId").toString();
+//			designerId=;
+//			LOGGER.info(designerId);
+			//return null;
+			List<OrderSKUDetailsEntity> orderDetails=orderSKUDetailsRepo.findAll()
+					.stream()
+					.filter(e->e.getDesignerId()==Long.parseLong(designerId))
+					.filter(e->e.getOrderId().equals(orderId))
+					.filter(e->e.getProductId()==Integer.parseInt(productId))
+					.collect(Collectors.toList());
+			LOGGER.info(orderDetails+"");
+			org.json.simple.JSONObject jsonObject= new org.json.simple.JSONObject();
+			jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
+			jsonObject.put("cancelationTime", new Date());
+			OrderStatusDetails orderStatusDetails= new OrderStatusDetails();
+			orderStatusDetails.setCancelOrderDetails(jsonObject);
+			orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+			orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+			orderSKUDetailsRepo.saveAll(orderDetails);
+			return new GlobalResponse("Success", "Cancelation request send successfully", 200);
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public GlobalResponse cancelApproval(String designerId, String orderId, String productId, CancelationRequestDTO cancelationRequestDTO) {
+		try {
+			List<OrderSKUDetailsEntity> orderDetails=orderSKUDetailsRepo.findAll()
+					.stream()
+					.filter(e->e.getDesignerId()==Long.parseLong(designerId))
+					.filter(e->e.getOrderId().equals(orderId))
+					.filter(e->e.getProductId()==Integer.parseInt(productId))
+					.filter(e->e.getOrderItemStatus().equals("Request for cancelation"))
+					.collect(Collectors.toList());
+			String username=userloginRepo.findById(orderDetails.get(0).getUserId()).get().getFirstName();
+			String userEmail=userloginRepo.findById(orderDetails.get(0).getUserId()).get().getEmail();
+			DesignerRequestDTO designerResponse=restTemplate.getForEntity("https://localhost:8083/dev/designer/"+designerId, DesignerRequestDTO.class)
+					.getBody();
+			String designerName=designerResponse.getDesignerId().toString();
+			String designerEmail=designerResponse.getDesignerProfile().get("email").toString();
+			if(cancelationRequestDTO.getOrderStatus().equals("Accepted")) {
+				
+				//org.json.simple.JSONObject data2= new org.json.simple.JSONObject();
+				Map<String, Object> data= new HashMap<String, Object>();
+				//Map<String, Object> data1= new HashMap<String, Object>();
+				CancelEmailJSON cancelEmailJSON= new CancelEmailJSON();
+				cancelEmailJSON.setOrderId(orderDetails.get(0).getOrderId());
+				cancelEmailJSON.setProductImages(orderDetails.get(0).getImages());
+				cancelEmailJSON.setProductName(orderDetails.get(0).getProductName());
+				cancelEmailJSON.setProductSize(orderDetails.get(0).getSize());
+				cancelEmailJSON.setSalePrice(orderDetails.get(0).getSalesPrice()+"");
+				cancelEmailJSON.setUserName(username);
+				cancelEmailJSON.setDesignerName(designerName);
+				cancelEmailJSON.setComment(orderDetails.get(0).getOrderStatusDetails().getCancelOrderDetails().get("cancelComment").toString());
+				LOGGER.info(cancelEmailJSON+"");
+				data.put("data2",cancelEmailJSON);
+				//data1.put("designerName", designerName);
+				Context context = new Context();
+				context.setVariables(data);
+				//context.setVariables(data1);
+				String htmlContent = templateEngine.process("ordercancel.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(userEmail, "Order cnacelled from designer side",
+						htmlContent, true, null, restTemplate);
+				emailSenderThread.start();
+				return new GlobalResponse("Success", "Order cancelled successfully", 200);
+			}else {
+				Map<String, Object> data= new HashMap<String, Object>();
+				//Map<String, Object> data1= new HashMap<String, Object>();
+				CancelEmailJSON cancelEmailJSON= new CancelEmailJSON();
+				cancelEmailJSON.setOrderId(orderDetails.get(0).getOrderId());
+				cancelEmailJSON.setProductImages(orderDetails.get(0).getImages());
+				cancelEmailJSON.setProductName(orderDetails.get(0).getProductName());
+				cancelEmailJSON.setProductSize(orderDetails.get(0).getSize());
+				cancelEmailJSON.setSalePrice(orderDetails.get(0).getSalesPrice()+"");
+				cancelEmailJSON.setUserName(username);
+				cancelEmailJSON.setDesignerName(designerName);
+				cancelEmailJSON.setComment(cancelationRequestDTO.getComment());
+				//LOGGER.info(cancelEmailJSON+"");
+				data.put("data2",cancelEmailJSON);
+				//data1.put("designerName", designerName);
+				Context context = new Context();
+				context.setVariables(data);
+				//context.setVariables(data1);
+				LOGGER.info(designerEmail);
+				String htmlContent = templateEngine.process("ordercancelRejected.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail, "Order cancelation rejected",
+						htmlContent, true, null, restTemplate);
+				emailSenderThread.start();
+				return new GlobalResponse("Success", "Order Rejected successfully", 200);
+			}
+		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
