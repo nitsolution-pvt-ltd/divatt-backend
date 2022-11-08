@@ -304,7 +304,7 @@ public class UserController {
 			userLoginEntity.setSocialType(userLoginEntity.getSocialType());
 			userLoginRepo.save(userLoginEntity);
 
-			SendMail mail= new SendMail(userLoginEntity.getEmail(), "Successfully Registration", "Welcome " + userLoginEntity.getEmail() + "" + ",\n   "
+			SendMail mail= new SendMail(userLoginEntity.getEmail(), "Successfully Registration", "Welcome " + userLoginEntity.getFirstName() + "" + ",\n   "
 					+ " you have been register successfully."
 					+ "Please active your account by clicking the bellow link "
 					+ URI.create(env.getProperty("redirectapi")
