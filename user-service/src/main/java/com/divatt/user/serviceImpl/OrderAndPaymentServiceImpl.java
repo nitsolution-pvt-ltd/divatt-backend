@@ -625,7 +625,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType) {
+			String keyword, Optional<String> sortBy, String orderItemStatus,String sortDateType) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 
@@ -653,31 +653,23 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			Page<OrderDetailsEntity> findAll = null;
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
-			LOGGER.info("Keyword Value is = {}",keyword);
-			if (keyword != null && !"".equals(keyword)) {
-				LOGGER.info("Keyword Value is = {}",keyword);
+			if (keyword != null || !"".equals(keyword)) {
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
 				LOGGER.info(OrderSKUDetailsData + "InsideSku");
-			}else {
-				LOGGER.info("Inside Else @%$#@");
 			}
 			List<Object> productId = new ArrayList<>();
-			
 
-			if (!orderItemStatus.isEmpty() && !keyword.isEmpty()) {
+			if (!orderItemStatus.isEmpty()) {
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
 						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus))
-						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword) : true)
+						.filter(e -> !keyword.isBlank() ? e.getOrderId().equals(keyword) : true)
 						.map(c -> c.getOrderId()).collect(Collectors.toList());
 
-				LOGGER.info("Inside OrderID1 ",OrderId1);
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
 
-			}
-			else
-			{
+			} else {
 				List<String> OrderId = OrderSKUDetailsData.stream()
-						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword) : true)
+						.filter(e -> !keyword.isBlank() ? e.getOrderId().equals(keyword) : true)
 						.map(c -> c.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
 			}
@@ -689,26 +681,20 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String productIdFilter = null;
 				try {
 					productIdFilter = obj.writeValueAsString(e);
-					LOGGER.info(productIdFilter+"Inside ProductIdFilter");
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
-						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);		 
+						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
+
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
 				String writeValueAsString = null;
 				JSONObject payRow = null;
 				if (!OrderPaymentRow.isEmpty()) {
 					try {
-						if(!orderItemStatus.isEmpty()) {
-							writeValueAsString = obj.writeValueAsString(orderSKUDetailsRepo
-									  .findByOrderIdAndDesignerIdAndorderItemStatus(e.getOrderId(), designerId,orderItemStatus));
-						}else {
-							writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
-						}
 						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
 					} catch (JsonProcessingException e1) {
 						e1.printStackTrace();
@@ -718,7 +704,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 				String OrderSKUD = null;
 				try {
-
 					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
 				} catch (JsonProcessingException e2) {
 					e2.printStackTrace();
@@ -756,12 +741,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered").size());
 			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "Return").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId, "Active").size());
+			response.put(keyword, orderSKUDetailsRepo.findAll().size());
 
 			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
 
 	public GlobalResponse invoiceGenarator(String orderId) {
 		try {
