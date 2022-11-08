@@ -741,7 +741,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered").size());
 			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "Return").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId, "Active").size());
-			response.put(keyword, orderSKUDetailsRepo.findAll().size());
+			response.put("Orders", orderSKUDetailsRepo.findByDesignerId(designerId).size());
 
 			return response;
 		} catch (Exception e) {
