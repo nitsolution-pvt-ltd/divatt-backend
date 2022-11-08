@@ -659,12 +659,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			List<Object> productId = new ArrayList<>();
 
-			if (!orderItemStatus.isEmpty() && !keyword.isEmpty()) {
+			if (!orderItemStatus.isEmpty()&& !orderItemStatus.equals("Orders")) {
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
 						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus))
 						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword) : true)
 						.map(c -> c.getOrderId()).collect(Collectors.toList());
-
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
 
 			}
@@ -689,7 +688,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());				
 				
-				  List<OrderSKUDetailsEntity> OrderSKUDetailsRow = orderSKUDetailsRepo
+				  List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
 				  .findByOrderIdAndDesignerId(e.getOrderId(), designerId);			 
 
 				JsonNode pJN = new JsonNode(productIdFilter);
@@ -698,12 +697,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				JSONObject payRow = null;
 				if (!OrderPaymentRow.isEmpty()) {
 					try {
-						if(!orderItemStatus.isEmpty()) {
-							writeValueAsString = obj.writeValueAsString(orderSKUDetailsRepo
-									  .findByOrderIdAndDesignerIdAndorderItemStatus(e.getOrderId(), designerId,orderItemStatus));
-						}else {
-							writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
-						}
 						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
 					} catch (JsonProcessingException e1) {
 						e1.printStackTrace();
@@ -713,8 +706,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 				String OrderSKUD = null;
 				try {
-
-					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+                    if(!orderItemStatus.isEmpty() && !orderItemStatus.equals("Orders")) {
+                    	OrderSKUD = obj.writeValueAsString(orderSKUDetailsRepo.findByOrderIdAndDesignerIdAndorderItemStatus(e.getOrderId(), designerId, orderItemStatus));
+                    }
+                    else if(!orderItemStatus.isEmpty() && orderItemStatus.equals("Orders")){
+                    	OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+                    }
+                    else{
+                    	OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+                    }
+					
 				} catch (JsonProcessingException e2) {
 					e2.printStackTrace();
 				}
