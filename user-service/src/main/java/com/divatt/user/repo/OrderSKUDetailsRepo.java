@@ -20,7 +20,7 @@ public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEnti
 	Page<OrderSKUDetailsEntity> findByDesignerId(int designerId,Pageable pageable);
 	
 	List<OrderSKUDetailsEntity> findByDesignerId(int designerId);
-	
+	@Query("{'orderId': ?0,'designerId' : ?1}")
 	List<OrderSKUDetailsEntity> findByOrderIdAndDesignerId(String orderId,int designerId);
 	
 	Optional<OrderSKUDetailsEntity> findByProductId(int productId);
@@ -36,7 +36,11 @@ public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEnti
 	Page<OrderDetailsEntity> findByOrderItem(int designerId,String orderIteamStatus, Pageable pagingSort);
 	@Query("{'designerId': ?0,'orderItemStatus' : ?1}")
 	List<OrderSKUDetailsEntity> findByOrderTotal(int designerId, String orderIteamStatus);
-	
+	@Query("{'designerId': ?0,'orderItemStatus' : ?1,'keyword' : {$regex:?0,$options:'i'}}")
+	List<OrderSKUDetailsEntity> findByOrderItemStatusAndDesignerIdAndKeyword(int designerId, String orderItemStatus, String keyword);
+	@Query("{'orderId': ?0,'designerId': ?1,'orderItemStatus' : ?2}")
+	List<OrderSKUDetailsEntity> findByOrderIdAndDesignerIdAndorderItemStatus(String orderId, int designerId,
+			String orderItemStatus);
 	
 
 //	Page<OrderSKUDetailsEntity> findByDesignerId(int designerId, Pageable pagingSort);
