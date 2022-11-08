@@ -212,7 +212,7 @@ public class CustomFunction {
 			updateMasterEntity.setPriceCode(productMasterEntity2.getPriceCode());
 			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
 			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
-			updateMasterEntity.setadminStatus(masterEntity2.getadminStatus());
+			updateMasterEntity.setadminStatus("Pending");
 			updateMasterEntity.setImage(productMasterEntity2.getImage());
 			updateMasterEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
 			updateMasterEntity.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());

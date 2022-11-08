@@ -625,7 +625,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy, String orderItemStatus,String sortDateType) {
+			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 
@@ -653,11 +653,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			Page<OrderDetailsEntity> findAll = null;
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
-			if (keyword != null || !"".equals(keyword)) {
+			LOGGER.info("Keyword Value is = {}",keyword);
+			if (keyword != null && !"".equals(keyword)) {
+				LOGGER.info("Keyword Value is = {}",keyword);
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
 				LOGGER.info(OrderSKUDetailsData + "InsideSku");
+			}else {
+				LOGGER.info("Inside Else @%$#@");
 			}
 			List<Object> productId = new ArrayList<>();
+			
 
 			if (!orderItemStatus.isEmpty()) {
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
@@ -665,6 +670,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.filter(e -> !keyword.isBlank() ? e.getOrderId().equals(keyword) : true)
 						.map(c -> c.getOrderId()).collect(Collectors.toList());
 
+				LOGGER.info("Inside OrderID1 ",OrderId1);
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
 
 			} else {
@@ -681,6 +687,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String productIdFilter = null;
 				try {
 					productIdFilter = obj.writeValueAsString(e);
+					LOGGER.info(productIdFilter+"Inside ProductIdFilter");
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
@@ -688,7 +695,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
 						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
-
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
 				String writeValueAsString = null;
