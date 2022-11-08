@@ -662,7 +662,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			if (!orderItemStatus.isEmpty()&& !orderItemStatus.equals("Orders")) {
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
 						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus))
-						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword) : true)
+						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword.toUpperCase()) : true)
 						.map(c -> c.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
 
@@ -670,7 +670,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			else
 			{
 				List<String> OrderId = OrderSKUDetailsData.stream()
-						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword) : true)
+						.filter(e -> !keyword.isBlank() ? e.getOrderId().toUpperCase().startsWith(keyword.toUpperCase()) : true)
 						.map(c -> c.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
 			}
