@@ -20,6 +20,7 @@ import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.response.GlobalResponse;
+import com.divatt.user.serviceDTO.CancelationRequestDTO;
 
 public interface OrderAndPaymentService {
 
@@ -87,7 +88,7 @@ public interface OrderAndPaymentService {
 
 	public Object getDesignerSideOrderListService(String token, String orderStatus);
 
-	
-   
+	public GlobalResponse cancelOrderService(String orderId, String productId, String token, CancelationRequestDTO cancelationRequestDTO);
 
+	public GlobalResponse cancelApproval(String designerId, String orderId, String productId, CancelationRequestDTO cancelationRequestDTO);
 }

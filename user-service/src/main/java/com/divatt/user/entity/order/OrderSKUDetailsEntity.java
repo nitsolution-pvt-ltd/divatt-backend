@@ -112,6 +112,8 @@ public class OrderSKUDetailsEntity {
 	
 	@Field(name = "updated_on") 
 	private String updatedOn;
+	
+	private OrderStatusDetails orderStatusDetails;
 
 	public OrderSKUDetailsEntity() {
 		super();
@@ -131,7 +133,8 @@ public class OrderSKUDetailsEntity {
 			@NotNull(message = "Discount is required!") Long discount,
 			@NotNull(message = "Tax amount is required!") Long taxAmount, Double cgst, Double sgst, Double igst,
 			Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST, String taxType,
-			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn) {
+			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn,
+			OrderStatusDetails orderStatusDetails) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -161,6 +164,7 @@ public class OrderSKUDetailsEntity {
 		this.reachedCentralHub = reachedCentralHub;
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
+		this.orderStatusDetails = orderStatusDetails;
 	}
 
 	@Override
@@ -173,7 +177,7 @@ public class OrderSKUDetailsEntity {
 				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
 				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", taxType=" + taxType + ", orderItemStatus="
 				+ orderItemStatus + ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn
-				+ ", updatedOn=" + updatedOn + "]";
+				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + "]";
 	}
 
 	public Integer getId() {
@@ -400,11 +404,16 @@ public class OrderSKUDetailsEntity {
 		this.updatedOn = updatedOn;
 	}
 
+	public OrderStatusDetails getOrderStatusDetails() {
+		return orderStatusDetails;
+	}
+
+	public void setOrderStatusDetails(OrderStatusDetails orderStatusDetails) {
+		this.orderStatusDetails = orderStatusDetails;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-
 	
-
-
 }
