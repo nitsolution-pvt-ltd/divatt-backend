@@ -270,10 +270,15 @@ public class ProfileContoller {
 				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
 			}
 
+			LOGGER.info("Inside Update");
+
+			designerLoginEntityDB.setDisplayName(designerLoginEntity.getDisplayName());
+			designerLoginEntityDB.setDesignerCategory(designerLoginEntity.getDesignerCategory());
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerLoginEntityDB.setCategories(designerLoginEntity.getCategories());
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
+			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
 			designerLoginRepo.save(designerLoginEntityDB);
 		}
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
@@ -346,7 +351,7 @@ public class ProfileContoller {
 
 			designerProfileRepo.save(designerProfileEntityDB);
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
-			designerLoginEntityDB.setProfileStatus("SUBMITTED");
+			designerLoginEntityDB.setProfileStatus(designerProfileEntity.getProfileStatus());
 			designerLoginRepo.save(designerLoginEntityDB);
 		}
 

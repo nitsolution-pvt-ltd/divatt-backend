@@ -49,6 +49,10 @@ public class DesignerLoginEntity {
 	private String categories;
 	
 	private String designerCurrentStatus;
+	
+	private String displayName;
+	
+	private String designerCategory;
 
 	public DesignerLoginEntity() {
 		super();
@@ -58,7 +62,8 @@ public class DesignerLoginEntity {
 	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String userExist, String password,
 			String authToken, @NotNull Boolean isDeleted, @NotNull String profileStatus, String accountStatus,
 			String adminComment, Json logins, DesignerProfileEntity designerProfileEntity, Integer productCount,
-			Integer follwerCount, Boolean isFollowing, String categories, String designerCurrentStatus) {
+			Integer follwerCount, Boolean isFollowing, String categories, String designerCurrentStatus,
+			String displayName, String designerCategory) {
 		super();
 		this.dId = dId;
 		this.email = email;
@@ -76,16 +81,8 @@ public class DesignerLoginEntity {
 		this.isFollowing = isFollowing;
 		this.categories = categories;
 		this.designerCurrentStatus = designerCurrentStatus;
-	}
-
-	@Override
-	public String toString() {
-		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", userExist=" + userExist + ", password="
-				+ password + ", authToken=" + authToken + ", isDeleted=" + isDeleted + ", profileStatus="
-				+ profileStatus + ", accountStatus=" + accountStatus + ", adminComment=" + adminComment + ", logins="
-				+ logins + ", designerProfileEntity=" + designerProfileEntity + ", productCount=" + productCount
-				+ ", follwerCount=" + follwerCount + ", isFollowing=" + isFollowing + ", categories=" + categories
-				+ ", designerCurrentStatus=" + designerCurrentStatus + "]";
+		this.displayName = displayName;
+		this.designerCategory = designerCategory;
 	}
 
 	public Long getdId() {
@@ -216,9 +213,37 @@ public class DesignerLoginEntity {
 		this.designerCurrentStatus = designerCurrentStatus;
 	}
 
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDesignerCategory() {
+		return designerCategory;
+	}
+
+	public void setDesignerCategory(String designerCategory) {
+		this.designerCategory = designerCategory;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+
+	@Override
+	public String toString() {
+		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", userExist=" + userExist + ", password="
+				+ password + ", authToken=" + authToken + ", isDeleted=" + isDeleted + ", profileStatus="
+				+ profileStatus + ", accountStatus=" + accountStatus + ", adminComment=" + adminComment + ", logins="
+				+ logins + ", designerProfileEntity=" + designerProfileEntity + ", productCount=" + productCount
+				+ ", follwerCount=" + follwerCount + ", isFollowing=" + isFollowing + ", categories=" + categories
+				+ ", designerCurrentStatus=" + designerCurrentStatus + ", displayName=" + displayName
+				+ ", designerCategory=" + designerCategory + "]";
+	}
+
 
 	
 }
