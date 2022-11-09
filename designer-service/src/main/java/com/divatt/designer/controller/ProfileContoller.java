@@ -287,22 +287,22 @@ public class ProfileContoller {
 					.getDesignerPersonalInfoEntity();
 			Optional<DesignerPersonalInfoEntity> findByDesignerId = designerPersonalInfoRepo
 					.findByDesignerId(designerProfileEntity.getDesignerId());
-			if (findByDesignerId.isPresent())
+			if (findByDesignerId.isPresent()) {
 				designerPersonalInfoEntity.setId(findByDesignerId.get().getId());
-			else
+			} else {
 				designerPersonalInfoEntity
 						.setId((long) sequenceGenerator.getNextSequence(DesignerPersonalInfoEntity.SEQUENCE_NAME));
-			designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
+				designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
 
-		
-			designerProfileEntity.setDesignerCurrentStatus("ProfileUpdated");
+			}
+
 			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
-			designerProfileRepo.save(designerProfileEntity);
 
+			LOGGER.info(designerProfileEntity + "Inside DesignerProfileEntity");
 			// start designer measurement
 			LOGGER.info("Men Chart data is ={}", designerProfileEntity.getMenChartData());
 			LOGGER.info("Women Chart data is ={}", designerProfileEntity.getWomenChartData());
-			;
+
 			Measurement menChartData = designerProfileEntity.getMenChartData();
 			menChartData.set_id(sequenceGenarator.getNextSequence(Measurement.SEQUENCE_NAME));
 			menChartData.setCreatedOn(new Date());
