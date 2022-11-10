@@ -309,6 +309,7 @@ public class CustomFunction {
 	}
 	public DesignerProfileEntity designerProfileEntity(DesignerLoginEntity designerLoginEntity) {
 		try {
+		
 			Long getdId = designerLoginEntity.getdId();
 			DesignerProfileEntity body=designerProfileRepo.findBydesignerId(getdId).get();
 			DesignerProfileEntity designerProfileEntity = new DesignerProfileEntity();
@@ -328,6 +329,7 @@ public class CustomFunction {
 			designerProfileEntity.setDesignerName(body.getDesignerName());
 			designerProfileEntity.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerProfileEntity.setSocialProfile(body.getSocialProfile());
+			designerProfileEntity.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 			designerProfile.setDesignerCategory(designerLoginEntity.getDesignerCategory());
 			designerProfile.setDisplayName(designerLoginEntity.getDisplayName());
 			designerProfile.setAltMobileNo(body.getDesignerProfile().getAltMobileNo());

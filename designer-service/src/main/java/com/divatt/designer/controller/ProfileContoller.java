@@ -231,6 +231,7 @@ public class ProfileContoller {
 				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
 				designerProfileEntity
 						.setId((long) sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
+				designerProfileEntity.setIsProfileCompleted(false);
 				DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
 				designerProfile.setPassword(
 						bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
