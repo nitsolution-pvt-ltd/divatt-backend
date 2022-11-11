@@ -1,8 +1,13 @@
 package com.divatt.designer.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +24,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
-import com.divatt.designer.services.ProductService2;
 import com.divatt.designer.services.ProductServiceImp2;
 
 @RestController
 @RequestMapping("/designerProducts")
-public class ProductController2 implements ProductService2 {
+public class ProductController2 {
 	@Autowired
 	private ProductServiceImp2 productServiceImp2;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController2.class);
 
-	@Override
+//	@Override
 	@PostMapping("/addProduct")
 	public GlobalResponce addProductData(@RequestBody ProductMasterEntity2 productMasterEntity2) {
 		LOGGER.info("Inside - designer -> ProductController2.addProductData()");
@@ -41,7 +45,7 @@ public class ProductController2 implements ProductService2 {
 		}
 	}
 
-	@Override
+//	@Override
 	@PutMapping("/updateProduct/{productId}")
 	public GlobalResponce updateProduct(@RequestBody ProductMasterEntity2 productMasterEntity2,
 			@PathVariable Integer productId) {
@@ -54,7 +58,7 @@ public class ProductController2 implements ProductService2 {
 
 	}
 
-	@Override
+//	@Override
 	@GetMapping("/productList")
 	public Map<String, Object> getAllProduct(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
@@ -70,7 +74,7 @@ public class ProductController2 implements ProductService2 {
 		}
 	}
 
-	@Override
+//	@Override
 	@GetMapping("/productList/{productId}")
 	public ProductMasterEntity2 getProduct(@PathVariable Integer productId) {
 		try {
@@ -81,7 +85,7 @@ public class ProductController2 implements ProductService2 {
 		}
 	}
 
-	@Override
+//	@Override
 	@GetMapping("/getProductDetailsallStatus")
 	public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "all") String adminStatus,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
@@ -97,7 +101,7 @@ public class ProductController2 implements ProductService2 {
 		}
 	}
 
-	@Override
+//	@Override
 	@GetMapping("/getDesignerProductByDesignerId/{designerId}")
 	public Map<String, Object> getDesignerProductByDesignerId(@PathVariable Integer designerId,
 			@RequestParam(defaultValue = "live") String adminStatus,
@@ -116,7 +120,7 @@ public class ProductController2 implements ProductService2 {
 		}
 	}
 
-	@Override
+//	@Override
 	@PutMapping("/delete/{productId}")
 	public GlobalResponce productDeleteByproductId(@PathVariable Integer productId) {
 		try {
@@ -127,7 +131,7 @@ public class ProductController2 implements ProductService2 {
 		}
 	}
 
-	@Override
+//	@Override
 	@PutMapping("/approvalUpdate/{productId}")
 	public GlobalResponce adminApprovalUpdate(@PathVariable Integer productId,
 			@RequestBody ProductMasterEntity2 entity2) {
@@ -140,7 +144,7 @@ public class ProductController2 implements ProductService2 {
 
 	}
 
-	@Override
+//	@Override
 	@PutMapping("/changeAdminStatus/{productId}")
 	public GlobalResponce changeAdminStatus(@PathVariable Integer productId) {
 		try {
@@ -151,7 +155,7 @@ public class ProductController2 implements ProductService2 {
 		}
 	}
 
-	@Override
+//	@Override
 	@GetMapping("/productListUser")
 	public ResponseEntity<?> productListUser() {
 		try {
@@ -160,5 +164,63 @@ public class ProductController2 implements ProductService2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	// Wish list by $hantanuR
+	@PostMapping("/getWishlistProductList")
+	public Map<String, Object> allWishlistProductData(@RequestBody JSONObject productIdList,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
+			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+		try {
+			LOGGER.info("Inside-ProductController2.allWishlistProductData()");
+			String productId = productIdList.get("productId").toString();
+			int getLimit = (Integer) (productIdList.get("limit"));
+			int getPage = (Integer) (productIdList.get("page"));
+			JSONParser jsonParser = new JSONParser();
+			Object object = (Object) jsonParser.parse(productId);
+			JSONArray jsonArray = (JSONArray) object;
+			int limit = jsonArray.size();
+			int page = 0;
+
+			List<Integer> list = new ArrayList<Integer>();
+			for (int i = 0; i < jsonArray.size(); i++) {
+				Object object2 = jsonArray.get(i);
+				int a = Integer.parseInt(object2.toString());
+				list.add(a);
+			}
+			if (getLimit != 0) {
+				limit = getLimit;
+			}
+			if (getPage != 0) {
+				page = getPage;
+			}
+
+			return productServiceImp2.allWishlistProductData(list, sortBy, page, sort, sortName, isDeleted, limit);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
+	@PostMapping("/getCartProductList")
+	public ResponseEntity<?> CartProductList(@RequestBody JSONObject productIdList) {
+		try {
+			LOGGER.info("inside - ProductController2.CartProductList()");
+			String productId = productIdList.get("productId").toString();
+			JSONParser jsonParser = new JSONParser();
+			Object object = (Object) jsonParser.parse(productId);
+			JSONArray jsonArray = (JSONArray) object;
+
+			List<Integer> list = new ArrayList<Integer>();
+			for (int i = 0; i < jsonArray.size(); i++) {
+				Object object2 = jsonArray.get(i);
+				int a = Integer.parseInt(object2.toString());
+				list.add(a);
+			}
+			return productServiceImp2.allCartProductData(list);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	
 
 }

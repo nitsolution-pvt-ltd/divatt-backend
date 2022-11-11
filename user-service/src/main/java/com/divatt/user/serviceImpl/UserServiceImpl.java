@@ -244,7 +244,7 @@ public class UserServiceImpl implements UserService {
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
 				response1 = restTemplate.postForEntity(
-						"https://localhost:8083/dev/designerProduct/getWishlistProductList", entity, String.class);
+						"https://localhost:8083/dev/designerProducts/getWishlistProductList", entity, String.class);
 
 			}
 			return ResponseEntity.ok(new Json(response1.getBody()));
@@ -371,7 +371,7 @@ public class UserServiceImpl implements UserService {
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(maps, headers);
 
-				response1 = restTemplate.postForEntity("https://localhost:8083/dev/designerProduct/getCartProductList",
+				response1 = restTemplate.postForEntity("https://localhost:8083/dev/designerProducts/getCartProductList",
 						entity, String.class);
 
 				String body = response1.getBody();
@@ -609,7 +609,7 @@ public class UserServiceImpl implements UserService {
 		try {
 
 			ResponseEntity<String> exchange = restTemplate.exchange(
-					"https://localhost:8083/dev/designerProduct/view/" + productId, HttpMethod.GET, null, String.class);
+					"https://localhost:8083/dev/designerProducts/productList/" + productId, HttpMethod.GET, null, String.class);
 			Json js = new Json(exchange.getBody());
 
 			if (!userId.equals("")) {

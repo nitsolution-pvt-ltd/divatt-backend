@@ -1,5 +1,6 @@
 package com.divatt.designer.services;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,4 +34,8 @@ public interface ProductService2 {
 	GlobalResponce changeAdminStatus(Integer productId);
 
 	ResponseEntity<?> productListUser();
+	
+	Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page, String sort,
+			String sortName, Boolean isDeleted, int limit);
+	ResponseEntity<?> allCartProductData(List<Integer> productIdList);
 }
