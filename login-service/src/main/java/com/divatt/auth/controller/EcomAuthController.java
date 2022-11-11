@@ -383,7 +383,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			LOGGER.info(designerLogin.getDesignerProfile().getFirstName1()+" " +designerLogin.getDesignerProfile().getLastName1() + "Inside json");
 
 			if (!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent() && !findByUserName.isPresent()) {
-				throw new CustomException("Username not found");
+				throw new CustomException("User not found");
 			} else {
 //			if (findByUserName.isPresent()) {
 				PasswordResetEntity loginResetEntity = new PasswordResetEntity();

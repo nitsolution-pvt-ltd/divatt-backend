@@ -244,7 +244,7 @@ public class ProfileContoller {
 					"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
 							+ ",\n                           "
 							+ " you have been register successfully. Please active your account by clicking the bellow link "
-							+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
+							+ URI.create("https://dev.divatt.com/designer/redirect/" + Base64.getEncoder()
 									.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
 							+ " . We will verify your details and come back to you soon.",
 					false);
