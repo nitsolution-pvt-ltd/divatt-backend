@@ -138,7 +138,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Value("${host}")
 	private String host;
-	
+
 	@Autowired
 	private UserLoginRepo userloginRepo;
 
@@ -359,6 +359,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			}
 
+			List<OrderSKUDetailsEntity> orderSKUDetails = new ArrayList<>();
+			orderSKUDetails = this.orderSKUDetailsRepo.findAll();
+			LOGGER.info("inside orderSKUDetails" + orderSKUDetails);
+
+			if (!orderStatus.isBlank() && !orderStatus.equals("All")) {
+				List<String> collect = orderSKUDetails.stream().filter(e -> e.getOrderItemStatus().equals(orderStatus))
+						.map(e -> e.getOrderId()).collect(Collectors.toList());
+				findAll = orderDetailsRepo.findByOrderIdIn(collect, pagingSort);
+				LOGGER.info("collect" + collect);
+			} else {
+				findAll = orderDetailsRepo.findAll(pagingSort);
+				LOGGER.info("hiiii");
+				LOGGER.info("inside no status" + findAll);
+			}
+
 			List<Object> productId = new ArrayList<>();
 
 			findAll.forEach(e -> {
@@ -387,7 +402,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 				String OrderSKUD = null;
 				try {
-					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+					if (!orderStatus.isEmpty() && !orderStatus.equals("All")) {
+						OrderSKUD = obj.writeValueAsString(
+								orderSKUDetailsRepo.findByOrderIdAndOrderItemStatus(e.getOrderId(), orderStatus));
+					} else {
+						OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+					}
+					// OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
 				} catch (JsonProcessingException e2) {
 					e2.printStackTrace();
 				}
@@ -414,6 +435,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
+			response.put("Cancelation", orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
+			response.put("New", orderSKUDetailsRepo.findByOrderItemStatus("New").size());
+			response.put("Packed", orderSKUDetailsRepo.findByOrderItemStatus("Packed").size());
+			response.put("Shipped", orderSKUDetailsRepo.findByOrderItemStatus("Shipped").size());
+			response.put("Delivered", orderSKUDetailsRepo.findByOrderItemStatus("Delivered").size());
+			response.put("Return", orderSKUDetailsRepo.findByOrderItemStatus("Return").size());
+			response.put("Active", orderSKUDetailsRepo.findByOrderItemStatus("Active").size());
 			// response.put("totalIteamStatus",
 			// orderSKUDetailsRepo.findByOrder(orderIteamStatus).size());
 
@@ -634,7 +662,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType) {
+			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType, String startDate,
+			String endDate) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
 		try {
 
@@ -668,19 +697,64 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			List<Object> productId = new ArrayList<>();
 
-			if (!orderItemStatus.isEmpty()&& !orderItemStatus.equals("Orders")) {
+			if (!orderItemStatus.isEmpty() && !orderItemStatus.equals("Orders")) {
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
+
 						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus))
 						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword.toUpperCase()) : true)
-						.map(c -> c.getOrderId()).collect(Collectors.toList());
+						.filter(e -> {
+							if (!startDate.isBlank() && !endDate.isBlank()) {
+								try {
+									SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+									SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+									Date startdate = dateFormat.parse(startDate);
+									Date enddate = dateFormat.parse(endDate);
+									Date createDate = dateFormat2.parse(e.getCreatedOn());
+									String format = dateFormat.format(createDate);
+									Date createDateFormatted = dateFormat.parse(format);
+									if ((createDateFormatted.after(startdate) || createDateFormatted.equals(startdate))
+											&& createDateFormatted.before(enddate)
+											|| createDateFormatted.equals(enddate)) {
+										return true;
+									} else {
+										return false;
+									}
+								} catch (Exception e2) {
+									throw new CustomException(e2.getMessage());
+								}
+							} else {
+								return true;
+							}
+						}).map(c -> c.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
 
-			}
-			else
-			{
-				List<String> OrderId = OrderSKUDetailsData.stream()
-						.filter(e -> !keyword.isBlank() ? e.getOrderId().toUpperCase().startsWith(keyword.toUpperCase()) : true)
-						.map(c -> c.getOrderId()).collect(Collectors.toList());
+			} else {
+				List<String> OrderId = OrderSKUDetailsData.stream().filter(
+						e -> !keyword.isBlank() ? e.getOrderId().toUpperCase().startsWith(keyword.toUpperCase()) : true)
+						.filter(e -> {
+							if (!startDate.isBlank() && !endDate.isBlank()) {
+								try {
+									SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+									SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+									Date startdate = dateFormat.parse(startDate);
+									Date enddate = dateFormat.parse(endDate);
+									Date createDate = dateFormat2.parse(e.getCreatedOn());
+									String format = dateFormat.format(createDate);
+									Date createDateFormatted = dateFormat.parse(format);
+									if ((createDateFormatted.after(startdate) || createDateFormatted.equals(startdate))
+											&& createDateFormatted.before(enddate)
+											|| createDateFormatted.equals(enddate)) {
+										return true;
+									} else {
+										return false;
+									}
+								} catch (Exception e2) {
+									throw new CustomException(e2.getMessage());
+								}
+							} else {
+								return true;
+							}
+						}).map(c -> c.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
 			}
 
@@ -695,10 +769,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					e1.printStackTrace();
 				}
 
-				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());				
-				
-				  List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
-				  .findByOrderIdAndDesignerId(e.getOrderId(), designerId);			 
+				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+
+				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
+						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
 
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
@@ -715,16 +789,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 				String OrderSKUD = null;
 				try {
-                    if(!orderItemStatus.isEmpty() && !orderItemStatus.equals("Orders")) {
-                    	OrderSKUD = obj.writeValueAsString(orderSKUDetailsRepo.findByOrderIdAndDesignerIdAndorderItemStatus(e.getOrderId(), designerId, orderItemStatus));
-                    }
-                    else if(!orderItemStatus.isEmpty() && orderItemStatus.equals("Orders")){
-                    	OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
-                    }
-                    else{
-                    	OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
-                    }
-					
+					if (!orderItemStatus.isEmpty() && !orderItemStatus.equals("Orders")) {
+						OrderSKUD = obj.writeValueAsString(
+								orderSKUDetailsRepo.findByOrderIdAndDesignerIdAndorderItemStatus(e.getOrderId(),
+										designerId, orderItemStatus));
+					} else if (!orderItemStatus.isEmpty() && orderItemStatus.equals("Orders")) {
+						OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+					} else {
+						OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+					}
+
 				} catch (JsonProcessingException e2) {
 					e2.printStackTrace();
 				}
@@ -761,7 +835,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered").size());
 			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "Return").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId, "Active").size());
-			response.put("cancelRequest", orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
+			response.put("cancelRequest",
+					orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
 			response.put("Orders", orderSKUDetailsRepo.findByDesignerId(designerId).size());
 
 			return response;
@@ -769,8 +844,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
 
 	public GlobalResponse invoiceGenarator(String orderId) {
 		try {
@@ -1425,99 +1498,100 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public GlobalResponse cancelOrderService(String orderId, String productId,String token,CancelationRequestDTO cancelationRequestDTO) {
+	public GlobalResponse cancelOrderService(String orderId, String productId, String token,
+			CancelationRequestDTO cancelationRequestDTO) {
 		// TODO Auto-generated method stub
 		try {
-			String designerEmail= jwtconfig.extractUsername(token.substring(7));
+			String designerEmail = jwtconfig.extractUsername(token.substring(7));
 			LOGGER.info(designerEmail);
-			String designerId=restTemplate
-					.getForEntity("https://localhost:8080/dev/auth/info/DESIGNER/"+designerEmail, org.json.simple.JSONObject.class)
-					.getBody()
-					.get("designerId").toString();
+			String designerId = restTemplate
+					.getForEntity("https://localhost:8080/dev/auth/info/DESIGNER/" + designerEmail,
+							org.json.simple.JSONObject.class)
+					.getBody().get("designerId").toString();
 //			designerId=;
 //			LOGGER.info(designerId);
-			//return null;
-			List<OrderSKUDetailsEntity> orderDetails=orderSKUDetailsRepo.findAll()
-					.stream()
-					.filter(e->e.getDesignerId()==Long.parseLong(designerId))
-					.filter(e->e.getOrderId().equals(orderId))
-					.filter(e->e.getProductId()==Integer.parseInt(productId))
-					.collect(Collectors.toList());
-			LOGGER.info(orderDetails+"");
-			org.json.simple.JSONObject jsonObject= new org.json.simple.JSONObject();
+			// return null;
+			List<OrderSKUDetailsEntity> orderDetails = orderSKUDetailsRepo.findAll().stream()
+					.filter(e -> e.getDesignerId() == Long.parseLong(designerId))
+					.filter(e -> e.getOrderId().equals(orderId))
+					.filter(e -> e.getProductId() == Integer.parseInt(productId)).collect(Collectors.toList());
+			LOGGER.info(orderDetails + "");
+			org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 			jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
 			jsonObject.put("cancelationTime", new Date());
-			OrderStatusDetails orderStatusDetails= new OrderStatusDetails();
+			OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 			orderStatusDetails.setCancelOrderDetails(jsonObject);
 			orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
 			orderDetails.get(0).setOrderItemStatus("Request for cancelation");
 			orderSKUDetailsRepo.saveAll(orderDetails);
 			return new GlobalResponse("Success", "Cancelation request send successfully", 200);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public GlobalResponse cancelApproval(String designerId, String orderId, String productId, CancelationRequestDTO cancelationRequestDTO) {
+	public GlobalResponse cancelApproval(String designerId, String orderId, String productId,
+			CancelationRequestDTO cancelationRequestDTO) {
 		try {
-			List<OrderSKUDetailsEntity> orderDetails=orderSKUDetailsRepo.findAll()
-					.stream()
-					.filter(e->e.getDesignerId()==Long.parseLong(designerId))
-					.filter(e->e.getOrderId().equals(orderId))
-					.filter(e->e.getProductId()==Integer.parseInt(productId))
-					.filter(e->e.getOrderItemStatus().equals("Request for cancelation"))
-					.collect(Collectors.toList());
+			List<OrderSKUDetailsEntity> orderDetails=orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatus(Integer.parseInt(productId), Integer.parseInt(designerId), orderId, "Request for cancelation");
+//					.stream()
+//					.filter(e->e.getDesignerId() == Long.parseLong(designerId))
+//					.filter(e->e.getOrderId().equals(orderId))
+//					.filter(e->e.getProductId()==Integer.parseInt(productId))
+//					.filter(e->e.getOrderItemStatus().equals("Request for cancelation"))
+//					.collect(Collectors.toList());
 			String username=userloginRepo.findById(orderDetails.get(0).getUserId()).get().getFirstName();
 			String userEmail=userloginRepo.findById(orderDetails.get(0).getUserId()).get().getEmail();
 			DesignerRequestDTO designerResponse=restTemplate.getForEntity("https://localhost:8083/dev/designer/"+designerId, DesignerRequestDTO.class)
 					.getBody();
-			String designerName=designerResponse.getDesignerId().toString();
-			String designerEmail=designerResponse.getDesignerProfile().get("email").toString();
-			if(cancelationRequestDTO.getOrderStatus().equals("Accepted")) {
-				
-				//org.json.simple.JSONObject data2= new org.json.simple.JSONObject();
-				Map<String, Object> data= new HashMap<String, Object>();
-				//Map<String, Object> data1= new HashMap<String, Object>();
-				CancelEmailJSON cancelEmailJSON= new CancelEmailJSON();
+			String designerName = designerResponse.getDesignerId().toString();
+			String designerEmail = designerResponse.getDesignerProfile().get("email").toString();
+			if (cancelationRequestDTO.getOrderStatus().equals("Accepted")) {
+
+				// org.json.simple.JSONObject data2= new org.json.simple.JSONObject();
+				Map<String, Object> data = new HashMap<String, Object>();
+				// Map<String, Object> data1= new HashMap<String, Object>();
+				CancelEmailJSON cancelEmailJSON = new CancelEmailJSON();
 				cancelEmailJSON.setOrderId(orderDetails.get(0).getOrderId());
 				cancelEmailJSON.setProductImages(orderDetails.get(0).getImages());
 				cancelEmailJSON.setProductName(orderDetails.get(0).getProductName());
 				cancelEmailJSON.setProductSize(orderDetails.get(0).getSize());
-				cancelEmailJSON.setSalePrice(orderDetails.get(0).getSalesPrice()+"");
+				cancelEmailJSON.setSalePrice(orderDetails.get(0).getSalesPrice() + "");
 				cancelEmailJSON.setUserName(username);
 				cancelEmailJSON.setDesignerName(designerName);
-				cancelEmailJSON.setComment(orderDetails.get(0).getOrderStatusDetails().getCancelOrderDetails().get("cancelComment").toString());
-				LOGGER.info(cancelEmailJSON+"");
-				data.put("data2",cancelEmailJSON);
-				//data1.put("designerName", designerName);
+				cancelEmailJSON.setComment(orderDetails.get(0).getOrderStatusDetails().getCancelOrderDetails()
+						.get("cancelComment").toString());
+				LOGGER.info(cancelEmailJSON + "");
+				data.put("data2", cancelEmailJSON);
+				// data1.put("designerName", designerName);
 				Context context = new Context();
 				context.setVariables(data);
-				//context.setVariables(data1);
+				// context.setVariables(data1);
 				String htmlContent = templateEngine.process("ordercancel.html", context);
-				EmailSenderThread emailSenderThread = new EmailSenderThread(userEmail, "Order cnacelled from designer side",
-						htmlContent, true, null, restTemplate);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(userEmail,
+						"Order cnacelled from designer side", htmlContent, true, null, restTemplate);
 				emailSenderThread.start();
 				return new GlobalResponse("Success", "Order cancelled successfully", 200);
-			}else {
-				Map<String, Object> data= new HashMap<String, Object>();
-				//Map<String, Object> data1= new HashMap<String, Object>();
-				CancelEmailJSON cancelEmailJSON= new CancelEmailJSON();
+			} else {
+				Map<String, Object> data = new HashMap<String, Object>();
+				// Map<String, Object> data1= new HashMap<String, Object>();
+				CancelEmailJSON cancelEmailJSON = new CancelEmailJSON();
 				cancelEmailJSON.setOrderId(orderDetails.get(0).getOrderId());
 				cancelEmailJSON.setProductImages(orderDetails.get(0).getImages());
 				cancelEmailJSON.setProductName(orderDetails.get(0).getProductName());
 				cancelEmailJSON.setProductSize(orderDetails.get(0).getSize());
-				cancelEmailJSON.setSalePrice(orderDetails.get(0).getSalesPrice()+"");
+				cancelEmailJSON.setSalePrice(orderDetails.get(0).getSalesPrice() + "");
 				cancelEmailJSON.setUserName(username);
 				cancelEmailJSON.setDesignerName(designerName);
 				cancelEmailJSON.setComment(cancelationRequestDTO.getComment());
-				//LOGGER.info(cancelEmailJSON+"");
-				data.put("data2",cancelEmailJSON);
-				//data1.put("designerName", designerName);
+				// LOGGER.info(cancelEmailJSON+"");
+				data.put("data2", cancelEmailJSON);
+				// data1.put("designerName", designerName);
 				Context context = new Context();
 				context.setVariables(data);
-				//context.setVariables(data1);
+				// context.setVariables(data1);
 				LOGGER.info(designerEmail);
 				String htmlContent = templateEngine.process("ordercancelRejected.html", context);
 				EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail, "Order cancelation rejected",
@@ -1525,7 +1599,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				emailSenderThread.start();
 				return new GlobalResponse("Success", "Order Rejected successfully", 200);
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

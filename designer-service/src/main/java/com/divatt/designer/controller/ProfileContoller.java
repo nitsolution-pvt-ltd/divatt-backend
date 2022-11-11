@@ -57,6 +57,7 @@ import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.entity.profile.ProfileImage;
 import com.divatt.designer.entity.profile.SocialProfile;
 import com.divatt.designer.exception.CustomException;
+import com.divatt.designer.helper.CustomFunction;
 import com.divatt.designer.repo.DesignerLogRepo;
 import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerPersonalInfoRepo;
@@ -120,6 +121,9 @@ public class ProfileContoller {
 
 	@Autowired
 	private JWTConfig jwtConfig;
+	
+	@Autowired
+	private CustomFunction customFunction;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
@@ -227,6 +231,7 @@ public class ProfileContoller {
 				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
 				designerProfileEntity
 						.setId((long) sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
+				designerProfileEntity.setIsProfileCompleted(false);
 				DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
 				designerProfile.setPassword(
 						bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
@@ -239,7 +244,7 @@ public class ProfileContoller {
 					"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
 							+ ",\n                           "
 							+ " you have been register successfully. Please active your account by clicking the bellow link "
-							+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
+							+ URI.create("https://dev.divatt.com/designer/redirect/" + Base64.getEncoder()
 									.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
 							+ " . We will verify your details and come back to you soon.",
 					false);
@@ -270,11 +275,16 @@ public class ProfileContoller {
 				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
 			}
 
+			LOGGER.info("Inside Update");
+			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
+			//Old
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerLoginEntityDB.setCategories(designerLoginEntity.getCategories());
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginRepo.save(designerLoginEntityDB);
+			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
+			
 		}
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
 	}
@@ -287,22 +297,22 @@ public class ProfileContoller {
 					.getDesignerPersonalInfoEntity();
 			Optional<DesignerPersonalInfoEntity> findByDesignerId = designerPersonalInfoRepo
 					.findByDesignerId(designerProfileEntity.getDesignerId());
-			if (findByDesignerId.isPresent())
+			if (findByDesignerId.isPresent()) {
 				designerPersonalInfoEntity.setId(findByDesignerId.get().getId());
-			else
+			} else {
 				designerPersonalInfoEntity
 						.setId((long) sequenceGenerator.getNextSequence(DesignerPersonalInfoEntity.SEQUENCE_NAME));
-			designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
+				designerPersonalInfoEntity.setDesignerId(designerProfileEntity.getDesignerId());
 
-		
-			designerProfileEntity.setDesignerCurrentStatus("ProfileUpdated");
+			}
+
 			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
-			designerProfileRepo.save(designerProfileEntity);
 
+			LOGGER.info(designerProfileEntity + "Inside DesignerProfileEntity");
 			// start designer measurement
 			LOGGER.info("Men Chart data is ={}", designerProfileEntity.getMenChartData());
 			LOGGER.info("Women Chart data is ={}", designerProfileEntity.getWomenChartData());
-			;
+
 			Measurement menChartData = designerProfileEntity.getMenChartData();
 			menChartData.set_id(sequenceGenarator.getNextSequence(Measurement.SEQUENCE_NAME));
 			menChartData.setCreatedOn(new Date());
@@ -346,7 +356,7 @@ public class ProfileContoller {
 
 			designerProfileRepo.save(designerProfileEntityDB);
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
-			designerLoginEntityDB.setProfileStatus("SUBMITTED");
+			designerLoginEntityDB.setProfileStatus(designerProfileEntity.getProfileStatus());
 			designerLoginRepo.save(designerLoginEntityDB);
 		}
 

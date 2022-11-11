@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.json.JSONObject;
 //import org.apache.tomcat.jni.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ import com.divatt.auth.entity.GlobalEntity;
 import com.divatt.auth.entity.GlobalResponse;
 import com.divatt.auth.entity.AdminLoginEntity;
 import com.divatt.auth.entity.DesignerLoginEntity;
+import com.divatt.auth.entity.DesignerProfileEntity;
 import com.divatt.auth.entity.LoginAdminData;
 import com.divatt.auth.entity.LoginDesignerData;
 import com.divatt.auth.entity.LoginUserData;
@@ -97,101 +99,57 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 
 	Logger LOGGER = LoggerFactory.getLogger(EcomAuthController.class);
 	@Autowired
-	private RestTemplate restTemplate ;
-	
+	private RestTemplate restTemplate;
+
 	@Autowired
 	private UserLoginEntity userLoginEntity;
-	
+
 	@PostMapping("/add")
-	public String  entity(@RequestBody() UserLoginEntity userEntity) {
-		
-	System.out.println("hi");	
-	//this.restTemplate.setRequestFactory(null);
-	 this.restTemplate.postForEntity("https://localhost:8082/dev/user/add", userEntity, UserLoginEntity.class);
+	public String entity(@RequestBody() UserLoginEntity userEntity) {
+
+		System.out.println("hi");
+		// this.restTemplate.setRequestFactory(null);
+		this.restTemplate.postForEntity("https://localhost:8082/dev/user/add", userEntity, UserLoginEntity.class);
 		return "Add";
 	}
-	
 
 	@PostMapping("/login")
 	public ResponseEntity<?> superAdminLogin(@RequestBody AdminLoginEntity loginEntity) {
 
 		LOGGER.info("Inside - EcomAuthController.superAdminLogin()");
-		
-		  if( loginEntity.getType().equals("USER")) { 
-			  UserLoginEntity entity =new UserLoginEntity();
-			  if(userLoginRepo.findByEmail(loginEntity.getEmail()).isEmpty()) {
-				  String s = loginEntity.getName().trim();
-				  String str[] = s.split(" ");
-				  
-				  entity.setFirstName(str[0]);
-				  entity.setLastName(str[1]);
-		          entity.setName(loginEntity.getName()); 
-		          entity.setEmail(loginEntity.getEmail());
-		          entity.setPassword(loginEntity.getPassword());
-		          entity.setProfilePic(loginEntity.getProfilePic());
-		          entity.setMobileNo("9784563210");
-		          entity.setSocialType(loginEntity.getSocialType());
-		          entity.setSocialId(loginEntity.getSocialId());
-		          entity.setDob("14/09/2022");
-		  this.restTemplate.postForEntity("https://localhost:8082/dev/user/add",entity, UserLoginEntity.class);
-		  
-		  } }
-		 
-		
+
+		if (loginEntity.getType().equals("USER")) {
+			UserLoginEntity entity = new UserLoginEntity();
+			if (userLoginRepo.findByEmail(loginEntity.getEmail()).isEmpty()) {
+				String s = loginEntity.getName().trim();
+				String str[] = s.split(" ");
+
+				entity.setFirstName(str[0]);
+				entity.setLastName(str[1]);
+				entity.setName(loginEntity.getName());
+				entity.setEmail(loginEntity.getEmail());
+				entity.setPassword(loginEntity.getPassword());
+				entity.setProfilePic(loginEntity.getProfilePic());
+				entity.setMobileNo("9784563210");
+				entity.setSocialType(loginEntity.getSocialType());
+				entity.setSocialId(loginEntity.getSocialId());
+				entity.setDob("14/09/2022");
+				this.restTemplate.postForEntity("https://localhost:8082/dev/user/add", entity, UserLoginEntity.class);
+
+			}
+		}
 
 		try {
 
 			// ** CHECKING THE USER IS REAL OR NOT **//
-			if(loginEntity.getType().equals("USER")) {
-				
-	               try {
-	            	   UserLoginEntity entity = userLoginRepo.findByEmail(loginEntity.getEmail()).get();
-	            	   
-						
-						this.authenticationManager.authenticate(
-								new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
-						
-					} catch (Exception e) {
-						if (e.getMessage().equals("Bad credentials"))
-							throw new CustomException("Please check your password");
-						else
-							throw new CustomException(e.getMessage());
+			if (loginEntity.getType().equals("USER")) {
 
-					}
-				
-	               
-				}
-		 if(loginEntity.getType().equals("USER") && (loginEntity.getSocialType().equals("facebook")||loginEntity.getSocialType().equals("google"))) {
-				
-               try {
-            	   UserLoginEntity entity = userLoginRepo.findByEmail(loginEntity.getEmail()).get();
-            	   
-            	   if(entity.getSocialType().contentEquals(loginEntity.getSocialType())) {
-            		   this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
-            	   }
-            	   else {
-            		   throw new CustomException("Your social loginType don't match , please try with another");
-            	   }
-					
-					
-					
-				} catch (Exception e) {
-					if (e.getMessage().equals("Bad credentials"))
-						throw new CustomException("Please check your password");
-					else
-						throw new CustomException(e.getMessage());
-
-				}
-			
-               
-			}
-			else {
-				
 				try {
-					
+					UserLoginEntity entity = userLoginRepo.findByEmail(loginEntity.getEmail()).get();
+
 					this.authenticationManager.authenticate(
 							new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
-					
+
 				} catch (Exception e) {
 					if (e.getMessage().equals("Bad credentials"))
 						throw new CustomException("Please check your password");
@@ -199,10 +157,46 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 						throw new CustomException(e.getMessage());
 
 				}
-				
+
 			}
-			
-			
+			if (loginEntity.getType().equals("USER") && (loginEntity.getSocialType().equals("facebook")
+					|| loginEntity.getSocialType().equals("google"))) {
+
+				try {
+					UserLoginEntity entity = userLoginRepo.findByEmail(loginEntity.getEmail()).get();
+
+					if (entity.getSocialType().contentEquals(loginEntity.getSocialType())) {
+						this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+								loginEntity.getEmail(), loginEntity.getPassword()));
+					} else {
+						throw new CustomException("Your social loginType don't match , please try with another");
+					}
+
+				} catch (Exception e) {
+					if (e.getMessage().equals("Bad credentials"))
+						throw new CustomException("Please check your password");
+					else
+						throw new CustomException(e.getMessage());
+
+				}
+
+			} else {
+
+				try {
+
+					this.authenticationManager.authenticate(
+							new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
+
+				} catch (Exception e) {
+					if (e.getMessage().equals("Bad credentials"))
+						throw new CustomException("Please check your password");
+					else
+						throw new CustomException(e.getMessage());
+
+				}
+
+			}
+
 			// ** CHECKING END(IF USER IS REAL THEN ONLY HE CAN GO TO NEXT LINE) **//
 
 			UserDetails vendor = this.loginUserDetails.loadUserByUsername(loginEntity.getEmail());
@@ -379,70 +373,82 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 
 			// ** CHECKING THE EMAIL IS PREASENT IN DATABASE **//
 			Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(email);
+			LOGGER.info("Inside findbyusername " + loginRepository.findByEmail(email));
 			Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo.findByEmail(email);
+			LOGGER.info("Inside findByUserNameDesigner " + designerLoginRepo.findByEmail(email));
 			Optional<UserLoginEntity> findByUserNameUser = userLoginRepo.findByEmail(email);
-			if (!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent() && !findByUserName.isPresent())
-				throw new CustomException("Username not found");
-//			if (findByUserName.isPresent()) {
-			PasswordResetEntity loginResetEntity = new PasswordResetEntity();
-			Object id = null;
-			try {
-				id = findByUserName.get().getUid();
-				loginResetEntity.setUser_type(findByUserName.get().getRole());
+			LOGGER.info("Inside findByUserNameUser " + userLoginRepo.findByEmail(email));
+			DesignerProfileEntity designerLogin = restTemplate.getForEntity(
+					"https://localhost:8083/dev/designer/" + findByUserNameDesigner.get().getUid(), DesignerProfileEntity.class).getBody();
+			LOGGER.info(designerLogin.getDesignerProfile().getFirstName1()+" " +designerLogin.getDesignerProfile().getLastName1() + "Inside json");
 
-			} catch (Exception e) {
-				try {
-					id = findByUserNameDesigner.get().getUid();
-					loginResetEntity.setUser_type("DESIGNER");
-				} catch (Exception j) {
-					id = findByUserNameUser.get().getuId();
-					loginResetEntity.setUser_type("USER");
-				}
-
-			}
-
-			loginResetEntity.setUser_id(id);
-			loginResetEntity.setPrtoken(uuid.toString() + "/" + format);
-			loginResetEntity.setStatus("ACTIVE");
-			loginResetEntity.setId(sequenceGenerator.getNextSequence(PasswordResetEntity.SEQUENCE_NAME));
-
-			loginResetEntity.setEmail(email);
-			Date dateObjForLinkCreateTime = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss").parse(format);
-
-			loginResetEntity.setCreated_on(dateObjForLinkCreateTime);
-			// ** SAVE THE DETAILS IN DATABASE **//
-			PasswordResetEntity save = loginResetRepo.save(loginResetEntity);
-
-			if (save.equals(null)) {
-				throw new CustomException("Data not save! try again");
+			if (!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent() && !findByUserName.isPresent()) {
+				throw new CustomException("User not found");
 			} else {
-				// ** SEND MAIL IF DETAILS SAVE IN DATABASE **//
+//			if (findByUserName.isPresent()) {
+				PasswordResetEntity loginResetEntity = new PasswordResetEntity();
+				Object id = null;
 				try {
-					mailService.sendEmail(findByUserName.get().getEmail(), "Forgot Password Link",
-							"Hi " + findByUserName.get().getFirstName() + " " + findByUserName.get().getLastName()
-									+ " This is Your Link Reset Password "
-									+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink,
-							false);
+					id = findByUserName.get().getUid();
+					loginResetEntity.setUser_type(findByUserName.get().getRole());
 
 				} catch (Exception e) {
 					try {
-						mailService.sendEmail(findByUserNameDesigner.get().getEmail(), "Forgot Password Link",
-								"Hi " + findByUserNameDesigner.get().getEmail() + " This is Link for reset password "
-										+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink,
-								false);
-					} catch (Exception Z) {
-						mailService.sendEmail(findByUserNameUser.get().getEmail(), "Forgot Password Link",
-								"Hi " + findByUserNameUser.get().getEmail() + " This is Link for reset password "
-										+ "https://dev.divatt.com/divatt/forgetpassword/" + forgotPasswordLink,
-								false);
+						id = findByUserNameDesigner.get().getUid();
+						loginResetEntity.setUser_type("DESIGNER");
+					} catch (Exception j) {
+						id = findByUserNameUser.get().getuId();
+						loginResetEntity.setUser_type("USER");
 					}
 
 				}
 
+				loginResetEntity.setUser_id(id);
+				loginResetEntity.setPrtoken(uuid.toString() + "/" + format);
+				loginResetEntity.setStatus("ACTIVE");
+				loginResetEntity.setId(sequenceGenerator.getNextSequence(PasswordResetEntity.SEQUENCE_NAME));
+
+				loginResetEntity.setEmail(email);
+				Date dateObjForLinkCreateTime = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss").parse(format);
+
+				loginResetEntity.setCreated_on(dateObjForLinkCreateTime);
+				// ** SAVE THE DETAILS IN DATABASE **//
+				PasswordResetEntity save = loginResetRepo.save(loginResetEntity);
+
+				if (save.equals(null)) {
+					throw new CustomException("Data not save! try again");
+				} else {
+					// ** SEND MAIL IF DETAILS SAVE IN DATABASE **//
+					try {
+						mailService.sendEmail(findByUserName.get().getEmail(), "Forgot Password Link",
+								"Hi " + findByUserName.get().getFirstName() + " " + findByUserName.get().getLastName()
+										+ " This is Your Link Reset Password "
+										+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink,
+								false);
+
+					} catch (Exception e) {
+						try {
+							mailService.sendEmail(findByUserNameDesigner.get().getEmail(), "Forgot Password Link",
+									"Hi " + designerLogin.getDesignerProfile().getFirstName1()+" " +designerLogin.getDesignerProfile().getLastName1()
+											+ " This is Link for reset password "
+											+ "https://dev.divatt.com/divatt/divatt-designer/reset-password/"
+											+ forgotPasswordLink,
+									false);
+						} catch (Exception Z) {
+							mailService.sendEmail(findByUserNameUser.get().getEmail(), "Forgot Password Link",
+									"Hi " + findByUserNameUser.get().getFirstName() + " "
+											+ findByUserNameUser.get().getLastName()
+											+ " This is Link for reset password "
+											+ "https://dev.divatt.com/divatt/forgetpassword/" + forgotPasswordLink,
+									false);
+						}
+
+					}
+
+				}
+
+				return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
 			}
-
-			return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
-
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

@@ -58,5 +58,7 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
             Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
     
     List<ProductMasterEntity2> findByIsDeletedAndAdminStatusAndIsActive(Boolean isDeleted, String adminStatus,Boolean isActive);
+    Page<ProductMasterEntity2> findByProductIdIn(List<Integer> productIdList, Pageable pagingSort);
+    List<ProductMasterEntity2> findByProductIdIn(List<Integer> productIdList);
 
 }

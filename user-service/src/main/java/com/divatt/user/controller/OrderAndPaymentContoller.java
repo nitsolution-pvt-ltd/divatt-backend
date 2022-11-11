@@ -334,12 +334,12 @@ public class OrderAndPaymentContoller {
             @PathVariable int designerId, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
             @RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
-            @RequestParam Optional<String> sortBy,@RequestParam (defaultValue = "") String orderItemStatus,@RequestParam(defaultValue = "") String sortDateType) {
+            @RequestParam Optional<String> sortBy,@RequestParam (defaultValue = "") String orderItemStatus,@RequestParam(defaultValue = "") String sortDateType,@RequestParam String startDate,@RequestParam String endDate) {
         LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner() for Designer side listing");
 
         try {
             return orderAndPaymentService.getDesigerOrders
-            		(designerId, page, limit, sort, sortName, keyword, sortBy,orderItemStatus,sortDateType);
+            		(designerId, page, limit, sort, sortName, keyword, sortBy,orderItemStatus,sortDateType,startDate,endDate);
         } catch (Exception e) {
             throw new CustomException(e.getMessage());
         }

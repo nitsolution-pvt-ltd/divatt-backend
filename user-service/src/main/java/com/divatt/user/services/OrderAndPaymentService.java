@@ -41,7 +41,7 @@ public interface OrderAndPaymentService {
 	public ResponseEntity<?> getUserOrderDetailsService(Integer userId);
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy,String orderItemStatus,String sortDateType);
+			String keyword, Optional<String> sortBy,String orderItemStatus,String sortDateType,String startDate,String endDate);
 
 	public GlobalResponse invoiceGenarator(String orderId);
 

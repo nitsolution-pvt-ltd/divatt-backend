@@ -14,7 +14,11 @@ import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.entity.product.ProductStageDetails;
+import com.divatt.designer.entity.profile.DesignerLoginEntity;
+import com.divatt.designer.entity.profile.DesignerProfile;
+import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.*;
+import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepo2;
 import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.services.ProductServiceImp2;
@@ -37,6 +41,9 @@ public class CustomFunction {
 
 	@Autowired
 	private ProductRepo2 productRepo2;
+
+	@Autowired
+	private DesignerProfileRepo designerProfileRepo;
 
 	RestTemplate restTemplate = new RestTemplate();
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomFunction.class);
@@ -282,14 +289,14 @@ public class CustomFunction {
 			filterProductEntity.setUpdatedOn(productMasterEntity2.getUpdatedOn());
 			filterProductEntity.setUpdatedBy(productMasterEntity2.getUpdatedBy());
 			filterProductEntity.setadminStatus("Pending");
-			
+
 			// Product stage
 			productStageDetails.setSubmittedBy(productMasterEntity2.getProductStageDetails().getSubmittedBy());
 			productStageDetails.setSubmittedOn(new Date());
 			productStageDetails.setApprovedBy(productMasterEntity2.getProductStageDetails().getApprovedBy());
 			productStageDetails.setApprovedOn(productMasterEntity2.getProductStageDetails().getApprovedOn());
 			productStageDetails.setComment(productMasterEntity2.getProductStageDetails().getComment());
-			
+
 			filterProductEntity.setProductStage("new");
 			filterProductEntity.setProductStageDetails(productStageDetails);
 			return filterProductEntity;
@@ -297,6 +304,57 @@ public class CustomFunction {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+
+	}
+
+	public DesignerProfileEntity designerProfileEntity(DesignerLoginEntity designerLoginEntity) {
+		try {
+
+			Long getdId = designerLoginEntity.getdId();
+			DesignerProfileEntity body = designerProfileRepo.findBydesignerId(getdId).get();
+			DesignerProfileEntity designerProfileEntity = new DesignerProfileEntity();
+			DesignerProfile designerProfile = new DesignerProfile();
+			designerProfileEntity.setId(body.getId());
+			designerProfileEntity.setAccountStatus(body.getAccountStatus());
+			designerProfileEntity.setBoutiqueProfile(body.getBoutiqueProfile());
+			designerProfileEntity.setDesignerId(body.getDesignerId());
+			designerProfileEntity.setDesignerPersonalInfoEntity(body.getDesignerPersonalInfoEntity());
+			designerProfileEntity.setDesignerLevel(body.getDesignerLevel());
+			designerProfileEntity.setFollowerCount(body.getFollowerCount());
+			designerProfileEntity.setIsDeleted(designerLoginEntity.getIsDeleted());
+			designerProfileEntity.setProductCount(body.getProductCount());
+			designerProfileEntity.setMenChartData(body.getMenChartData());
+			designerProfileEntity.setWomenChartData(body.getWomenChartData());
+			designerProfileEntity.setDesignerCurrentStatus(body.getDesignerCurrentStatus());
+			designerProfileEntity.setDesignerName(body.getDesignerName());
+			designerProfileEntity.setProfileStatus(designerLoginEntity.getProfileStatus());
+			designerProfileEntity.setSocialProfile(body.getSocialProfile());
+			designerProfileEntity.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
+			designerProfile.setDesignerCategory(designerLoginEntity.getDesignerCategory());
+			designerProfile.setDisplayName(designerLoginEntity.getDisplayName());
+			designerProfile.setAltMobileNo(body.getDesignerProfile().getAltMobileNo());
+			designerProfile.setCity(body.getDesignerProfile().getCity());
+			designerProfile.setCountry(body.getDesignerProfile().getCountry());
+			designerProfile.setDob(body.getDesignerProfile().getDob());
+			designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
+			designerProfile.setEmail(body.getDesignerProfile().getEmail());
+			designerProfile.setFirstName1(body.getDesignerProfile().getFirstName1());
+			designerProfile.setLastName1(body.getDesignerProfile().getLastName1());
+			designerProfile.setFirstName2(body.getDesignerProfile().getFirstName2());
+			designerProfile.setLastName2(body.getDesignerProfile().getLastName2());
+			designerProfile.setGender(body.getDesignerProfile().getGender());
+			designerProfile.setMobileNo(body.getDesignerProfile().getMobileNo());
+			designerProfile.setPassword(body.getDesignerProfile().getPassword());
+			designerProfile.setProfilePic(body.getDesignerProfile().getProfilePic());
+			designerProfile.setPinCode(body.getDesignerProfile().getPinCode());
+			designerProfile.setState(body.getDesignerProfile().getState());
+			designerProfileEntity.setDesignerProfile(designerProfile);
+
+			return designerProfileEntity;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 
 }

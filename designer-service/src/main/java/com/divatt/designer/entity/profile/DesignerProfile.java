@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 public class DesignerProfile {
-	
+
 	@NotNull
 	@Field(name = "email")
 	private String email;
@@ -21,10 +21,10 @@ public class DesignerProfile {
 	@NotNull
 	@Field(name = "last_name1")
 	private String lastName1;
-	
+
 	@Field(name = "first_name2")
 	private String firstName2;
-	
+
 	@Field(name = "last_name2")
 	private String lastName2;
 	@NotNull
@@ -33,38 +33,41 @@ public class DesignerProfile {
 	@NotNull
 	@Field(name = "mobile_no")
 	private String mobileNo;
-	
+
 	@Field(name = "alt_mobile_no")
 	private String altMobileNo;
 
 	@Field(name = "digital_signature")
 	private String digitalSignature;
-	
+
 	@Field(name = "country")
 	private String country;
-	
+
 	@Field(name = "state")
 	private String state;
-	
+
 	@Field(name = "city")
 	private String city;
-	
+
 	@NotNull
-	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
-	
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
+
 	@Field(name = "dob")
 	private String dob;
-	@NotNull 
-	
+	@NotNull
+
 	@Field(name = "gender")
 	private String gender;
-	
+
 	@NotNull(message = "User profile picture must not be null")
 	@Field(name = "profile_pic")
 	private String profilePic;
-	
-	@Field(name="designer_category")
+
+	@Field(name = "designer_category")
 	private String designerCategory;
+
+	@Field(name = "pin_code")
+	private String pinCode;
 
 	public DesignerProfile() {
 		super();
@@ -75,7 +78,8 @@ public class DesignerProfile {
 			@NotNull String lastName1, String firstName2, String lastName2, @NotNull String displayName,
 			@NotNull String mobileNo, String altMobileNo, String digitalSignature, String country, String state,
 			String city, @NotNull String dob, @NotNull String gender,
-			@NotNull(message = "User profile picture must not be null") String profilePic, String designerCategory) {
+			@NotNull(message = "User profile picture must not be null") String profilePic, String designerCategory,
+			String pinCode) {
 		super();
 		this.email = email;
 		this.password = password;
@@ -94,16 +98,7 @@ public class DesignerProfile {
 		this.gender = gender;
 		this.profilePic = profilePic;
 		this.designerCategory = designerCategory;
-	}
-
-	@Override
-	public String toString() {
-		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
-				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
-				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
-				+ ", digitalSignature=" + digitalSignature + ", country=" + country + ", state=" + state + ", city="
-				+ city + ", dob=" + dob + ", gender=" + gender + ", profilePic=" + profilePic + ", designerCategory="
-				+ designerCategory + "]";
+		this.pinCode = pinCode;
 	}
 
 	public String getEmail() {
@@ -242,6 +237,22 @@ public class DesignerProfile {
 		this.designerCategory = designerCategory;
 	}
 
-	
-	
+	public String getPinCode() {
+		return pinCode;
+	}
+
+	public void setPinCode(String pinCode) {
+		this.pinCode = pinCode;
+	}
+
+	@Override
+	public String toString() {
+		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
+				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
+				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
+				+ ", digitalSignature=" + digitalSignature + ", country=" + country + ", state=" + state + ", city="
+				+ city + ", dob=" + dob + ", gender=" + gender + ", profilePic=" + profilePic + ", designerCategory="
+				+ designerCategory + ", pinCode=" + pinCode + "]";
+	}
+
 }
