@@ -42,6 +42,8 @@ public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEnti
 	List<OrderSKUDetailsEntity> findByOrderIdAndDesignerIdAndorderItemStatus(String orderId, int designerId,
 			String orderItemStatus);
 	
+	List<OrderSKUDetailsEntity> findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatus(Integer productId, Integer designerId, String orderId, String orderItemStatus);
+	
 
 //	Page<OrderSKUDetailsEntity> findByDesignerId(int designerId, Pageable pagingSort);
 
