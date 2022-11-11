@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -45,6 +46,8 @@ public class UserCartEntity {
 	@Field("customization")
 	@NotNull(message = "Customization is required")
 	private Boolean customization;
+	
+	private JSONObject measurementObject;
 
 	public UserCartEntity() {
 		super();
@@ -54,7 +57,8 @@ public class UserCartEntity {
 	public UserCartEntity(Integer id, @NotNull(message = "Username is required!") Integer userId,
 			@NotNull(message = "Product name is required!") Integer productId,
 			@NotNull(message = "Quantity is required!") Integer qty, Date addedOn,
-			@NotNull(message = "size is required") String selectedSize, @NotNull(message = "Customization is required") Boolean customization) {
+			@NotNull(message = "size is required") String selectedSize,
+			@NotNull(message = "Customization is required") Boolean customization, JSONObject measurementObject) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -63,12 +67,14 @@ public class UserCartEntity {
 		this.addedOn = addedOn;
 		this.selectedSize = selectedSize;
 		this.customization = customization;
+		this.measurementObject = measurementObject;
 	}
 
 	@Override
 	public String toString() {
 		return "UserCartEntity [id=" + id + ", userId=" + userId + ", productId=" + productId + ", qty=" + qty
-				+ ", addedOn=" + addedOn + ", selectedSize=" + selectedSize + ", customization=" + customization +"]";
+				+ ", addedOn=" + addedOn + ", selectedSize=" + selectedSize + ", customization=" + customization
+				+ ", measurementObject=" + measurementObject + "]";
 	}
 
 	public Integer getId() {
@@ -118,7 +124,7 @@ public class UserCartEntity {
 	public void setSelectedSize(String selectedSize) {
 		this.selectedSize = selectedSize;
 	}
-	
+
 	public Boolean getCustomization() {
 		return customization;
 	}
@@ -127,9 +133,16 @@ public class UserCartEntity {
 		this.customization = customization;
 	}
 
+	public JSONObject getMeasurementObject() {
+		return measurementObject;
+	}
+
+	public void setMeasurementObject(JSONObject measurementObject) {
+		this.measurementObject = measurementObject;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
 	
 }

@@ -276,7 +276,9 @@ public class UserServiceImpl implements UserService {
 						filterCatDetails.setAddedOn(new Date());
 						filterCatDetails.setSelectedSize(getRow.getSelectedSize());
 						filterCatDetails.setCustomization(getRow.getCustomization());
-						
+						if(getRow.getCustomization()) {
+							filterCatDetails.setMeasurementObject(getRow.getMeasurementObject());
+						}
 						userCartRepo.save(filterCatDetails);
 					}
 				}
