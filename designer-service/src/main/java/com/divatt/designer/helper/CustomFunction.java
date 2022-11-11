@@ -41,7 +41,7 @@ public class CustomFunction {
 
 	@Autowired
 	private ProductRepo2 productRepo2;
-	
+
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
 
@@ -289,14 +289,14 @@ public class CustomFunction {
 			filterProductEntity.setUpdatedOn(productMasterEntity2.getUpdatedOn());
 			filterProductEntity.setUpdatedBy(productMasterEntity2.getUpdatedBy());
 			filterProductEntity.setadminStatus("Pending");
-			
+
 			// Product stage
 			productStageDetails.setSubmittedBy(productMasterEntity2.getProductStageDetails().getSubmittedBy());
 			productStageDetails.setSubmittedOn(new Date());
 			productStageDetails.setApprovedBy(productMasterEntity2.getProductStageDetails().getApprovedBy());
 			productStageDetails.setApprovedOn(productMasterEntity2.getProductStageDetails().getApprovedOn());
 			productStageDetails.setComment(productMasterEntity2.getProductStageDetails().getComment());
-			
+
 			filterProductEntity.setProductStage("new");
 			filterProductEntity.setProductStageDetails(productStageDetails);
 			return filterProductEntity;
@@ -304,14 +304,14 @@ public class CustomFunction {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		
-		
+
 	}
+
 	public DesignerProfileEntity designerProfileEntity(DesignerLoginEntity designerLoginEntity) {
 		try {
-		
+
 			Long getdId = designerLoginEntity.getdId();
-			DesignerProfileEntity body=designerProfileRepo.findBydesignerId(getdId).get();
+			DesignerProfileEntity body = designerProfileRepo.findBydesignerId(getdId).get();
 			DesignerProfileEntity designerProfileEntity = new DesignerProfileEntity();
 			DesignerProfile designerProfile = new DesignerProfile();
 			designerProfileEntity.setId(body.getId());
@@ -346,14 +346,15 @@ public class CustomFunction {
 			designerProfile.setMobileNo(body.getDesignerProfile().getMobileNo());
 			designerProfile.setPassword(body.getDesignerProfile().getPassword());
 			designerProfile.setProfilePic(body.getDesignerProfile().getProfilePic());
+			designerProfile.setPinCode(body.getDesignerProfile().getPinCode());
 			designerProfile.setState(body.getDesignerProfile().getState());
 			designerProfileEntity.setDesignerProfile(designerProfile);
-			
+
 			return designerProfileEntity;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-	
+
 	}
 
 }
