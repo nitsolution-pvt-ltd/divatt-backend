@@ -1535,15 +1535,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	public GlobalResponse cancelApproval(String designerId, String orderId, String productId,
 			CancelationRequestDTO cancelationRequestDTO) {
 		try {
-			List<OrderSKUDetailsEntity> orderDetails = orderSKUDetailsRepo.findAll().stream()
-					.filter(e -> e.getDesignerId() == Long.parseLong(designerId))
-					.filter(e -> e.getOrderId().equals(orderId))
-					.filter(e -> e.getProductId() == Integer.parseInt(productId))
-					.filter(e -> e.getOrderItemStatus().equals("Request for cancelation")).collect(Collectors.toList());
-			String username = userloginRepo.findById(orderDetails.get(0).getUserId()).get().getFirstName();
-			String userEmail = userloginRepo.findById(orderDetails.get(0).getUserId()).get().getEmail();
-			DesignerRequestDTO designerResponse = restTemplate
-					.getForEntity("https://localhost:8083/dev/designer/" + designerId, DesignerRequestDTO.class)
+			List<OrderSKUDetailsEntity> orderDetails=orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatus(Integer.parseInt(productId), Integer.parseInt(designerId), orderId, "Request for cancelation");
+//					.stream()
+//					.filter(e->e.getDesignerId() == Long.parseLong(designerId))
+//					.filter(e->e.getOrderId().equals(orderId))
+//					.filter(e->e.getProductId()==Integer.parseInt(productId))
+//					.filter(e->e.getOrderItemStatus().equals("Request for cancelation"))
+//					.collect(Collectors.toList());
+			String username=userloginRepo.findById(orderDetails.get(0).getUserId()).get().getFirstName();
+			String userEmail=userloginRepo.findById(orderDetails.get(0).getUserId()).get().getEmail();
+			DesignerRequestDTO designerResponse=restTemplate.getForEntity("https://localhost:8083/dev/designer/"+designerId, DesignerRequestDTO.class)
 					.getBody();
 			String designerName = designerResponse.getDesignerId().toString();
 			String designerEmail = designerResponse.getDesignerProfile().get("email").toString();
