@@ -245,7 +245,7 @@ public class OrderServiceImpl implements OrderService {
 
 				serviceResponse.setOrderItemStatus(status);
 			} else {
-				throw new CustomException("ItemStatus already in " + status);
+				throw new CustomException("OrderItemStatus already in " + status);
 
 			}
 			LOGGER.info(serviceResponse.toString());
@@ -253,7 +253,7 @@ public class OrderServiceImpl implements OrderService {
 			restTemplate.put("https://localhost:8082/dev/userOrder/updateOrder/" + orderId, serviceResponse,
 					OrderSKUDetailsEntity.class);
 
-			return new GlobalResponce("Success", "Order status updated Change " + itemStatus + " to " + status, 200);
+			return new GlobalResponce("Success", "OrderItemStatus updated Change " + itemStatus + " to " + status, 200);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

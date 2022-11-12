@@ -46,6 +46,8 @@ import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.serviceDTO.CancelationRequestDTO;
+import com.divatt.user.serviceDTO.OrderItemStatusChange;
+import com.divatt.user.serviceDTO.PackedDTO;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
 
@@ -777,4 +779,13 @@ public class OrderAndPaymentContoller {
 	   throw new CustomException(e.getMessage()); 
    }
  }
+    @PostMapping("/itemStatusChange")
+    public GlobalResponse itemStatusChange(@RequestParam String designerId,@RequestParam String orderId,@RequestParam String productId,@RequestBody JSONObject statusChange,@RequestParam String orderItemStatus) {
+    	try {
+    		return orderAndPaymentService.packedStatusChange(designerId,orderId,productId,statusChange, orderItemStatus);
+    		
+    	}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+    }
 }
