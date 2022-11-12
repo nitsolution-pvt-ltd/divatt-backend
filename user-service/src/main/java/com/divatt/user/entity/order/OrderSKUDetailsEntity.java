@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -115,6 +116,19 @@ public class OrderSKUDetailsEntity {
 	
 	private OrderStatusDetails orderStatusDetails;
 
+	@Field(name = "designer_Customization")
+	private JSONObject customObject;
+
+	@Field(name ="customization_status")
+	private Boolean customizationStatus;
+	
+	@Field(name ="giftwrap_status")
+	private Boolean giftwrapStatus;
+	
+	private JSONObject giftWrapObject;
+
+	private String userComment;
+
 	public OrderSKUDetailsEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -134,7 +148,8 @@ public class OrderSKUDetailsEntity {
 			@NotNull(message = "Tax amount is required!") Long taxAmount, Double cgst, Double sgst, Double igst,
 			Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST, String taxType,
 			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn,
-			OrderStatusDetails orderStatusDetails) {
+			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
+			Boolean giftwrapStatus, JSONObject giftWrapObject, String userComment) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -165,6 +180,11 @@ public class OrderSKUDetailsEntity {
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
 		this.orderStatusDetails = orderStatusDetails;
+		this.customObject = customObject;
+		this.customizationStatus = customizationStatus;
+		this.giftwrapStatus = giftwrapStatus;
+		this.giftWrapObject = giftWrapObject;
+		this.userComment = userComment;
 	}
 
 	@Override
@@ -177,7 +197,9 @@ public class OrderSKUDetailsEntity {
 				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
 				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", taxType=" + taxType + ", orderItemStatus="
 				+ orderItemStatus + ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn
-				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + "]";
+				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + ", customObject="
+				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
+				+ ", giftWrapObject=" + giftWrapObject + ", userComment=" + userComment + "]";
 	}
 
 	public Integer getId() {
@@ -412,8 +434,47 @@ public class OrderSKUDetailsEntity {
 		this.orderStatusDetails = orderStatusDetails;
 	}
 
+	public JSONObject getCustomObject() {
+		return customObject;
+	}
+
+	public void setCustomObject(JSONObject customObject) {
+		this.customObject = customObject;
+	}
+
+	public Boolean getCustomizationStatus() {
+		return customizationStatus;
+	}
+
+	public void setCustomizationStatus(Boolean customizationStatus) {
+		this.customizationStatus = customizationStatus;
+	}
+
+	public Boolean getGiftwrapStatus() {
+		return giftwrapStatus;
+	}
+
+	public void setGiftwrapStatus(Boolean giftwrapStatus) {
+		this.giftwrapStatus = giftwrapStatus;
+	}
+
+	public JSONObject getGiftWrapObject() {
+		return giftWrapObject;
+	}
+
+	public void setGiftWrapObject(JSONObject giftWrapObject) {
+		this.giftWrapObject = giftWrapObject;
+	}
+
+	public String getUserComment() {
+		return userComment;
+	}
+
+	public void setUserComment(String userComment) {
+		this.userComment = userComment;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
 }

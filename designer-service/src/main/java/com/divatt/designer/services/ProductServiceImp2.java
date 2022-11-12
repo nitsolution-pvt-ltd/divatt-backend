@@ -422,4 +422,70 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	}
 
+	@Override
+	public Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page,
+			String sort, String sortName, Boolean isDeleted, int limit) {
+		try {
+			LOGGER.info("inside - ProductServiceImp2.allWishlistProductData()");
+			if (productIdList.isEmpty()) {
+				Map<String, Object> response = new HashMap<>();
+				List<String> data = new ArrayList<String>();
+//				data.add("Wishlist empty");
+				response.put("data", data);
+				response.put("currentPage", 0);
+				response.put("total", 0);
+				response.put("totalPage", 0);
+				response.put("perPage", 0);
+				response.put("perPageElement", 0);
+				return response;
+			} else {
+				List<ProductMasterEntity2> getProductByLiatOfProductId = productRepo2.findByProductIdIn(productIdList);
+				int CountData = (int) getProductByLiatOfProductId.size();
+				if (limit == 0) {
+					limit = CountData;
+				}
+				Pageable pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+				Page<ProductMasterEntity2> findByProductIdIn = productRepo2.findByProductIdIn(productIdList, pagingSort);
+				int totalPage = findByProductIdIn.getTotalPages() - 1;
+				if (totalPage < 0) {
+					totalPage = 0;
+				}
+				Map<String, Object> response = new HashMap<>();
+				response.put("data", findByProductIdIn.getContent());
+				response.put("currentPage", findByProductIdIn.getNumber());
+				response.put("total", CountData);
+				response.put("totalPage", totalPage);
+				response.put("perPage", findByProductIdIn.getSize());
+				response.put("perPageElement", findByProductIdIn.getNumberOfElements());
+				if (findByProductIdIn.getSize() <= 0) {
+					throw new CustomException("Product not found!");
+				} else {
+					return response;
+				}
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+//		return null;
+	}
+
+	@Override
+	public ResponseEntity<?> allCartProductData(List<Integer> productIdList) {
+		try {
+			LOGGER.info("Inside - ProductServiceImp2.allCartProductData()");
+			if (productIdList.isEmpty()) {
+				throw new CustomException("Product not found!");
+			} else {
+				List<ProductMasterEntity2> getProductByLiatOfProductId = productRepo2.findByProductIdIn(productIdList);
+				if (getProductByLiatOfProductId.size() <= 0) {
+					throw new CustomException("Product not found!");
+				} else {
+					return ResponseEntity.ok(getProductByLiatOfProductId);
+				}
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }
