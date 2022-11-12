@@ -54,10 +54,10 @@ public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEnti
 	@Query("{ 'orderItemStatus' : ?0}")
 	List<OrderSKUDetailsEntity> findByOrderItemStatus(String orderItemStatus);
 
-	
-	List<OrderSKUDetailsEntity> findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatus(Integer productId, Integer designerId, String orderId, String orderItemStatus);
-	
+	List<OrderSKUDetailsEntity> findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatus(Integer productId,
+			Integer designerId, String orderId, String orderItemStatus);
 
+	List<OrderSKUDetailsEntity> findByProductIdAndDesignerIdAndOrderId(Integer parseInt, Integer parseInt2, String orderId);
 
 //	Page<OrderSKUDetailsEntity> findByDesignerId(int designerId, Pageable pagingSort);
 
