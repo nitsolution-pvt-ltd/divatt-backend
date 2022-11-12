@@ -186,13 +186,12 @@ public class ProfileContoller {
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
 			if (!findById.isPresent())
 				throw new CustomException("This designer profile is not completed");
-			if (findById.get().getProfileStatus().equals("COMPLETED")) {
+			if (findById.get().getIsProfileCompleted()) {
 				designerLoginEntity = findById.get();
 				designerLoginEntity.setDesignerProfileEntity(designerProfileRepo
 						.findBydesignerId(Long.parseLong(designerLoginEntity.getdId().toString())).get());
 				designerLoginEntity.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(
 						false, "Approved", Long.parseLong(designerLoginEntity.getdId().toString()), true));
-
 			}
 			return ResponseEntity.ok(designerLoginEntity);
 		} catch (Exception e) {

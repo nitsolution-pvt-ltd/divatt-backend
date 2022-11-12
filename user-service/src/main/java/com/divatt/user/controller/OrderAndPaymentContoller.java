@@ -238,12 +238,11 @@ public class OrderAndPaymentContoller {
                 List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
                         .getOrderSKUDetailsEntity();
                 for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
-
+                	
                     orderSKUDetailsEntityRow
                             .setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
                     orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
                     orderSKUDetailsEntityRow.setCreatedOn(format);
-
                     this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
                 }
 
