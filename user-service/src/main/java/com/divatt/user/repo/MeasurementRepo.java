@@ -10,4 +10,6 @@ public interface MeasurementRepo extends MongoRepository<MeasurementEntity, Inte
 
 	List<MeasurementEntity> findByUserId(Long id);
 
+	List<MeasurementEntity> findByUserIdAndGenderAndDisplyName(Long userId, String gender, String displyName);
+
 }

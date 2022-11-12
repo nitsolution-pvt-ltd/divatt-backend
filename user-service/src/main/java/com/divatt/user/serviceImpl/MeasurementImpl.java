@@ -45,13 +45,18 @@ public class MeasurementImpl implements MeasurementService{
 	public GlobalResponse addMeasurementService(String token, MeasurementEntity measurementEntity) {
 		try {
 			Long userId=userLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7))).get().getId();
-			LOGGER.info(userId+"");
-			measurementEntity.setUserId(userId);
-			measurementEntity.setId(sequenceGenerator.getNextSequence(MeasurementEntity.SEQUENCE_NAME));;
-			LOGGER.info(measurementEntity+"");
-			measurementEntity.setCreatedOnDate(new Date());
-			measurementRepo.save(measurementEntity);
-			return new GlobalResponse("Success", "Measurement added successfully", 200);
+			//LOGGER.info(userId+"");
+			List<MeasurementEntity> listData=measurementRepo
+					.findByUserIdAndGenderAndDisplyName(userId,measurementEntity.getGender(),measurementEntity.getDisplyName());
+			if(listData.isEmpty()) {
+				measurementEntity.setUserId(userId);
+				measurementEntity.setId(sequenceGenerator.getNextSequence(MeasurementEntity.SEQUENCE_NAME));;
+				//LOGGER.info(measurementEntity+"");
+				measurementEntity.setCreatedOnDate(new Date());
+				measurementRepo.save(measurementEntity);
+				return new GlobalResponse("Success", "Measurement added successfully", 200);	
+			}
+			return new GlobalResponse("Success", "Measurement already added", 400);
 			}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -71,6 +76,7 @@ public class MeasurementImpl implements MeasurementService{
 		try {
 			MeasurementEntity lastSavedMeasurement=measurementRepo.findById(Integer.parseInt(measurementId)).get();
 			updatedMeasurementEntity.setId(lastSavedMeasurement.getId());
+			updatedMeasurementEntity.setUserId(lastSavedMeasurement.getUserId());
 			measurementRepo.save(updatedMeasurementEntity);
 			return new GlobalResponse("Success", "Measurement updated successfully", 200);
 		}catch(Exception e) {
