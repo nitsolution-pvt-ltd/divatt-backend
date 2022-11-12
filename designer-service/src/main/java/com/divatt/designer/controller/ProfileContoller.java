@@ -184,6 +184,7 @@ public class ProfileContoller {
 		try {
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
+			LOGGER.info("Dta By id for designer = {}",findById.get());
 			if (!findById.isPresent())
 				throw new CustomException("This designer profile is not completed");
 			if (findById.get().getIsProfileCompleted()) {
@@ -226,6 +227,7 @@ public class ProfileContoller {
 			designerLoginEntity.setIsDeleted(false);
 			designerLoginEntity.setAccountStatus("INACTIVE");
 			designerLoginEntity.setProfileStatus("waitForApprove");
+			designerLoginEntity.setIsProfileCompleted(false);
 			if (designerLoginRepo.save(designerLoginEntity) != null) {
 				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
 				designerProfileEntity

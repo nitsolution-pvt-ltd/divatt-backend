@@ -670,7 +670,8 @@ public class UserServiceImpl implements UserService {
 					.getForEntity("https://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();
 			JsonNode jn = new JsonNode(body);
 			JSONObject object = jn.getObject();
-			System.out.println(object);
+//			System.out.println(object);
+			LOGGER.info("Data after service call = {}",object);
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
 			if (userId != 0) {
