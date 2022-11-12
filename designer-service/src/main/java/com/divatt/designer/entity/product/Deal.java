@@ -14,11 +14,13 @@ public class Deal {
 	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
 	private Date dealEnd;
 	private Integer salePrice;
+	private Float taxAmount;
 	public Deal() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Deal(String dealName, String dealType, Integer dealValue, Date dealStart, Date dealEnd, Integer salePrice) {
+	public Deal(String dealName, String dealType, Integer dealValue, Date dealStart, Date dealEnd, Integer salePrice,
+			Float taxAmount) {
 		super();
 		this.dealName = dealName;
 		this.dealType = dealType;
@@ -26,6 +28,12 @@ public class Deal {
 		this.dealStart = dealStart;
 		this.dealEnd = dealEnd;
 		this.salePrice = salePrice;
+		this.taxAmount = taxAmount;
+	}
+	@Override
+	public String toString() {
+		return "Deal [dealName=" + dealName + ", dealType=" + dealType + ", dealValue=" + dealValue + ", dealStart="
+				+ dealStart + ", dealEnd=" + dealEnd + ", salePrice=" + salePrice + ", taxAmount=" + taxAmount + "]";
 	}
 	public String getDealName() {
 		return dealName;
@@ -63,11 +71,11 @@ public class Deal {
 	public void setSalePrice(Integer salePrice) {
 		this.salePrice = salePrice;
 	}
-
-	@Override
-	public String toString() {
-		return "Deal [dealName=" + dealName + ", dealType=" + dealType + ", dealValue=" + dealValue + ", dealStart="
-				+ dealStart + ", dealEnd=" + dealEnd + ", salePrice=" + salePrice + "]";
+	public Float getTaxAmount() {
+		return taxAmount;
 	}
-
+	public void setTaxAmount(Float taxAmount) {
+		this.taxAmount = taxAmount;
+	}
+	
 }
