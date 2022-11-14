@@ -292,6 +292,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
              if(orderSKUDetailsEntityRow.getGiftwrapStatus()) {
              orderSKUDetailsEntityRow.setGiftWrapObject(orderSKUDetailsEntityRow.getGiftWrapObject());
              }
+             if(orderSKUDetailsEntityRow.getCustomizationStatus()) { 
+            	 orderSKUDetailsEntityRow.setCustomizationStatus(orderSKUDetailsEntityRow.getCustomizationStatus()); 
+             } else {
+            	 orderSKUDetailsEntityRow.setCustomizationStatus(false);
+             }
+             if(orderSKUDetailsEntityRow.getGiftwrapStatus()) {
+            	 orderSKUDetailsEntityRow.setGiftwrapStatus(orderSKUDetailsEntityRow.getGiftwrapStatus());
+             } else {
+            	 orderSKUDetailsEntityRow.setGiftwrapStatus(false);
+             }
 			orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
 
 			return ResponseEntity.ok(null);
