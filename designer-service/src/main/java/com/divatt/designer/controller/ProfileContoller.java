@@ -191,8 +191,8 @@ public class ProfileContoller {
 				designerLoginEntity = findById.get();
 				designerLoginEntity.setDesignerProfileEntity(designerProfileRepo
 						.findBydesignerId(Long.parseLong(designerLoginEntity.getdId().toString())).get());
-				designerLoginEntity.setProductCount(productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(
-						false, "Approved", Long.parseLong(designerLoginEntity.getdId().toString()), true));
+				designerLoginEntity.setProductCount(productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(
+						false, "Approved", findById.get().getdId().intValue(), true));
 			}
 			return ResponseEntity.ok(designerLoginEntity);
 		} catch (Exception e) {
