@@ -42,6 +42,7 @@ import com.divatt.designer.entity.UserProfileInfo;
 import com.divatt.designer.entity.UserResponseEntity;
 import com.divatt.designer.entity.product.ImagesEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
+import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.entity.product.StandardSOH;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
@@ -755,12 +756,12 @@ public class ProductServiceImpl implements ProductService{
 		}
 	}
 
-	public List<ProductMasterEntity> UserDesignerProductList(Integer Id) {
+	public List<ProductMasterEntity2> UserDesignerProductList(Integer Id) {
 		try {
 			Query query = new Query();
 			query.addCriteria(
 					Criteria.where("designerId").is(Id).and("isActive").is(true).and("adminStatus").is("Approved"));
-			List<ProductMasterEntity> productList = mongoOperations.find(query, ProductMasterEntity.class);
+			List<ProductMasterEntity2> productList = mongoOperations.find(query, ProductMasterEntity2.class);
 
 			if (productList.isEmpty()) {
 				throw new CustomException("Product not found");
@@ -770,11 +771,11 @@ public class ProductServiceImpl implements ProductService{
 			if (productList.size() < 15) {
 				return productList;
 			}
-			List<ProductMasterEntity> productMasterEntity = new ArrayList<>();
+			List<ProductMasterEntity2> productMasterEntity = new ArrayList<>();
 			Boolean flag = true;
 			while (flag) {
 				int nextInt = rd.nextInt((int) count);
-				for (ProductMasterEntity obj : productList) {
+				for (ProductMasterEntity2 obj : productList) {
 					if (obj.getProductId() == nextInt) {
 						productMasterEntity.add(obj);
 					}

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import com.divatt.designer.entity.OrderSKUDetailsEntity;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
+import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.response.GlobalResponce;
 
 public interface ProductService {
@@ -58,7 +59,7 @@ public interface ProductService {
 
 	ResponseEntity<?> getPerDesignerProductService(Integer designerId);
 
-	List<ProductMasterEntity> UserDesignerProductList(Integer designerId);
+	List<ProductMasterEntity2> UserDesignerProductList(Integer designerId);
 
 	ResponseEntity<?> ProductListByIdService(List<Integer> productIdList);
 
