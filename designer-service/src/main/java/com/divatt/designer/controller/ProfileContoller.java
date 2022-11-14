@@ -277,12 +277,15 @@ public class ProfileContoller {
 			}
 
 			LOGGER.info("Inside Update");
+			LOGGER.info("Designer profile status = {}",designerLoginEntity.getProfileStatus());
+			LOGGER.info("Designer profile status = {}",designerLoginEntity.getIsProfileCompleted());
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
 			//Old
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerLoginEntityDB.setCategories(designerLoginEntity.getCategories());
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
+			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 			designerLoginRepo.save(designerLoginEntityDB);
 			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
 			
@@ -522,8 +525,8 @@ public class ProfileContoller {
 					.getForEntity("https://localhost:9095/dev/user/followerCount/" + designerId, GlobalResponce.class);
 			String followersData = userData.getBody().getMessage();
 			response.put("FollowersData", followersData);
-			response.put("Products", productRepo.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,
-					"Approved", designerId, true));
+			response.put("Products", productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,
+					"Approved", designerId.intValue(), true));
 			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -604,6 +607,10 @@ public class ProfileContoller {
 							DesignerProfileEntity.class);
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
 					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
+					
+					if(designerData.get(i).getdId() == 264) {
+						LOGGER.info("Count data is = {}",countData);
+					}
 					String productCount = countData.get("Products").toString();
 					String followerCount = countData.get("FollowersData").toString();
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));

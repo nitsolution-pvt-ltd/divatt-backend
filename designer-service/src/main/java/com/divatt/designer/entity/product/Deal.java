@@ -2,6 +2,8 @@ package com.divatt.designer.entity.product;
 
 import java.util.Date;
 
+import org.json.simple.JSONObject;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
@@ -14,13 +16,13 @@ public class Deal {
 	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
 	private Date dealEnd;
 	private Integer salePrice;
-	private Float taxAmount;
+	private JSONObject taxAmount;
 	public Deal() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public Deal(String dealName, String dealType, Integer dealValue, Date dealStart, Date dealEnd, Integer salePrice,
-			Float taxAmount) {
+			JSONObject taxAmount) {
 		super();
 		this.dealName = dealName;
 		this.dealType = dealType;
@@ -33,7 +35,9 @@ public class Deal {
 	@Override
 	public String toString() {
 		return "Deal [dealName=" + dealName + ", dealType=" + dealType + ", dealValue=" + dealValue + ", dealStart="
-				+ dealStart + ", dealEnd=" + dealEnd + ", salePrice=" + salePrice + ", taxAmount=" + taxAmount + "]";
+				+ dealStart + ", dealEnd=" + dealEnd + ", salePrice=" + salePrice + ", taxAmount=" + taxAmount
+				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
+				+ "]";
 	}
 	public String getDealName() {
 		return dealName;
@@ -71,10 +75,10 @@ public class Deal {
 	public void setSalePrice(Integer salePrice) {
 		this.salePrice = salePrice;
 	}
-	public Float getTaxAmount() {
+	public JSONObject getTaxAmount() {
 		return taxAmount;
 	}
-	public void setTaxAmount(Float taxAmount) {
+	public void setTaxAmount(JSONObject taxAmount) {
 		this.taxAmount = taxAmount;
 	}
 	
