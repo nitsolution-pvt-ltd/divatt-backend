@@ -245,7 +245,7 @@ public class ProfileContoller {
 					"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
 							+ ",\n                           "
 							+ " you have been register successfully. Please active your account by clicking the bellow link "
-							+ URI.create("https://dev.divatt.com/designer/redirect/" + Base64.getEncoder()
+							+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
 									.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
 							+ " . We will verify your details and come back to you soon.",
 					false);
@@ -387,6 +387,7 @@ public class ProfileContoller {
 	public void method(HttpServletResponse httpServletResponse, @PathVariable("email") String email) {
 		Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
 				.findByEmail(new String(Base64.getDecoder().decode(email)));
+		LOGGER.info("Get data by mail id = {}",findByEmail);
 		if (findByEmail.isPresent()) {
 			DesignerLoginEntity designerLoginEntity = findByEmail.get();
 			if (designerLoginEntity.getAccountStatus().equals("INACTIVE"))
@@ -394,7 +395,7 @@ public class ProfileContoller {
 			designerLoginRepo.save(designerLoginEntity);
 		}
 
-		httpServletResponse.setHeader("Location", "http://65.1.190.195/admin/auth");
+		httpServletResponse.setHeader("Location", "https://dev.divatt.com/designer/");
 		httpServletResponse.setStatus(302);
 	}
 
