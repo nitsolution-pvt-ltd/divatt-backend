@@ -302,6 +302,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
              } else {
             	 orderSKUDetailsEntityRow.setGiftwrapStatus(false);
              }
+             orderSKUDetailsEntityRow.setDesignerId(orderSKUDetailsEntityRow.getDesignerId());
+             orderSKUDetailsEntityRow.setOrderItemStatus("New");
 			orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
 
 			return ResponseEntity.ok(null);
@@ -530,11 +532,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					try {
 						LOGGER.info(D.getProductId() + " inside productid");
 						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
-								"https://localhost:8083/dev/designerProduct/view/" + D.getProductId(),
+								"https://localhost:8083/dev/designerProducts/productList/" + D.getProductId(),
 								org.json.simple.JSONObject.class);
 
-						LOGGER.info(productById + "Inside Productbyid");
-						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));
+						LOGGER.info("Dta after rest call = {} ",productById);
+//						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));
 						D.setHsn(productById.getBody().get("hsnData"));
 
 						LOGGER.info(productById.getBody().get("withGiftWrap") + "Inside gift wrap");
@@ -641,7 +643,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				OrderSKUDetailsRow.forEach(order -> {
 					try {
 						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(
-								"https://localhost:8083/dev//designerProduct/view/" + order.getProductId(),
+								"https://localhost:8083/dev/designerProducts/productList/" + order.getProductId(),
 								org.json.simple.JSONObject.class);
 						LOGGER.info(getProductByID.getBody().get("hsnData").toString());
 						order.setHsn(getProductByID.getBody().get("hsnData"));
@@ -692,8 +694,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType, String startDate,
 			String endDate) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
+		LOGGER.info("Designer id = {}",designerId);
+//		String orderItemStatusValue = null;
 		try {
-
+			
+			
 			int CountData = (int) orderDetailsRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
@@ -720,11 +725,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
 			if (keyword != null || !"".equals(keyword)) {
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
-				LOGGER.info(OrderSKUDetailsData + "InsideSku");
+				LOGGER.info("SKU data is = {}",OrderSKUDetailsData);
 			}
 			List<Object> productId = new ArrayList<>();
 
 			if (!orderItemStatus.isEmpty() && !orderItemStatus.equals("Orders")) {
+				
+				LOGGER.info("SKU DATA IS ={}",OrderSKUDetailsData);
+				
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
 
 						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus))
@@ -753,7 +761,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								return true;
 							}
 						}).map(c -> c.getOrderId()).collect(Collectors.toList());
+				
+				LOGGER.info("Order id = {}",OrderId1);
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
+				
+				LOGGER.info("Data for find ALL in if = {}",findAll.getContent());
 
 			} else {
 				List<String> OrderId = OrderSKUDetailsData.stream().filter(
@@ -783,10 +795,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							}
 						}).map(c -> c.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
+				LOGGER.info("Data for find ALL in else = {}",findAll.getContent());
 			}
 
 			List<OrderDetailsEntity> content = findAll.getContent();
-
+			LOGGER.info("Content data is = {}",content);
 			content.forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
 				String productIdFilter = null;
@@ -800,7 +813,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
 						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
-
+				LOGGER.info("value for SKU = {}",OrderSKUDetailsRow);
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
 				String writeValueAsString = null;

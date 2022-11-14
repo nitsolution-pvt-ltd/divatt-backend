@@ -339,6 +339,13 @@ public class OrderAndPaymentContoller {
         LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner() for Designer side listing");
 
         try {
+//        	String orderItemStatusValue = null;
+//        	if(orderItemStatus.equals("New")) {
+//				orderItemStatusValue = "Active";
+//			}
+//			else {
+//				orderItemStatusValue = orderItemStatus;
+//			}
             return orderAndPaymentService.getDesigerOrders
             		(designerId, page, limit, sort, sortName, keyword, sortBy,orderItemStatus,sortDateType,startDate,endDate);
         } catch (Exception e) {
