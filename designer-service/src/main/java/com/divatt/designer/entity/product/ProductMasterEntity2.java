@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 @Document(collection = "tbl2_products")
-public class ProductMasterEntity2 {
+public class ProductMasterEntity2 implements Cloneable {
 	@Id
 	@Field(name = "_id")
 	private Integer productId;
@@ -111,6 +111,7 @@ public class ProductMasterEntity2 {
 	@Field(name = "updated_by")
 	private String updatedBy;
 	private String subCategoryName;
+	private String categoryName;
 
 	public ProductMasterEntity2() {
 		super();
@@ -127,7 +128,7 @@ public class ProductMasterEntity2 {
 			Integer notify, String priceCode, Integer mrp, String adminStatus, Deal deal, Integer giftWrapAmount,
 			ExtraSpecifications extraSpecifications, String productWeight, String shipmentTime, ImageEntity[] images,
 			Boolean isActive, Boolean isDeleted, String productStage, ProductStageDetails productStageDetails,
-			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String subCategoryName) {
+			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String subCategoryName, String categoryName) {
 		super();
 		this.productId = productId;
 		this.sku = sku;
@@ -169,6 +170,7 @@ public class ProductMasterEntity2 {
 		this.updatedOn = updatedOn;
 		this.updatedBy = updatedBy;
 		this.subCategoryName = subCategoryName;
+		this.categoryName = categoryName;
 	}
 
 	public Integer getProductId() {
@@ -494,6 +496,14 @@ public class ProductMasterEntity2 {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+	
+	public String getCategoryName() {
+		return categoryName;
+	}
+
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
 
 	@Override
 	public String toString() {
@@ -510,6 +520,6 @@ public class ProductMasterEntity2 {
 				+ ", shipmentTime=" + shipmentTime + ", images=" + Arrays.toString(images) + ", isActive=" + isActive
 				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", productStageDetails="
 				+ productStageDetails + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", updatedOn="
-				+ updatedOn + ", updatedBy=" + updatedBy + ", subCategoryName=" + subCategoryName + "]";
+				+ updatedOn + ", updatedBy=" + updatedBy + ", subCategoryName=" + subCategoryName + ", categoryName" + categoryName + "]";
 	}
 }

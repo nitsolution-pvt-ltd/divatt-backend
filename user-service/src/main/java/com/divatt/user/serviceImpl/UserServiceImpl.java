@@ -242,7 +242,7 @@ public class UserServiceImpl implements UserService {
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
-
+				LOGGER.info("ENTITY DATA = {}",entity);
 				response1 = restTemplate.postForEntity(
 						"https://localhost:8083/dev/designerProducts/getWishlistProductList", entity, String.class);
 

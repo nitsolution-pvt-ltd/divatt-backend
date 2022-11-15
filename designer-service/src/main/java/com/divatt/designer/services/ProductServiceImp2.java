@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.SubCategoryEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
@@ -127,7 +128,9 @@ public class ProductServiceImp2 implements ProductService2 {
 			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
 					"https://localhost:8084/dev/subcategory/view/" + productMasterEntity2.getSubCategoryId(),
 					SubCategoryEntity.class);
+			ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + productMasterEntity2.getCategoryId(), CategoryEntity.class);
 			productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
+			productMasterEntity2.setCategoryName(catagory.getBody().getCategoryName());
 			return productMasterEntity2;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -456,6 +459,17 @@ public class ProductServiceImp2 implements ProductService2 {
 				}
 				Pageable pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 				Page<ProductMasterEntity2> findByProductIdIn = productRepo2.findByProductIdIn(productIdList, pagingSort);
+//				List<ProductMasterEntity2> findByProductIdIn1 = new ArrayList<>();
+				findByProductIdIn.getContent().forEach(productData -> {
+					ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+							"https://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
+							SubCategoryEntity.class);
+					ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+							"https://localhost:8084/dev/category/view/" + productData.getCategoryId(),
+							CategoryEntity.class);
+					productData.setCategoryName(catagory.getBody().getCategoryName());
+					productData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+				});
 				int totalPage = findByProductIdIn.getTotalPages() - 1;
 				if (totalPage < 0) {
 					totalPage = 0;
