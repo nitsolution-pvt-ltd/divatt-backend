@@ -44,6 +44,8 @@ public class CustomFunction {
 
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
+	
+	ProductMasterEntity2 productMasterEntity2;
 
 	RestTemplate restTemplate = new RestTemplate();
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomFunction.class);
@@ -355,6 +357,52 @@ public class CustomFunction {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+	
+	public ProductMasterEntity2 setProduDetails(ProductMasterEntity2 productMasterEntity2, Integer qty) {
+		try {
+			this.productMasterEntity2 = new ProductMasterEntity2();
+			this.productMasterEntity2.setProductId(productMasterEntity2.getProductId());
+			this.productMasterEntity2.setSku(productMasterEntity2.getSku());
+			this.productMasterEntity2.setDesignerId(productMasterEntity2.getDesignerId());
+			this.productMasterEntity2.setCategoryId(productMasterEntity2.getCategoryId());
+			this.productMasterEntity2.setSubCategoryId(productMasterEntity2.getSubCategoryId());
+			this.productMasterEntity2.setPurchaseMaxQuantity(productMasterEntity2.getPurchaseMaxQuantity());
+			this.productMasterEntity2.setPurchaseMinQuantity(productMasterEntity2.getPurchaseMinQuantity());
+			this.productMasterEntity2.setHsnCode(productMasterEntity2.getHsnCode());
+			this.productMasterEntity2.setProductDetails(productMasterEntity2.getProductDetails());
+			this.productMasterEntity2.setWithCustomization(productMasterEntity2.getWithCustomization());
+			this.productMasterEntity2.setWithDesignCustomization(productMasterEntity2.getWithDesignCustomization());
+			this.productMasterEntity2.setWithGiftWrap(productMasterEntity2.getWithGiftWrap());
+			this.productMasterEntity2.setReturnAcceptable(productMasterEntity2.getReturnAcceptable());
+			this.productMasterEntity2.setCancelAcceptable(productMasterEntity2.getCancelAcceptable());
+			this.productMasterEntity2.setCod(productMasterEntity2.getCod());
+			this.productMasterEntity2.setPriceType(productMasterEntity2.getPriceType());
+			this.productMasterEntity2.setColour(productMasterEntity2.getColour());
+			this.productMasterEntity2.setSizes(productMasterEntity2.getSizes());
+			this.productMasterEntity2.setSoh(productMasterEntity2.getSoh() - qty);
+			this.productMasterEntity2.setOos(productMasterEntity2.getOos() + qty);
+			this.productMasterEntity2.setNotify(productMasterEntity2.getNotify());
+			this.productMasterEntity2.setPriceCode(productMasterEntity2.getPriceCode());
+			this.productMasterEntity2.setMrp(productMasterEntity2.getMrp());
+			this.productMasterEntity2.setadminStatus(productMasterEntity2.getadminStatus());
+			this.productMasterEntity2.setDeal(productMasterEntity2.getDeal());
+			this.productMasterEntity2.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
+			this.productMasterEntity2.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
+			this.productMasterEntity2.setProductWeight(productMasterEntity2.getProductWeight());
+			this.productMasterEntity2.setShipmentTime(productMasterEntity2.getShipmentTime());
+			this.productMasterEntity2.setImage(productMasterEntity2.getImage());
+			this.productMasterEntity2.setImage(productMasterEntity2.getImage());
+			this.productMasterEntity2.setIsActive(productMasterEntity2.getIsActive());
+			this.productMasterEntity2.setIsDeleted(productMasterEntity2.getIsDeleted());
+			this.productMasterEntity2.setProductStage(productMasterEntity2.getProductStage());
+			this.productMasterEntity2.setProductStageDetails(productMasterEntity2.getProductStageDetails());
+			this.productMasterEntity2.setCreatedOn(productMasterEntity2.getCreatedOn());
+			
+			return this.productMasterEntity2;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 
 }

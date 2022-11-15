@@ -110,6 +110,7 @@ public class ProductMasterEntity2 {
 	private Date updatedOn;
 	@Field(name = "updated_by")
 	private String updatedBy;
+	private String subCategoryName;
 
 	public ProductMasterEntity2() {
 		super();
@@ -126,7 +127,7 @@ public class ProductMasterEntity2 {
 			Integer notify, String priceCode, Integer mrp, Deal deal, Integer giftWrapAmount,
 			ExtraSpecifications extraSpecifications, String productWeight, String shipmentTime, ImageEntity[] image,
 			Boolean isActive, Boolean isDeleted, String productStage, ProductStageDetails productStageDetails,
-			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String adminstatus) {
+			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String adminstatus, String subCategoryName) {
 		super();
 		this.productId = productId;
 		this.sku = sku;
@@ -167,6 +168,7 @@ public class ProductMasterEntity2 {
 		this.updatedOn = updatedOn;
 		this.updatedBy = updatedBy;
 		this.adminStatus = adminstatus;
+		this.subCategoryName = subCategoryName;
 	}
 
 	public Integer getProductId() {
@@ -485,6 +487,14 @@ public class ProductMasterEntity2 {
 		return SEQUENCE_NAME;
 	}
 
+	public String getSubCategoryName() {
+		return subCategoryName;
+	}
+
+	public void setSubCategoryName(String subCategoryName) {
+		this.subCategoryName = subCategoryName;
+	}
+
 	@Override
 	public String toString() {
 		return "ProductMasterEntity2 [productId=" + productId + ", sku=" + sku + ", designerId=" + designerId
@@ -500,7 +510,7 @@ public class ProductMasterEntity2 {
 				+ ", shipmentTime=" + shipmentTime + ", image=" + Arrays.toString(image) + ", isActive=" + isActive
 				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", productStageDetails="
 				+ productStageDetails + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", updatedOn="
-				+ updatedOn + ", updatedBy=" + updatedBy + "]";
+				+ updatedOn + ", updatedBy=" + updatedBy + ", categoryName=" + subCategoryName +"]";
 	}
 
 }

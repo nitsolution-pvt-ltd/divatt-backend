@@ -1651,141 +1651,304 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@Override
 	public GlobalResponse packedStatusChange(String designerId, String orderId, String productId,
 			org.json.simple.JSONObject statusChange, String orderItemStatus) {
-
 		try {
+			if (!designerId.isBlank()) {
+				try {
 
-			if (!orderItemStatus.isEmpty()) {
+					if (!orderItemStatus.isEmpty()) {
 
-				if (orderItemStatus.equals("Shipped")) {
-					OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderId(
-							Integer.parseInt(productId), Integer.parseInt(designerId), orderId).get(0);
-					org.json.simple.JSONObject jsonObject1 = new org.json.simple.JSONObject();
-					String string = statusChange.get("ShippedDTO").toString();
-					LOGGER.info(string + "InsideObject");
-					Gson gson = new Gson();
-					org.json.simple.JSONObject fromJson = gson.fromJson(string, org.json.simple.JSONObject.class);
-					try {
-						OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-						orderStatusDetails.setShippedDetails(jsonObject1);
-						jsonObject1.put("courierName", fromJson.get("courierName"));
-						jsonObject1.put("trackingName", fromJson.get("trackingName"));
-						jsonObject1.put("orderShippedTime", new Date());
-						orderStatusDetails.setShippedDetails(jsonObject1);
-						orderDetails.setOrderItemStatus(orderItemStatus);
-						orderSKUDetailsRepo.save(orderDetails);
+						if (orderItemStatus.equals("Shipped")) {
+							OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
+									.findByProductIdAndDesignerIdAndOrderId(Integer.parseInt(productId),
+											Integer.parseInt(designerId), orderId)
+									.get(0);
+							org.json.simple.JSONObject jsonObject1 = new org.json.simple.JSONObject();
+							String string = statusChange.get("ShippedDTO").toString();
+							LOGGER.info(string + "InsideObject");
+							Gson gson = new Gson();
+							org.json.simple.JSONObject fromJson = gson.fromJson(string,
+									org.json.simple.JSONObject.class);
+							try {
+								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+								orderStatusDetails.setShippedDetails(jsonObject1);
+								jsonObject1.put("courierName", fromJson.get("courierName"));
+								jsonObject1.put("trackingName", fromJson.get("trackingName"));
+								jsonObject1.put("orderShippedTime", new Date());
+								orderStatusDetails.setShippedDetails(jsonObject1);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
 
-					} catch (Exception e) {
-						OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-						LOGGER.info(orderDetails + "Inside OrderDetails");
-						LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
-						jsonObject1.put("courierName", fromJson.get("courierName"));
-						jsonObject1.put("trackingName", fromJson.get("trackingName"));
-						jsonObject1.put("orderShippedTime", new Date());
-						orderStatusDetails.setShippedDetails(jsonObject1);
-						orderDetails.setOrderStatusDetails(orderStatusDetails);
-						orderDetails.setOrderItemStatus(orderItemStatus);
-						orderSKUDetailsRepo.save(orderDetails);
+							} catch (Exception e) {
+								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+								LOGGER.info(orderDetails + "Inside OrderDetails");
+								LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
+								jsonObject1.put("courierName", fromJson.get("courierName"));
+								jsonObject1.put("trackingName", fromJson.get("trackingName"));
+								jsonObject1.put("orderShippedTime", new Date());
+								orderStatusDetails.setShippedDetails(jsonObject1);
+								orderDetails.setOrderStatusDetails(orderStatusDetails);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
 
-					}
-				} else if (orderItemStatus.equals("Packed")) {
-					LOGGER.info("Inside Packed");
-					OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderId(
-							Integer.parseInt(productId), Integer.parseInt(designerId), orderId).get(0);
-					org.json.simple.JSONObject jsonObject2 = new org.json.simple.JSONObject();
-					String string = statusChange.get("PackedDTO").toString();
-					LOGGER.info(string + "InsideObject");
-					Gson gson = new Gson();
-					org.json.simple.JSONObject fromJson = gson.fromJson(string, org.json.simple.JSONObject.class);
-					try {
-						LOGGER.info("Inside Packed try ");
-						OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-						jsonObject2.put("packedInDivattCover", fromJson.get("packedInDivattCover"));
-						jsonObject2.put("recordedPackageVideo", fromJson.get("recordedPackageVideo"));
-						jsonObject2.put("orderPackedTime", new Date());
-						orderDetails.setOrderItemStatus(orderItemStatus);
-						orderStatusDetails.setPackedDetails(jsonObject2);
-						orderSKUDetailsRepo.save(orderDetails);
+							}
+						} else if (orderItemStatus.equals("Packed")) {
+							LOGGER.info("Inside Packed");
+							OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
+									.findByProductIdAndDesignerIdAndOrderId(Integer.parseInt(productId),
+											Integer.parseInt(designerId), orderId)
+									.get(0);
+							org.json.simple.JSONObject jsonObject2 = new org.json.simple.JSONObject();
+							String string = statusChange.get("PackedDTO").toString();
+							LOGGER.info(string + "InsideObject");
+							Gson gson = new Gson();
+							org.json.simple.JSONObject fromJson = gson.fromJson(string,
+									org.json.simple.JSONObject.class);
+							try {
+								LOGGER.info("Inside Packed try ");
+								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+								jsonObject2.put("packedInDivattCover", fromJson.get("packedInDivattCover"));
+								jsonObject2.put("recordedPackageVideo", fromJson.get("recordedPackageVideo"));
+								jsonObject2.put("orderPackedTime", new Date());
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderStatusDetails.setPackedDetails(jsonObject2);
+								orderSKUDetailsRepo.save(orderDetails);
 
-					} catch (Exception e) {
-						LOGGER.info("Inside Packed catch");
-						OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-						LOGGER.info(statusChange.get("PackedDTO") + "Inside Packed");
-						LOGGER.info(fromJson.toString());
-						jsonObject2.put("packedInDivattCover", fromJson.get("packedInDivattcover"));
-						jsonObject2.put("recordedPackageVideo", fromJson.get("recordedPackageVideo"));
-						jsonObject2.put("orderPackedTime", new Date());
-						orderStatusDetails.setPackedDetails(jsonObject2);
-						orderDetails.setOrderStatusDetails(orderStatusDetails);
-						orderDetails.setOrderItemStatus(orderItemStatus);
-						orderSKUDetailsRepo.save(orderDetails);
-						LOGGER.info(orderDetails + "Inside OrderDetails");
+							} catch (Exception e) {
+								LOGGER.info("Inside Packed catch");
+								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+								LOGGER.info(statusChange.get("PackedDTO") + "Inside Packed");
+								LOGGER.info(fromJson.toString());
+								jsonObject2.put("packedInDivattCover", fromJson.get("packedInDivattcover"));
+								jsonObject2.put("recordedPackageVideo", fromJson.get("recordedPackageVideo"));
+								jsonObject2.put("orderPackedTime", new Date());
+								orderStatusDetails.setPackedDetails(jsonObject2);
+								orderDetails.setOrderStatusDetails(orderStatusDetails);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+								LOGGER.info(orderDetails + "Inside OrderDetails");
 
-					}
+							}
 
-				} else if (orderItemStatus.equals("Accepted")) {
-					OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderId(
-							Integer.parseInt(productId), Integer.parseInt(designerId), orderId).get(0);
-					org.json.simple.JSONObject jsonObject3 = new org.json.simple.JSONObject();
-					String string = statusChange.get("AcceptDTO").toString();
-					LOGGER.info(string + "InsideObject");
-					Gson gson = new Gson();
-					org.json.simple.JSONObject fromJson = gson.fromJson(string, org.json.simple.JSONObject.class);
-					try {
-						OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-						jsonObject3.put("verifiedDesignCustomizationRequirements",
-								fromJson.get("verifiedDesignCustomizationRequirements"));
-						jsonObject3.put("verifiedCustomizationSizes", fromJson.get("verifiedCustomizationSizes"));
-						jsonObject3.put("orderAcceptedTime", new Date());
-						orderStatusDetails.setAcceptDetails(jsonObject3);
-						orderDetails.setOrderItemStatus(orderItemStatus);
-						orderSKUDetailsRepo.save(orderDetails);
-						LOGGER.info(jsonObject3 + "Inside");
+						} else if (orderItemStatus.equals("Accepted")) {
+							OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
+									.findByProductIdAndDesignerIdAndOrderId(Integer.parseInt(productId),
+											Integer.parseInt(designerId), orderId)
+									.get(0);
+							org.json.simple.JSONObject jsonObject3 = new org.json.simple.JSONObject();
+							String string = statusChange.get("AcceptDTO").toString();
+							LOGGER.info(string + "InsideObject");
+							Gson gson = new Gson();
+							org.json.simple.JSONObject fromJson = gson.fromJson(string,
+									org.json.simple.JSONObject.class);
+							try {
+								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+								jsonObject3.put("verifiedDesignCustomizationRequirements",
+										fromJson.get("verifiedDesignCustomizationRequirements"));
+								jsonObject3.put("verifiedCustomizationSizes",
+										fromJson.get("verifiedCustomizationSizes"));
+								jsonObject3.put("orderAcceptedTime", new Date());
+								orderStatusDetails.setAcceptDetails(jsonObject3);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+								LOGGER.info(jsonObject3 + "Inside");
 
-					} catch (Exception e) {
-						OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+							} catch (Exception e) {
+								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 
-						jsonObject3.put("verifiedDesignCustomizationRequirements",
-								fromJson.get("verifiedDesignCustomizationRequirements"));
-						jsonObject3.put("verifiedCustomizationSizes", fromJson.get("verifiedCustomizationSizes"));
-						jsonObject3.put("orderAcceptedTime", new Date());
-						orderStatusDetails.setAcceptDetails(jsonObject3);
-						orderDetails.setOrderStatusDetails(orderStatusDetails);
-						orderDetails.setOrderItemStatus(orderItemStatus);
-						orderSKUDetailsRepo.save(orderDetails);
-						LOGGER.info(jsonObject3 + "Inside");
+								jsonObject3.put("verifiedDesignCustomizationRequirements",
+										fromJson.get("verifiedDesignCustomizationRequirements"));
+								jsonObject3.put("verifiedCustomizationSizes",
+										fromJson.get("verifiedCustomizationSizes"));
+								jsonObject3.put("orderAcceptedTime", new Date());
+								orderStatusDetails.setAcceptDetails(jsonObject3);
+								orderDetails.setOrderStatusDetails(orderStatusDetails);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+								LOGGER.info(jsonObject3 + "Inside");
 
-					}
-				} else if (orderItemStatus.equals("Delivered")) {
-					OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderId(
-							Integer.parseInt(productId), Integer.parseInt(designerId), orderId).get(0);
-					org.json.simple.JSONObject jsonObject4 = new org.json.simple.JSONObject();
-					String string = statusChange.get("DeliveryDTO").toString();
-					LOGGER.info(string + "InsideObject");
-					Gson gson = new Gson();
-					org.json.simple.JSONObject fromJson = gson.fromJson(string, org.json.simple.JSONObject.class);
-					try {
-						OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-						jsonObject4.put("deliveryDate", fromJson.get("deliveryDate"));
-						orderStatusDetails.setDeliveryDetails(jsonObject4);
-						orderDetails.setOrderItemStatus(orderItemStatus);
-						orderSKUDetailsRepo.save(orderDetails);
+							}
+						} else if (orderItemStatus.equals("Delivered")) {
+							OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
+									.findByProductIdAndDesignerIdAndOrderId(Integer.parseInt(productId),
+											Integer.parseInt(designerId), orderId)
+									.get(0);
+							org.json.simple.JSONObject jsonObject4 = new org.json.simple.JSONObject();
+							String string = statusChange.get("DeliveryDTO").toString();
+							LOGGER.info(string + "InsideObject");
+							Gson gson = new Gson();
+							org.json.simple.JSONObject fromJson = gson.fromJson(string,
+									org.json.simple.JSONObject.class);
+							try {
+								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+								jsonObject4.put("deliveryDate", fromJson.get("deliveryDate"));
+								orderStatusDetails.setDeliveryDetails(jsonObject4);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
 
-					} catch (Exception e) {
-						OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+							} catch (Exception e) {
+								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 
-						LOGGER.info(fromJson + "Inside Delivery");
-						jsonObject4.put("deliveryDate", fromJson.get("deliveryDate"));
-						orderStatusDetails.setDeliveryDetails(jsonObject4);
-						orderDetails.setOrderStatusDetails(orderStatusDetails);
-						orderDetails.setOrderItemStatus(orderItemStatus);
-						orderSKUDetailsRepo.save(orderDetails);
+								LOGGER.info(fromJson + "Inside Delivery");
+								jsonObject4.put("deliveryDate", fromJson.get("deliveryDate"));
+								orderStatusDetails.setDeliveryDetails(jsonObject4);
+								orderDetails.setOrderStatusDetails(orderStatusDetails);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
 
-					}
+							}
+						}
+						return new GlobalResponse("Sucess", "Order Status " + orderItemStatus + " Sucessfully", 200);
+					} else
+						throw new CustomException("Check OrderItemStatus ");
+
+				} catch (Exception e) {
+					throw new CustomException(e.getMessage());
 				}
-				return new GlobalResponse("Sucess", "Order Status " + orderItemStatus + " Sucessfully", 200);
-			} else
-				throw new CustomException("Check OrderItemStatus ");
+			} else {
+				try {
 
+					if (!orderItemStatus.isEmpty()) {
+
+						if (orderItemStatus.equals("Shipped")) {
+							OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
+									.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
+							org.json.simple.JSONObject jsonObject1 = new org.json.simple.JSONObject();
+							String string = statusChange.get("ShippedDTO").toString();
+							LOGGER.info(string + "InsideObject");
+							Gson gson = new Gson();
+							org.json.simple.JSONObject fromJson = gson.fromJson(string,
+									org.json.simple.JSONObject.class);
+							try {
+								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+								orderStatusDetails.setShippedDetails(jsonObject1);
+								jsonObject1.put("courierName", fromJson.get("courierName"));
+								jsonObject1.put("trackingName", fromJson.get("trackingName"));
+								jsonObject1.put("orderShippedTime", new Date());
+								orderStatusDetails.setShippedDetails(jsonObject1);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+
+							} catch (Exception e) {
+								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+								LOGGER.info(orderDetails + "Inside OrderDetails");
+								LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
+								jsonObject1.put("courierName", fromJson.get("courierName"));
+								jsonObject1.put("trackingName", fromJson.get("trackingName"));
+								jsonObject1.put("orderShippedTime", new Date());
+								orderStatusDetails.setShippedDetails(jsonObject1);
+								orderDetails.setOrderStatusDetails(orderStatusDetails);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+
+							}
+						} else if (orderItemStatus.equals("Packed")) {
+							LOGGER.info("Inside Packed");
+							OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
+									.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
+							org.json.simple.JSONObject jsonObject2 = new org.json.simple.JSONObject();
+							String string = statusChange.get("PackedDTO").toString();
+							LOGGER.info(string + "InsideObject");
+							Gson gson = new Gson();
+							org.json.simple.JSONObject fromJson = gson.fromJson(string,
+									org.json.simple.JSONObject.class);
+							try {
+								LOGGER.info("Inside Packed try ");
+								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+								jsonObject2.put("packedInDivattCover", fromJson.get("packedInDivattCover"));
+								jsonObject2.put("recordedPackageVideo", fromJson.get("recordedPackageVideo"));
+								jsonObject2.put("orderPackedTime", new Date());
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderStatusDetails.setPackedDetails(jsonObject2);
+								orderSKUDetailsRepo.save(orderDetails);
+
+							} catch (Exception e) {
+								LOGGER.info("Inside Packed catch");
+								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+								LOGGER.info(statusChange.get("PackedDTO") + "Inside Packed");
+								LOGGER.info(fromJson.toString());
+								jsonObject2.put("packedInDivattCover", fromJson.get("packedInDivattcover"));
+								jsonObject2.put("recordedPackageVideo", fromJson.get("recordedPackageVideo"));
+								jsonObject2.put("orderPackedTime", new Date());
+								orderStatusDetails.setPackedDetails(jsonObject2);
+								orderDetails.setOrderStatusDetails(orderStatusDetails);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+								LOGGER.info(orderDetails + "Inside OrderDetails");
+
+							}
+
+						} else if (orderItemStatus.equals("Accepted")) {
+							OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
+									.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
+							org.json.simple.JSONObject jsonObject3 = new org.json.simple.JSONObject();
+							String string = statusChange.get("AcceptDTO").toString();
+							LOGGER.info(string + "InsideObject");
+							Gson gson = new Gson();
+							org.json.simple.JSONObject fromJson = gson.fromJson(string,
+									org.json.simple.JSONObject.class);
+							try {
+								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+								jsonObject3.put("verifiedDesignCustomizationRequirements",
+										fromJson.get("verifiedDesignCustomizationRequirements"));
+								jsonObject3.put("verifiedCustomizationSizes",
+										fromJson.get("verifiedCustomizationSizes"));
+								jsonObject3.put("orderAcceptedTime", new Date());
+								orderStatusDetails.setAcceptDetails(jsonObject3);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+								LOGGER.info(jsonObject3 + "Inside");
+
+							} catch (Exception e) {
+								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+
+								jsonObject3.put("verifiedDesignCustomizationRequirements",
+										fromJson.get("verifiedDesignCustomizationRequirements"));
+								jsonObject3.put("verifiedCustomizationSizes",
+										fromJson.get("verifiedCustomizationSizes"));
+								jsonObject3.put("orderAcceptedTime", new Date());
+								orderStatusDetails.setAcceptDetails(jsonObject3);
+								orderDetails.setOrderStatusDetails(orderStatusDetails);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+								LOGGER.info(jsonObject3 + "Inside");
+
+							}
+						} else if (orderItemStatus.equals("Delivered")) {
+							OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
+									.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
+							org.json.simple.JSONObject jsonObject4 = new org.json.simple.JSONObject();
+							String string = statusChange.get("DeliveryDTO").toString();
+							LOGGER.info(string + "InsideObject");
+							Gson gson = new Gson();
+							org.json.simple.JSONObject fromJson = gson.fromJson(string,
+									org.json.simple.JSONObject.class);
+							try {
+								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+								jsonObject4.put("deliveryDate", fromJson.get("deliveryDate"));
+								orderStatusDetails.setDeliveryDetails(jsonObject4);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+
+							} catch (Exception e) {
+								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+
+								LOGGER.info(fromJson + "Inside Delivery");
+								jsonObject4.put("deliveryDate", fromJson.get("deliveryDate"));
+								orderStatusDetails.setDeliveryDetails(jsonObject4);
+								orderDetails.setOrderStatusDetails(orderStatusDetails);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+
+							}
+						}
+						return new GlobalResponse("Sucess", "Order Status " + orderItemStatus + " Sucessfully", 200);
+					} else
+						throw new CustomException("Check OrderItemStatus ");
+
+				} catch (Exception e) {
+					throw new CustomException(e.getMessage());
+				}
+			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

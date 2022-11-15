@@ -51,6 +51,7 @@ import com.divatt.designer.helper.CustomFunction;
 import com.divatt.designer.helper.EmailSenderThread;
 import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerProfileRepo;
+import com.divatt.designer.repo.ProductRepo2;
 import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.ProductService;
@@ -83,6 +84,9 @@ public class ProductServiceImpl implements ProductService{
 
 	@Autowired
 	private TemplateEngine templateEngine;
+	
+	@Autowired
+	private ProductRepo2 productRepo2;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
 
@@ -933,23 +937,33 @@ public class ProductServiceImpl implements ProductService{
 				int productId = orderSKUDetailsEntities.get(i).getProductId();
 				int productQty = orderSKUDetailsEntities.get(i).getUnits().intValue();
 				String productSize = orderSKUDetailsEntities.get(i).getSize();
-				List<StandardSOH> updatedSOH = new ArrayList<StandardSOH>();
-				ProductMasterEntity productMasterEntity = productRepo.findById(productId).get();
-				List<StandardSOH> standardSOHs = productMasterEntity.getStanderedSOH();
-				for (int a = 0; a < standardSOHs.size(); a++) {
-					StandardSOH standardSOH = new StandardSOH();
-					if (standardSOHs.get(a).getSizeType().equals(productSize)) {
-						standardSOH.setSoh(standardSOHs.get(a).getSoh().intValue() - productQty);
-						standardSOH.setOos(standardSOHs.get(a).getOos());
-						standardSOH.setSizeType(productSize);
-						standardSOH.setNotify(standardSOHs.get(a).getNotify());
-						System.out.println(standardSOH);
-						updatedSOH.add(standardSOH);
+//				List<StandardSOH> updatedSOH = new ArrayList<StandardSOH>();
+				ProductMasterEntity2 productMasterEntity = productRepo2.findById(productId).get();
+				LOGGER.info("Size for the product = {}",productSize);
+				if(productSize.equals("Custom") && productMasterEntity.getWithCustomization()) {	
+					productRepo2.save(new CustomFunction().setProduDetails(productMasterEntity, productQty));
+				}
+				List<String> sizes = productMasterEntity.getSizes();
+				for(int k = 0; k < sizes.size(); k++) {
+					if(sizes.get(i).equals(productSize)) {
+						productRepo2.save(new CustomFunction().setProduDetails(productMasterEntity, productQty));
 					}
 				}
-				ProductMasterEntity masterEntity = productRepo.findById(productId).get();
-				masterEntity.setStanderedSOH(updatedSOH);
-				productRepo.save(masterEntity);
+//				List<StandardSOH> standardSOHs = productMasterEntity.getStanderedSOH();
+//				for (int a = 0; a < standardSOHs.size(); a++) {
+//					StandardSOH standardSOH = new StandardSOH();
+//					if (standardSOHs.get(a).getSizeType().equals(productSize)) {
+//						standardSOH.setSoh(standardSOHs.get(a).getSoh().intValue() - productQty);
+//						standardSOH.setOos(standardSOHs.get(a).getOos());
+//						standardSOH.setSizeType(productSize);
+//						standardSOH.setNotify(standardSOHs.get(a).getNotify());
+//						System.out.println(standardSOH);
+//						updatedSOH.add(standardSOH);
+//					}
+//				}
+//				ProductMasterEntity masterEntity = productRepo.findById(productId).get();
+//				masterEntity.setStanderedSOH(updatedSOH);
+//				productRepo.save(masterEntity);
 			}
 			return new GlobalResponce("Success", "Stock cleared successfully", 200);
 		} catch (Exception e) {

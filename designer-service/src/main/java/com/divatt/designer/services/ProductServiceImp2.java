@@ -18,7 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.divatt.designer.entity.SubCategoryEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.exception.CustomException;
@@ -36,6 +38,9 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	@Autowired
 	private SequenceGenerator sequenceGenarator;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImp2.class);
 
@@ -118,7 +123,11 @@ public class ProductServiceImp2 implements ProductService2 {
 	public ProductMasterEntity2 getProduct(Integer productId) {
 		try {
 			LOGGER.info("Product data by product ID = {}", productRepo2.findById(productId).get().toString());
-			return productRepo2.findById(productId).get();
+			ProductMasterEntity2 productMasterEntity2 = productRepo2.findById(productId).get();
+			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+productMasterEntity2.getSubCategoryId(), SubCategoryEntity.class);
+			subCatagory.getBody().getCategoryName();
+			productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
+			return productMasterEntity2;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

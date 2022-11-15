@@ -611,7 +611,8 @@ public class UserServiceImpl implements UserService {
 		try {
 
 			ResponseEntity<String> exchange = restTemplate.exchange(
-					"https://localhost:8083/dev/designerProducts/productList/" + productId, HttpMethod.GET, null, String.class);
+					"https://localhost:8083/dev/designerProducts/productList/" + productId, HttpMethod.GET, null,
+					String.class);
 			Json js = new Json(exchange.getBody());
 
 			if (!userId.equals("")) {
@@ -620,12 +621,18 @@ public class UserServiceImpl implements UserService {
 				if (!cart.isEmpty()) {
 
 					try {
-
 						JsonNode jn = new JsonNode(exchange.getBody().toString());
 						JSONObject object = jn.getObject();
 
+						Object categoryId = object.get("categoryId");
+						LOGGER.info(categoryId.toString());
 						ObjectMapper obj = new ObjectMapper();
 						String writeValueAsString = null;
+						ResponseEntity<org.json.simple.JSONObject> categoryById = restTemplate.getForEntity(
+								"https://localhost:8084/dev/category/view/" + object.get("categoryId"),
+								org.json.simple.JSONObject.class);
+						Object categoryName = categoryById.getBody().get("categoryName");
+						LOGGER.info(categoryName.toString());
 						try {
 							writeValueAsString = obj.writeValueAsString(cart);
 						} catch (JsonProcessingException e1) {
@@ -634,6 +641,7 @@ public class UserServiceImpl implements UserService {
 						JsonNode cartJN = new JsonNode(writeValueAsString);
 						JSONObject cartObject = cartJN.getObject();
 						object.put("cartData", cartObject);
+						object.put("categoryName", categoryName);
 
 						return ResponseEntity.ok(new Json(jn.toString()));
 					} catch (Exception e2) {
