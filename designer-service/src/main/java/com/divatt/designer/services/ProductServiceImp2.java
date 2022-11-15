@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.apache.commons.codec.binary.StringUtils;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,16 @@ import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.SubCategoryEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
+import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
+import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepo2;
 import com.divatt.designer.response.GlobalResponce;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mashape.unirest.http.JsonNode;
 
 @Service
 public class ProductServiceImp2 implements ProductService2 {
@@ -43,6 +50,9 @@ public class ProductServiceImp2 implements ProductService2 {
 	@Autowired
 	private RestTemplate restTemplate;
 
+	@Autowired
+	private DesignerProfileRepo designerProfileRepo;
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImp2.class);
 
 	@Override
@@ -405,6 +415,7 @@ public class ProductServiceImp2 implements ProductService2 {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<?> productListUser() {
 		try {
@@ -412,6 +423,10 @@ public class ProductServiceImp2 implements ProductService2 {
 			Random random = new Random();
 			List<ProductMasterEntity2> findall = productRepo2.findByIsDeletedAndAdminStatusAndIsActive(false,
 					"Approved", true);
+			findall.forEach(designerdat -> {
+				DesignerProfileEntity designerProfileEntity = designerProfileRepo.findBydesignerId(Long.parseLong(designerdat.getDesignerId().toString())).get();
+				designerdat.setDesignerProfile(designerProfileEntity.getDesignerProfile());
+			});
 			if (findall.size() <= 15) {
 				return ResponseEntity.ok(findall);
 			}

@@ -12,6 +12,8 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.divatt.designer.entity.profile.DesignerProfile;
+import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
@@ -112,6 +114,7 @@ public class ProductMasterEntity2 implements Cloneable {
 	private String updatedBy;
 	private String subCategoryName;
 	private String categoryName;
+	private DesignerProfile designerProfile;
 
 	public ProductMasterEntity2() {
 		super();
@@ -128,7 +131,7 @@ public class ProductMasterEntity2 implements Cloneable {
 			Integer notify, String priceCode, Integer mrp, String adminStatus, Deal deal, Integer giftWrapAmount,
 			ExtraSpecifications extraSpecifications, String productWeight, String shipmentTime, ImageEntity[] images,
 			Boolean isActive, Boolean isDeleted, String productStage, ProductStageDetails productStageDetails,
-			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String subCategoryName, String categoryName) {
+			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String subCategoryName, String categoryName, DesignerProfile designerProfile) {
 		super();
 		this.productId = productId;
 		this.sku = sku;
@@ -171,6 +174,7 @@ public class ProductMasterEntity2 implements Cloneable {
 		this.updatedBy = updatedBy;
 		this.subCategoryName = subCategoryName;
 		this.categoryName = categoryName;
+		this.designerProfile = designerProfile;
 	}
 
 	public Integer getProductId() {
@@ -504,6 +508,14 @@ public class ProductMasterEntity2 implements Cloneable {
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
+	
+	public DesignerProfile getDesignerProfile() {
+		return designerProfile;
+	}
+
+	public void setDesignerProfile(DesignerProfile designerProfile) {
+		this.designerProfile = designerProfile;
+	}
 
 	@Override
 	public String toString() {
@@ -520,6 +532,6 @@ public class ProductMasterEntity2 implements Cloneable {
 				+ ", shipmentTime=" + shipmentTime + ", images=" + Arrays.toString(images) + ", isActive=" + isActive
 				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", productStageDetails="
 				+ productStageDetails + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", updatedOn="
-				+ updatedOn + ", updatedBy=" + updatedBy + ", subCategoryName=" + subCategoryName + ", categoryName" + categoryName + "]";
+				+ updatedOn + ", updatedBy=" + updatedBy + ", subCategoryName=" + subCategoryName + ", categoryName" + categoryName + " ,designerProfile" + designerProfile +"]";
 	}
 }
