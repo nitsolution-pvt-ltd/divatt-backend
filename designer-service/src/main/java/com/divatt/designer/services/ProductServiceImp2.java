@@ -482,6 +482,8 @@ public class ProductServiceImp2 implements ProductService2 {
 					ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
 							"https://localhost:8084/dev/category/view/" + productData.getCategoryId(),
 							CategoryEntity.class);
+					DesignerProfileEntity designerProfileEntity = designerProfileRepo.findBydesignerId(Long.parseLong(productData.getDesignerId().toString())).get();
+					productData.setDesignerProfile(designerProfileEntity.getDesignerProfile());
 					productData.setCategoryName(catagory.getBody().getCategoryName());
 					productData.setSubCategoryName(subCatagory.getBody().getCategoryName());
 				});
