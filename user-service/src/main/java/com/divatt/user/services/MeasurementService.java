@@ -13,7 +13,7 @@ public interface MeasurementService {
 
 	GlobalResponse addMeasurementService(String token, MeasurementEntity measurementEntity);
 
-	List<MeasurementEntity> getmeasurementList(String token);
+	List<MeasurementEntity> getmeasurementList(String token, String gender);
 
 	GlobalResponse updateMeasurementService(String token, String measurementId, MeasurementEntity measurementEntity);
 

@@ -90,7 +90,7 @@ public class ProductMasterEntity2 {
 	private String shipmentTime;
 
 	@Field(name = "images")
-	private ImageEntity image[];
+	private ImageEntity images[];
 	@Field(name = "is_active")
 	private Boolean isActive;
 	@Field(name = "is_deleted")
@@ -124,10 +124,10 @@ public class ProductMasterEntity2 {
 			Boolean withCustomization, Boolean withDesignCustomization, Boolean withGiftWrap, Boolean returnAcceptable,
 			Boolean cancelAcceptable, Boolean cod, @NotEmpty(message = "Price Type Required") String priceType,
 			@NotEmpty(message = "Price Type Required") String colour, List<String> sizes, Integer soh, Integer oos,
-			Integer notify, String priceCode, Integer mrp, Deal deal, Integer giftWrapAmount,
-			ExtraSpecifications extraSpecifications, String productWeight, String shipmentTime, ImageEntity[] image,
+			Integer notify, String priceCode, Integer mrp, String adminStatus, Deal deal, Integer giftWrapAmount,
+			ExtraSpecifications extraSpecifications, String productWeight, String shipmentTime, ImageEntity[] images,
 			Boolean isActive, Boolean isDeleted, String productStage, ProductStageDetails productStageDetails,
-			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String adminstatus, String subCategoryName) {
+			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String subCategoryName) {
 		super();
 		this.productId = productId;
 		this.sku = sku;
@@ -153,12 +153,13 @@ public class ProductMasterEntity2 {
 		this.notify = notify;
 		this.priceCode = priceCode;
 		this.mrp = mrp;
+		this.adminStatus = adminStatus;
 		this.deal = deal;
 		this.giftWrapAmount = giftWrapAmount;
 		this.extraSpecifications = extraSpecifications;
 		this.productWeight = productWeight;
 		this.shipmentTime = shipmentTime;
-		this.image = image;
+		this.images = images;
 		this.isActive = isActive;
 		this.isDeleted = isDeleted;
 		this.productStage = productStage;
@@ -167,7 +168,6 @@ public class ProductMasterEntity2 {
 		this.createdBy = createdBy;
 		this.updatedOn = updatedOn;
 		this.updatedBy = updatedBy;
-		this.adminStatus = adminstatus;
 		this.subCategoryName = subCategoryName;
 	}
 
@@ -363,6 +363,14 @@ public class ProductMasterEntity2 {
 		this.mrp = mrp;
 	}
 
+	public String getadminStatus() {
+		return adminStatus;
+	}
+
+	public void setadminStatus(String adminStatus) {
+		this.adminStatus = adminStatus;
+	}
+
 	public Deal getDeal() {
 		return deal;
 	}
@@ -403,12 +411,12 @@ public class ProductMasterEntity2 {
 		this.shipmentTime = shipmentTime;
 	}
 
-	public ImageEntity[] getImage() {
-		return image;
+	public ImageEntity[] getImages() {
+		return images;
 	}
 
-	public void setImage(ImageEntity[] image) {
-		this.image = image;
+	public void setImages(ImageEntity[] images) {
+		this.images = images;
 	}
 
 	public Boolean getIsActive() {
@@ -475,18 +483,6 @@ public class ProductMasterEntity2 {
 		this.updatedBy = updatedBy;
 	}
 
-	public String getadminStatus() {
-		return adminStatus;
-	}
-
-	public void setadminStatus(String adminStatus) {
-		this.adminStatus = adminStatus;
-	}
-
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
-
 	public String getSubCategoryName() {
 		return subCategoryName;
 	}
@@ -495,22 +491,10 @@ public class ProductMasterEntity2 {
 		this.subCategoryName = subCategoryName;
 	}
 
-	@Override
-	public String toString() {
-		return "ProductMasterEntity2 [productId=" + productId + ", sku=" + sku + ", designerId=" + designerId
-				+ ", categoryId=" + categoryId + ", subCategoryId=" + subCategoryId + ", purchaseMinQuantity="
-				+ purchaseMinQuantity + ", purchaseMaxQuantity=" + purchaseMaxQuantity + ", hsnCode=" + hsnCode
-				+ ", productDetails=" + productDetails + ", designCustomizationFeatures=" + designCustomizationFeatures
-				+ ", withCustomization=" + withCustomization + ", withDesignCustomization=" + withDesignCustomization
-				+ ", withGiftWrap=" + withGiftWrap + ", returnAcceptable=" + returnAcceptable + ", cancelAcceptable="
-				+ cancelAcceptable + ", cod=" + cod + ", priceType=" + priceType + ", colour=" + colour + ", sizes="
-				+ sizes + ", soh=" + soh + ", oos=" + oos + ", notify=" + notify + ", priceCode=" + priceCode + ", mrp="
-				+ mrp + ", adminStatus=" + adminStatus + ", deal=" + deal + ", giftWrapAmount=" + giftWrapAmount
-				+ ", extraSpecifications=" + extraSpecifications + ", productWeight=" + productWeight
-				+ ", shipmentTime=" + shipmentTime + ", image=" + Arrays.toString(image) + ", isActive=" + isActive
-				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", productStageDetails="
-				+ productStageDetails + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", updatedOn="
-				+ updatedOn + ", updatedBy=" + updatedBy + ", categoryName=" + subCategoryName +"]";
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
 	}
+	
+	
 
 }

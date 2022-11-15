@@ -122,10 +122,11 @@ public class ProductServiceImp2 implements ProductService2 {
 	@Override
 	public ProductMasterEntity2 getProduct(Integer productId) {
 		try {
-			LOGGER.info("Product data by product ID = {}", productRepo2.findById(productId).get().toString());
 			ProductMasterEntity2 productMasterEntity2 = productRepo2.findById(productId).get();
-			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+productMasterEntity2.getSubCategoryId(), SubCategoryEntity.class);
-			subCatagory.getBody().getCategoryName();
+			LOGGER.info("Product data by product ID = {}", productMasterEntity2);
+			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+					"https://localhost:8084/dev/subcategory/view/" + productMasterEntity2.getSubCategoryId(),
+					SubCategoryEntity.class);
 			productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
 			return productMasterEntity2;
 		} catch (Exception e) {

@@ -222,7 +222,7 @@ public class CustomFunction {
 			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
 			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
 			updateMasterEntity.setadminStatus("Pending");
-			updateMasterEntity.setImage(productMasterEntity2.getImage());
+			updateMasterEntity.setImages(productMasterEntity2.getImages());
 			updateMasterEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
 			updateMasterEntity.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
 			updateMasterEntity.setProductWeight(productMasterEntity2.getProductWeight());
@@ -283,7 +283,7 @@ public class CustomFunction {
 			filterProductEntity.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
 			filterProductEntity.setProductWeight(productMasterEntity2.getProductWeight());
 			filterProductEntity.setShipmentTime(productMasterEntity2.getShipmentTime());
-			filterProductEntity.setImage(productMasterEntity2.getImage());
+			filterProductEntity.setImages(productMasterEntity2.getImages());
 			filterProductEntity.setIsActive(true);
 			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setCreatedOn(new Date());
@@ -391,8 +391,7 @@ public class CustomFunction {
 			this.productMasterEntity2.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
 			this.productMasterEntity2.setProductWeight(productMasterEntity2.getProductWeight());
 			this.productMasterEntity2.setShipmentTime(productMasterEntity2.getShipmentTime());
-			this.productMasterEntity2.setImage(productMasterEntity2.getImage());
-			this.productMasterEntity2.setImage(productMasterEntity2.getImage());
+			this.productMasterEntity2.setImages(productMasterEntity2.getImages());
 			this.productMasterEntity2.setIsActive(productMasterEntity2.getIsActive());
 			this.productMasterEntity2.setIsDeleted(productMasterEntity2.getIsDeleted());
 			this.productMasterEntity2.setProductStage(productMasterEntity2.getProductStage());

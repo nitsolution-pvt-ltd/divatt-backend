@@ -63,9 +63,9 @@ public class MeasurementImpl implements MeasurementService{
 	}
 
 	@Override
-	public List<MeasurementEntity> getmeasurementList(String token) {
+	public List<MeasurementEntity> getmeasurementList(String token, String gender) {
 		try {
-			return measurementRepo.findByUserId(userLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7))).get().getId());
+			return measurementRepo.findByUserIdAndGender(userLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7))).get().getId(), gender);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
