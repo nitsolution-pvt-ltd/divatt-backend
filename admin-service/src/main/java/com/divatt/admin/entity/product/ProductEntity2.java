@@ -41,7 +41,7 @@ public class ProductEntity2 {
 	private ExtraSpecifications extraSpecifications;
 	private String productWeight;
 	private String shipmentTime;
-	private ImageEntity image[];
+	private ImageEntity images[];
 	private Boolean isActive;
 	private Boolean isDeleted;
 	private String productStage;
@@ -64,7 +64,7 @@ public class ProductEntity2 {
 			Boolean withGiftWrap, Boolean returnAcceptable, Boolean cancelAcceptable, Boolean cod, String priceType,
 			String colour, List<String> sizes, Integer soh, Integer oos, Integer notify, String priceCode, Integer mrp,
 			String adminStatus, Deal deal, Integer giftWrapAmount, ExtraSpecifications extraSpecifications,
-			String productWeight, String shipmentTime, ImageEntity[] image, Boolean isActive, Boolean isDeleted,
+			String productWeight, String shipmentTime, ImageEntity[] images, Boolean isActive, Boolean isDeleted,
 			String productStage, ProductStageDetails productStageDetails, Date createdOn, String createdBy,
 			Date updatedOn, String updatedBy) {
 		super();
@@ -98,7 +98,7 @@ public class ProductEntity2 {
 		this.extraSpecifications = extraSpecifications;
 		this.productWeight = productWeight;
 		this.shipmentTime = shipmentTime;
-		this.image = image;
+		this.images = images;
 		this.isActive = isActive;
 		this.isDeleted = isDeleted;
 		this.productStage = productStage;
@@ -349,12 +349,12 @@ public class ProductEntity2 {
 		this.shipmentTime = shipmentTime;
 	}
 
-	public ImageEntity[] getImage() {
-		return image;
+	public ImageEntity[] getImages() {
+		return images;
 	}
 
-	public void setImage(ImageEntity[] image) {
-		this.image = image;
+	public void setImages(ImageEntity[] images) {
+		this.images = images;
 	}
 
 	public Boolean getIsActive() {
@@ -433,7 +433,7 @@ public class ProductEntity2 {
 				+ sizes + ", soh=" + soh + ", oos=" + oos + ", notify=" + notify + ", priceCode=" + priceCode + ", mrp="
 				+ mrp + ", adminStatus=" + adminStatus + ", deal=" + deal + ", giftWrapAmount=" + giftWrapAmount
 				+ ", extraSpecifications=" + extraSpecifications + ", productWeight=" + productWeight
-				+ ", shipmentTime=" + shipmentTime + ", image=" + Arrays.toString(image) + ", isActive=" + isActive
+				+ ", shipmentTime=" + shipmentTime + ", image=" + Arrays.toString(images) + ", isActive=" + isActive
 				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", productStageDetails="
 				+ productStageDetails + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", updatedOn="
 				+ updatedOn + ", updatedBy=" + updatedBy + "]";
