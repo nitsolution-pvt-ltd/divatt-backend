@@ -494,7 +494,22 @@ public class ProductMasterEntity2 {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
-	
 
+	@Override
+	public String toString() {
+		return "ProductMasterEntity2 [productId=" + productId + ", sku=" + sku + ", designerId=" + designerId
+				+ ", categoryId=" + categoryId + ", subCategoryId=" + subCategoryId + ", purchaseMinQuantity="
+				+ purchaseMinQuantity + ", purchaseMaxQuantity=" + purchaseMaxQuantity + ", hsnCode=" + hsnCode
+				+ ", productDetails=" + productDetails + ", designCustomizationFeatures=" + designCustomizationFeatures
+				+ ", withCustomization=" + withCustomization + ", withDesignCustomization=" + withDesignCustomization
+				+ ", withGiftWrap=" + withGiftWrap + ", returnAcceptable=" + returnAcceptable + ", cancelAcceptable="
+				+ cancelAcceptable + ", cod=" + cod + ", priceType=" + priceType + ", colour=" + colour + ", sizes="
+				+ sizes + ", soh=" + soh + ", oos=" + oos + ", notify=" + notify + ", priceCode=" + priceCode + ", mrp="
+				+ mrp + ", adminStatus=" + adminStatus + ", deal=" + deal + ", giftWrapAmount=" + giftWrapAmount
+				+ ", extraSpecifications=" + extraSpecifications + ", productWeight=" + productWeight
+				+ ", shipmentTime=" + shipmentTime + ", images=" + Arrays.toString(images) + ", isActive=" + isActive
+				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", productStageDetails="
+				+ productStageDetails + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", updatedOn="
+				+ updatedOn + ", updatedBy=" + updatedBy + ", subCategoryName=" + subCategoryName + "]";
+	}
 }
