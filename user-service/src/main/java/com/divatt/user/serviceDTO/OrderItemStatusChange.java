@@ -3,7 +3,7 @@ package com.divatt.user.serviceDTO;
 public class OrderItemStatusChange {
 
 	private PackedDTO packedDTO;
-	private AcceptDTO acceptDTO;
+	private OrdersDTO ordersDTO;
 	private ShippedDTO shippedDTO;
 	private DeliveryDTO deliveryDTO;
 
@@ -12,11 +12,11 @@ public class OrderItemStatusChange {
 		// TODO Auto-generated constructor stub
 	}
 
-	public OrderItemStatusChange(PackedDTO packedDTO, AcceptDTO acceptDTO, ShippedDTO shippedDTO,
+	public OrderItemStatusChange(PackedDTO packedDTO, OrdersDTO ordersDTO, ShippedDTO shippedDTO,
 			DeliveryDTO deliveryDTO) {
 		super();
 		this.packedDTO = packedDTO;
-		this.acceptDTO = acceptDTO;
+		this.ordersDTO = ordersDTO;
 		this.shippedDTO = shippedDTO;
 		this.deliveryDTO = deliveryDTO;
 	}
@@ -29,12 +29,12 @@ public class OrderItemStatusChange {
 		this.packedDTO = packedDTO;
 	}
 
-	public AcceptDTO getAcceptDTO() {
-		return acceptDTO;
+	public OrdersDTO getOrdersDTO() {
+		return ordersDTO;
 	}
 
-	public void setAcceptDTO(AcceptDTO acceptDTO) {
-		this.acceptDTO = acceptDTO;
+	public void setOrdersDTO(OrdersDTO ordersDTO) {
+		this.ordersDTO = ordersDTO;
 	}
 
 	public ShippedDTO getShippedDTO() {
@@ -55,7 +55,7 @@ public class OrderItemStatusChange {
 
 	@Override
 	public String toString() {
-		return "OrderItemStatusChange [packedDTO=" + packedDTO + ", acceptDTO=" + acceptDTO + ", shippedDTO="
+		return "OrderItemStatusChange [packedDTO=" + packedDTO + ", ordersDTO=" + ordersDTO + ", shippedDTO="
 				+ shippedDTO + ", deliveryDTO=" + deliveryDTO + "]";
 	}
 
