@@ -282,6 +282,7 @@ public class OrderAndPaymentContoller {
         LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
 
         try {
+        	LOGGER.info("Order Status form controller ={}",orderStatus);
             return orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy, token,orderStatus);
         } catch (Exception e) {
             throw new CustomException(e.getMessage());

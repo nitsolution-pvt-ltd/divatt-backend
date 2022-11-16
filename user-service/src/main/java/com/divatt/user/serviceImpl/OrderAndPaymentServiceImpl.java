@@ -389,22 +389,24 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			List<OrderSKUDetailsEntity> orderSKUDetails = new ArrayList<>();
 			orderSKUDetails = this.orderSKUDetailsRepo.findAll();
-			LOGGER.info("inside orderSKUDetails" + orderSKUDetails);
+			LOGGER.info("inside orderSKUDetails" + orderSKUDetails.size());
 
 			if (!orderStatus.isBlank() && !orderStatus.equals("All")) {
 				List<String> collect = orderSKUDetails.stream().filter(e -> e.getOrderItemStatus().equals(orderStatus))
 						.map(e -> e.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(collect, pagingSort);
-				LOGGER.info("collect" + collect);
+				LOGGER.info("collect <><><><>" + collect);
 			} else {
 				findAll = orderDetailsRepo.findAll(pagingSort);
 				LOGGER.info("hiiii");
-				LOGGER.info("inside no status" + findAll);
+//				LOGGER.info("inside no status" + findAll);
 			}
+			
+//			LOGGER.info("Data for find ALL <><><><><><><><><> !!!!!! = {}",findAll.getContent());
 
 			List<Object> productId = new ArrayList<>();
 
-			findAll.forEach(e -> {
+			findAll.getContent().forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
 				String productIdFilter = null;
 				try {
@@ -433,6 +435,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					if (!orderStatus.isEmpty() && !orderStatus.equals("All")) {
 						OrderSKUD = obj.writeValueAsString(
 								orderSKUDetailsRepo.findByOrderIdAndOrderItemStatus(e.getOrderId(), orderStatus));
+						LOGGER.info("Order SKU DATA <><><><><> {}",OrderSKUD);
 					} else {
 						OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
 					}
@@ -448,9 +451,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				objects.put("paymentData", payRow);
 				objects.put("OrderSKUDetails", OrderSKUDJson.getArray());
 				productId.add(objects);
-
+//				LOGGER.info("Payment data <><><><><><><><><>{}",payRow);
+//				LOGGER.info("Order SKUDetails data <><><><><><><><><>{}",OrderSKUDJson.getArray());
 			});
-
+			LOGGER.info("<><><><><><><><><><>!!!!!!!! = {}",productId.size());
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
@@ -470,8 +474,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderItemStatus("Delivered").size());
 			response.put("Return", orderSKUDetailsRepo.findByOrderItemStatus("Return").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderItemStatus("Active").size());
-			// response.put("totalIteamStatus",
-			// orderSKUDetailsRepo.findByOrder(orderIteamStatus).size());
+			 response.put("totalIteamStatus",
+			 orderSKUDetailsRepo.findByOrder(orderStatus).size());
 
 			if (productId.size() <= 0) {
 				Map<String, Integer> orderCount = getOrderCount(0, true);
@@ -479,6 +483,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				response.put("Error", "Order not found");
 				return response;
 			} else {
+				LOGGER.info("USERNAME IN ELSE <><><><><><><><><> !!!! = {}",jwtconfig.extractUsername(token.substring(7)));
 				if (!restTemplate.getForEntity(
 						"https://localhost:8080/dev/auth/info/ADMIN/" + jwtconfig.extractUsername(token.substring(7)),
 						Object.class).toString().isBlank()) {

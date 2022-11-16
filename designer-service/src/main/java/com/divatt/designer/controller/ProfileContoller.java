@@ -185,6 +185,9 @@ public class ProfileContoller {
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
 			LOGGER.info("Dta By id for designer = {}",findById.get());
+			if(findById.get().getIsProfileCompleted()==null) {
+				findById.get().setIsProfileCompleted(true);
+			}
 			if (!findById.isPresent())
 				throw new CustomException("This designer profile is not completed");
 			if (findById.get().getIsProfileCompleted()) {
@@ -275,6 +278,8 @@ public class ProfileContoller {
 			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
 				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
 			}
+
+//			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 
 			LOGGER.info("Inside Update");
 			LOGGER.info("Designer profile status = {}",designerLoginEntity.getProfileStatus());
