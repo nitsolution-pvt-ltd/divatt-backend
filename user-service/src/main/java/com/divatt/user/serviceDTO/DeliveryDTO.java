@@ -7,29 +7,29 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 public class DeliveryDTO {
 
-	private String deliveryDate;
+	private String deliveredDate;
 
 	public DeliveryDTO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public DeliveryDTO(String deliveryDate) {
+	public DeliveryDTO(String deliveredDate) {
 		super();
-		this.deliveryDate = deliveryDate;
+		this.deliveredDate = deliveredDate;
 	}
 
-	public String getDeliveryDate() {
-		return deliveryDate;
+	public String getDeliveredDate() {
+		return deliveredDate;
 	}
 
-	public void setDeliveryDate(String deliveryDate) {
-		this.deliveryDate = deliveryDate;
+	public void setDeliveredDate(String deliveredDate) {
+		this.deliveredDate = deliveredDate;
 	}
 
 	@Override
 	public String toString() {
-		return "DeliveryDTO [deliveryDate=" + deliveryDate + "]";
+		return "DeliveryDTO [deliveredDate=" + deliveredDate + "]";
 	}
 
 }

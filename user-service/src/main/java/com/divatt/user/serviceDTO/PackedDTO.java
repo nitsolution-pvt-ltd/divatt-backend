@@ -2,40 +2,39 @@ package com.divatt.user.serviceDTO;
 
 public class PackedDTO {
 
-	private Boolean packedInDivattCover;
-	private Boolean recordedPackageVideo;
+	private Boolean packedCovered;
+	private Boolean packingVideo;
 
 	public PackedDTO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public PackedDTO(Boolean packedInDivattCover, Boolean recordedPackageVideo) {
+	public PackedDTO(Boolean packedCovered, Boolean packingVideo) {
 		super();
-		this.packedInDivattCover = packedInDivattCover;
-		this.recordedPackageVideo = recordedPackageVideo;
+		this.packedCovered = packedCovered;
+		this.packingVideo = packingVideo;
 	}
 
-	public Boolean getPackedInDivattCover() {
-		return packedInDivattCover;
+	public Boolean getPackedCovered() {
+		return packedCovered;
 	}
 
-	public void setPackedInDivattCover(Boolean packedInDivattCover) {
-		this.packedInDivattCover = packedInDivattCover;
+	public void setPackedCovered(Boolean packedCovered) {
+		this.packedCovered = packedCovered;
 	}
 
-	public Boolean getRecordedPackageVideo() {
-		return recordedPackageVideo;
+	public Boolean getPackingVideo() {
+		return packingVideo;
 	}
 
-	public void setRecordedPackageVideo(Boolean recordedPackageVideo) {
-		this.recordedPackageVideo = recordedPackageVideo;
+	public void setPackingVideo(Boolean packingVideo) {
+		this.packingVideo = packingVideo;
 	}
 
 	@Override
 	public String toString() {
-		return "PackedDTO [packedInDivattCover=" + packedInDivattCover + ", recordedPackageVideo="
-				+ recordedPackageVideo + "]";
+		return "PackedDTO [packedCovered=" + packedCovered + ", packingVideo=" + packingVideo + "]";
 	}
 
 }

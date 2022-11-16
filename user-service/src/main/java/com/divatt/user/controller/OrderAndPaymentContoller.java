@@ -789,7 +789,7 @@ public class OrderAndPaymentContoller {
     @PostMapping("/itemStatusChange")
     public GlobalResponse itemStatusChange(@RequestParam(defaultValue = "") String designerId,@RequestParam String orderId,@RequestParam String productId,@RequestBody JSONObject statusChange,@RequestParam String orderItemStatus) {
     	try {
-    		return orderAndPaymentService.packedStatusChange(designerId,orderId,productId,statusChange, orderItemStatus);
+    		return orderAndPaymentService.itemStatusChange(designerId,orderId,productId,statusChange, orderItemStatus);
     		
     	}catch (Exception e) {
 			throw new CustomException(e.getMessage());

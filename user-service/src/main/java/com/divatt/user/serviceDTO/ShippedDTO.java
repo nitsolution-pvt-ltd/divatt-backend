@@ -3,17 +3,17 @@ package com.divatt.user.serviceDTO;
 public class ShippedDTO {
 
 	private String courierName;
-	private String trackingName;
+	private String awbNumber;
 
 	public ShippedDTO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public ShippedDTO(String courierName, String trackingName) {
+	public ShippedDTO(String courierName, String awbNumber) {
 		super();
 		this.courierName = courierName;
-		this.trackingName = trackingName;
+		this.awbNumber = awbNumber;
 	}
 
 	public String getCourierName() {
@@ -24,17 +24,17 @@ public class ShippedDTO {
 		this.courierName = courierName;
 	}
 
-	public String getTrackingName() {
-		return trackingName;
+	public String getAwbNumber() {
+		return awbNumber;
 	}
 
-	public void setTrackingName(String trackingName) {
-		this.trackingName = trackingName;
+	public void setAwbNumber(String awbNumber) {
+		this.awbNumber = awbNumber;
 	}
 
 	@Override
 	public String toString() {
-		return "ShippedDTO [courierName=" + courierName + ", trackingName=" + trackingName + "]";
+		return "ShippedDTO [courierName=" + courierName + ", awbNumber=" + awbNumber + "]";
 	}
 
 }
