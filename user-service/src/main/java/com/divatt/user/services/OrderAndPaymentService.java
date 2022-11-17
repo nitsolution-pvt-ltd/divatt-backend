@@ -100,5 +100,8 @@ public interface OrderAndPaymentService {
 	public GlobalResponse itemStatusChange(String designerId, String orderId, String productId,
 			JSONObject statusChange,String orderItemStatus);
 
+	public GlobalResponse itemStatusChangefromAdmin(String token, String orderId, String productId,
+			JSONObject statusChange, String orderItemStatus);
+
 
 }
