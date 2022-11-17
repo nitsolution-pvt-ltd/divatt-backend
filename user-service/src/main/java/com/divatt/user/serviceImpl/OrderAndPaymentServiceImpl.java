@@ -1846,7 +1846,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 			String itemStatus = item.getOrderItemStatus();
 			if (!itemStatus.equals("New")) {
-				if (orderItemStatus.equals("Packed")) {
+				if(itemStatus.equals(orderItemStatus)) {
+					throw new CustomException("The Product is Already " + itemStatus);
+				}
+				else if (orderItemStatus.equals("Packed")) {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("Orders")) {
 							LOGGER.info("Inside Packed");
