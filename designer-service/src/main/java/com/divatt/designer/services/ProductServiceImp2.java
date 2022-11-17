@@ -170,6 +170,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			Integer rejected = 0;
 
 			all = productRepo2.countByIsDeleted(isDeleted);
+			LOGGER.info("Behind all" + all);
 			pending = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Pending");
 			approved = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Approved");
 			rejected = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Rejected");
@@ -179,32 +180,100 @@ public class ProductServiceImp2 implements ProductService2 {
 				if (adminStatus.equals("all")) {
 					LOGGER.info("Behind all");
 					findAll = productRepo2.findByIsDeleted(isDeleted, pagingSort);
+					findAll.getContent().forEach(catagoryData -> {
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								CategoryEntity.class);
+						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+					});
 				} else if (adminStatus.equals("pending")) {
 					LOGGER.info("Behind pending");
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Pending", pagingSort);
+					findAll.getContent().forEach(catagoryData -> {
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								CategoryEntity.class);
+						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+					});
 				} else if (adminStatus.equals("approved")) {
 					LOGGER.info("Behind approved");
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Approved", pagingSort);
+					findAll.getContent().forEach(catagoryData -> {
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								CategoryEntity.class);
+						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+					});
 				} else if (adminStatus.equals("rejected")) {
 					LOGGER.info("Behind rejected");
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Rejected", pagingSort);
+					findAll.getContent().forEach(catagoryData -> {
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								CategoryEntity.class);
+						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+					});
 				}
 			} else {
 				if (adminStatus.equals("all")) {
 					LOGGER.info("Behind into else all");
 					findAll = productRepo2.SearchAndfindByIsDeleted(keyword, isDeleted, pagingSort);
+					findAll.getContent().forEach(catagoryData-> { 
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+catagoryData.getSubCategoryId(),SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+							CategoryEntity.class);
+						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+					});
 				} else if (adminStatus.equals("pending")) {
 					LOGGER.info("Behind into else pending");
 					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Pending",
 							pagingSort);
+					findAll.getContent().forEach(catagoryData-> { 
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+catagoryData.getSubCategoryId(),SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+							CategoryEntity.class);
+						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+					});
 				} else if (adminStatus.equals("approved")) {
 					LOGGER.info("Behind into else approved");
 					findAll = productRepo2.SearchAppAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",
 							pagingSort);
+					findAll.getContent().forEach(catagoryData-> { 
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+catagoryData.getSubCategoryId(),SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+							CategoryEntity.class);
+						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+					});
 				} else if (adminStatus.equals("rejected")) {
 					LOGGER.info("Behind into else rejected");
 					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Rejected",
 							pagingSort);
+					findAll.getContent().forEach(catagoryData-> { 
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+catagoryData.getSubCategoryId(),SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+							CategoryEntity.class);
+						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+					});
 				}
 
 			}
@@ -528,5 +597,4 @@ public class ProductServiceImp2 implements ProductService2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 }
