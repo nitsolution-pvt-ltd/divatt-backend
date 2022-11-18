@@ -314,11 +314,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			c.add(Calendar.DATE, shipmentTime);
 			String output = formatter.format(c.getTime());
 			LOGGER.info(output);
-			OrderStatusDetails statusDetails= new OrderStatusDetails();
-			org.json.simple.JSONObject jsonObject= new org.json.simple.JSONObject();
-			jsonObject.put("delivaryDate", output);
-			statusDetails.setDeliveryDetails(jsonObject);
-			orderSKUDetailsEntityRow.setOrderStatusDetails(statusDetails);
+			orderSKUDetailsEntityRow.setShippingDate(output);
 			orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
 			return ResponseEntity.ok(null);
 		} catch (Exception e) {
