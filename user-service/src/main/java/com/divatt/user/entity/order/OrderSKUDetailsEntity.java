@@ -12,122 +12,124 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "tbl_order_sku_details")
 public class OrderSKUDetailsEntity {
-	
+
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_order_sku_details";
-	 
+
 	@Id
 	private Integer id;
-	
+
 	@NotNull(message = "Username is required!")
-	@Field(name = "user_id") 
+	@Field(name = "user_id")
 	private Long userId;
-	
-	@Field(name = "order_id") 
+
+	@Field(name = "order_id")
 	private String orderId;
-	
+
 	@NotNull(message = "HSN is required!")
-	@Field(name = "hsn") 
+	@Field(name = "hsn")
 	private Object hsn;
-	
+
 	@NotNull(message = "Designer is required!")
-	@Field(name = "designer_id") 
+	@Field(name = "designer_id")
 	private int designerId;
-	
+
 	@NotNull(message = "Product is required!")
-	@Field(name = "productId") 
+	@Field(name = "productId")
 	private int productId;
-	
+
 	@NotNull(message = "Product name is required!")
-	@Field(name = "productName") 
+	@Field(name = "productName")
 	private String productName;
-	
+
 	@NotNull(message = "Product Sku is required!")
-	@Field(name = "productSku") 
+	@Field(name = "productSku")
 	private String productSku;
-	
+
 	@NotNull(message = "Size is required!")
-	@Field(name = "size") 
+	@Field(name = "size")
 	private String size;
-	
+
 	@NotNull(message = "Image is required!")
-	@Field(name = "images") 
+	@Field(name = "images")
 	private String images;
-	
+
 	@NotNull(message = "Colour is required!")
-	@Field(name = "colour") 
+	@Field(name = "colour")
 	private String colour;
-	
+
 	@NotNull(message = "Units is required!")
-	@Field(name = "units") 
+	@Field(name = "units")
 	private Long units;
-	
+
 	@NotNull(message = "mrp is required!")
-	@Field(name = "mrp") 
+	@Field(name = "mrp")
 	private Long mrp;
-	
+
 	@NotNull(message = "Sales price is required!")
-	@Field(name = "salesPrice") 
+	@Field(name = "salesPrice")
 	private Long salesPrice;
-	
+
 	@NotNull(message = "Discount is required!")
-	@Field(name = "discount") 
+	@Field(name = "discount")
 	private Long discount;
-	
+
 	@NotNull(message = "Tax amount is required!")
-	@Field(name = "tax_amount") 
+	@Field(name = "tax_amount")
 	private Long taxAmount;
-	
-	@Field(name = "cgst") 
+
+	@Field(name = "cgst")
 	private Double cgst;
-	
-	@Field(name = "sgst") 
+
+	@Field(name = "sgst")
 	private Double sgst;
-	
-	@Field(name = "igst") 
+
+	@Field(name = "igst")
 	private Double igst;
-	
-	@Field(name = "shipping_charge") 
+
+	@Field(name = "shipping_charge")
 	private Double shippingCharge;
-	
-	@Field(name = "shipping_cgst") 
+
+	@Field(name = "shipping_cgst")
 	private Double shippingCGST;
-	
-	@Field(name = "shipping_sgst") 
+
+	@Field(name = "shipping_sgst")
 	private Double shippingSGST;
-	
-	@Field(name = "shipping_igst") 
+
+	@Field(name = "shipping_igst")
 	private Double shippingIGST;
-	
-	@Field(name = "taxType") 
+
+	@Field(name = "taxType")
 	private String taxType;
 
-	@Field(name= "order_item_status")
+	@Field(name = "order_item_status")
 	private String orderItemStatus;
-	
-	@Field(name= "reached_central_hub")
+
+	@Field(name = "reached_central_hub")
 	private String reachedCentralHub;
-	
-	@Field(name = "created_on") 
+
+	@Field(name = "created_on")
 	private String createdOn;
-	
-	@Field(name = "updated_on") 
+
+	@Field(name = "updated_on")
 	private String updatedOn;
-	
+
 	private OrderStatusDetails orderStatusDetails;
 
 	@Field(name = "designer_Customization")
 	private JSONObject customObject;
 
-	@Field(name ="customization_status")
+	@Field(name = "customization_status")
 	private Boolean customizationStatus;
-	
-	@Field(name ="giftwrap_status")
+
+	@Field(name = "giftwrap_status")
 	private Boolean giftwrapStatus;
-	
+
 	private JSONObject giftWrapObject;
 
 	private String userComment;
+
+	private String shippingDate;
 
 	public OrderSKUDetailsEntity() {
 		super();
@@ -149,7 +151,7 @@ public class OrderSKUDetailsEntity {
 			Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST, String taxType,
 			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn,
 			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
-			Boolean giftwrapStatus, JSONObject giftWrapObject, String userComment) {
+			Boolean giftwrapStatus, JSONObject giftWrapObject, String userComment, String shippingDate) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -185,21 +187,7 @@ public class OrderSKUDetailsEntity {
 		this.giftwrapStatus = giftwrapStatus;
 		this.giftWrapObject = giftWrapObject;
 		this.userComment = userComment;
-	}
-
-	@Override
-	public String toString() {
-		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", hsn=" + hsn
-				+ ", designerId=" + designerId + ", productId=" + productId + ", productName=" + productName
-				+ ", productSku=" + productSku + ", size=" + size + ", images=" + images + ", colour=" + colour
-				+ ", units=" + units + ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount
-				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
-				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
-				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", taxType=" + taxType + ", orderItemStatus="
-				+ orderItemStatus + ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn
-				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + ", customObject="
-				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
-				+ ", giftWrapObject=" + giftWrapObject + ", userComment=" + userComment + "]";
+		this.shippingDate = shippingDate;
 	}
 
 	public Integer getId() {
@@ -474,7 +462,47 @@ public class OrderSKUDetailsEntity {
 		this.userComment = userComment;
 	}
 
+	public String getShippingDate() {
+		return shippingDate;
+	}
+
+	public void setShippingDate(String shippingDate) {
+		this.shippingDate = shippingDate;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+
+	@Override
+	public String toString() {
+		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", hsn=" + hsn
+				+ ", designerId=" + designerId + ", productId=" + productId + ", productName=" + productName
+				+ ", productSku=" + productSku + ", size=" + size + ", images=" + images + ", colour=" + colour
+				+ ", units=" + units + ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount
+				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
+				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
+				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", taxType=" + taxType + ", orderItemStatus="
+				+ orderItemStatus + ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn
+				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + ", customObject="
+				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
+				+ ", giftWrapObject=" + giftWrapObject + ", userComment=" + userComment + ", shippingDate="
+				+ shippingDate + ", getId()=" + getId() + ", getUserId()=" + getUserId() + ", getOrderId()="
+				+ getOrderId() + ", getHsn()=" + getHsn() + ", getDesignerId()=" + getDesignerId() + ", getProductId()="
+				+ getProductId() + ", getProductName()=" + getProductName() + ", getProductSku()=" + getProductSku()
+				+ ", getSize()=" + getSize() + ", getImages()=" + getImages() + ", getColour()=" + getColour()
+				+ ", getUnits()=" + getUnits() + ", getMrp()=" + getMrp() + ", getSalesPrice()=" + getSalesPrice()
+				+ ", getDiscount()=" + getDiscount() + ", getTaxAmount()=" + getTaxAmount() + ", getCgst()=" + getCgst()
+				+ ", getSgst()=" + getSgst() + ", getIgst()=" + getIgst() + ", getShippingCharge()="
+				+ getShippingCharge() + ", getShippingCGST()=" + getShippingCGST() + ", getShippingSGST()="
+				+ getShippingSGST() + ", getShippingIGST()=" + getShippingIGST() + ", getTaxType()=" + getTaxType()
+				+ ", getOrderItemStatus()=" + getOrderItemStatus() + ", getReachedCentralHub()="
+				+ getReachedCentralHub() + ", getCreatedOn()=" + getCreatedOn() + ", getUpdatedOn()=" + getUpdatedOn()
+				+ ", getOrderStatusDetails()=" + getOrderStatusDetails() + ", getCustomObject()=" + getCustomObject()
+				+ ", getCustomizationStatus()=" + getCustomizationStatus() + ", getGiftwrapStatus()="
+				+ getGiftwrapStatus() + ", getGiftWrapObject()=" + getGiftWrapObject() + ", getUserComment()="
+				+ getUserComment() + ", getShippingDate()=" + getShippingDate() + ", getClass()=" + getClass()
+				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+	}
+
 }
