@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -272,6 +273,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public ResponseEntity<?> postOrderSKUService(OrderSKUDetailsEntity orderSKUDetailsEntityRow) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderSKUService()");
 
@@ -303,8 +305,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			orderSKUDetailsEntityRow.setDesignerId(orderSKUDetailsEntityRow.getDesignerId());
 			orderSKUDetailsEntityRow.setOrderItemStatus("New");
+			int shipmentTime=Integer.parseInt(restTemplate
+					.getForEntity("https://localhost:8083/dev/designerProducts/productList/"+orderSKUDetailsEntityRow
+							.getProductId(), org.json.simple.JSONObject.class).getBody().get("shipmentTime").toString());
+			//SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			Calendar c = Calendar.getInstance();
+			c.setTime(new Date());
+			c.add(Calendar.DATE, shipmentTime);
+			String output = formatter.format(c.getTime());
+			LOGGER.info(output);
+			OrderStatusDetails statusDetails= new OrderStatusDetails();
+			org.json.simple.JSONObject jsonObject= new org.json.simple.JSONObject();
+			jsonObject.put("delivaryDate", output);
+			statusDetails.setDeliveryDetails(jsonObject);
+			orderSKUDetailsEntityRow.setOrderStatusDetails(statusDetails);
 			orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
-
 			return ResponseEntity.ok(null);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

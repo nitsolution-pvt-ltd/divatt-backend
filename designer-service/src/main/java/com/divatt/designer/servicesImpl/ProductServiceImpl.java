@@ -949,21 +949,6 @@ public class ProductServiceImpl implements ProductService{
 						productRepo2.save(new CustomFunction().setProduDetails(productMasterEntity, productQty));
 					}
 				}
-//				List<StandardSOH> standardSOHs = productMasterEntity.getStanderedSOH();
-//				for (int a = 0; a < standardSOHs.size(); a++) {
-//					StandardSOH standardSOH = new StandardSOH();
-//					if (standardSOHs.get(a).getSizeType().equals(productSize)) {
-//						standardSOH.setSoh(standardSOHs.get(a).getSoh().intValue() - productQty);
-//						standardSOH.setOos(standardSOHs.get(a).getOos());
-//						standardSOH.setSizeType(productSize);
-//						standardSOH.setNotify(standardSOHs.get(a).getNotify());
-//						System.out.println(standardSOH);
-//						updatedSOH.add(standardSOH);
-//					}
-//				}
-//				ProductMasterEntity masterEntity = productRepo.findById(productId).get();
-//				masterEntity.setStanderedSOH(updatedSOH);
-//				productRepo.save(masterEntity);
 			}
 			return new GlobalResponce("Success", "Stock cleared successfully", 200);
 		} catch (Exception e) {
