@@ -233,6 +233,8 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				if (findByUserNameDesigner.isPresent()) {
 					if (findByUserNameDesigner.get().getAccountStatus().equals("INACTIVE"))
 						throw new CustomException("Please active your account");
+					if(findByUserNameDesigner.get().getProfileStatus().equals("REJECTED"))
+						throw new CustomException("Your Profile is Rejected, and No Need to Take Into Profile");
 					if (findByUserNameDesigner.get().getProfileStatus().equals("waitForApprove"))
 						throw new CustomException("Waiting for admin approve");
 					try {
