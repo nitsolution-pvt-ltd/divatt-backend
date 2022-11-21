@@ -1,7 +1,6 @@
 package com.divatt.admin.contoller;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
-
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 import java.awt.Graphics2D;
@@ -9,19 +8,15 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import com.divatt.admin.helper.*;
 
 import javax.imageio.ImageIO;
-import javax.servlet.annotation.MultipartConfig;
 import javax.validation.Valid;
 
 import org.json.JSONObject;
@@ -36,9 +31,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,18 +51,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.divatt.admin.entity.AdminModule;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
-import com.divatt.admin.entity.category.SubCategoryEntity;
+import com.divatt.admin.entity.SendMail;
 import com.divatt.admin.exception.CustomException;
+import com.divatt.admin.helper.JwtUtil;
 import com.divatt.admin.repo.AdminModulesRepo;
 import com.divatt.admin.repo.LoginRepository;
+import com.divatt.admin.services.S3Service;
 import com.divatt.admin.services.SequenceGenerator;
-import com.divatt.admin.entity.SendMail;
-import com.google.gson.JsonObject;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mongodb.BasicDBList;
-import com.divatt.admin.services.*;
 
 @RestController
 @RequestMapping("/admin/profile")

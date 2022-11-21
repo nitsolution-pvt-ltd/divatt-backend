@@ -1,6 +1,5 @@
 package com.divatt.designer.controller;
 
-import java.lang.invoke.VarHandle;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,14 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -41,15 +38,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
 import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.entity.Measurement;
-import com.divatt.designer.entity.MenMeasurement;
 import com.divatt.designer.entity.SendMail;
-import com.divatt.designer.entity.product.ProductMasterEntity;
-import com.divatt.designer.entity.profile.DesignerLogEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
@@ -58,19 +52,15 @@ import com.divatt.designer.entity.profile.ProfileImage;
 import com.divatt.designer.entity.profile.SocialProfile;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
-import com.divatt.designer.repo.DesignerLogRepo;
+import com.divatt.designer.repo.DatabaseSeqRepo;
 import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerPersonalInfoRepo;
 import com.divatt.designer.repo.DesignerProfileRepo;
+import com.divatt.designer.repo.MeasurementRepo;
+import com.divatt.designer.repo.ProductRepo2;
 import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-
-import net.bytebuddy.agent.builder.AgentBuilder.CircularityLock.Global;
-
-import com.divatt.designer.repo.*;
 
 @RestController
 @RequestMapping("/designer")
@@ -97,8 +87,8 @@ public class ProfileContoller {
 	@Autowired
 	private ProductRepository productRepo;
 
-	@Autowired
-	private DesignerLogRepo designerLogRepo;
+//	@Autowired
+//	private DesignerLogRepo designerLogRepo;
 
 	@Autowired
 	private DatabaseSeqRepo databaseSeqRepo;
@@ -206,61 +196,71 @@ public class ProfileContoller {
 	@PostMapping("/add")
 	public ResponseEntity<?> addDesigner(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
 		try {
-			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
-					.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
+			LOGGER.info("TEST" + designerProfileEntity.getBoutiqueProfile().getBoutiqueName());
 
-			ResponseEntity<String> forEntity = restTemplate
-					.getForEntity("https://localhost:8080/dev/auth/Present/DESIGNER/"
-							+ designerProfileEntity.getDesignerProfile().getEmail(), String.class);
-			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
-			JSONObject jsObj = new JSONObject(forEntity.getBody());
-			if ((boolean) jsObj.get("isPresent") && jsObj.get("role").equals("DESIGNER"))
-				throw new CustomException("Email already present");
-			if ((boolean) jsObj.get("isPresent") && jsObj.get("role").equals("USER")) {
-				ResponseEntity<String> forEntity2 = restTemplate
-						.getForEntity("https://localhost:8080/dev/auth/info/USER/"
+			Optional<DesignerProfileEntity> findByBoutiqueName = designerProfileRepo
+					.findByBoutiqueName(designerProfileEntity.getBoutiqueProfile().getBoutiqueName());
+			LOGGER.info("	TEST" + findByBoutiqueName);
+			if (!findByBoutiqueName.isPresent()) {
+
+				Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
+						.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
+
+				ResponseEntity<String> forEntity = restTemplate
+						.getForEntity("https://localhost:8080/dev/auth/Present/DESIGNER/"
 								+ designerProfileEntity.getDesignerProfile().getEmail(), String.class);
-				designerLoginEntity.setUserExist(forEntity2.getBody());
-			}
+				DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
+				JSONObject jsObj = new JSONObject(forEntity.getBody());
+				if ((boolean) jsObj.get("isPresent") && jsObj.get("role").equals("DESIGNER"))
+					throw new CustomException("Email already present");
+				if ((boolean) jsObj.get("isPresent") && jsObj.get("role").equals("USER")) {
+					ResponseEntity<String> forEntity2 = restTemplate
+							.getForEntity("https://localhost:8080/dev/auth/info/USER/"
+									+ designerProfileEntity.getDesignerProfile().getEmail(), String.class);
+					designerLoginEntity.setUserExist(forEntity2.getBody());
+				}
 
-			designerLoginEntity.setdId((long) sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
-			designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
-			designerLoginEntity.setPassword(
-					bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
-			designerLoginEntity.setIsDeleted(false);
-			designerLoginEntity.setAccountStatus("INACTIVE");
-			designerLoginEntity.setProfileStatus("waitForApprove");
-			designerLoginEntity.setIsProfileCompleted(false);
-			if (designerLoginRepo.save(designerLoginEntity) != null) {
-				designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
-				designerProfileEntity
-						.setId((long) sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
-				designerProfileEntity.setIsProfileCompleted(false);
-				DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
-				designerProfile.setPassword(
+				designerLoginEntity.setdId((long) sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
+				designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
+				designerLoginEntity.setPassword(
 						bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
-				designerProfileEntity.setDesignerProfile(designerProfile);
-				designerProfileRepo.save(designerProfileEntity);
+				designerLoginEntity.setIsDeleted(false);
+				designerLoginEntity.setAccountStatus("INACTIVE");
+				designerLoginEntity.setProfileStatus("waitForApprove");
+				designerLoginEntity.setIsProfileCompleted(false);
+				if (designerLoginRepo.save(designerLoginEntity) != null) {
+					designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
+					designerProfileEntity
+							.setId((long) sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
+					designerProfileEntity.setIsProfileCompleted(false);
+					DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
+					designerProfile.setPassword(
+							bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
+					designerProfileEntity.setDesignerProfile(designerProfile);
+					designerProfileRepo.save(designerProfileEntity);
+				}
+
+				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
+						"Successfully Registration",
+						"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
+								+ ",\n                           "
+								+ " you have been register successfully. Please active your account by clicking the bellow link "
+								+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
+										.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
+								+ " . We will verify your details and come back to you soon.",
+						false);
+
+				try {
+					ResponseEntity<String> response = restTemplate
+							.postForEntity("https://65.1.190.195:8080/dev/auth/sendMail", mail, String.class);
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+
+				return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Registered successfully", 200));
+			} else {
+				throw new CustomException("This Boutique Name allready present!");
 			}
-
-			SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
-					"Successfully Registration",
-					"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
-							+ ",\n                           "
-							+ " you have been register successfully. Please active your account by clicking the bellow link "
-							+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
-									.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
-							+ " . We will verify your details and come back to you soon.",
-					false);
-
-			try {
-				ResponseEntity<String> response = restTemplate
-						.postForEntity("https://65.1.190.195:8080/dev/auth/sendMail", mail, String.class);
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
-			}
-
-			return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Registered successfully", 200));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

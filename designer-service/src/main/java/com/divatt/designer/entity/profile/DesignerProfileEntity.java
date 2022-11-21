@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.divatt.designer.entity.Measurement;
-import com.divatt.designer.entity.MenMeasurement;
 
 import nonapi.io.github.classgraph.json.Id;
 
