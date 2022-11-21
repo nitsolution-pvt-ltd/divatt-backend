@@ -1633,7 +1633,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				return new GlobalResponse("Success", "Order cancelled successfully", 200);
 			} else {
 				Map<String, Object> data = new HashMap<String, Object>();
-				// Map<String, Object> data1= new HashMap<String, Object>();
 				CancelEmailJSON cancelEmailJSON = new CancelEmailJSON();
 				cancelEmailJSON.setOrderId(orderDetails.get(0).getOrderId());
 				cancelEmailJSON.setProductImages(orderDetails.get(0).getImages());
