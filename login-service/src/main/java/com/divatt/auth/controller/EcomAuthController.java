@@ -378,9 +378,12 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			LOGGER.info("Inside findByUserNameDesigner " + designerLoginRepo.findByEmail(email));
 			Optional<UserLoginEntity> findByUserNameUser = userLoginRepo.findByEmail(email);
 			LOGGER.info("Inside findByUserNameUser " + userLoginRepo.findByEmail(email));
-			DesignerProfileEntity designerLogin = restTemplate.getForEntity(
-					"https://localhost:8083/dev/designer/" + findByUserNameDesigner.get().getUid(), DesignerProfileEntity.class).getBody();
-			LOGGER.info(designerLogin.getDesignerProfile().getFirstName1()+" " +designerLogin.getDesignerProfile().getLastName1() + "Inside json");
+			DesignerProfileEntity designerLogin = restTemplate
+					.getForEntity("https://localhost:8083/dev/designer/" + findByUserNameDesigner.get().getUid(),
+							DesignerProfileEntity.class)
+					.getBody();
+			LOGGER.info(designerLogin.getDesignerProfile().getFirstName1() + " "
+					+ designerLogin.getDesignerProfile().getLastName1() + "Inside json");
 
 			if (!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent() && !findByUserName.isPresent()) {
 				throw new CustomException("User not found");
@@ -419,35 +422,31 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					throw new CustomException("Data not save! try again");
 				} else {
 					// ** SEND MAIL IF DETAILS SAVE IN DATABASE **//
-					try {
+					if(save.getUser_type().equals("ADMIN")) {
 						mailService.sendEmail(findByUserName.get().getEmail(), "Forgot Password Link",
-								"Hi " + findByUserName.get().getFirstName() + " " + findByUserName.get().getLastName()
-										+ " This is Your Link Reset Password "
-										+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink,
-								false);
-
-					} catch (Exception e) {
-						try {
-							mailService.sendEmail(findByUserNameDesigner.get().getEmail(), "Forgot Password Link",
-									"Hi " + designerLogin.getDesignerProfile().getFirstName1()+" " +designerLogin.getDesignerProfile().getLastName1()
-											+ " This is Link for reset password "
-											+ "https://dev.divatt.com/divatt/divatt-designer/reset-password/"
-											+ forgotPasswordLink,
-									false);
-						} catch (Exception Z) {
-							mailService.sendEmail(findByUserNameUser.get().getEmail(), "Forgot Password Link",
-									"Hi " + findByUserNameUser.get().getFirstName() + " "
-											+ findByUserNameUser.get().getLastName()
-											+ " This is Link for reset password "
-											+ "https://dev.divatt.com/divatt/forgetpassword/" + forgotPasswordLink,
-									false);
-						}
-
+						"Hi " + findByUserName.get().getFirstName() + " " + findByUserName.get().getLastName()
+								+ " This is Your Link Reset Password "
+								+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink,
+						false);
+						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
+					} else if(save.getUser_type().equals("DESIGNER")) {
+						mailService.sendEmail(findByUserNameDesigner.get().getEmail(), "Forgot Password Link",
+						"Hi " + designerLogin.getDesignerProfile().getFirstName1()+" " +designerLogin.getDesignerProfile().getLastName1()
+								+ " This is Link for reset password "
+								+ "https://dev.divatt.com/designer/reset-password/"
+								+ forgotPasswordLink,
+						false);
+						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
+					} else {
+						mailService.sendEmail(findByUserNameUser.get().getEmail(), "Forgot Password Link",
+						"Hi " + findByUserNameUser.get().getFirstName() + " "
+								+ findByUserNameUser.get().getLastName()
+								+ " This is Link for reset password "
+								+ "https://dev.divatt.com/divatt/forgetpassword/" + forgotPasswordLink,
+						false);
+						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
 					}
-
 				}
-
-				return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
