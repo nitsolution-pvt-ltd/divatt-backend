@@ -435,7 +435,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							mailService.sendEmail(findByUserNameDesigner.get().getEmail(), "Forgot Password Link",
 									"Hi " + designerLogin.getDesignerProfile().getFirstName1()+" " +designerLogin.getDesignerProfile().getLastName1()
 											+ " This is Link for reset password "
-											+ "https://dev.divatt.com/divatt/divatt-designer/reset-password/"
+											+ "https://dev.divatt.com/designer/reset-password/"
 											+ forgotPasswordLink,
 									false);
 						} catch (Exception Z) {
