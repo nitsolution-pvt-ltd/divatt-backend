@@ -892,6 +892,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("cancelRequest",
 					orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
 			response.put("Orders", orderSKUDetailsRepo.findByDesignerId(designerId).size());
+			response.put("Canceled", orderSKUDetailsRepo.findByOrderTotal(designerId, "cancelled").size());
 
 			return response;
 		} catch (Exception e) {

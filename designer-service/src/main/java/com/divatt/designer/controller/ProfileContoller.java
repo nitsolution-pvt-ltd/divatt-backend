@@ -754,6 +754,7 @@ public class ProfileContoller {
 				designerProfileEntity.setProductCount(findBydesignerId.getProductCount());
 				designerProfileEntity.setProfileStatus(findBydesignerId.getProfileStatus());
 				designerProfileEntity.setDesignerCurrentStatus(findBydesignerId.getDesignerCurrentStatus());
+				designerProfileEntity.setIsProfileCompleted(findBydesignerId.getIsProfileCompleted());
 				designerProfile.setAltMobileNo(findBydesignerId.getDesignerProfile().getAltMobileNo());
 				designerProfile.setCity(findBydesignerId.getDesignerProfile().getCity());
 				designerProfile.setCountry(findBydesignerId.getDesignerProfile().getCountry());
@@ -765,10 +766,11 @@ public class ProfileContoller {
 				designerProfile.setFirstName1(findBydesignerId.getDesignerProfile().getFirstName1());
 				designerProfile.setLastName1(findBydesignerId.getDesignerProfile().getLastName1());
 				designerProfile.setFirstName2(findBydesignerId.getDesignerProfile().getFirstName2());
-				designerProfile.setFirstName2(findBydesignerId.getDesignerProfile().getLastName2());
+				designerProfile.setLastName2(findBydesignerId.getDesignerProfile().getLastName2());
 				designerProfile.setGender(findBydesignerId.getDesignerProfile().getGender());
 				designerProfile.setMobileNo(findBydesignerId.getDesignerProfile().getMobileNo());
 				designerProfile.setPassword(findBydesignerId.getDesignerProfile().getPassword());
+				designerProfile.setPinCode(findBydesignerId.getDesignerProfile().getPinCode());
 				designerProfile.setProfilePic(profileimage.getImage());
 				LOGGER.info(profileimage.getImage());
 				designerProfile.setState(findBydesignerId.getDesignerProfile().getState());
