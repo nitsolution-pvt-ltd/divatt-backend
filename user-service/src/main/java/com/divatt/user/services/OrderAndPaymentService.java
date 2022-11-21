@@ -97,7 +97,7 @@ public interface OrderAndPaymentService {
 	public GlobalResponse cancelApproval(String designerId, String orderId, String productId,
 			CancelationRequestDTO cancelationRequestDTO);
 
-	public GlobalResponse itemStatusChange(String designerId, String orderId, String productId,
+	public GlobalResponse itemStatusChange(String token, String orderId, String productId,
 			JSONObject statusChange,String orderItemStatus);
 
 	public GlobalResponse itemStatusChangefromAdmin(String token, String orderId, String productId,

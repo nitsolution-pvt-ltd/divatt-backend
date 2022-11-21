@@ -788,9 +788,9 @@ public class OrderAndPaymentContoller {
    }
  }
     @PostMapping("/itemStatusChange")
-    public GlobalResponse itemStatusChange(@RequestParam String designerId,@RequestParam String orderId,@RequestParam String productId,@RequestBody JSONObject statusChange,@RequestParam String orderItemStatus) {
+    public GlobalResponse itemStatusChange(@RequestHeader("Authorization") String token,@RequestParam String orderId,@RequestParam String productId,@RequestBody JSONObject statusChange,@RequestParam String orderItemStatus) {
     	try {
-    		return orderAndPaymentService.itemStatusChange(designerId,orderId,productId,statusChange, orderItemStatus);
+    		return orderAndPaymentService.itemStatusChange(token,orderId,productId,statusChange, orderItemStatus);
     		
     	}catch (Exception e) {
 			throw new CustomException(e.getMessage());

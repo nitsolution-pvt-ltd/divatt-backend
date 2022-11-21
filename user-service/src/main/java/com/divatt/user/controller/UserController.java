@@ -803,13 +803,7 @@ public class UserController {
 	}catch (Exception e) {
 		throw new CustomException(e.getMessage());
 	}
-		
-
-
 }
-	
-
-	
 	@GetMapping("/find")
 	public Map<String, Object> find(@RequestParam String orderItemStatus,@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,@RequestParam (defaultValue = "false") Boolean isDeleted,
