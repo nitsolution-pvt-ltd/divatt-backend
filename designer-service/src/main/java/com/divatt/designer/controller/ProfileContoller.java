@@ -454,6 +454,7 @@ public class ProfileContoller {
 		}
 	}
 
+	//listing Logic
 	public Map<String, Object> getDesignerProfDetails(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, String keyword, Optional<String> sortBy, String profileStatus) {
 		try {
