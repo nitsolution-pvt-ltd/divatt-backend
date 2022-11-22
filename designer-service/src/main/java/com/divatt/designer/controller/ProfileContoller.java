@@ -513,11 +513,11 @@ public class ProfileContoller {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("waitingForApproval", designerLoginRepo.findByProfileStatus("waitForApprove").size());
-			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatus("APPROVE").size());
-			response.put("submitted", designerLoginRepo.findByProfileStatus("SUBMITTED").size());
-			response.put("completed", designerLoginRepo.findByProfileStatus("COMPLETED").size());
-			response.put("rejected", designerLoginRepo.findByProfileStatus("REJECTED").size());
+			response.put("waitingForApproval", designerLoginRepo.findByProfileStatusAndAccountStatus("waitForApprove", "ACTIVE").size());
+			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatusAndAccountStatus("APPROVE", "ACTIVE").size());
+			response.put("submitted", designerLoginRepo.findByProfileStatusAndAccountStatus("SUBMITTED", "ACTIVE").size());
+			response.put("completed", designerLoginRepo.findByProfileStatusAndAccountStatus("COMPLETED", "ACTIVE").size());
+			response.put("rejected", designerLoginRepo.findByProfileStatusAndAccountStatus("REJECTED", "ACTIVE").size());
 			response.put("deleted", designerLoginRepo.findByDeleted(true).size());
 			response.put("changeRequest", designerLoginRepo.findByDeletedAndIsProfileCompletedAndProfileStatus(false, true, "SAVED").size());
 
