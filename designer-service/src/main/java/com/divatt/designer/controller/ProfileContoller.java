@@ -519,7 +519,7 @@ public class ProfileContoller {
 			response.put("completed", designerLoginRepo.findByProfileStatusAndAccountStatus("COMPLETED", "ACTIVE").size());
 			response.put("rejected", designerLoginRepo.findByProfileStatusAndAccountStatus("REJECTED", "ACTIVE").size());
 			response.put("deleted", designerLoginRepo.findByDeleted(true).size());
-			response.put("changeRequest", designerLoginRepo.findByDeletedAndIsProfileCompletedAndProfileStatus(false, true, "SAVED").size());
+			response.put("changeRequest", designerLoginRepo.findByDeletedAndIsProfileCompletedAndProfileStatus(false, true, "SUBMITTED").size());
 
 			return response;
 		} catch (Exception e) {
