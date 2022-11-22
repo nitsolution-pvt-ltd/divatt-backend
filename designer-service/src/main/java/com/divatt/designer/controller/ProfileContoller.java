@@ -474,7 +474,7 @@ public class ProfileContoller {
 
 			if (!profileStatus.isEmpty()) {
 				if(profileStatus.equals("changeRequest")) {
-					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true, "SAVED", pagingSort);
+					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true, "SUBMITTED", pagingSort);
 				} else {
 					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAcountStatus(isDeleted, profileStatus, "ACTIVE", pagingSort);
 				}
