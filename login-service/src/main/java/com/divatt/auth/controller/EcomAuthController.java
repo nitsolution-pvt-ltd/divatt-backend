@@ -233,7 +233,8 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				if (findByUserNameDesigner.isPresent()) {
 					if (findByUserNameDesigner.get().getAccountStatus().equals("INACTIVE"))
 						throw new CustomException("Please active your account");
-					if (findByUserNameDesigner.get().getProfileStatus().equals("REJECTED"))
+					if(findByUserNameDesigner.get().getProfileStatus().equals("REJECTED") && findByUserNameDesigner.get().getIsProfileCompleted() == false)
+
 						throw new CustomException("Your Profile is Rejected, and No Need to Take Into Profile");
 					if (findByUserNameDesigner.get().getProfileStatus().equals("waitForApprove"))
 						throw new CustomException("Waiting for Approval");
@@ -494,7 +495,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					}
 					// ** FIND THE USER CORRESPONDING THE LINK IN LOGIN TABLE **//
 					PasswordResetEntity loginResetEntity = findByPrToken.get();
-					System.out.println("loginResetEntity.getUser_id() " + loginResetEntity.getUser_id());
+					LOGGER.info("loginResetEntity.getUser_id() " + loginResetEntity.getUser_id());
 					Optional<AdminLoginEntity> findById = loginRepository.findById((loginResetEntity.getUser_id()));
 					Optional<AdminLoginEntity> findByEmail = loginRepository.findByEmail((loginResetEntity.getEmail()));
 					JsonObject jo = new JsonObject();

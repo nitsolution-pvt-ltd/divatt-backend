@@ -9,41 +9,46 @@ import springfox.documentation.spring.web.json.Json;
 
 @Document(collection = "tbl_designer_login")
 public class DesignerLoginEntity {
-	
+
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_designer_login";
 
 	@Id
 	private Object uid;
-	
-	@Field(name = "email") private String email;
-	@Field(name = "password") private String password;
-	@Field(name = "auth_token") private String authToken;
-	@Field(name = "is_deleted") private Boolean isDeleted;
-	@Field(name = "admin_comment") private String adminComment;
-	@Field(name = "profile_status") private String profileStatus;
-	@Field(name = "account_status") private String accountStatus;
-	@Field(name = "logins") private Json logins;
-	
+
+	@Field(name = "email")
+	private String email;
+	@Field(name = "password")
+	private String password;
+	@Field(name = "auth_token")
+	private String authToken;
+	@Field(name = "is_deleted")
+	private Boolean isDeleted;
+	@Field(name = "admin_comment")
+	private String adminComment;
+	@Field(name = "profile_status")
+	private String profileStatus;
+	@Field(name = "account_status")
+	private String accountStatus;
+	@Field(name = "logins")
+	private Json logins;
+
 	@Field(name = "social_type")
 	private String socialType;
-	
+
 	@Field(name = "social_id")
-	private String socialId ;
-	private String name ;
+	private String socialId;
+	private String name;
+	private Boolean isProfileCompleted;
 
 	public DesignerLoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-
-
-
-
 	public DesignerLoginEntity(Object uid, String email, String password, String authToken, Boolean isDeleted,
 			String adminComment, String profileStatus, String accountStatus, Json logins, String socialType,
-			String socialId, String name) {
+			String socialId, String name, Boolean isProfileCompleted) {
 		super();
 		this.uid = uid;
 		this.email = email;
@@ -57,23 +62,8 @@ public class DesignerLoginEntity {
 		this.socialType = socialType;
 		this.socialId = socialId;
 		this.name = name;
+		this.isProfileCompleted = isProfileCompleted;
 	}
-
-
-
-
-
-	@Override
-	public String toString() {
-		return "DesignerLoginEntity [uid=" + uid + ", email=" + email + ", password=" + password + ", authToken="
-				+ authToken + ", isDeleted=" + isDeleted + ", adminComment=" + adminComment + ", profileStatus="
-				+ profileStatus + ", accountStatus=" + accountStatus + ", logins=" + logins + ", socialType="
-				+ socialType + ", socialId=" + socialId + ", name=" + name + "]";
-	}
-
-
-
-
 
 	public Object getUid() {
 		return uid;
@@ -123,94 +113,72 @@ public class DesignerLoginEntity {
 		this.authToken = authToken;
 	}
 
-
-
-	
-
-
 	public Boolean getIsDeleted() {
 		return isDeleted;
 	}
-
-
 
 	public void setIsDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
 
-
 	public String getAdminComment() {
 		return adminComment;
 	}
-
-
 
 	public void setAdminComment(String adminComment) {
 		this.adminComment = adminComment;
 	}
 
-
-
 	public Json getLogins() {
 		return logins;
 	}
-
-
 
 	public void setLogins(Json logins) {
 		this.logins = logins;
 	}
 
-
-
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-
-
 
 	public String getSocialType() {
 		return socialType;
 	}
 
-
-
 	public void setSocialType(String socialType) {
 		this.socialType = socialType;
 	}
-
-
 
 	public String getSocialId() {
 		return socialId;
 	}
 
-
-
 	public void setSocialId(String socialId) {
 		this.socialId = socialId;
 	}
-
-
-
-
 
 	public String getName() {
 		return name;
 	}
 
-
-
-
-
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	
-	
-	
-	
-	
+	public Boolean getIsProfileCompleted() {
+		return isProfileCompleted;
+	}
 
+	public void setIsProfileCompleted(Boolean isProfileCompleted) {
+		this.isProfileCompleted = isProfileCompleted;
+	}
+
+	@Override
+	public String toString() {
+		return "DesignerLoginEntity [uid=" + uid + ", email=" + email + ", password=" + password + ", authToken="
+				+ authToken + ", isDeleted=" + isDeleted + ", adminComment=" + adminComment + ", profileStatus="
+				+ profileStatus + ", accountStatus=" + accountStatus + ", logins=" + logins + ", socialType="
+				+ socialType + ", socialId=" + socialId + ", name=" + name + ", isProfileCompleted="
+				+ isProfileCompleted + "]";
+	}
 }
