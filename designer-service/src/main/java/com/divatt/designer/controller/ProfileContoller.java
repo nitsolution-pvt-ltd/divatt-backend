@@ -476,7 +476,9 @@ public class ProfileContoller {
 				if(profileStatus.equals("changeRequest")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true, "SUBMITTED", pagingSort);
 				} else {
-					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAcountStatus(isDeleted, profileStatus, pagingSort);
+					LOGGER.info("Profile Status = {} , Is deleted = {}",profileStatus, isDeleted);
+					findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted, profileStatus, pagingSort);
+					LOGGER.info("Find all data is  = {}",findAll.getContent());
 				}
 			} else if (profileStatus.isEmpty() || keyword.isEmpty()) {
 				findAll = designerLoginRepo.findDesignerisDeleted(isDeleted, pagingSort);
