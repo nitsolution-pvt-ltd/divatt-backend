@@ -51,7 +51,7 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 	@Query("{'isDeleted':?0, 'isProfileCompleted':?1, 'profile_status':?2}")
 	List<DesignerLoginEntity> findByDeletedAndIsProfileCompletedAndProfileStatus(boolean isDeleted, Boolean isProfileCompleted, String profileStatus);
 	
-	@Query("{'isDeleted':?0,'isProfileCompleted':?1, 'profile_status':?2}")
+	@Query("{'isDeleted':?0,'isProfileCompleted':?1, 'profileStatus':?2}")
 	public Page<DesignerLoginEntity> findByIsDeletedAndIsProfileCompletedAndProfileStatus(Boolean isDeleted, Boolean isProfileCompleted, String profileStatus, Pageable pagingSort);
 
 }

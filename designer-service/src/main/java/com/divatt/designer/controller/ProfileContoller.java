@@ -475,6 +475,7 @@ public class ProfileContoller {
 			if (!profileStatus.isEmpty()) {
 				if(profileStatus.equals("changeRequest")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true, "SUBMITTED", pagingSort);
+					LOGGER.info("DATA FOR CHANGE REQUEST = {}",findAll.getContent());
 				} else if(profileStatus.equals("SUBMITTED")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, false, "SUBMITTED", pagingSort);
 				} else {
@@ -488,6 +489,7 @@ public class ProfileContoller {
 			} else {
 				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted, profileStatus,
 						pagingSort);
+				LOGGER.info("Search data by email = {}", findAll.getContent());
 
 			}
 
