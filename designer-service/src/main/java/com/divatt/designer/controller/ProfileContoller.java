@@ -135,6 +135,7 @@ public class ProfileContoller {
 				designerProfileEntity.setAccountStatus(designerLoginEntity.getAccountStatus());
 				designerProfileEntity.setProfileStatus(designerLoginEntity.getProfileStatus());
 				designerProfileEntity.setIsDeleted(designerLoginEntity.getIsDeleted());
+				designerProfileEntity.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 				designerLoginEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
 				designerProfileEntity
 						.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
@@ -366,7 +367,10 @@ public class ProfileContoller {
 			designerProfileRepo.save(designerProfileEntityDB);
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setProfileStatus(designerProfileEntity.getProfileStatus());
-			designerLoginRepo.save(designerLoginEntityDB);
+			designerLoginEntityDB.setIsProfileCompleted(designerProfileEntity.getIsProfileCompleted());
+			LOGGER.info("DATA FOR LOGIN ENTITY FOR DESIGNER = {}",designerLoginEntityDB);
+			DesignerLoginEntity save = designerLoginRepo.save(designerLoginEntityDB);
+			LOGGER.info("AFTER SAVE DATA IN DATABASE = {}", save);
 		}
 
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
