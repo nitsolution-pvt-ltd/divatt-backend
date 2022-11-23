@@ -476,7 +476,7 @@ public class ProfileContoller {
 				if(profileStatus.equals("changeRequest")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true, "SUBMITTED", pagingSort);
 				} else {
-					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAcountStatus(isDeleted, profileStatus, "ACTIVE", pagingSort);
+					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAcountStatus(isDeleted, profileStatus, pagingSort);
 				}
 			} else if (profileStatus.isEmpty() || keyword.isEmpty()) {
 				findAll = designerLoginRepo.findDesignerisDeleted(isDeleted, pagingSort);
@@ -520,6 +520,7 @@ public class ProfileContoller {
 			response.put("rejected", designerLoginRepo.findByProfileStatusAndAccountStatus("REJECTED", "ACTIVE").size());
 			response.put("deleted", designerLoginRepo.findByDeleted(true).size());
 			response.put("changeRequest", designerLoginRepo.findByDeletedAndIsProfileCompletedAndProfileStatus(false, true, "SUBMITTED").size());
+			response.put("saved", designerLoginRepo.findByProfileStatusAndAccountStatus("SAVED", "ACTIVE").size());
 
 			return response;
 		} catch (Exception e) {

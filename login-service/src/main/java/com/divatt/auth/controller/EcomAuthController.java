@@ -493,7 +493,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					}
 					// ** FIND THE USER CORRESPONDING THE LINK IN LOGIN TABLE **//
 					PasswordResetEntity loginResetEntity = findByPrToken.get();
-					System.out.println("loginResetEntity.getUser_id() " + loginResetEntity.getUser_id());
+					LOGGER.info("loginResetEntity.getUser_id() " + loginResetEntity.getUser_id());
 					Optional<AdminLoginEntity> findById = loginRepository.findById((loginResetEntity.getUser_id()));
 					Optional<AdminLoginEntity> findByEmail = loginRepository.findByEmail((loginResetEntity.getEmail()));
 					JsonObject jo = new JsonObject();

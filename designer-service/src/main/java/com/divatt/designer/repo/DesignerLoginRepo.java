@@ -21,9 +21,12 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 
 	List<DesignerLoginEntity> findByProfileStatusAndAccountStatus(String profileStatus, String acountStatus);
 
-	@Query("{'isDeleted':?0,'profileStatus':?1,'accountStatus':?2}")
-	public Page<DesignerLoginEntity> findByIsDeletedAndProfileStatusAndAcountStatus(Boolean isDeleted, String profileStatus, String accountStatus,
-			Pageable pagingSort);
+	@Query("{'isDeleted':?0,'profileStatus':?1}")
+	public Page<DesignerLoginEntity> findByIsDeletedAndProfileStatusAndAcountStatus(Boolean isDeleted, String profileStatus, Pageable pagingSort);
+	
+//	@Query("{'isDeleted':?0,'profileStatus':?1}")
+//	@Query("{ $or: [ { 'profileStatus' : {$regex:?1,$options:'i'} }, {'profileStatus' : {$regex:'SAVED',$options:'i'} } ], $and: [{'isDeleted':?0}] }")
+//	public Page<DesignerLoginEntity> findByIsDeletedAndProfileStatusAndAcountStatusForCompleted(Boolean isDeleted, String profileStatus, Pageable pagingSort);
 
 	public Page<DesignerLoginEntity> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
 
