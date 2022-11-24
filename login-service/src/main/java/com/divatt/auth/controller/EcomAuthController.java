@@ -234,11 +234,11 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					if (findByUserNameDesigner.get().getAccountStatus().equals("INACTIVE"))
 						throw new CustomException("Please active your account");
 					if(findByUserNameDesigner.get().getProfileStatus().equals("REJECTED") && findByUserNameDesigner.get().getIsProfileCompleted() == false)
-						throw new CustomException("Your Profile is Rejected, and No Need to Take Into Profile");
+						throw new CustomException("Your profile is rejected.");
 					if (findByUserNameDesigner.get().getProfileStatus().equals("waitForApprove"))
 						throw new CustomException("Waiting for Approval");
-					if(findByUserNameDesigner.get().getIsDeleted().equals(true))
-						throw new CustomException("Your Account has Been Deleted");
+					if (findByUserNameDesigner.get().getIsDeleted().equals(true))
+						throw new CustomException("Your profile has been deleted and no need to take into profile.");
 					try {
 						if (!findByUserNameDesigner.get().getAccountStatus().equals("INACTIVE"))
 							throw new CustomException("This account has been deactive");
@@ -388,7 +388,9 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					.getBody();
 			LOGGER.info(designerLogin.getDesignerProfile().getFirstName1() + " "
 					+ designerLogin.getDesignerProfile().getLastName1() + "Inside json");
-
+			if(findByUserNameDesigner.get().getIsDeleted()==true) {
+				throw new CustomException("Your account has been deleted and no need to do any action");
+			}
 			if (!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent() && !findByUserName.isPresent()) {
 				throw new CustomException("User not found");
 			} else {
@@ -426,28 +428,27 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					throw new CustomException("Data not save! try again");
 				} else {
 					// ** SEND MAIL IF DETAILS SAVE IN DATABASE **//
-					if(save.getUser_type().equals("ADMIN")) {
+					if (save.getUser_type().equals("ADMIN")) {
 						mailService.sendEmail(findByUserName.get().getEmail(), "Forgot Password Link",
-						"Hi " + findByUserName.get().getFirstName() + " " + findByUserName.get().getLastName()
-								+ " This is Your Link Reset Password "
-								+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink,
-						false);
+								"Hi " + findByUserName.get().getFirstName() + " " + findByUserName.get().getLastName()
+										+ " This is Your Link Reset Password "
+										+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink,
+								false);
 						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
-					} else if(save.getUser_type().equals("DESIGNER")) {
+					} else if (save.getUser_type().equals("DESIGNER")) {
 						mailService.sendEmail(findByUserNameDesigner.get().getEmail(), "Forgot Password Link",
-						"Hi " + designerLogin.getDesignerProfile().getFirstName1()+" " +designerLogin.getDesignerProfile().getLastName1()
-								+ " This is Link for reset password "
-								+ "https://dev.divatt.com/designer/reset-password/"
-								+ forgotPasswordLink,
-						false);
+								"Hi " + designerLogin.getDesignerProfile().getFirstName1() + " "
+										+ designerLogin.getDesignerProfile().getLastName1()
+										+ " This is Link for reset password "
+										+ "https://dev.divatt.com/designer/reset-password/" + forgotPasswordLink,
+								false);
 						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
 					} else {
 						mailService.sendEmail(findByUserNameUser.get().getEmail(), "Forgot Password Link",
-						"Hi " + findByUserNameUser.get().getFirstName() + " "
-								+ findByUserNameUser.get().getLastName()
-								+ " This is Link for reset password "
-								+ "https://dev.divatt.com/divatt/forgetpassword/" + forgotPasswordLink,
-						false);
+								"Hi " + findByUserNameUser.get().getFirstName() + " "
+										+ findByUserNameUser.get().getLastName() + " This is Link for reset password "
+										+ "https://dev.divatt.com/divatt/forgetpassword/" + forgotPasswordLink,
+								false);
 						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
 					}
 				}

@@ -111,7 +111,7 @@ public class ProfileContoller {
 
 	@Autowired
 	private JWTConfig jwtConfig;
-	
+
 	@Autowired
 	private CustomFunction customFunction;
 
@@ -175,8 +175,8 @@ public class ProfileContoller {
 		try {
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
-			LOGGER.info("Dta By id for designer = {}",findById.get());
-			if(findById.get().getIsProfileCompleted()==null) {
+			LOGGER.info("Dta By id for designer = {}", findById.get());
+			if (findById.get().getIsProfileCompleted() == null) {
 				findById.get().setIsProfileCompleted(true);
 			}
 			if (!findById.isPresent())
@@ -283,10 +283,10 @@ public class ProfileContoller {
 //			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 
 			LOGGER.info("Inside Update");
-			LOGGER.info("Designer profile status = {}",designerLoginEntity.getProfileStatus());
-			LOGGER.info("Designer profile status = {}",designerLoginEntity.getIsProfileCompleted());
+			LOGGER.info("Designer profile status = {}", designerLoginEntity.getProfileStatus());
+			LOGGER.info("Designer profile status = {}", designerLoginEntity.getIsProfileCompleted());
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
-			//Old
+			// Old
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerLoginEntityDB.setCategories(designerLoginEntity.getCategories());
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
@@ -294,7 +294,7 @@ public class ProfileContoller {
 			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 			designerLoginRepo.save(designerLoginEntityDB);
 			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
-			
+
 		}
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
 	}
@@ -368,7 +368,7 @@ public class ProfileContoller {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setProfileStatus(designerProfileEntity.getProfileStatus());
 			designerLoginEntityDB.setIsProfileCompleted(designerProfileEntity.getIsProfileCompleted());
-			LOGGER.info("DATA FOR LOGIN ENTITY FOR DESIGNER = {}",designerLoginEntityDB);
+			LOGGER.info("DATA FOR LOGIN ENTITY FOR DESIGNER = {}", designerLoginEntityDB);
 			DesignerLoginEntity save = designerLoginRepo.save(designerLoginEntityDB);
 			LOGGER.info("AFTER SAVE DATA IN DATABASE = {}", save);
 		}
@@ -396,7 +396,7 @@ public class ProfileContoller {
 	public void method(HttpServletResponse httpServletResponse, @PathVariable("email") String email) {
 		Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
 				.findByEmail(new String(Base64.getDecoder().decode(email)));
-		LOGGER.info("Get data by mail id = {}",findByEmail);
+		LOGGER.info("Get data by mail id = {}", findByEmail);
 		if (findByEmail.isPresent()) {
 			DesignerLoginEntity designerLoginEntity = findByEmail.get();
 			if (designerLoginEntity.getAccountStatus().equals("INACTIVE"))
@@ -458,7 +458,7 @@ public class ProfileContoller {
 		}
 	}
 
-	//listing Logic
+	// listing Logic
 	public Map<String, Object> getDesignerProfDetails(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, String keyword, Optional<String> sortBy, String profileStatus) {
 		try {
@@ -485,9 +485,9 @@ public class ProfileContoller {
 				} else if(profileStatus.equals("SUBMITTED")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, false, "SUBMITTED", pagingSort);
 				} else {
-					LOGGER.info("Profile Status = {} , Is deleted = {}",profileStatus, isDeleted);
+					LOGGER.info("Profile Status = {} , Is deleted = {}", profileStatus, isDeleted);
 					findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted, profileStatus, pagingSort);
-					LOGGER.info("Find all data is  = {}",findAll.getContent());
+					LOGGER.info("Find all data is  = {}", findAll.getContent());
 				}
 			} else if (profileStatus.isBlank() || keyword.isBlank()) {
 				findAll = designerLoginRepo.findDesignerisDeleted(isDeleted, pagingSort);
@@ -631,9 +631,9 @@ public class ProfileContoller {
 							DesignerProfileEntity.class);
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
 					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
-					
-					if(designerData.get(i).getdId() == 264) {
-						LOGGER.info("Count data is = {}",countData);
+
+					if (designerData.get(i).getdId() == 264) {
+						LOGGER.info("Count data is = {}", countData);
 					}
 					String productCount = countData.get("Products").toString();
 					String followerCount = countData.get("FollowersData").toString();
