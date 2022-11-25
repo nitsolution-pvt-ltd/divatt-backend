@@ -135,12 +135,14 @@ public class ProductServiceImp2 implements ProductService2 {
 		try {
 			ProductMasterEntity2 productMasterEntity2 = productRepo2.findById(productId).get();
 			LOGGER.info("Product data by product ID = {}", productMasterEntity2);
+			DesignerProfileEntity designerProfileEntity = designerProfileRepo.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get();
 			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
 					"https://localhost:8084/dev/subcategory/view/" + productMasterEntity2.getSubCategoryId(),
 					SubCategoryEntity.class);
 			ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + productMasterEntity2.getCategoryId(), CategoryEntity.class);
 			productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
 			productMasterEntity2.setCategoryName(catagory.getBody().getCategoryName());
+			productMasterEntity2.setDesignerProfile(designerProfileEntity.getDesignerProfile());
 			return productMasterEntity2;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

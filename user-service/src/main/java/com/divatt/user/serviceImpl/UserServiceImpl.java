@@ -609,14 +609,16 @@ public class UserServiceImpl implements UserService {
 
 	public ResponseEntity<?> productDetails(Integer productId, String userId) {
 		try {
-
+			LOGGER.info("Inside - UserServiceImpl.productDetails() <><><><><><><>");
 			ResponseEntity<String> exchange = restTemplate.exchange(
 					"https://localhost:8083/dev/designerProducts/productList/" + productId, HttpMethod.GET, null,
 					String.class);
+			LOGGER.info("DATAAAAAAAAAAAAAAAAAAAAAAAA = {}",exchange);
 			Json js = new Json(exchange.getBody());
 
 			if (!userId.equals("")) {
 				List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
+				LOGGER.info("Cart Data : = {}",cart);
 
 				if (!cart.isEmpty()) {
 
@@ -642,6 +644,7 @@ public class UserServiceImpl implements UserService {
 						JSONObject cartObject = cartJN.getObject();
 						object.put("cartData", cartObject);
 						object.put("categoryName", categoryName);
+						LOGGER.info("Data for ADMIN: = {}" + new Json(jn.toString()).toString());
 
 						return ResponseEntity.ok(new Json(jn.toString()));
 					} catch (Exception e2) {
