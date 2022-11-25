@@ -302,9 +302,6 @@ public class ProfileContoller {
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
-			designerLoginRepo.save(designerLoginEntityDB);
-			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
-
 			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
 				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
 				LOGGER.info(getDesigner(designerLoginEntityDB.getdId()).getBody().toString() + "Inside Did");
@@ -331,6 +328,8 @@ public class ProfileContoller {
 						true, null, restTemplate);
 				emailSenderThread.start();
 			}
+			designerLoginRepo.save(designerLoginEntityDB);
+			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
 
 		}
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
