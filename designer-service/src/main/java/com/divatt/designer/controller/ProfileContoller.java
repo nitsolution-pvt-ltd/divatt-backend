@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +41,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.entity.Measurement;
@@ -52,6 +55,7 @@ import com.divatt.designer.entity.profile.ProfileImage;
 import com.divatt.designer.entity.profile.SocialProfile;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
+import com.divatt.designer.helper.EmailSenderThread;
 import com.divatt.designer.repo.DatabaseSeqRepo;
 import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerPersonalInfoRepo;
@@ -61,6 +65,12 @@ import com.divatt.designer.repo.ProductRepo2;
 import com.divatt.designer.repo.ProductRepository;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.mashape.unirest.http.JsonNode;
+
+import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("/designer")
@@ -114,6 +124,9 @@ public class ProfileContoller {
 
 	@Autowired
 	private CustomFunction customFunction;
+
+	@Autowired
+	private TemplateEngine templateEngine;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
@@ -276,9 +289,6 @@ public class ProfileContoller {
 			throw new CustomException("Designer details not found");
 		else {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
-			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
-				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
-			}
 
 //			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 
@@ -294,6 +304,33 @@ public class ProfileContoller {
 			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 			designerLoginRepo.save(designerLoginEntityDB);
 			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
+
+			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
+				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
+				LOGGER.info(getDesigner(designerLoginEntityDB.getdId()).getBody().toString() + "Inside Did");
+				Object string = getDesigner(designerLoginEntityDB.getdId()).getBody();
+				LOGGER.info("Inside body " + string);
+				String designerId = null;
+				ObjectMapper mapper = new ObjectMapper();
+				try {
+					designerId = mapper.writeValueAsString(string);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				JsonNode jsonNode = new JsonNode(designerId);
+				String string2 = jsonNode.getObject().get("designerName").toString();
+				LOGGER.info(string2);
+				String email = designerLoginEntityDB.getEmail();
+				LOGGER.info(email + "Inside Email");
+				LOGGER.info(designerLoginEntity.getAdminComment() + "Inside Comment");
+				Context context = new Context();
+				context.setVariable("designerName", string2);
+				context.setVariable("adminComment", designerLoginEntity.getAdminComment());
+				String htmlContent = templateEngine.process("designerRejected.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Designer rejected", htmlContent,
+						true, null, restTemplate);
+				emailSenderThread.start();
+			}
 
 		}
 		return ResponseEntity.ok(new GlobalResponce("SUCCESS", "Updated successfully", 200));
@@ -471,20 +508,22 @@ public class ProfileContoller {
 
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
-				LOGGER.info("PAGEBLE data for ASC = {}",pagingSort);
+				LOGGER.info("PAGEBLE data for ASC = {}", pagingSort);
 			} else {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-				LOGGER.info("PAGEBLE data for DESC = {}",pagingSort);
+				LOGGER.info("PAGEBLE data for DESC = {}", pagingSort);
 			}
 
 			Page<DesignerLoginEntity> findAll = null;
 
 			if (!profileStatus.isBlank()) {
-				if(profileStatus.equals("changeRequest")) {
-					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true, "SUBMITTED", pagingSort);
-					LOGGER.info("DATA FOR CHANGE REQUEST = {}",findAll.getContent());
-				} else if(profileStatus.equals("SUBMITTED")) {
-					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, false, "SUBMITTED", pagingSort);
+				if (profileStatus.equals("changeRequest")) {
+					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true,
+							"SUBMITTED", pagingSort);
+					LOGGER.info("DATA FOR CHANGE REQUEST = {}", findAll.getContent());
+				} else if (profileStatus.equals("SUBMITTED")) {
+					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, false,
+							"SUBMITTED", pagingSort);
 				} else {
 					LOGGER.info("Profile Status = {} , Is deleted = {}", profileStatus, isDeleted);
 					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(isDeleted, profileStatus, "ACTIVE", pagingSort);
@@ -532,8 +571,10 @@ public class ProfileContoller {
 			response.put("completed", designerLoginRepo.findByProfileStatusAndAccountStatusAndIsDeleted("COMPLETED", "ACTIVE", false).size());
 			response.put("rejected", designerLoginRepo.findByProfileStatusAndAccountStatusAndIsDeleted("REJECTED", "ACTIVE", false).size());
 			response.put("deleted", designerLoginRepo.findByDeleted(true).size());
-			response.put("changeRequest", designerLoginRepo.findByDeletedAndIsProfileCompletedAndProfileStatus(false, true, "SUBMITTED").size());
-			response.put("saved", designerLoginRepo.findByProfileStatusAndAccountStatusAndIsDeleted("SAVED", "ACTIVE", false).size());
+			response.put("changeRequest", designerLoginRepo
+					.findByDeletedAndIsProfileCompletedAndProfileStatus(false, true, "SUBMITTED").size());
+			response.put("saved",
+					designerLoginRepo.findByProfileStatusAndAccountStatusAndIsDeleted("SAVED", "ACTIVE", false).size());
 
 			return response;
 		} catch (Exception e) {
