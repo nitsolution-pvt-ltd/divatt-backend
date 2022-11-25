@@ -437,7 +437,7 @@ public class ProfileContoller {
 			DesignerLoginEntity designerLoginEntity = findByEmail.get();
 			if (designerLoginEntity.getAccountStatus().equals("INACTIVE"))
 				designerLoginEntity.setAccountStatus("ACTIVE");
-				designerLoginEntity.setProfileStatus("waitForApprove");
+			designerLoginEntity.setProfileStatus("waitForApprove");
 			designerLoginRepo.save(designerLoginEntity);
 		}
 
@@ -525,7 +525,8 @@ public class ProfileContoller {
 							"SUBMITTED", pagingSort);
 				} else {
 					LOGGER.info("Profile Status = {} , Is deleted = {}", profileStatus, isDeleted);
-					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(isDeleted, profileStatus, "ACTIVE", pagingSort);
+					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(isDeleted,
+							profileStatus, "ACTIVE", pagingSort);
 					LOGGER.info("Find all data is  = {}", findAll.getContent());
 				}
 			} else if (profileStatus.isBlank() || keyword.isBlank()) {
@@ -537,6 +538,12 @@ public class ProfileContoller {
 				LOGGER.info("Search data by email = {}", findAll.getContent());
 
 			}
+			List<DesignerLoginEntity> designerLoginData = designerLoginRepo.findAll();
+			List<Long> collect = designerLoginData.stream()
+					.filter(e -> !keyword.isBlank() ? e.getEmail().startsWith(keyword.toLowerCase()) : true)
+					.map(e -> e.getdId()).collect(Collectors.toList());
+			LOGGER.info(collect.toString());
+			findAll = designerLoginRepo.findBydIdIn(collect, pagingSort);
 
 			if (findAll.getSize() <= 1)
 				throw new CustomException("Designer not found!");
@@ -564,11 +571,16 @@ public class ProfileContoller {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("waitingForApproval", designerLoginRepo.findByProfileStatusAndAccountStatusAndIsDeleted("waitForApprove", "ACTIVE", false).size());
-			response.put("waitingForSubmit", designerLoginRepo.findByProfileStatusAndAccountStatusAndIsDeleted("APPROVE", "ACTIVE", false).size());
-			response.put("submitted", designerLoginRepo.findByProfileStatusAndAccountStatusAndIsProfileCompleted("SUBMITTED", "ACTIVE", false).size());
-			response.put("completed", designerLoginRepo.findByProfileStatusAndAccountStatusAndIsDeleted("COMPLETED", "ACTIVE", false).size());
-			response.put("rejected", designerLoginRepo.findByProfileStatusAndAccountStatusAndIsDeleted("REJECTED", "ACTIVE", false).size());
+			response.put("waitingForApproval", designerLoginRepo
+					.findByProfileStatusAndAccountStatusAndIsDeleted("waitForApprove", "ACTIVE", false).size());
+			response.put("waitingForSubmit", designerLoginRepo
+					.findByProfileStatusAndAccountStatusAndIsDeleted("APPROVE", "ACTIVE", false).size());
+			response.put("submitted", designerLoginRepo
+					.findByProfileStatusAndAccountStatusAndIsProfileCompleted("SUBMITTED", "ACTIVE", false).size());
+			response.put("completed", designerLoginRepo
+					.findByProfileStatusAndAccountStatusAndIsDeleted("COMPLETED", "ACTIVE", false).size());
+			response.put("rejected", designerLoginRepo
+					.findByProfileStatusAndAccountStatusAndIsDeleted("REJECTED", "ACTIVE", false).size());
 			response.put("deleted", designerLoginRepo.findByDeleted(true).size());
 			response.put("changeRequest", designerLoginRepo
 					.findByDeletedAndIsProfileCompletedAndProfileStatus(false, true, "SUBMITTED").size());
