@@ -214,7 +214,7 @@ public class OrderAndPaymentContoller {
         LOGGER.info("Inside - OrderAndPaymentContoller.addOrder()");
 
         try {
-
+        	LOGGER.info("Data for add order = {}",orderAndPaymentGlobalEntity);
             Map<String, Object> map = new HashMap<>();
             String extractUsername = JwtUtil.extractUsername(token.substring(7));
 
@@ -223,19 +223,20 @@ public class OrderAndPaymentContoller {
                 OrderDetailsEntity orderDetailsEntity = orderAndPaymentGlobalEntity.getOrderDetailsEntity();
 
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                SimpleDateFormat formatters = new SimpleDateFormat("dd/MM/yyyy");
+               // SimpleDateFormat formatters = new SimpleDateFormat("dd/MM/yyyy");
                 Date date = new Date();
                 String format = formatter.format(date);
-                String formatDate = formatters.format(date);
+                String formatDate = formatter.format(date);
 
                 orderAndPaymentGlobalEntity.getOrderDetailsEntity()
                         .setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
                 orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderId("OR" + System.currentTimeMillis());
                 orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderDate(formatDate);
                 orderAndPaymentGlobalEntity.getOrderDetailsEntity().setCreatedOn(format);
-
+                LOGGER.info("DATA BEFOUR SAVE, = {}",orderAndPaymentGlobalEntity.getOrderDetailsEntity());
                 OrderDetailsEntity OrderData = orderDetailsRepo
                         .save(orderAndPaymentGlobalEntity.getOrderDetailsEntity());
+                LOGGER.info("AFTER SAVE DATA IN DATABASE = {}",OrderData);
 
                 List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
                         .getOrderSKUDetailsEntity();

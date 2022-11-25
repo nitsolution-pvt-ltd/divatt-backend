@@ -316,6 +316,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			LOGGER.info(output);
 			orderSKUDetailsEntityRow.setShippingDate(output);
 			orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
+			LOGGER.info(orderSKUDetailsEntityRow+"");
+			LOGGER.info("Ok<><><><>");
 			return ResponseEntity.ok(null);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
