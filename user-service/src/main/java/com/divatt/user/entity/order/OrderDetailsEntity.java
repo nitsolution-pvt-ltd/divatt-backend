@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.divatt.user.entity.BillingAddressEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 @Document(collection = "tbl_order_details")
 public class OrderDetailsEntity {
@@ -51,6 +53,7 @@ public class OrderDetailsEntity {
 	private String deliveryMode;
 	
 	@Field(name = "delivery_date") 
+	@JsonFormat(shape = Shape.STRING,pattern = "dd/MM/yyyy")
 	private String deliveryDate;
 	
 	@Field(name = "delivery_check_url") 
@@ -89,7 +92,8 @@ public class OrderDetailsEntity {
 	@Field(name = "shipping_igst") 
 	private Double shippingIGST;
 	
-	@Field(name = "created_on") 
+	@Field(name = "created_on")
+	@JsonFormat(shape = Shape.STRING,pattern = "dd/MM/yyyy HH:mm:ss")
 	private String createdOn;
 	
 	@Field(name = "razorpay_order_id") 
@@ -134,19 +138,6 @@ public class OrderDetailsEntity {
 		this.shippingIGST = shippingIGST;
 		this.createdOn = createdOn;
 		this.razorpayOrderId = razorpayOrderId;
-	}
-
-	@Override
-	public String toString() {
-		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", shippingAddress="
-				+ shippingAddress + ", billingAddress=" + billingAddress + ", totalAmount=" + totalAmount
-				+ ", orderDate=" + orderDate + ", orderStatus=" + orderStatus + ", deliveryStatus=" + deliveryStatus
-				+ ", deliveryMode=" + deliveryMode + ", deliveryDate=" + deliveryDate + ", deliveryCheckUrl="
-				+ deliveryCheckUrl + ", shippingCharges=" + shippingCharges + ", discount=" + discount + ", mrp=" + mrp
-				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
-				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
-				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", createdOn=" + createdOn + ", razorpayOrderId="
-				+ razorpayOrderId + "]";
 	}
 
 	public Integer getId() {
@@ -353,8 +344,16 @@ public class OrderDetailsEntity {
 		return SEQUENCE_NAME;
 	}
 
-	
-
-	
-	
+	@Override
+	public String toString() {
+		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", shippingAddress="
+				+ shippingAddress + ", billingAddress=" + billingAddress + ", totalAmount=" + totalAmount
+				+ ", orderDate=" + orderDate + ", orderStatus=" + orderStatus + ", deliveryStatus=" + deliveryStatus
+				+ ", deliveryMode=" + deliveryMode + ", deliveryDate=" + deliveryDate + ", deliveryCheckUrl="
+				+ deliveryCheckUrl + ", shippingCharges=" + shippingCharges + ", discount=" + discount + ", mrp=" + mrp
+				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
+				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
+				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", createdOn=" + createdOn + ", razorpayOrderId="
+				+ razorpayOrderId + "]";
+	}
 }

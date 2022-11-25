@@ -10,6 +10,9 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+
 @Document(collection = "tbl_order_sku_details")
 public class OrderSKUDetailsEntity {
 
@@ -109,6 +112,7 @@ public class OrderSKUDetailsEntity {
 	private String reachedCentralHub;
 
 	@Field(name = "created_on")
+	@JsonFormat(shape = Shape.STRING,pattern = "dd/MM/yyyy HH:mm:ss")
 	private String createdOn;
 
 	@Field(name = "updated_on")
@@ -129,6 +133,7 @@ public class OrderSKUDetailsEntity {
 
 	private String userComment;
 
+	@JsonFormat(shape = Shape.STRING,pattern = "dd/MM/yyyy HH:mm:ss")
 	private String shippingDate;
 
 	public OrderSKUDetailsEntity() {

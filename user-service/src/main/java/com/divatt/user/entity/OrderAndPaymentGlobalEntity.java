@@ -48,8 +48,10 @@ public class OrderAndPaymentGlobalEntity {
 		this.orderSKUDetailsEntity = orderSKUDetailsEntity;
 	}
 
-	
-	
-	
+	@Override
+	public String toString() {
+		return "OrderAndPaymentGlobalEntity [orderPaymentEntity=" + orderPaymentEntity + ", orderDetailsEntity="
+				+ orderDetailsEntity + ", orderSKUDetailsEntity=" + orderSKUDetailsEntity + "]";
+	}
 
 }
