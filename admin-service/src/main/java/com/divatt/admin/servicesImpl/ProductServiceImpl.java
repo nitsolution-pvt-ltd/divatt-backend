@@ -45,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
 					"https://localhost:8083/dev/designerProducts/productList/" + productId, HttpMethod.GET, null,
 					ProductEntity2.class);
 			ProductEntity2 productdata = exchange.getBody();
+			LOGGER.info("Product data is = {}",productdata);
 			if (productdata.getDesignerId().equals(designerId)) {
 
 				productdata.getProductStageDetails().setApprovedBy(ApprovedBy);;
@@ -62,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
 //				} else {
 //					status = "pending";
 //				}
+				LOGGER.info("Data for update = {}",productdata);
 				restTemplate.put("https://localhost:8083/dev/designerProducts/approvalUpdate/" + productId, productdata,
 						String.class);
 
