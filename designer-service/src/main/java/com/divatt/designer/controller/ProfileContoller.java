@@ -525,10 +525,10 @@ public class ProfileContoller {
 							"SUBMITTED", pagingSort);
 				} else {
 					LOGGER.info("Profile Status = {} , Is deleted = {}, AccountStatus = {}", profileStatus, isDeleted, "ACTIVE");
-//					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(isDeleted,
-//							profileStatus, "ACTIVE", pagingSort);
-					findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted,
-							profileStatus, pagingSort);
+					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(isDeleted,
+							profileStatus, "ACTIVE", pagingSort);
+//					findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted,
+//							profileStatus, pagingSort);
 					LOGGER.info("Find all data is  = {}", findAll.getContent());
 				}
 			} else if (profileStatus.isBlank() || keyword.isBlank()) {

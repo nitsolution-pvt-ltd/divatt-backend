@@ -239,10 +239,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			String payStatus = "FAILED";
 			LOGGER.info("Payment data = {}", payment);
-			if (payment.get("error_code").equals(null) && payment.get("error_reason").equals(null)
-					&& payment.get("error_step").equals(null) && payment.get("status").equals("captured")) {
+			if (payment.get("error_code").equals(null) && payment.get("status").equals("captured")) {
 				payStatus = "COMPLETED";
 
+			} else if(!payment.get("error_code").equals(null) && !payment.get("error_reason").equals(null)
+					&& !payment.get("error_step").equals(null) && payment.get("status").equals("failed")) {
+				payStatus = "FAILED";
 			}
 			LOGGER.info("Payment STATUS = {}",payStatus);
 			List<OrderDetailsEntity> findOrderRow = orderDetailsRepo.findByOrderId(orderPaymentEntity.getOrderId());
