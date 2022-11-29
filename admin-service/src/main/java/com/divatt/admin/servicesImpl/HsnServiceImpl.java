@@ -1,11 +1,23 @@
 package com.divatt.admin.servicesImpl;
 
+import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.NumberToTextConverter;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +30,16 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.hsnCode.HsnEntity;
+import com.divatt.admin.entity.hsnCode.UploadErrorEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.HsnRepo;
 import com.divatt.admin.services.HsnService;
 import com.divatt.admin.services.SequenceGenerator;
+import com.divatt.category.validation.FieldValidation;
 
 @Service
 public class HsnServiceImpl implements HsnService {
@@ -37,6 +52,9 @@ public class HsnServiceImpl implements HsnService {
 
 	@Autowired
 	private MongoOperations mongoOperations;
+
+	@Autowired
+	private UploadErrorEntity uploadErrorEntity;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HsnServiceImpl.class);
 
@@ -270,6 +288,116 @@ public class HsnServiceImpl implements HsnService {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	@Override
+	public boolean upload(MultipartFile uploadFile) {
+		Map<String, String> errorMap = new HashMap<>();
+		HsnEntity hsnEntity = new HsnEntity();
+		LOGGER.info("Inside  - UploadServiceImpl.upload()");
+		DataFormatter dataFormatter = new DataFormatter();
+		String sheetName = "Sheet1";
+		boolean returnFlag = true;
+		File fileName = new File(uploadFile.getOriginalFilename());
+		Sheet sheet = loadTemplate(uploadFile, sheetName);
+		int minRow = sheet.getFirstRowNum() + 1;
+		int maxRow = sheet.getLastRowNum();
+		Row row = sheet.getRow(sheet.getFirstRowNum());
+		int minCell = row.getFirstCellNum();
+		int maxCell = row.getLastCellNum() - 1;
+		String cellValue = null;
+		for (int i = minRow; i <= maxRow; i++) {
+			Row rows = sheet.getRow(i);
+			for (int c = minCell; c <= maxCell; c++) {
+				returnFlag = false;
+				Cell cells = rows.getCell(c);
+				LOGGER.info(cells + "Inside Cells");
+				cellValue = dataFormatter.formatCellValue(cells);
+				LOGGER.info("Value is ==========  " + cellValue);
+				if (cellValue.equals(null) || cellValue.equals("")) {
+					returnFlag = true;
+					uploadErrorEntity.setRowNumber(i);
+					uploadErrorEntity.setCellNumber(c);
+					uploadErrorEntity.setErrorDescription("Blank Value");
+				}
+			}
+			hsnEntity.setId(sequenceGenerator.getNextSequence(HsnEntity.SEQUENCE_NAME));
+			try {
+				hsnEntity.setHsnCode((int) (Float.parseFloat(rows.getCell(0).toString())));
+				LOGGER.info("HSN code" + (int) (Float.parseFloat(rows.getCell(0).toString())));
+			} catch (Exception e) {
+				throw new CustomException(
+						"Please Fillup Excel HsnCode Fields on row no  " + i + " and cell no  " + 0 + " this Positon");
+			}
+			try {
+				if (!rows.getCell(1).toString().equals(null) || !rows.getCell(1).toString().equals("")) {
+					hsnEntity.setDescription(rows.getCell(1).toString());
+					LOGGER.info("description" + rows.getCell(1).toString());
+				}
+			} catch (Exception e) {
+				throw new CustomException("Please Fillup Excel Description Fields on row no  " + i + " and cell no  "
+						+ 1 + " this Positon");
+			}
+			try {
+				hsnEntity.setRate(Float.parseFloat(rows.getCell(2).toString()));
+				LOGGER.info(Float.parseFloat(rows.getCell(2).toString()) + "inside rate");
+			} catch (Exception e) {
+				throw new CustomException(
+						"Please Fillup Excel Rate Fields on row no  " + i + " and cell no  " + 2 + " this Positon");
+			}
+			try {
+				hsnEntity.setCess(Float.parseFloat(rows.getCell(3).toString()));
+			} catch (Exception e) {
+				throw new CustomException(
+						"Please Fillup Excel Cess Fields on row no  " + i + " and cell no  " + 3 + " this Positon");
+			}
+			try {
+				Date dateCellValue = rows.getCell(4).getDateCellValue();
+				LOGGER.info("DateCellValue is" + dateCellValue);
+				SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(dateCellValue);
+				Date time = calendar.getTime();
+				LOGGER.info("time is" + time);
+				String format = dateFormat.format(time);
+				hsnEntity.setEffectiveDate(format);
+			} catch (Exception e) {
+				throw new CustomException("Please Fillup Excel EffectiveDate Fields on row no  " + i + " and cell no  "
+						+ 4 + " this Positon");
+			}
+			try {
+				hsnEntity.setRateVision(rows.getCell(5).toString());
+			} catch (Exception e) {
+				throw new CustomException("Please Fillup Excel RateVision Fields on row no  " + i + " and cell no  " + 5
+						+ " this Positon");
+			}
+			hsnRepo.save(hsnEntity);
+
+		}
+		return returnFlag;
+
+	}
+
+	private Sheet loadTemplate(MultipartFile uploadFile, String sheetName) {
+		File fileName = new File(uploadFile.getOriginalFilename());
+		XSSFWorkbook workbook = null;
+		OPCPackage pkg;
+		Sheet sheet = null;
+		int count = 0;
+		File file = null;
+		LOGGER.info("1");
+		try {
+			if (fileName != null) {
+				workbook = new XSSFWorkbook(uploadFile.getInputStream());
+				count = workbook.getNumberOfSheets();
+				if (count < 0) {
+				} else {
+					sheet = workbook.getSheet(sheetName);
+				}
+			}
+		} catch (Exception e) {
+		}
+		return sheet;
 	}
 
 }

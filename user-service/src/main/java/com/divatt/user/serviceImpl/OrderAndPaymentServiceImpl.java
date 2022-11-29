@@ -232,10 +232,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			Payment payment = razorpayClient.Payments
 					.fetch(OrderPayJson.getObject().get("razorpay_payment_id").toString());
+			LOGGER.info(OrderPayJson.getObject().get("razorpay_payment_id").toString() + "Inside Json");
 
 			String payStatus = "FAILED";
-			if (payment.get("error_code").equals(null) && payment.get("error_reason").equals(null)
-					&& payment.get("error_step").equals(null) && payment.get("status").equals("captured")) {
+			if (payment.get("error_code").equals(null) && payment.get("status").equals("captured")) {
 				payStatus = "COMPLETED";
 
 			}
@@ -253,6 +253,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			Map<String, String> mapPayId = new HashMap<>();
 			mapPayId.put("OrderId", orderPaymentEntity.getOrderId());
 			mapPayId.put("TransactionId", OrderPayJson.getObject().get("razorpay_payment_id").toString());
+			LOGGER.info(OrderPayJson.getObject().get("razorpay_payment_id").toString() + "Inside Json");
 
 			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 
@@ -305,10 +306,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			orderSKUDetailsEntityRow.setDesignerId(orderSKUDetailsEntityRow.getDesignerId());
 			orderSKUDetailsEntityRow.setOrderItemStatus("New");
-			int shipmentTime=Integer.parseInt(restTemplate
-					.getForEntity("https://localhost:8083/dev/designerProducts/productList/"+orderSKUDetailsEntityRow
-							.getProductId(), org.json.simple.JSONObject.class).getBody().get("shipmentTime").toString());
-			//SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			int shipmentTime = Integer.parseInt(restTemplate
+					.getForEntity("https://localhost:8083/dev/designerProducts/productList/"
+							+ orderSKUDetailsEntityRow.getProductId(), org.json.simple.JSONObject.class)
+					.getBody().get("shipmentTime").toString());
+			// SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 			c.add(Calendar.DATE, shipmentTime);
@@ -316,7 +318,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			LOGGER.info(output);
 			orderSKUDetailsEntityRow.setShippingDate(output);
 			orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
-			LOGGER.info(orderSKUDetailsEntityRow+"");
+			LOGGER.info(orderSKUDetailsEntityRow + "");
 			LOGGER.info("Ok<><><><>");
 			return ResponseEntity.ok(null);
 		} catch (Exception e) {
@@ -1859,10 +1861,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 			String itemStatus = item.getOrderItemStatus();
 			if (!itemStatus.equals("New")) {
-				if(itemStatus.equals(orderItemStatus)) {
+				if (itemStatus.equals(orderItemStatus)) {
 					throw new CustomException("The Product is Already " + itemStatus);
-				}
-				else if (orderItemStatus.equals("Packed")) {
+				} else if (orderItemStatus.equals("Packed")) {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("Orders")) {
 							LOGGER.info("Inside Packed");

@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.hsnCode.HsnEntity;
 
@@ -27,5 +29,7 @@ public interface HsnService {
 	GlobalResponse setStatus(Integer id);
 
 	List<HsnEntity> getActiveHSNListService(String searchKeyword);
+
+	boolean upload(MultipartFile uploadFile);
 
 }
