@@ -228,28 +228,25 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} catch (JsonProcessingException e1) {
 				e1.printStackTrace();
 			}
-			LOGGER.info("Payment ID FILTER data = {}",paymentIdFilter);
+			LOGGER.info("Payment ID FILTER data = {}", paymentIdFilter);
 			JsonNode OrderPayJson = new JsonNode(paymentIdFilter);
 
 			Payment payment = razorpayClient.Payments
 					.fetch(OrderPayJson.getObject().get("razorpay_payment_id").toString());
-			// With static data
-//			Payment payment = razorpayClient.Payments
-//					.fetch("pay_KjRBcMuTJFls6J");
+			LOGGER.info(OrderPayJson.getObject().get("razorpay_payment_id").toString() + "Inside Json");
 
 			String payStatus = "FAILED";
-			LOGGER.info("Payment data = {}", payment);
 			if (payment.get("error_code").equals(null) && payment.get("status").equals("captured")) {
 				payStatus = "COMPLETED";
 
-			} else if(!payment.get("error_code").equals(null) && !payment.get("error_reason").equals(null)
+			} else if (!payment.get("error_code").equals(null) && !payment.get("error_reason").equals(null)
 					&& !payment.get("error_step").equals(null) && payment.get("status").equals("failed")) {
 				payStatus = "FAILED";
 			}
-			LOGGER.info("Payment STATUS = {}",payStatus);
+			LOGGER.info("Payment STATUS = {}", payStatus);
 			List<OrderDetailsEntity> findOrderRow = orderDetailsRepo.findByOrderId(orderPaymentEntity.getOrderId());
 //			LOGGER.info("FInd by order id");
-			LOGGER.info("Get order id from client end = {}",orderPaymentEntity.getOrderId());
+			LOGGER.info("Get order id from client end = {}", orderPaymentEntity.getOrderId());
 			if (findOrderRow.size() <= 0) {
 				throw new CustomException("Order not found");
 			}
@@ -263,6 +260,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			Map<String, String> mapPayId = new HashMap<>();
 			mapPayId.put("OrderId", orderPaymentEntity.getOrderId());
 			mapPayId.put("TransactionId", OrderPayJson.getObject().get("razorpay_payment_id").toString());
+			LOGGER.info(OrderPayJson.getObject().get("razorpay_payment_id").toString() + "Inside Json");
 
 			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 
@@ -315,10 +313,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			orderSKUDetailsEntityRow.setDesignerId(orderSKUDetailsEntityRow.getDesignerId());
 			orderSKUDetailsEntityRow.setOrderItemStatus("New");
-			int shipmentTime=Integer.parseInt(restTemplate
-					.getForEntity("https://localhost:8083/dev/designerProducts/productList/"+orderSKUDetailsEntityRow
-							.getProductId(), org.json.simple.JSONObject.class).getBody().get("shipmentTime").toString());
-			//SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			int shipmentTime = Integer.parseInt(restTemplate
+					.getForEntity("https://localhost:8083/dev/designerProducts/productList/"
+							+ orderSKUDetailsEntityRow.getProductId(), org.json.simple.JSONObject.class)
+					.getBody().get("shipmentTime").toString());
+			// SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 			c.add(Calendar.DATE, shipmentTime);
@@ -326,7 +325,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			LOGGER.info(output);
 			orderSKUDetailsEntityRow.setShippingDate(output);
 			orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
-			LOGGER.info(orderSKUDetailsEntityRow+"");
+			LOGGER.info(orderSKUDetailsEntityRow + "");
 			LOGGER.info("Ok<><><><>");
 			return ResponseEntity.ok(null);
 		} catch (Exception e) {
@@ -1869,10 +1868,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 			String itemStatus = item.getOrderItemStatus();
 			if (!itemStatus.equals("New")) {
-				if(itemStatus.equals(orderItemStatus)) {
+				if (itemStatus.equals(orderItemStatus)) {
 					throw new CustomException("The Product is Already " + itemStatus);
-				}
-				else if (orderItemStatus.equals("Packed")) {
+				} else if (orderItemStatus.equals("Packed")) {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("Orders")) {
 							LOGGER.info("Inside Packed");

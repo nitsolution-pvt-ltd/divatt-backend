@@ -17,87 +17,89 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 public class OrderDetailsEntity {
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_order_details";
-	
+
 	@Id
 	private Integer id;
-	
+
 	@NotNull(message = "Username is required!")
-	@Field(name = "user_id") 
+	@Field(name = "user_id")
 	private Long userId;
-	
-	@Field(name = "order_id") 
+
+	@Field(name = "order_id")
 	private String orderId;
-	
+
 	@NotNull(message = "Shipping address is required!")
-	@Field(name = "shipping_address") 
+	@Field(name = "shipping_address")
 	private Object shippingAddress;
-	
+
 	@NotNull(message = "Billing address is required!")
-	@Field(name = "billing_address") 
+	@Field(name = "billing_address")
 	private BillingAddressEntity billingAddress;
-	
+
 	@NotNull(message = "Total amount is required!")
-	@Field(name = "total_amount") 
-	private Double totalAmount;	
-	
-	@Field(name = "order_date") 
+	@Field(name = "total_amount")
+	private Double totalAmount;
+
+	@Field(name = "order_date")
 	private String orderDate;
 
-	@Field(name= "order_status")
+	@Field(name = "order_status")
 	private String orderStatus;
-	
-	@Field(name= "delivery_status")
+
+	@Field(name = "delivery_status")
 	private String deliveryStatus;
-	
-	@Field(name= "delivery_mode")
+
+	@Field(name = "delivery_mode")
 	private String deliveryMode;
-	
-	@Field(name = "delivery_date") 
-	@JsonFormat(shape = Shape.STRING,pattern = "dd/MM/yyyy")
+
+	@Field(name = "delivery_date")
+	@JsonFormat(shape = Shape.STRING, pattern = "dd/MM/yyyy")
 	private String deliveryDate;
-	
-	@Field(name = "delivery_check_url") 
+
+	@Field(name = "delivery_check_url")
 	private String deliveryCheckUrl;
-	
-	@Field(name = "shipping_charges") 
+
+	@Field(name = "shipping_charges")
 	private Double shippingCharges;
-	
-	@Field(name = "discount") 
+
+	@Field(name = "discount")
 	private Double discount;
-	
-	@Field(name = "mrp") 
+
+	@Field(name = "mrp")
 	private Double mrp;
 
-	@Field(name = "tax_amount") 
+	@Field(name = "tax_amount")
 	private Double taxAmount;
-	
-	@Field(name = "cgst") 
+
+	@Field(name = "cgst")
 	private Double cgst;
-	
-	@Field(name = "sgst") 
+
+	@Field(name = "sgst")
 	private Double sgst;
-	
-	@Field(name = "igst") 
+
+	@Field(name = "igst")
 	private Double igst;
-	
-	@Field(name = "shipping_charge") 
+
+	@Field(name = "shipping_charge")
 	private Double shippingCharge;
-	
-	@Field(name = "shipping_cgst") 
+
+	@Field(name = "shipping_cgst")
 	private Double shippingCGST;
-	
-	@Field(name = "shipping_sgst") 
+
+	@Field(name = "shipping_sgst")
 	private Double shippingSGST;
-	
-	@Field(name = "shipping_igst") 
+
+	@Field(name = "shipping_igst")
 	private Double shippingIGST;
-	
+
 	@Field(name = "created_on")
-	@JsonFormat(shape = Shape.STRING,pattern = "dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(shape = Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
 	private String createdOn;
-	
-	@Field(name = "razorpay_order_id") 
+
+	@Field(name = "razorpay_order_id")
 	private String razorpayOrderId;
+	@Field(name = "netPrice")
+	private Double netPrice;
 
 	public OrderDetailsEntity() {
 		super();
@@ -111,7 +113,7 @@ public class OrderDetailsEntity {
 			String deliveryStatus, String deliveryMode, String deliveryDate, String deliveryCheckUrl,
 			Double shippingCharges, Double discount, Double mrp, Double taxAmount, Double cgst, Double sgst,
 			Double igst, Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST,
-			String createdOn, String razorpayOrderId) {
+			String createdOn, String razorpayOrderId, Double netPrice) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -138,6 +140,7 @@ public class OrderDetailsEntity {
 		this.shippingIGST = shippingIGST;
 		this.createdOn = createdOn;
 		this.razorpayOrderId = razorpayOrderId;
+		this.netPrice = netPrice;
 	}
 
 	public Integer getId() {
@@ -340,6 +343,14 @@ public class OrderDetailsEntity {
 		this.razorpayOrderId = razorpayOrderId;
 	}
 
+	public Double getNetPrice() {
+		return netPrice;
+	}
+
+	public void setNetPrice(Double netPrice) {
+		this.netPrice = netPrice;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
@@ -354,6 +365,6 @@ public class OrderDetailsEntity {
 				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
 				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
 				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", createdOn=" + createdOn + ", razorpayOrderId="
-				+ razorpayOrderId + "]";
+				+ razorpayOrderId + ", netPrice=" + netPrice + "]";
 	}
 }
