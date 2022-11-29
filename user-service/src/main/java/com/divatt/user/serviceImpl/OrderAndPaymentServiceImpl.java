@@ -228,6 +228,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} catch (JsonProcessingException e1) {
 				e1.printStackTrace();
 			}
+			LOGGER.info("Payment ID FILTER data = {}", paymentIdFilter);
 			JsonNode OrderPayJson = new JsonNode(paymentIdFilter);
 
 			Payment payment = razorpayClient.Payments
@@ -238,8 +239,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			if (payment.get("error_code").equals(null) && payment.get("status").equals("captured")) {
 				payStatus = "COMPLETED";
 
+			} else if (!payment.get("error_code").equals(null) && !payment.get("error_reason").equals(null)
+					&& !payment.get("error_step").equals(null) && payment.get("status").equals("failed")) {
+				payStatus = "FAILED";
 			}
+			LOGGER.info("Payment STATUS = {}", payStatus);
 			List<OrderDetailsEntity> findOrderRow = orderDetailsRepo.findByOrderId(orderPaymentEntity.getOrderId());
+//			LOGGER.info("FInd by order id");
+			LOGGER.info("Get order id from client end = {}", orderPaymentEntity.getOrderId());
 			if (findOrderRow.size() <= 0) {
 				throw new CustomException("Order not found");
 			}

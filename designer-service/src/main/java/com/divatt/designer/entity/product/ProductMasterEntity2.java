@@ -64,7 +64,7 @@ public class ProductMasterEntity2 implements Cloneable {
 	@Field(name = "price_type")
 	private String priceType;
 	@Field(name = "color")
-	@NotEmpty(message = "Price Type Required")
+	@NotEmpty(message = "Color Required")
 	private String colour;
 	@Field(name = "sizes")
 	private List<String> sizes;
@@ -131,7 +131,8 @@ public class ProductMasterEntity2 implements Cloneable {
 			Integer notify, String priceCode, Integer mrp, String adminStatus, Deal deal, Integer giftWrapAmount,
 			ExtraSpecifications extraSpecifications, String productWeight, String shipmentTime, ImageEntity[] images,
 			Boolean isActive, Boolean isDeleted, String productStage, ProductStageDetails productStageDetails,
-			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String subCategoryName, String categoryName, DesignerProfile designerProfile) {
+			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String subCategoryName,
+			String categoryName, DesignerProfile designerProfile) {
 		super();
 		this.productId = productId;
 		this.sku = sku;
@@ -500,7 +501,7 @@ public class ProductMasterEntity2 implements Cloneable {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
+
 	public String getCategoryName() {
 		return categoryName;
 	}
@@ -508,7 +509,7 @@ public class ProductMasterEntity2 implements Cloneable {
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
-	
+
 	public DesignerProfile getDesignerProfile() {
 		return designerProfile;
 	}
@@ -532,6 +533,7 @@ public class ProductMasterEntity2 implements Cloneable {
 				+ ", shipmentTime=" + shipmentTime + ", images=" + Arrays.toString(images) + ", isActive=" + isActive
 				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", productStageDetails="
 				+ productStageDetails + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", updatedOn="
-				+ updatedOn + ", updatedBy=" + updatedBy + ", subCategoryName=" + subCategoryName + ", categoryName" + categoryName + " ,designerProfile" + designerProfile +"]";
+				+ updatedOn + ", updatedBy=" + updatedBy + ", subCategoryName=" + subCategoryName + ", categoryName"
+				+ categoryName + " ,designerProfile" + designerProfile + "]";
 	}
 }

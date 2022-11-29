@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.response.GlobalResponce;
 
@@ -34,8 +35,13 @@ public interface ProductService2 {
 	GlobalResponce changeAdminStatus(Integer productId);
 
 	ResponseEntity<?> productListUser();
-	
-	Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page, String sort,
-			String sortName, Boolean isDeleted, int limit);
+
+	Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page,
+			String sort, String sortName, Boolean isDeleted, int limit);
+
 	ResponseEntity<?> allCartProductData(List<Integer> productIdList);
+
+	List<ProductMasterEntity2> productSearching(String searchBy, String designerId, String categoryId,
+			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
+			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey);
 }

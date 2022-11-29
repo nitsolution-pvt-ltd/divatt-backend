@@ -1,12 +1,14 @@
 package com.divatt.designer.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.json.simple.JSONObject;
@@ -46,13 +48,13 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	@Autowired
 	private SequenceGenerator sequenceGenarator;
-	
+
 	@Autowired
 	private RestTemplate restTemplate;
 
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImp2.class);
 
 	@Override
@@ -135,11 +137,14 @@ public class ProductServiceImp2 implements ProductService2 {
 		try {
 			ProductMasterEntity2 productMasterEntity2 = productRepo2.findById(productId).get();
 			LOGGER.info("Product data by product ID = {}", productMasterEntity2);
-			DesignerProfileEntity designerProfileEntity = designerProfileRepo.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get();
+			DesignerProfileEntity designerProfileEntity = designerProfileRepo
+					.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get();
 			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
 					"https://localhost:8084/dev/subcategory/view/" + productMasterEntity2.getSubCategoryId(),
 					SubCategoryEntity.class);
-			ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + productMasterEntity2.getCategoryId(), CategoryEntity.class);
+			ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+					"https://localhost:8084/dev/category/view/" + productMasterEntity2.getCategoryId(),
+					CategoryEntity.class);
 			productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
 			productMasterEntity2.setCategoryName(catagory.getBody().getCategoryName());
 			productMasterEntity2.setDesignerProfile(designerProfileEntity.getDesignerProfile());
@@ -236,10 +241,13 @@ public class ProductServiceImp2 implements ProductService2 {
 				if (adminStatus.equals("all")) {
 					LOGGER.info("Behind into else all");
 					findAll = productRepo2.SearchAndfindByIsDeleted(keyword, isDeleted, pagingSort);
-					findAll.getContent().forEach(catagoryData-> { 
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+catagoryData.getSubCategoryId(),SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
-							CategoryEntity.class);
+					findAll.getContent().forEach(catagoryData -> {
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
 					});
@@ -247,10 +255,13 @@ public class ProductServiceImp2 implements ProductService2 {
 					LOGGER.info("Behind into else pending");
 					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Pending",
 							pagingSort);
-					findAll.getContent().forEach(catagoryData-> { 
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+catagoryData.getSubCategoryId(),SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
-							CategoryEntity.class);
+					findAll.getContent().forEach(catagoryData -> {
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
 					});
@@ -258,10 +269,13 @@ public class ProductServiceImp2 implements ProductService2 {
 					LOGGER.info("Behind into else approved");
 					findAll = productRepo2.SearchAppAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",
 							pagingSort);
-					findAll.getContent().forEach(catagoryData-> { 
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+catagoryData.getSubCategoryId(),SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
-							CategoryEntity.class);
+					findAll.getContent().forEach(catagoryData -> {
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
 					});
@@ -269,10 +283,13 @@ public class ProductServiceImp2 implements ProductService2 {
 					LOGGER.info("Behind into else rejected");
 					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Rejected",
 							pagingSort);
-					findAll.getContent().forEach(catagoryData-> { 
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity("https://localhost:8084/dev/subcategory/view/"+catagoryData.getSubCategoryId(),SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity("https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
-							CategoryEntity.class);
+					findAll.getContent().forEach(catagoryData -> {
+						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								SubCategoryEntity.class);
+						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
 					});
@@ -495,7 +512,8 @@ public class ProductServiceImp2 implements ProductService2 {
 			List<ProductMasterEntity2> findall = productRepo2.findByIsDeletedAndAdminStatusAndIsActive(false,
 					"Approved", true);
 			findall.forEach(designerdat -> {
-				DesignerProfileEntity designerProfileEntity = designerProfileRepo.findBydesignerId(Long.parseLong(designerdat.getDesignerId().toString())).get();
+				DesignerProfileEntity designerProfileEntity = designerProfileRepo
+						.findBydesignerId(Long.parseLong(designerdat.getDesignerId().toString())).get();
 				designerdat.setDesignerProfile(designerProfileEntity.getDesignerProfile());
 			});
 			if (findall.size() <= 15) {
@@ -544,7 +562,8 @@ public class ProductServiceImp2 implements ProductService2 {
 					limit = CountData;
 				}
 				Pageable pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-				Page<ProductMasterEntity2> findByProductIdIn = productRepo2.findByProductIdIn(productIdList, pagingSort);
+				Page<ProductMasterEntity2> findByProductIdIn = productRepo2.findByProductIdIn(productIdList,
+						pagingSort);
 //				List<ProductMasterEntity2> findByProductIdIn1 = new ArrayList<>();
 				findByProductIdIn.getContent().forEach(productData -> {
 					ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
@@ -553,7 +572,8 @@ public class ProductServiceImp2 implements ProductService2 {
 					ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
 							"https://localhost:8084/dev/category/view/" + productData.getCategoryId(),
 							CategoryEntity.class);
-					DesignerProfileEntity designerProfileEntity = designerProfileRepo.findBydesignerId(Long.parseLong(productData.getDesignerId().toString())).get();
+					DesignerProfileEntity designerProfileEntity = designerProfileRepo
+							.findBydesignerId(Long.parseLong(productData.getDesignerId().toString())).get();
 					productData.setDesignerProfile(designerProfileEntity.getDesignerProfile());
 					productData.setCategoryName(catagory.getBody().getCategoryName());
 					productData.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -598,5 +618,57 @@ public class ProductServiceImp2 implements ProductService2 {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	public List<ProductMasterEntity2> productSearching(String searchBy, String designerId, String categoryId,
+			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
+			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey) {
+
+		try {
+			LOGGER.info("Inside ProductServiceImpl.productSearching()");
+			LOGGER.info("priceType = {}", priceType);
+			LOGGER.info("subCategoryId = {}", subCategoryId);
+
+			return !searchKey.equals("") ? productRepo2.findbySearchKey(searchKey)
+					: productRepo2.findAll().stream().filter(product -> cod != null ? product.getCod() == cod : true)
+							.filter(product -> customization != null ? product.getWithCustomization() == customization
+									: true)
+							.filter(product -> !priceType.equals("") ? product.getPriceType().equals(priceType) : true)
+							.filter(product -> giftWrap != null ? product.getWithGiftWrap() == giftWrap : true)
+							.filter(product -> !maxPrice.equals("-1") ? product.getMrp() <= Long.parseLong(maxPrice)
+									: true)
+							.filter(product -> !minPrice.equals("-1") ? product.getMrp() >= Long.parseLong(minPrice)
+									: true)
+							.filter(product -> !size.equals("") 
+									? Arrays.asList(size.split(",")).stream()
+											.anyMatch(s -> product.getSizes().stream()
+													.anyMatch(sizee -> sizee.equals(s))) 
+									: true)
+//							.filter(product -> !colour.equals("")
+//									? Arrays.asList(colour.split(",")).stream()
+//											.anyMatch(color -> Arrays.asList(product.getImages()).stream()
+//													.anyMatch(image -> Optional.ofNullable(image.getLarge())
+//															.filter(image1 -> image1.equals("#" + color)).isPresent()))
+//									: true)
+							.filter(product -> !colour.equals("")
+									? Arrays.asList(colour.split(",")).stream().anyMatch(
+											color -> product.getColour().equals(color))
+									: true)
+							.filter(product -> !categoryId.equals("")
+									? Arrays.asList(categoryId.split(",")).stream()
+											.anyMatch(category -> category.equals(product.getCategoryId().toString()))
+									: true)
+							.filter(product -> !subCategoryId.equals("")
+									? Arrays.asList(subCategoryId.split(",")).stream()
+											.anyMatch(subCategory -> subCategory
+													.equals(product.getSubCategoryId().toString()))
+									: true)
+							.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
+									.anyMatch(dId -> dId.equals(product.getDesignerId().toString())) : true)
+							.collect(Collectors.toList());
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 }

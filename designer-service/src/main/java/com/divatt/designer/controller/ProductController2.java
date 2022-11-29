@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
@@ -164,7 +165,7 @@ public class ProductController2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	// Wish list by $hantanuR
 	@PostMapping("/getWishlistProductList")
 	public Map<String, Object> allWishlistProductData(@RequestBody JSONObject productIdList,
@@ -200,7 +201,7 @@ public class ProductController2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@PostMapping("/getCartProductList")
 	public ResponseEntity<?> CartProductList(@RequestBody JSONObject productIdList) {
 		try {
@@ -221,6 +222,24 @@ public class ProductController2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
+	@GetMapping("/searching")
+	public List<ProductMasterEntity2> productSearching(@RequestParam(defaultValue = "") String searchBy,
+			@RequestParam(defaultValue = "") String designerId, @RequestParam(defaultValue = "") String categoryId,
+			@RequestParam(defaultValue = "") String subCategoryId, @RequestParam(defaultValue = "") String colour,
+			@RequestParam(defaultValue = "") Boolean cod, @RequestParam(defaultValue = "") Boolean customization,
+			@RequestParam(defaultValue = "") String priceType, @RequestParam(defaultValue = "") Boolean returnStatus,
+			@RequestParam(defaultValue = "-1") String maxPrice, @RequestParam(defaultValue = "-1") String minPrice,
+			@RequestParam(defaultValue = "") String size, @RequestParam(defaultValue = "") Boolean giftWrap,
+			@RequestParam(defaultValue = "") String searchKey) {
+		try {
+			LOGGER.info("Inside- ProductController.productSearching()");
+			LOGGER.info("COD data = {}", cod);
+			return this.productServiceImp2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour, cod,
+					customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
 }
