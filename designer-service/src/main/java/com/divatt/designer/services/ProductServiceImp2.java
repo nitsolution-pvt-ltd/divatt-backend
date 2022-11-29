@@ -629,7 +629,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			LOGGER.info("priceType = {}", priceType);
 			LOGGER.info("subCategoryId = {}", subCategoryId);
 
-			return !searchKey.equals("") ? productRepo2.findbySearchKey(searchKey)
+			List<ProductMasterEntity2> data = !searchKey.equals("") ? productRepo2.findbySearchKey(searchKey)
 					: productRepo2.findAll().stream().filter(product -> cod != null ? product.getCod() == cod : true)
 							.filter(product -> customization != null ? product.getWithCustomization() == customization
 									: true)
@@ -666,6 +666,12 @@ public class ProductServiceImp2 implements ProductService2 {
 							.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
 									.anyMatch(dId -> dId.equals(product.getDesignerId().toString())) : true)
 							.collect(Collectors.toList());
+			data.forEach(element -> {
+				element.setDesignerProfile(
+						designerProfileRepo.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get()
+								.getDesignerProfile());
+			});
+			return data;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
