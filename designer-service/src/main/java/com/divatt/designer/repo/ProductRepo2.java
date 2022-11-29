@@ -14,51 +14,57 @@ import com.divatt.designer.entity.product.ProductMasterEntity2;
 @Repository
 public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Integer> {
 
-    Integer countByIsDeleted(Boolean isDeleted);
+	Integer countByIsDeleted(Boolean isDeleted);
 
-    Integer countByIsDeletedAndAdminStatus(Boolean isDeleted, String adminStatus);
-    
-    Integer countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(Boolean isDeleted, String adminStatus, Integer designerId, Boolean isActive);
+	Integer countByIsDeletedAndAdminStatus(Boolean isDeleted, String adminStatus);
 
-    Page<ProductMasterEntity2> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
+	Integer countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(Boolean isDeleted, String adminStatus,
+			Integer designerId, Boolean isActive);
 
-    Page<ProductMasterEntity2> findByIsDeletedAndAdminStatus(Boolean isDeleted, String adminStatus,
-            Pageable pagingSort);
+	Page<ProductMasterEntity2> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
 
-    @Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName,' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1}]}")
-    Page<ProductMasterEntity2> SearchAndfindByIsDeleted(String keyword, Boolean isDeleted, Pageable pagingSort);
+	Page<ProductMasterEntity2> findByIsDeletedAndAdminStatus(Boolean isDeleted, String adminStatus,
+			Pageable pagingSort);
 
-    @Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2 }]}")
-    Page<ProductMasterEntity2> SearchAndfindByIsDeletedAndAdminStatus(String keyword, Boolean isDeleted,
-            String adminStatus,
-            Pageable pagingSort);
+	@Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName,' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1}]}")
+	Page<ProductMasterEntity2> SearchAndfindByIsDeleted(String keyword, Boolean isDeleted, Pageable pagingSort);
 
-    @Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2}]}")
-    Page<ProductMasterEntity2> SearchAppAndfindByIsDeletedAndAdminStatus(String keyword, Boolean isDeleted,
-            String adminStatus, Pageable pagingSort);
+	@Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2 }]}")
+	Page<ProductMasterEntity2> SearchAndfindByIsDeletedAndAdminStatus(String keyword, Boolean isDeleted,
+			String adminStatus, Pageable pagingSort);
 
-    @Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1 }]}")
-    Page<ProductMasterEntity2> findByKeyword(String keyword, Boolean isDeleted, Pageable pageable);
+	@Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} } ],$and: [ {  'isDeleted' : ?1, 'adminStatus' : ?2}]}")
+	Page<ProductMasterEntity2> SearchAppAndfindByIsDeletedAndAdminStatus(String keyword, Boolean isDeleted,
+			String adminStatus, Pageable pagingSort);
 
-    Page<ProductMasterEntity2> findByDesignerIdAndAdminStatus(Boolean isDeleted, Integer designerId, String adminStatus,
-            Boolean isActive, Pageable pagingSort);
+	@Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1 }]}")
+	Page<ProductMasterEntity2> findByKeyword(String keyword, Boolean isDeleted, Pageable pageable);
 
-    Integer countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(Boolean isDeleted, Integer designerId,
-            Boolean isActive, String string);
+	Page<ProductMasterEntity2> findByDesignerIdAndAdminStatus(Boolean isDeleted, Integer designerId, String adminStatus,
+			Boolean isActive, Pageable pagingSort);
 
-    Page<ProductMasterEntity2> findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(Boolean isDeleted,
-            Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
+	Integer countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(Boolean isDeleted, Integer designerId,
+			Boolean isActive, String string);
 
-    @Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2, 'adminStatus' : ?3 }]}")
-    Page<ProductMasterEntity2> listDesignerProductsearchByAdminStatus(String keyword, Boolean isDeleted,
-            Integer designerId, String adminStatus, Pageable pagingSort);
+	Page<ProductMasterEntity2> findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(Boolean isDeleted,
+			Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
 
-    @Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2, 'adminStatus' : ?3, 'isActive' : ?4 }]}")
-    Page<ProductMasterEntity2> listDesignerProductsearchByAdminStatusForOos(String keyword, Boolean isDeleted,
-            Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
-    
-    List<ProductMasterEntity2> findByIsDeletedAndAdminStatusAndIsActive(Boolean isDeleted, String adminStatus,Boolean isActive);
-    Page<ProductMasterEntity2> findByProductIdIn(List<Integer> productIdList, Pageable pagingSort);
-    List<ProductMasterEntity2> findByProductIdIn(List<Integer> productIdList);
+	@Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2, 'adminStatus' : ?3 }]}")
+	Page<ProductMasterEntity2> listDesignerProductsearchByAdminStatus(String keyword, Boolean isDeleted,
+			Integer designerId, String adminStatus, Pageable pagingSort);
+
+	@Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2, 'adminStatus' : ?3, 'isActive' : ?4 }]}")
+	Page<ProductMasterEntity2> listDesignerProductsearchByAdminStatusForOos(String keyword, Boolean isDeleted,
+			Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
+
+	List<ProductMasterEntity2> findByIsDeletedAndAdminStatusAndIsActive(Boolean isDeleted, String adminStatus,
+			Boolean isActive);
+
+	Page<ProductMasterEntity2> findByProductIdIn(List<Integer> productIdList, Pageable pagingSort);
+
+	List<ProductMasterEntity2> findByProductIdIn(List<Integer> productIdList);
+
+	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'productDescription' : {$regex:?0,$options:'i'} },{ 'gender' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.mrp' : {$regex:?0,$options:'i'} },{ 'designerName' : {$regex:?0,$options:'i'} },{ 'price.usPrice.mrp' : {$regex:?0,$options:'i'} } ]}")
+	List<ProductMasterEntity2> findbySearchKey(String searchKey);
 
 }
