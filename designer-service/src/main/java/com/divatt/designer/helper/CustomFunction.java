@@ -338,7 +338,7 @@ public class CustomFunction {
 			designerProfile.setCity(body.getDesignerProfile().getCity());
 			designerProfile.setCountry(body.getDesignerProfile().getCountry());
 			designerProfile.setDob(body.getDesignerProfile().getDob());
-			designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
+			designerProfile.setDigitalSignature(designerLoginEntity.getDesignerProfileEntity().getDesignerProfile().getDigitalSignature());
 			designerProfile.setEmail(body.getDesignerProfile().getEmail());
 			designerProfile.setFirstName1(body.getDesignerProfile().getFirstName1());
 			designerProfile.setLastName1(body.getDesignerProfile().getLastName1());
