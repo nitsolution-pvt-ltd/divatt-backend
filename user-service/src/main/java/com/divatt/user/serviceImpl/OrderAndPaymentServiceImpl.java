@@ -261,20 +261,22 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			mapPayId.put("OrderId", orderPaymentEntity.getOrderId());
 			mapPayId.put("TransactionId", OrderPayJson.getObject().get("razorpay_payment_id").toString());
 			LOGGER.info(OrderPayJson.getObject().get("razorpay_payment_id").toString() + "Inside Json");
-
-			OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
-
-			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
-			filterCatDetails.setOrderId(orderPaymentEntity.getOrderId());
-			filterCatDetails.setPaymentMode(orderPaymentEntity.getPaymentMode());
-			filterCatDetails.setPaymentDetails(orderPaymentEntity.getPaymentDetails());
-			filterCatDetails.setPaymentResponse(map);
-			filterCatDetails.setPaymentStatus(payStatus);
-			filterCatDetails.setUserId(orderPaymentEntity.getUserId());
-			filterCatDetails.setCreatedOn(new Date());
-
-			userOrderPaymentRepo.save(filterCatDetails);
-			return ResponseEntity.ok(mapPayId);
+			Optional<OrderPaymentEntity> findByOrderId = userOrderPaymentRepo
+					.findByOrderId(orderPaymentEntity.getOrderId());
+			if (!findByOrderId.isPresent()) {
+				OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
+				filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
+				filterCatDetails.setOrderId(orderPaymentEntity.getOrderId());
+				filterCatDetails.setPaymentMode(orderPaymentEntity.getPaymentMode());
+				filterCatDetails.setPaymentDetails(orderPaymentEntity.getPaymentDetails());
+				filterCatDetails.setPaymentResponse(map);
+				filterCatDetails.setPaymentStatus(payStatus);
+				filterCatDetails.setUserId(orderPaymentEntity.getUserId());
+				filterCatDetails.setCreatedOn(new Date());
+				userOrderPaymentRepo.save(filterCatDetails);
+				return ResponseEntity.ok(mapPayId);
+			} else
+				throw new CustomException("OrderId Already Exist");
 		} catch (RazorpayException e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -1862,6 +1864,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@Override
 	public GlobalResponse itemStatusChangefromAdmin(String token, String orderId, String productId,
 			org.json.simple.JSONObject statusChange, String orderItemStatus) {
+		String extractUsername = jwtconfig.extractUsername(token.substring(7));
+		LOGGER.info(extractUsername);
 		try {
 			LOGGER.info("Inside itemStatusChangefromAdmin");
 			OrderSKUDetailsEntity item = orderSKUDetailsRepo

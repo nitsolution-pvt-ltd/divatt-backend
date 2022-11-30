@@ -84,6 +84,11 @@ public class HsnServiceImpl implements HsnService {
 				hsn.setSgst(hsnEntity.getTaxValue() / 2);
 				hsn.setCgst(hsnEntity.getTaxValue() / 2);
 				hsn.setIgst(hsnEntity.getTaxValue());
+				hsn.setCess(hsnEntity.getCess());
+				hsn.setEffectiveDate(hsnEntity.getEffectiveDate());
+				hsn.setRateRevision(hsnEntity.getRateRevision());
+				hsn.setIsActive(true);
+				hsn.setIsDelete(false);
 
 				hsnRepo.save(hsn);
 
@@ -115,6 +120,10 @@ public class HsnServiceImpl implements HsnService {
 					entity.setIgst(hsnEntity.getTaxValue());
 					entity.setIsActive(true);
 					entity.setIsDelete(false);
+					entity.setCess(hsnEntity.getCess());
+					entity.setEffectiveDate(hsnEntity.getEffectiveDate());
+					entity.setRateRevision(hsnEntity.getRateRevision());
+
 					hsnRepo.save(entity);
 					return new GlobalResponse("SUCCESS", "Hsn update succesfully", 200);
 
@@ -339,11 +348,10 @@ public class HsnServiceImpl implements HsnService {
 						+ 1 + " this Positon");
 			}
 			try {
-				hsnEntity.setRate(Float.parseFloat(rows.getCell(2).toString()));
-				LOGGER.info(Float.parseFloat(rows.getCell(2).toString()) + "inside rate");
+				hsnEntity.setTaxValue((double)Float.parseFloat(rows.getCell(2).toString()));
 			} catch (Exception e) {
 				throw new CustomException(
-						"Please Fillup Excel Rate Fields on row no  " + i + " and cell no  " + 2 + " this Positon");
+						"Please Fillup Excel TaxValue Fields on row no  " + i + " and cell no  " + 2 + " this Positon");
 			}
 			try {
 				hsnEntity.setCess(Float.parseFloat(rows.getCell(3).toString()));
@@ -366,7 +374,7 @@ public class HsnServiceImpl implements HsnService {
 						+ 4 + " this Positon");
 			}
 			try {
-				hsnEntity.setRateVision(rows.getCell(5).toString());
+				hsnEntity.setRateRevision(rows.getCell(5).toString());
 			} catch (Exception e) {
 				throw new CustomException("Please Fillup Excel RateVision Fields on row no  " + i + " and cell no  " + 5
 						+ " this Positon");

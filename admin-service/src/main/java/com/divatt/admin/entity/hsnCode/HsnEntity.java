@@ -46,9 +46,7 @@ public class HsnEntity {
 
 	private Float cess;
 
-	private Float rate;
-
-	private String rateVision;
+	private String rateRevision;
 
 	private String effectiveDate;
 
@@ -59,8 +57,7 @@ public class HsnEntity {
 
 	public HsnEntity(Integer id, @NotNull(message = "hsnCode is requried") Integer hsnCode,
 			@NotNull(message = "description is requried") String description, Double taxValue, Double sgst, Double cgst,
-			Double igst, Boolean isActive, Boolean isDelete, Float cess, Float rate, String rateVision,
-			String effectiveDate) {
+			Double igst, Boolean isActive, Boolean isDelete, Float cess, String rateRevision, String effectiveDate) {
 		super();
 		this.id = id;
 		this.hsnCode = hsnCode;
@@ -72,8 +69,7 @@ public class HsnEntity {
 		this.isActive = isActive;
 		this.isDelete = isDelete;
 		this.cess = cess;
-		this.rate = rate;
-		this.rateVision = rateVision;
+		this.rateRevision = rateRevision;
 		this.effectiveDate = effectiveDate;
 	}
 
@@ -157,20 +153,12 @@ public class HsnEntity {
 		this.cess = cess;
 	}
 
-	public Float getRate() {
-		return rate;
+	public String getRateRevision() {
+		return rateRevision;
 	}
 
-	public void setRate(Float rate) {
-		this.rate = rate;
-	}
-
-	public String getRateVision() {
-		return rateVision;
-	}
-
-	public void setRateVision(String rateVision) {
-		this.rateVision = rateVision;
+	public void setRateRevision(String rateRevision) {
+		this.rateRevision = rateRevision;
 	}
 
 	public String getEffectiveDate() {
@@ -189,8 +177,8 @@ public class HsnEntity {
 	public String toString() {
 		return "HsnEntity [id=" + id + ", hsnCode=" + hsnCode + ", description=" + description + ", taxValue="
 				+ taxValue + ", sgst=" + sgst + ", cgst=" + cgst + ", igst=" + igst + ", isActive=" + isActive
-				+ ", isDelete=" + isDelete + ", cess=" + cess + ", rate=" + rate + ", rateVision=" + rateVision
-				+ ", effectiveDate=" + effectiveDate + "]";
+				+ ", isDelete=" + isDelete + ", cess=" + cess + ", rateRevision=" + rateRevision + ", effectiveDate="
+				+ effectiveDate + "]";
 	}
 
-	}
+}
