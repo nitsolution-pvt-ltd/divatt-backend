@@ -296,6 +296,15 @@ public class ProfileContoller {
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getProfileStatus());
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getIsProfileCompleted());
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
+			// update designer personal information from admin update 
+			DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo.findByDesignerId(designerLoginEntity.getdId()).get();
+			DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
+			designerPersonalInfoEntity.setId(infoEntity.getId());
+			designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
+			designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity().getDesignerPersonalInfoEntity().getBankDetails());
+			designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity().getDesignerPersonalInfoEntity().getDesignerDocuments());
+			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+			// end update designer personal information from admin update
 			// Old
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerLoginEntityDB.setCategories(designerLoginEntity.getCategories());
