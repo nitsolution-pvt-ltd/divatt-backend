@@ -500,24 +500,24 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Active", orderSKUDetailsRepo.findByOrderItemStatus("Active").size());
 			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderStatus).size());
 
-			if (productId.size() <= 0) {
-				Map<String, Integer> orderCount = getOrderCount(0, true);
-				response.put("orderCount", orderCount);
-				response.put("Error", "Order not found");
-				return response;
-			} else {
-				LOGGER.info("USERNAME IN ELSE <><><><><><><><><> !!!! = {}",
-						jwtconfig.extractUsername(token.substring(7)));
-				if (!restTemplate.getForEntity(
-						"https://localhost:8080/dev/auth/info/ADMIN/" + jwtconfig.extractUsername(token.substring(7)),
-						Object.class).toString().isBlank()) {
-					Map<String, Integer> orderCount = getOrderCount(0, true);
-					response.put("orderCount", orderCount);
-					return response;
-				}
-				return response;
+//			if (productId.size() <= 0) {
+//				Map<String, Integer> orderCount = getOrderCount(0, true);
+//				response.put("orderCount", orderCount);
+//				response.put("Error", "Order not found");
+//				return response;
+//			} else {
+//				LOGGER.info("USERNAME IN ELSE <><><><><><><><><> !!!! = {}",
+//						jwtconfig.extractUsername(token.substring(7)));
+//				if (!restTemplate.getForEntity(
+//						"https://localhost:8080/dev/auth/info/ADMIN/" + jwtconfig.extractUsername(token.substring(7)),
+//						Object.class).toString().isBlank()) {
+//					Map<String, Integer> orderCount = getOrderCount(0, true);
+//					response.put("orderCount", orderCount);
+//					return response;
+//				}
+//			}
+			return response;
 
-			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
