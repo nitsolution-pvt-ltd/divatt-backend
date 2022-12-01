@@ -3,11 +3,11 @@ package com.divatt.user.serviceImpl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.divatt.user.config.JWTConfig;
@@ -84,6 +84,22 @@ public class MeasurementImpl implements MeasurementService{
 			measurementRepo.save(updatedMeasurementEntity);
 			return new GlobalResponse("Success", "Measurement updated successfully", 200);
 		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@Override
+	public GlobalResponse deleteMeasurement(Integer measurementId) {
+		try {
+			LOGGER.info("Inside - MeasurementImpl.deleteMeasurement()");
+			Optional<MeasurementEntity> findMeasurementById = measurementRepo.findById(measurementId);
+			if (findMeasurementById.isPresent()) {
+				measurementRepo.deleteById(measurementId);
+				return new GlobalResponse("Success", "Measurement deleted successfully", 200);
+			} else {
+				throw new CustomException("Measurement not found");
+			}
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
