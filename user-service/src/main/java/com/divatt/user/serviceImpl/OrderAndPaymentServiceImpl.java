@@ -1,6 +1,7 @@
 package com.divatt.user.serviceImpl;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1690,7 +1691,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				OrderSKUDetailsEntity item = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderId(
 						Integer.parseInt(productId), Integer.parseInt(designerId), orderId).get(0);
 				String itemStatus = item.getOrderItemStatus();
-
+				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+				Date dates = new Date();
+				String format = formatter.format(dates);
 				if (orderItemStatus.equals("Orders")) {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("New")) {
@@ -1708,7 +1711,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
 								jsonObject3.put("withCustomization", fromJson.get("withCustomization"));
 								jsonObject3.put("withDesignCustomization", fromJson.get("withDesignCustomization"));
-								jsonObject3.put("ordersTime", new Date());
+								jsonObject3.put("ordersTime", format);
 								orderStatusDetails.setOrdersDetails(jsonObject3);
 								orderDetails.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(orderDetails);
@@ -1718,7 +1721,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 								jsonObject3.put("withCustomization", fromJson.get("withCustomization"));
 								jsonObject3.put("withDesignCustomization", fromJson.get("withDesignCustomization"));
-								jsonObject3.put("ordersTime", new Date());
+								jsonObject3.put("ordersTime", format);
 								orderStatusDetails.setOrdersDetails(jsonObject3);
 								orderDetails.setOrderStatusDetails(orderStatusDetails);
 								orderDetails.setOrderItemStatus(orderItemStatus);
@@ -1749,7 +1752,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
 								jsonObject2.put("packedCovered", fromJson.get("packedCovered"));
 								jsonObject2.put("packingVideo", fromJson.get("packingVideo"));
-								jsonObject2.put("orderPackedTime", new Date());
+								jsonObject2.put("orderPackedTime", format);
 								orderDetails.setOrderItemStatus(orderItemStatus);
 								orderStatusDetails.setPackedDetails(jsonObject2);
 								orderSKUDetailsRepo.save(orderDetails);
@@ -1761,7 +1764,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								LOGGER.info(fromJson.toString());
 								jsonObject2.put("packedCovered", fromJson.get("packedCovered"));
 								jsonObject2.put("packingVideo", fromJson.get("packingVideo"));
-								jsonObject2.put("orderPackedTime", new Date());
+								jsonObject2.put("orderPackedTime", format);
 								orderStatusDetails.setPackedDetails(jsonObject2);
 								orderDetails.setOrderStatusDetails(orderStatusDetails);
 								orderDetails.setOrderItemStatus(orderItemStatus);
@@ -1792,7 +1795,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								orderStatusDetails.setShippedDetails(jsonObject1);
 								jsonObject1.put("courierName", fromJson.get("courierName"));
 								jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
-								jsonObject1.put("orderShippedTime", new Date());
+								jsonObject1.put("orderShippedTime", format);
 								orderStatusDetails.setShippedDetails(jsonObject1);
 								orderDetails.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(orderDetails);
@@ -1803,7 +1806,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
 								jsonObject1.put("courierName", fromJson.get("courierName"));
 								jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
-								jsonObject1.put("orderShippedTime", new Date());
+								jsonObject1.put("orderShippedTime", format);
 								orderStatusDetails.setShippedDetails(jsonObject1);
 								orderDetails.setOrderStatusDetails(orderStatusDetails);
 								orderDetails.setOrderItemStatus(orderItemStatus);
@@ -1827,9 +1830,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							Gson gson = new Gson();
 							org.json.simple.JSONObject fromJson = gson.fromJson(string,
 									org.json.simple.JSONObject.class);
+							LOGGER.info(fromJson.get("deliveredDate") + "Inside fromjson");
+							String deliveredDate = (String) fromJson.get("deliveredDate");
+							SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+							DateFormat inputText = new SimpleDateFormat("yyyy-MM-dd");
+							Date date = inputText.parse(deliveredDate);
+							String format1 = dateFormat.format(date);
+							LOGGER.info(format1 + "INSIDE FORMAT");
 							try {
 								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-								jsonObject4.put("deliveredDate", fromJson.get("deliveredDate"));
+								jsonObject4.put("deliveredDate", format1);
 								orderStatusDetails.setDeliveryDetails(jsonObject4);
 								orderDetails.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(orderDetails);
@@ -1838,7 +1848,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 
 								LOGGER.info(fromJson + "Inside Delivery");
-								jsonObject4.put("deliveredDate", fromJson.get("deliveredDate"));
+								jsonObject4.put("deliveredDate", format1);
 								orderStatusDetails.setDeliveryDetails(jsonObject4);
 								orderDetails.setOrderStatusDetails(orderStatusDetails);
 								orderDetails.setOrderItemStatus(orderItemStatus);
@@ -1871,6 +1881,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			OrderSKUDetailsEntity item = orderSKUDetailsRepo
 					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 			String itemStatus = item.getOrderItemStatus();
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			Date dates = new Date();
+			String format = formatter.format(dates);
 			if (!itemStatus.equals("New")) {
 				if (itemStatus.equals(orderItemStatus)) {
 					throw new CustomException("The Product is Already " + itemStatus);
@@ -1891,7 +1904,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
 								jsonObject2.put("packedCovered", fromJson.get("packedCovered"));
 								jsonObject2.put("packingVideo", fromJson.get("packingVideo"));
-								jsonObject2.put("orderPackedTime", new Date());
+								jsonObject2.put("orderPackedTime", format);
 								orderDetails.setOrderItemStatus(orderItemStatus);
 								orderStatusDetails.setPackedDetails(jsonObject2);
 								orderSKUDetailsRepo.save(orderDetails);
@@ -1902,7 +1915,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								LOGGER.info(fromJson.toString());
 								jsonObject2.put("packedCovered", fromJson.get("packedCovered"));
 								jsonObject2.put("packingVideo", fromJson.get("packingVideo"));
-								jsonObject2.put("orderPackedTime", new Date());
+								jsonObject2.put("orderPackedTime", format);
 								orderStatusDetails.setPackedDetails(jsonObject2);
 								orderDetails.setOrderStatusDetails(orderStatusDetails);
 								orderDetails.setOrderItemStatus(orderItemStatus);
@@ -1930,7 +1943,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								orderStatusDetails.setShippedDetails(jsonObject1);
 								jsonObject1.put("courierName", fromJson.get("courierName"));
 								jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
-								jsonObject1.put("orderShippedTime", new Date());
+								jsonObject1.put("orderShippedTime", format);
 								orderStatusDetails.setShippedDetails(jsonObject1);
 								orderDetails.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(orderDetails);
@@ -1940,7 +1953,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
 								jsonObject1.put("courierName", fromJson.get("courierName"));
 								jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
-								jsonObject1.put("orderShippedTime", new Date());
+								jsonObject1.put("orderShippedTime", format);
 								orderStatusDetails.setShippedDetails(jsonObject1);
 								orderDetails.setOrderStatusDetails(orderStatusDetails);
 								orderDetails.setOrderItemStatus(orderItemStatus);
@@ -1961,9 +1974,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							Gson gson = new Gson();
 							org.json.simple.JSONObject fromJson = gson.fromJson(string,
 									org.json.simple.JSONObject.class);
+							LOGGER.info(fromJson.get("deliveredDate") + "Inside fromjson");
+							String deliveredDate = (String) fromJson.get("deliveredDate");
+							SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+							DateFormat inputText = new SimpleDateFormat("yyyy-MM-dd");
+							Date date = inputText.parse(deliveredDate);
+							String format1 = dateFormat.format(date);
+							LOGGER.info(format1 + "INSIDE FORMAT");
 							try {
 								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-								jsonObject4.put("deliveredDate", fromJson.get("deliveredDate"));
+								jsonObject4.put("deliveredDate", format1);
 								orderStatusDetails.setDeliveryDetails(jsonObject4);
 								orderDetails.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(orderDetails);
@@ -1971,7 +1991,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 
 								LOGGER.info(fromJson + "Inside Delivery");
-								jsonObject4.put("deliveredDate", fromJson.get("deliveredDate"));
+								jsonObject4.put("deliveredDate", format1);
 								orderStatusDetails.setDeliveryDetails(jsonObject4);
 								orderDetails.setOrderStatusDetails(orderStatusDetails);
 								orderDetails.setOrderItemStatus(orderItemStatus);
