@@ -1,6 +1,7 @@
 package com.divatt.user.serviceImpl;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1827,9 +1828,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							Gson gson = new Gson();
 							org.json.simple.JSONObject fromJson = gson.fromJson(string,
 									org.json.simple.JSONObject.class);
+							LOGGER.info(fromJson.get("deliveredDate") + "Inside fromjson");
+							String deliveredDate = (String) fromJson.get("deliveredDate");
+							SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+							DateFormat inputText = new SimpleDateFormat("yyyy-mm-dd");
+							Date date = inputText.parse(deliveredDate);
+							String format1 = dateFormat.format(date);
+							LOGGER.info(format1 + "INSIDE FORMAT");
 							try {
 								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-								jsonObject4.put("deliveredDate", fromJson.get("deliveredDate"));
+								jsonObject4.put("deliveredDate", format1);
 								orderStatusDetails.setDeliveryDetails(jsonObject4);
 								orderDetails.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(orderDetails);
@@ -1838,7 +1846,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 
 								LOGGER.info(fromJson + "Inside Delivery");
-								jsonObject4.put("deliveredDate", fromJson.get("deliveredDate"));
+								jsonObject4.put("deliveredDate", format1);
 								orderStatusDetails.setDeliveryDetails(jsonObject4);
 								orderDetails.setOrderStatusDetails(orderStatusDetails);
 								orderDetails.setOrderItemStatus(orderItemStatus);
@@ -1961,9 +1969,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							Gson gson = new Gson();
 							org.json.simple.JSONObject fromJson = gson.fromJson(string,
 									org.json.simple.JSONObject.class);
+							LOGGER.info(fromJson.get("deliveredDate") + "Inside fromjson");
+							String deliveredDate = (String) fromJson.get("deliveredDate");
+							SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+							DateFormat inputText = new SimpleDateFormat("yyyy-mm-dd");
+							Date date = inputText.parse(deliveredDate);
+							String format1 = dateFormat.format(date);
+							LOGGER.info(format1 + "INSIDE FORMAT");
 							try {
 								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-								jsonObject4.put("deliveredDate", fromJson.get("deliveredDate"));
+								jsonObject4.put("deliveredDate", format1);
 								orderStatusDetails.setDeliveryDetails(jsonObject4);
 								orderDetails.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(orderDetails);
@@ -1971,7 +1986,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 
 								LOGGER.info(fromJson + "Inside Delivery");
-								jsonObject4.put("deliveredDate", fromJson.get("deliveredDate"));
+								jsonObject4.put("deliveredDate", format1);
 								orderStatusDetails.setDeliveryDetails(jsonObject4);
 								orderDetails.setOrderStatusDetails(orderStatusDetails);
 								orderDetails.setOrderItemStatus(orderItemStatus);
