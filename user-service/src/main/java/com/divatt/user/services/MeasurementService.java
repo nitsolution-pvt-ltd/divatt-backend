@@ -2,8 +2,6 @@ package com.divatt.user.services;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-
 import com.divatt.user.entity.measurement.MeasurementEntity;
 import com.divatt.user.response.GlobalResponse;
 
@@ -16,5 +14,7 @@ public interface MeasurementService {
 	List<MeasurementEntity> getmeasurementList(String token, String gender);
 
 	GlobalResponse updateMeasurementService(String token, String measurementId, MeasurementEntity measurementEntity);
+	
+	GlobalResponse deleteMeasurement(Integer measurementId);
 
 }
