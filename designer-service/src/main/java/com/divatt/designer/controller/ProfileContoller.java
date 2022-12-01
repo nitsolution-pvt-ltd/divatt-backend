@@ -297,6 +297,7 @@ public class ProfileContoller {
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getIsProfileCompleted());
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
 			if(!designerLoginEntity.getProfileStatus().equals("APPROVE")) {
+				LOGGER.info("INSIDE IF <><><><><><@!!!");
 				// update designer personal information from admin update 
 				DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo.findByDesignerId(designerLoginEntity.getdId()).get();
 				DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
