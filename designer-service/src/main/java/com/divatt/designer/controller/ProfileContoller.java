@@ -296,15 +296,17 @@ public class ProfileContoller {
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getProfileStatus());
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getIsProfileCompleted());
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
-			// update designer personal information from admin update 
-			DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo.findByDesignerId(designerLoginEntity.getdId()).get();
-			DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
-			designerPersonalInfoEntity.setId(infoEntity.getId());
-			designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
-			designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity().getDesignerPersonalInfoEntity().getBankDetails());
-			designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity().getDesignerPersonalInfoEntity().getDesignerDocuments());
-			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
-			// end update designer personal information from admin update
+			if(!designerLoginEntity.getProfileStatus().equals("APPROVE")) {
+				// update designer personal information from admin update 
+				DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo.findByDesignerId(designerLoginEntity.getdId()).get();
+				DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
+				designerPersonalInfoEntity.setId(infoEntity.getId());
+				designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
+				designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity().getDesignerPersonalInfoEntity().getBankDetails());
+				designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity().getDesignerPersonalInfoEntity().getDesignerDocuments());
+				designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+				// end update designer personal information from admin update
+			}
 			// Old
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerLoginEntityDB.setCategories(designerLoginEntity.getCategories());
@@ -563,6 +565,7 @@ public class ProfileContoller {
 				try {
 					e.setDesignerProfileEntity(
 							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
+					e.getDesignerProfileEntity().setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(Long.parseLong(e.getdId().toString())).get());
 				} catch (Exception o) {
 
 				}
