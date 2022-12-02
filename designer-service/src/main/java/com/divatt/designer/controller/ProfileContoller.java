@@ -895,5 +895,16 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	@GetMapping("/getProfileImage/{designerId}")
+	public  Map<String,String> getProfileImage(@PathVariable Long designerId) {
+		try {
+			 DesignerProfileEntity findByDesignerId = designerProfileRepo.findBydesignerId(designerId).get();
+			Map<String, String> map=new HashMap<>();
+			map.put("profilePic", findByDesignerId.getDesignerProfile().getProfilePic());
+			return  map;
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
 }
