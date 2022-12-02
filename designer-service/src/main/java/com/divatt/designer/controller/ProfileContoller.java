@@ -254,16 +254,25 @@ public class ProfileContoller {
 					designerProfileRepo.save(designerProfileEntity);
 				}
 
-				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
-						"Successfully Registration",
-						"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
-								+ ",\n                           "
-								+ " you have been register successfully. Please active your account by clicking the bellow link "
-								+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
-										.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
-								+ " . We will verify your details and come back to you soon.",
-						false);
-
+				StringBuilder sb = new StringBuilder();
+				URI uri = URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
+				.encodeToString(designerLoginEntity.getEmail().toString().getBytes()));
+				sb.append("Hi " + designerProfileEntity.getDesignerName() + "" + ",\n\n"
+						+ "Welcome to Divatt We are delighted to have you join us as a designer.\n"
+						+ "We are committed to providing our designer with a secure and safe platform to conduct business. Our website has been designed to make it easy for buyers to find the products they need and for designer to reach those buyers. We offer a wide range of tools and services to help you succeed, including payment processing, customer support, product listing, and promotions.\n\n"
+						+ "We look forward to working with you to help you reach your business goals. Please feel free to contact us with any questions or concerns. You can do active your account by clicking the button below.");
+				sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
+						+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">ACTIVE ACCOUNT</a></div><br><br>We will verify your details and come back to you soon.");
+//				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
+//						"Successfully Registration",
+//						"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
+//								+ ",\n                           "
+//								+ " you have been register successfully. Please active your account by clicking the bellow link "
+//								+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
+//										.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
+//								+ " . We will verify your details and come back to you soon.",
+//						false);
+				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),"Successfully Registration", sb.toString(),false);
 				try {
 					ResponseEntity<String> response = restTemplate
 							.postForEntity("https://65.1.190.195:8080/dev/auth/sendMail", mail, String.class);
