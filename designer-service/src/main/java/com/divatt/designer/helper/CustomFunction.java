@@ -338,8 +338,12 @@ public class CustomFunction {
 			designerProfile.setCity(body.getDesignerProfile().getCity());
 			designerProfile.setCountry(body.getDesignerProfile().getCountry());
 			designerProfile.setDob(body.getDesignerProfile().getDob());
-			if(!designerLoginEntity.getProfileStatus().equals("APPROVE")) {
+			if(!designerLoginEntity.getProfileStatus().equals("APPROVE") && !designerLoginEntity.getProfileStatus().equals("REJECTED")) {
+				LOGGER.info("Status <><><><><> !!!!! = {}",designerLoginEntity.getProfileStatus());
 				designerProfile.setDigitalSignature(designerLoginEntity.getDesignerProfileEntity().getDesignerProfile().getDigitalSignature());
+			}
+			else {
+				designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
 			}
 			designerProfile.setEmail(body.getDesignerProfile().getEmail());
 			designerProfile.setFirstName1(body.getDesignerProfile().getFirstName1());
