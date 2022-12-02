@@ -296,15 +296,18 @@ public class ProfileContoller {
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getProfileStatus());
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getIsProfileCompleted());
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
-			if(!designerLoginEntity.getProfileStatus().equals("APPROVE")) {
+			if (!designerLoginEntity.getProfileStatus().equals("APPROVE")) {
 				LOGGER.info("INSIDE IF <><><><><><@!!!");
-				// update designer personal information from admin update 
-				DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo.findByDesignerId(designerLoginEntity.getdId()).get();
+				// update designer personal information from admin update
+				DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
+						.findByDesignerId(designerLoginEntity.getdId()).get();
 				DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
 				designerPersonalInfoEntity.setId(infoEntity.getId());
 				designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
-				designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity().getDesignerPersonalInfoEntity().getBankDetails());
-				designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity().getDesignerPersonalInfoEntity().getDesignerDocuments());
+				designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity()
+						.getDesignerPersonalInfoEntity().getBankDetails());
+				designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity()
+						.getDesignerPersonalInfoEntity().getDesignerDocuments());
 				designerPersonalInfoRepo.save(designerPersonalInfoEntity);
 				// end update designer personal information from admin update
 			}
@@ -536,7 +539,8 @@ public class ProfileContoller {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, false,
 							"SUBMITTED", pagingSort);
 				} else {
-					LOGGER.info("Profile Status = {} , Is deleted = {}, AccountStatus = {}", profileStatus, isDeleted, "ACTIVE");
+					LOGGER.info("Profile Status = {} , Is deleted = {}, AccountStatus = {}", profileStatus, isDeleted,
+							"ACTIVE");
 					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(isDeleted,
 							profileStatus, "ACTIVE", pagingSort);
 //					findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted,
@@ -566,7 +570,8 @@ public class ProfileContoller {
 				try {
 					e.setDesignerProfileEntity(
 							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
-					e.getDesignerProfileEntity().setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(Long.parseLong(e.getdId().toString())).get());
+					e.getDesignerProfileEntity().setDesignerPersonalInfoEntity(
+							designerPersonalInfoRepo.findByDesignerId(Long.parseLong(e.getdId().toString())).get());
 				} catch (Exception o) {
 
 				}
@@ -791,12 +796,24 @@ public class ProfileContoller {
 			LOGGER.info(token.substring(7));
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
 					.findByEmail(jwtConfig.extractUsername(token.substring(7)));
-			DesignerLoginEntity designerEntity = new DesignerLoginEntity();
+			DesignerLoginEntity designerProfileEntity = new DesignerLoginEntity();
 			if (!findByEmail.isEmpty()) {
-				BeanUtils.copyProperties(findByEmail.get(), designerEntity);
-				designerEntity.setDesignerCurrentStatus(status);
-				designerLoginRepo.save(designerEntity);
-				return new GlobalResponce("Success", "Designer current status", 200);
+				designerProfileEntity.setdId(findByEmail.get().getdId());
+				designerProfileEntity.setAdminComment(findByEmail.get().getAdminComment());
+				designerProfileEntity.setAuthToken(findByEmail.get().getAuthToken());
+				designerProfileEntity.setAccountStatus(findByEmail.get().getAccountStatus());
+				designerProfileEntity.setIsDeleted(findByEmail.get().getIsDeleted());
+				designerProfileEntity.setDesignerCurrentStatus(findByEmail.get().getDesignerCurrentStatus());
+				designerProfileEntity.setProfileStatus(findByEmail.get().getProfileStatus());
+				designerProfileEntity.setIsProfileCompleted(findByEmail.get().getIsProfileCompleted());
+				designerProfileEntity.setIsDeleted(findByEmail.get().getIsDeleted());
+				designerProfileEntity.setCategories(findByEmail.get().getCategories());
+				designerProfileEntity.setDesignerCategory(findByEmail.get().getDesignerCategory());
+				designerProfileEntity.setDisplayName(findByEmail.get().getDisplayName());
+				designerProfileEntity.setEmail(findByEmail.get().getEmail());
+				designerProfileEntity.setDesignerCurrentStatus(status);
+				designerLoginRepo.save(designerProfileEntity);
+				return new GlobalResponce("Success", "Designer current status Changed", 200);
 			} else {
 				throw new CustomException("User not found");
 			}
