@@ -2028,7 +2028,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 			orderStatusDetails.setCancelOrderDetails(jsonObject);
 			orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-			orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+			orderDetails.get(0).setOrderItemStatus(cancelationRequestDTO.getOrderStatus());
 			orderSKUDetailsRepo.saveAll(orderDetails);
 			return new GlobalResponse("Success", "Cancelation request send successfully", 200);
 
