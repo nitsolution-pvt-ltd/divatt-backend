@@ -811,4 +811,14 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	@PostMapping("/adminCancelation")
+	public GlobalResponse adminCancelation(@RequestParam String orderId, @RequestParam String productId,
+			@RequestHeader("Authorization") String token, @RequestBody CancelationRequestDTO cancelationRequestDTO) {
+		try {
+			return this.orderAndPaymentService.adminCancelation(orderId, productId, token, cancelationRequestDTO);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

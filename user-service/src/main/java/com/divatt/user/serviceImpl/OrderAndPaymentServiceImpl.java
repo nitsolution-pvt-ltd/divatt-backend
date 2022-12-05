@@ -2011,4 +2011,29 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 
 	}
+
+	@Override
+	public GlobalResponse adminCancelation(String orderId, String productId, String token,
+			CancelationRequestDTO cancelationRequestDTO) {
+		try {
+			String adminEmail = jwtconfig.extractUsername(token.substring(7));
+			LOGGER.info(adminEmail);
+			List<OrderSKUDetailsEntity> orderDetails = orderSKUDetailsRepo.findAll().stream()
+					.filter(e -> e.getOrderId().equals(orderId))
+					.filter(e -> e.getProductId() == Integer.parseInt(productId)).collect(Collectors.toList());
+			LOGGER.info(orderDetails + "");
+			org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+			jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
+			jsonObject.put("cancelationTime", new Date());
+			OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+			orderStatusDetails.setCancelOrderDetails(jsonObject);
+			orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+			orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+			orderSKUDetailsRepo.saveAll(orderDetails);
+			return new GlobalResponse("Success", "Cancelation request send successfully", 200);
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

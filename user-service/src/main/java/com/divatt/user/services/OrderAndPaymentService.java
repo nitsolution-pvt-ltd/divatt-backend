@@ -103,5 +103,8 @@ public interface OrderAndPaymentService {
 	public GlobalResponse itemStatusChangefromAdmin(String token, String orderId, String productId,
 			JSONObject statusChange, String orderItemStatus);
 
+	public GlobalResponse adminCancelation(String orderId, String productId, String token,
+			CancelationRequestDTO cancelationRequestDTO);
+
 
 }
