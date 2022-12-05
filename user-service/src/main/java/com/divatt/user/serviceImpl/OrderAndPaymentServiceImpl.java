@@ -492,13 +492,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("Cancelation", orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
+			response.put("requestForCancelation",
+					orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
 			response.put("New", orderSKUDetailsRepo.findByOrderItemStatus("New").size());
 			response.put("Packed", orderSKUDetailsRepo.findByOrderItemStatus("Packed").size());
 			response.put("Shipped", orderSKUDetailsRepo.findByOrderItemStatus("Shipped").size());
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderItemStatus("Delivered").size());
 			response.put("Return", orderSKUDetailsRepo.findByOrderItemStatus("Return").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderItemStatus("Active").size());
+			response.put("Cancelled", orderSKUDetailsRepo.findByOrderItemStatus("cancelled").size());
 			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderStatus).size());
 
 //			if (productId.size() <= 0) {
@@ -2018,19 +2020,23 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			String adminEmail = jwtconfig.extractUsername(token.substring(7));
 			LOGGER.info(adminEmail);
-			List<OrderSKUDetailsEntity> orderDetails = orderSKUDetailsRepo.findAll().stream()
-					.filter(e -> e.getOrderId().equals(orderId))
-					.filter(e -> e.getProductId() == Integer.parseInt(productId)).collect(Collectors.toList());
-			LOGGER.info(orderDetails + "");
-			org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-			jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
-			jsonObject.put("cancelationTime", new Date());
-			OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-			orderStatusDetails.setCancelOrderDetails(jsonObject);
-			orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-			orderDetails.get(0).setOrderItemStatus(cancelationRequestDTO.getOrderStatus());
-			orderSKUDetailsRepo.saveAll(orderDetails);
-			return new GlobalResponse("Success", "Cancelation request send successfully", 200);
+			String item = orderSKUDetailsRepo.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0)
+					.getOrderItemStatus();
+			if (!item.equals("Delivered")) {
+				OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
+						.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
+				LOGGER.info(orderDetails + "");
+				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+				jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
+				jsonObject.put("cancelationTime", new Date());
+				OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+				orderStatusDetails.setCancelOrderDetails(jsonObject);
+				orderDetails.setOrderStatusDetails(orderStatusDetails);
+				orderDetails.setOrderItemStatus(cancelationRequestDTO.getOrderStatus());
+				orderSKUDetailsRepo.save(orderDetails);
+				return new GlobalResponse("Success", "Cancelation request send successfully", 200);
+			} else
+				throw new CustomException("Orders Already Delivered");
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
