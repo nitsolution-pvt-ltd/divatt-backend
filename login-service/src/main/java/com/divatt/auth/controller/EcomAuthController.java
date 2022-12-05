@@ -233,7 +233,8 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				if (findByUserNameDesigner.isPresent()) {
 					if (findByUserNameDesigner.get().getAccountStatus().equals("INACTIVE"))
 						throw new CustomException("You got a mail. please go to that mail and activate your account");
-					if(findByUserNameDesigner.get().getProfileStatus().equals("REJECTED") && findByUserNameDesigner.get().getIsProfileCompleted() == false)
+					if (findByUserNameDesigner.get().getProfileStatus().equals("REJECTED")
+							&& findByUserNameDesigner.get().getIsProfileCompleted() == false)
 						throw new CustomException("Your profile is rejected.");
 					if (findByUserNameDesigner.get().getProfileStatus().equals("waitForApprove"))
 						throw new CustomException("Waiting for Approval");
@@ -382,19 +383,13 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			LOGGER.info("Inside findByUserNameDesigner " + designerLoginRepo.findByEmail(email));
 			Optional<UserLoginEntity> findByUserNameUser = userLoginRepo.findByEmail(email);
 			LOGGER.info("Inside findByUserNameUser " + userLoginRepo.findByEmail(email));
-			DesignerProfileEntity designerLogin = restTemplate
-					.getForEntity("https://localhost:8083/dev/designer/" + findByUserNameDesigner.get().getUid(),
-							DesignerProfileEntity.class)
-					.getBody();
-			LOGGER.info(designerLogin.getDesignerProfile().getFirstName1() + " "
-					+ designerLogin.getDesignerProfile().getLastName1() + "Inside json");
-			if(findByUserNameDesigner.get().getIsDeleted()==true) {
-				throw new CustomException("Your account has been deleted and no need to do any action");
-			}
 			if (!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent() && !findByUserName.isPresent()) {
-				throw new CustomException("User not found");
+				throw new CustomException("Oops! No such user account found");
 			} else {
 //			if (findByUserName.isPresent()) {
+				if (findByUserNameDesigner.get().getIsDeleted() == true) {
+					throw new CustomException("Your account has been deleted and no need to do any action");
+				}
 				PasswordResetEntity loginResetEntity = new PasswordResetEntity();
 				Object id = null;
 				try {
@@ -436,6 +431,11 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 								false);
 						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
 					} else if (save.getUser_type().equals("DESIGNER")) {
+						DesignerProfileEntity designerLogin = restTemplate.getForEntity(
+								"https://localhost:8083/dev/designer/" + findByUserNameDesigner.get().getUid(),
+								DesignerProfileEntity.class).getBody();
+						LOGGER.info(designerLogin.getDesignerProfile().getFirstName1() + " "
+								+ designerLogin.getDesignerProfile().getLastName1() + "Inside json");
 						mailService.sendEmail(findByUserNameDesigner.get().getEmail(), "Forgot Password Link",
 								"Hi " + designerLogin.getDesignerProfile().getFirstName1() + " "
 										+ designerLogin.getDesignerProfile().getLastName1()
