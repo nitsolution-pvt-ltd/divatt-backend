@@ -2208,29 +2208,53 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GlobalResponse adminCancelation(String orderId, String productId, String token,
 			CancelationRequestDTO cancelationRequestDTO) {
 		try {
-			String adminEmail = jwtconfig.extractUsername(token.substring(7));
-			LOGGER.info(adminEmail);
-			String item = orderSKUDetailsRepo.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0)
-					.getOrderItemStatus();
-			if (!item.equals("Delivered")) {
-				OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
-						.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
-				LOGGER.info(orderDetails + "");
-				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-				jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
-				jsonObject.put("cancelationTime", new Date());
-				OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-				orderStatusDetails.setCancelOrderDetails(jsonObject);
-				orderDetails.setOrderStatusDetails(orderStatusDetails);
-				orderDetails.setOrderItemStatus(cancelationRequestDTO.getOrderStatus());
-				orderSKUDetailsRepo.save(orderDetails);
-				return new GlobalResponse("Success", "Cancelation request send successfully", 200);
-			} else
-				throw new CustomException("Orders Already Delivered");
+//			String extractUsername = jwtconfig.extractUsername(token.substring(7));
+			OrderSKUDetailsEntity findByProductIdAndOrderId = this.orderSKUDetailsRepo
+					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
+			String orderItemStatus = findByProductIdAndOrderId.getOrderItemStatus();
+			if (!orderItemStatus.equals("Delivered")) {
+				if (!orderItemStatus.equals("New")) {
+					org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+					jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
+					jsonObject.put("cancelationTime", new Date());
+					OrderStatusDetails orderStatusDetails = findByProductIdAndOrderId.getOrderStatusDetails();
+					try {
+						orderStatusDetails.setCancelOrderDetails(jsonObject);
+						findByProductIdAndOrderId.setOrderStatusDetails(orderStatusDetails);
+						findByProductIdAndOrderId.setOrderItemStatus(cancelationRequestDTO.getOrderStatus());
+						this.orderSKUDetailsRepo.save(findByProductIdAndOrderId);
+					} catch (Exception e) {
+						orderStatusDetails.setCancelOrderDetails(jsonObject);
+						findByProductIdAndOrderId.setOrderStatusDetails(orderStatusDetails);
+						findByProductIdAndOrderId.setOrderItemStatus(cancelationRequestDTO.getOrderStatus());
+						this.orderSKUDetailsRepo.save(findByProductIdAndOrderId);
+					}
+				} else {
+					org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+					jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
+					jsonObject.put("cancelationTime", new Date());
+					OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+					try {
+						orderStatusDetails.setCancelOrderDetails(jsonObject);
+						findByProductIdAndOrderId.setOrderStatusDetails(orderStatusDetails);
+						findByProductIdAndOrderId.setOrderItemStatus(cancelationRequestDTO.getOrderStatus());
+						this.orderSKUDetailsRepo.save(findByProductIdAndOrderId);
+					} catch (Exception e) {
+						orderStatusDetails.setCancelOrderDetails(jsonObject);
+						findByProductIdAndOrderId.setOrderStatusDetails(orderStatusDetails);
+						findByProductIdAndOrderId.setOrderItemStatus(cancelationRequestDTO.getOrderStatus());
+						this.orderSKUDetailsRepo.save(findByProductIdAndOrderId);
+					}
+				}
+				return new GlobalResponse("Success", "Order cancelled successfully", 200);
+			} else {
+				throw new CustomException("Order Already delivered");
+			}
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
