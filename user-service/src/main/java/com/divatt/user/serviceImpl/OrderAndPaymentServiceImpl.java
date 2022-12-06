@@ -1583,14 +1583,39 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			orderDetails.get(0).setStatus(orderItemStatus);
 			String status = orderDetails.get(0).getStatus();
 			LOGGER.info("status"+ status);
+			if(!orderDetails.get(0).getOrderItemStatus().equals("New")) {
 			org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 			jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
 			jsonObject.put("cancelationTime", new Date());
 			OrderStatusDetails orderStatusDetails = orderDetails.get(0).getOrderStatusDetails();
+			try {
 			orderStatusDetails.setCancelOrderDetails(jsonObject);
 			orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
 			orderDetails.get(0).setOrderItemStatus("Request for cancelation");
 			orderSKUDetailsRepo.saveAll(orderDetails);
+			}catch (Exception e) {
+				orderStatusDetails.setCancelOrderDetails(jsonObject);
+				orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+				orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+				orderSKUDetailsRepo.saveAll(orderDetails);
+			}
+		}else {
+			org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+			jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
+			jsonObject.put("cancelationTime", new Date());
+			OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+			try {
+				orderStatusDetails.setCancelOrderDetails(jsonObject);
+				orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+				orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+				orderSKUDetailsRepo.saveAll(orderDetails);
+				}catch (Exception e) {
+					orderStatusDetails.setCancelOrderDetails(jsonObject);
+					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+					orderSKUDetailsRepo.saveAll(orderDetails);
+				}
+		}
 			return new GlobalResponse("Success", "Cancelation request send successfully", 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
