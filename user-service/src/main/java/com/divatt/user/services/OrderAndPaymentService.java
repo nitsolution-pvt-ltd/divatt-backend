@@ -104,5 +104,8 @@ public interface OrderAndPaymentService {
 	public GlobalResponse adminCancelation(String orderId, String productId, String token,
 			CancelationRequestDTO cancelationRequestDTO);
 
+	public Map<String, Object> getOrdersItemstatus(int page, int limit, String sort, String sortName, String keyword,
+			Optional<String> sortBy, String token, String orderStatus);
+
 
 }

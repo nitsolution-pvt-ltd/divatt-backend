@@ -475,7 +475,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			if (totalPage < 0) {
 				totalPage = 0;
 			}
-
 			Map<String, Object> response = new HashMap<>();
 			response.put("data", new Json(productId.toString()));
 			response.put("currentPage", findAll.getNumber());
@@ -2111,29 +2110,29 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							Gson gson = new Gson();
 							org.json.simple.JSONObject fromJson = gson.fromJson(string,
 									org.json.simple.JSONObject.class);
-							if(fromJson.containsKey("courierName")||fromJson.containsKey("awbNumber")) {
-							try {
-								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-								orderStatusDetails.setShippedDetails(jsonObject1);
-								jsonObject1.put("courierName", fromJson.get("courierName"));
-								jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
-								jsonObject1.put("orderShippedTime", format);
-								orderStatusDetails.setShippedDetails(jsonObject1);
-								orderDetails.setOrderItemStatus(orderItemStatus);
-								orderSKUDetailsRepo.save(orderDetails);
-							} catch (Exception e) {
-								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-								LOGGER.info(orderDetails + "Inside OrderDetails");
-								LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
-								jsonObject1.put("courierName", fromJson.get("courierName"));
-								jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
-								jsonObject1.put("orderShippedTime", format);
-								orderStatusDetails.setShippedDetails(jsonObject1);
-								orderDetails.setOrderStatusDetails(orderStatusDetails);
-								orderDetails.setOrderItemStatus(orderItemStatus);
-								orderSKUDetailsRepo.save(orderDetails);
-							}
-							}else {
+							if (fromJson.containsKey("courierName") || fromJson.containsKey("awbNumber")) {
+								try {
+									OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+									orderStatusDetails.setShippedDetails(jsonObject1);
+									jsonObject1.put("courierName", fromJson.get("courierName"));
+									jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
+									jsonObject1.put("orderShippedTime", format);
+									orderStatusDetails.setShippedDetails(jsonObject1);
+									orderDetails.setOrderItemStatus(orderItemStatus);
+									orderSKUDetailsRepo.save(orderDetails);
+								} catch (Exception e) {
+									OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+									LOGGER.info(orderDetails + "Inside OrderDetails");
+									LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
+									jsonObject1.put("courierName", fromJson.get("courierName"));
+									jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
+									jsonObject1.put("orderShippedTime", format);
+									orderStatusDetails.setShippedDetails(jsonObject1);
+									orderDetails.setOrderStatusDetails(orderStatusDetails);
+									orderDetails.setOrderItemStatus(orderItemStatus);
+									orderSKUDetailsRepo.save(orderDetails);
+								}
+							} else {
 								try {
 									OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
 									orderStatusDetails.setShippedDetails(jsonObject1);
@@ -2237,4 +2236,98 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	public Map<String, Object> getOrdersItemstatus(int page, int limit, String sort, String sortName, String keyword,
+			Optional<String> sortBy, String token, String orderItemStatus) {
+		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
+		try {
+			int CountData = (int) orderSKUDetailsRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<OrderSKUDetailsEntity> findAll = null;
+
+			if (!orderItemStatus.equals("All")) {
+				findAll = orderSKUDetailsRepo.findOrderStatus(orderItemStatus, pagingSort);
+			} else if (keyword.isEmpty()) {
+				findAll = orderSKUDetailsRepo.findAll(pagingSort);
+			} else {
+				findAll = orderSKUDetailsRepo.Searching(keyword, pagingSort);
+
+			}
+
+			LOGGER.info(findAll.getContent() + "Inside Findall");
+			List<OrderSKUDetailsEntity> orderSKUDetails = new ArrayList<>();
+			orderSKUDetails = this.orderSKUDetailsRepo.findAll();
+			LOGGER.info("inside orderSKUDetails" + orderSKUDetails.size());
+
+			List<Object> productId = new ArrayList<>();
+
+			findAll.getContent().forEach(e -> {
+				ObjectMapper obj = new ObjectMapper();
+				String productIdFilter = null;
+				try {
+					productIdFilter = obj.writeValueAsString(e);
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
+				}
+
+				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+
+				String writeValueAsString = null;
+				JSONObject payRow = null;
+				if (!OrderPaymentRow.isEmpty()) {
+					try {
+						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
+					} catch (JsonProcessingException e1) {
+						e1.printStackTrace();
+					}
+					JsonNode paymentJson = new JsonNode(writeValueAsString);
+					payRow = paymentJson.getObject();
+				}
+
+				JsonNode cartJN = new JsonNode(productIdFilter);
+				JSONObject objects = cartJN.getObject();
+				objects.put("paymentData", payRow);
+				productId.add(objects);
+
+			});
+			LOGGER.info("<><><><><><><><><><>!!!!!!!! = {}", productId.size());
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", new Json(productId.toString()));
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+			response.put("requestForCancelation",
+					orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
+			response.put("New", orderSKUDetailsRepo.findByOrderItemStatus("New").size());
+			response.put("Packed", orderSKUDetailsRepo.findByOrderItemStatus("Packed").size());
+			response.put("Shipped", orderSKUDetailsRepo.findByOrderItemStatus("Shipped").size());
+			response.put("Delivered", orderSKUDetailsRepo.findByOrderItemStatus("Delivered").size());
+			response.put("Return", orderSKUDetailsRepo.findByOrderItemStatus("Return").size());
+			response.put("Active", orderSKUDetailsRepo.findByOrderItemStatus("Active").size());
+			response.put("Cancelled", orderSKUDetailsRepo.findByOrderItemStatus("cancelled").size());
+			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
+
+			return response;
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 }
