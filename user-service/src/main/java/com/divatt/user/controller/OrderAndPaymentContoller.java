@@ -820,5 +820,21 @@ public class OrderAndPaymentContoller {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}	
+	@GetMapping("/skuList")
+	public Map<String, Object> skuList(@RequestHeader("Authorization") String token,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy,
+			@RequestParam(defaultValue = "All") String orderItemStatus) {
+		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
+
+		try {
+			LOGGER.info("Order Status form controller ={}", orderItemStatus);
+			return orderAndPaymentService.getOrdersItemstatus(page, limit, sort, sortName, keyword, sortBy, token, orderItemStatus);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 }
