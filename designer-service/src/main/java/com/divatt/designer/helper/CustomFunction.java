@@ -332,11 +332,19 @@ public class CustomFunction {
 			designerProfile.setCity(body.getDesignerProfile().getCity());
 			designerProfile.setCountry(body.getDesignerProfile().getCountry());
 			designerProfile.setDob(body.getDesignerProfile().getDob());
-			if((!designerLoginEntity.getProfileStatus().equals("APPROVE") || !designerLoginEntity.getProfileStatus().equals("REJECTED")) && !designerLoginEntity.getIsDeleted().equals(false)) {
-				LOGGER.info("Status <><><><><> !!!!! = {}",designerLoginEntity.getProfileStatus());
-				designerProfile.setDigitalSignature(designerLoginEntity.getDesignerProfileEntity().getDesignerProfile().getDigitalSignature());
-			}
-			else {
+			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE") || !designerLoginEntity.getProfileStatus().equals("REJECTED"))
+					&& designerLoginEntity.getIsDeleted().equals(true)) {
+				
+				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
+						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
+						&& !designerLoginEntity.getIsDeleted().equals(true)) {
+					LOGGER.info("Status <><><><><> !!!!! = {}", designerLoginEntity.getProfileStatus());
+					designerProfile.setDigitalSignature(
+							designerLoginEntity.getDesignerProfileEntity().getDesignerProfile().getDigitalSignature());
+				} else {
+					designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
+				}
+			} else {
 				designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
 			}
 			designerProfile.setEmail(body.getDesignerProfile().getEmail());

@@ -300,21 +300,27 @@ public class ProfileContoller {
 			LOGGER.info("Inside Update");
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getProfileStatus());
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getIsProfileCompleted());
+			LOGGER.info("DATATATATATAT = {}", !designerLoginEntity.getIsDeleted().equals(true));
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
-			if((!designerLoginEntity.getProfileStatus().equals("APPROVE") || !designerLoginEntity.getProfileStatus().equals("REJECTED")) && !designerLoginEntity.getIsDeleted().equals(false)) {
-				LOGGER.info("INSIDE IF <><><><><><@!!!");
-				// update designer personal information from admin update
-				DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
-						.findByDesignerId(designerLoginEntity.getdId()).get();
-				DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
-				designerPersonalInfoEntity.setId(infoEntity.getId());
-				designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
-				designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity()
-						.getDesignerPersonalInfoEntity().getBankDetails());
-				designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity()
-						.getDesignerPersonalInfoEntity().getDesignerDocuments());
-				designerPersonalInfoRepo.save(designerPersonalInfoEntity);
-				// end update designer personal information from admin update
+			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE") || !designerLoginEntity.getProfileStatus().equals("REJECTED"))
+					&& designerLoginEntity.getIsDeleted().equals(true)) {
+				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
+						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
+						&& !designerLoginEntity.getIsDeleted().equals(true)) {
+					LOGGER.info("INSIDE IF <><><><><><@!!!");
+					// update designer personal information from admin update
+					DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
+							.findByDesignerId(designerLoginEntity.getdId()).get();
+					DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
+					designerPersonalInfoEntity.setId(infoEntity.getId());
+					designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
+					designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity()
+							.getDesignerPersonalInfoEntity().getBankDetails());
+					designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity()
+							.getDesignerPersonalInfoEntity().getDesignerDocuments());
+					designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+					// end update designer personal information from admin update
+				}
 			}
 			// Old
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
