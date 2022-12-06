@@ -9,7 +9,6 @@ import javax.validation.Valid;
 
 import org.json.simple.JSONObject;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -20,9 +19,8 @@ import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.response.GlobalResponse;
+import com.divatt.user.serviceDTO.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.serviceDTO.CancelationRequestDTO;
-import com.divatt.user.serviceDTO.OrderItemStatusChange;
-import com.divatt.user.serviceDTO.PackedDTO;
 
 public interface OrderAndPaymentService {
 
@@ -95,7 +93,7 @@ public interface OrderAndPaymentService {
 			CancelationRequestDTO cancelationRequestDTO);
 
 	public GlobalResponse cancelApproval(String designerId, String orderId, String productId,
-			CancelationRequestDTO cancelationRequestDTO);
+			CancelationRequestApproveAndRejectDTO cancelationRequestApproveAndRejectDTO);
 
 	public GlobalResponse itemStatusChange(String token, String orderId, String productId,
 			JSONObject statusChange,String orderItemStatus);

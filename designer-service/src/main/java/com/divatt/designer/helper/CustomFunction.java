@@ -1,12 +1,10 @@
 package com.divatt.designer.helper;
 
 import java.util.Date;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,15 +15,11 @@ import com.divatt.designer.entity.product.ProductStageDetails;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
-import com.divatt.designer.exception.*;
+import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepo2;
 import com.divatt.designer.repo.ProductRepository;
-import com.divatt.designer.services.ProductServiceImp2;
 import com.divatt.designer.services.SequenceGenerator;
-
-import io.swagger.models.HttpMethod;
-import net.bytebuddy.utility.RandomString;
 
 @Service
 public class CustomFunction {

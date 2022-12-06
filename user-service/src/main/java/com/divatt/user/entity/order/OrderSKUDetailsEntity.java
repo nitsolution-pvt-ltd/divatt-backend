@@ -1,7 +1,5 @@
 package com.divatt.user.entity.order;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import org.json.simple.JSONObject;
@@ -135,6 +133,8 @@ public class OrderSKUDetailsEntity {
 
 	@JsonFormat(shape = Shape.STRING,pattern = "dd/MM/yyyy HH:mm:ss")
 	private String shippingDate;
+	
+	private String status;
 
 	public OrderSKUDetailsEntity() {
 		super();
@@ -156,7 +156,7 @@ public class OrderSKUDetailsEntity {
 			Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST, String taxType,
 			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn,
 			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
-			Boolean giftwrapStatus, JSONObject giftWrapObject, String userComment, String shippingDate) {
+			Boolean giftwrapStatus, JSONObject giftWrapObject, String userComment, String shippingDate, String status) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -193,6 +193,7 @@ public class OrderSKUDetailsEntity {
 		this.giftWrapObject = giftWrapObject;
 		this.userComment = userComment;
 		this.shippingDate = shippingDate;
+		this.status = status;
 	}
 
 	public Integer getId() {
@@ -479,6 +480,14 @@ public class OrderSKUDetailsEntity {
 		return SEQUENCE_NAME;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", hsn=" + hsn
@@ -492,7 +501,7 @@ public class OrderSKUDetailsEntity {
 				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + ", customObject="
 				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
 				+ ", giftWrapObject=" + giftWrapObject + ", userComment=" + userComment + ", shippingDate="
-				+ shippingDate + ", getId()=" + getId() + ", getUserId()=" + getUserId() + ", getOrderId()="
+				+ shippingDate + ", status=" + status +", getId()=" + getId() + ", getUserId()=" + getUserId() + ", getOrderId()="
 				+ getOrderId() + ", getHsn()=" + getHsn() + ", getDesignerId()=" + getDesignerId() + ", getProductId()="
 				+ getProductId() + ", getProductName()=" + getProductName() + ", getProductSku()=" + getProductSku()
 				+ ", getSize()=" + getSize() + ", getImages()=" + getImages() + ", getColour()=" + getColour()

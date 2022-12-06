@@ -19,7 +19,6 @@ import javax.validation.Valid;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -67,10 +66,7 @@ import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.SequenceGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.mashape.unirest.http.JsonNode;
-
-import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("/designer")

@@ -10,6 +10,7 @@ public class OrderStatusDetails {
 	private JSONObject shippedDetails;
 	private JSONObject deliveryDetails;
 	private JSONObject cancelOrderDetails;
+	private JSONObject cancelRequestDetails;
 
 	public OrderStatusDetails() {
 		super();
@@ -17,7 +18,7 @@ public class OrderStatusDetails {
 	}
 
 	public OrderStatusDetails(String command, JSONObject ordersDetails, JSONObject packedDetails,
-			JSONObject shippedDetails, JSONObject deliveryDetails, JSONObject cancelOrderDetails) {
+			JSONObject shippedDetails, JSONObject deliveryDetails, JSONObject cancelOrderDetails, JSONObject cancelRequestDetails) {
 		super();
 		this.command = command;
 		this.ordersDetails = ordersDetails;
@@ -25,6 +26,7 @@ public class OrderStatusDetails {
 		this.shippedDetails = shippedDetails;
 		this.deliveryDetails = deliveryDetails;
 		this.cancelOrderDetails = cancelOrderDetails;
+		this.cancelRequestDetails = cancelRequestDetails;
 	}
 
 	public String getCommand() {
@@ -74,12 +76,20 @@ public class OrderStatusDetails {
 	public void setCancelOrderDetails(JSONObject cancelOrderDetails) {
 		this.cancelOrderDetails = cancelOrderDetails;
 	}
+	
+	public JSONObject getCancelRequestDetails() {
+		return cancelRequestDetails;
+	}
+
+	public void setCancelRequestDetails(JSONObject cancelRequestDetails) {
+		this.cancelRequestDetails = cancelRequestDetails;
+	}
 
 	@Override
 	public String toString() {
 		return "OrderStatusDetails [command=" + command + ", ordersDetails=" + ordersDetails + ", packedDetails="
 				+ packedDetails + ", shippedDetails=" + shippedDetails + ", deliveryDetails=" + deliveryDetails
-				+ ", cancelOrderDetails=" + cancelOrderDetails + "]";
+				+ ", cancelOrderDetails=" + cancelOrderDetails + ", cancelRequestDetails=" + cancelRequestDetails +"]";
 	}
 
 }
