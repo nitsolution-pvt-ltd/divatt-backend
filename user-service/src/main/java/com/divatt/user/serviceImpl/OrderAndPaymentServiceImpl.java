@@ -51,6 +51,7 @@ import com.divatt.user.entity.InvoiceEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.ProductInvoice;
+import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.order.OrderStatusDetails;
@@ -129,6 +130,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Autowired
 	private JWTConfig jwtconfig;
+
+	@Autowired
+	private UserServiceImpl userServiceImpl;
 
 	@Value("${pdf.directory}")
 	private String pdfDirectory;
@@ -583,7 +587,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							objectss.put("invoiceId", invoiceId.get().getInvoiceId());
 							LOGGER.info(objectss + "Inside objectss");
 						} else {
-							throw new CustomException("After Delivered you can Download Your Invoice");
+							objectss.put("invoiceId", JSONObject.NULL);
 						}
 						if (findByIdTracking.size() > 0) {
 							String writeValueAsStringd = null;
@@ -641,7 +645,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						"Designer Service", host + contextPath + "/userOrder/getOrder/" + orderId,
 						exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			//return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			// return new ResponseEntity<>(exception.getLocalizedMessage(),
+			// HttpStatus.INTERNAL_SERVER_ERROR);
 			throw new CustomException(exception.getLocalizedMessage());
 		}
 	}
@@ -2014,8 +2019,35 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					} else
 						throw new CustomException("The Product is Already " + itemStatus);
 				}
+				Long userId = item.getUserId();
+				UserLoginEntity userById = userServiceImpl.getUserById(userId);
+				String email = userById.getEmail();
+				LOGGER.info(email + "Inside Email");
+				String firstName = userById.getFirstName();
+				String productName = item.getProductName();
+				Long mrp = item.getMrp();
+				String size = item.getSize();
+				String images = item.getImages();
+				Context context = new Context();
+				context.setVariable("firstName", firstName);
+				context.setVariable("productId", productId);
+				context.setVariable("productName", productName);
+				context.setVariable("mrp", mrp);
+				context.setVariable("size", size);
+				if (orderItemStatus.equals("Orders")) {
+					context.setVariable("orderItemStatus", "Verified");
+				} else {
+					context.setVariable("orderItemStatus", orderItemStatus);
+				}
+				context.setVariable("orderId", orderId);
+				context.setVariable("ProductImage", images);
+				String htmlContent = templateEngine.process("orderStatusChange.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+						"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
+				emailSenderThread.start();
 				return new GlobalResponse("Sucess",
 						"Item Status Changed " + itemStatus + " to " + orderItemStatus + " Sucessfully", 200);
+
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
 			}

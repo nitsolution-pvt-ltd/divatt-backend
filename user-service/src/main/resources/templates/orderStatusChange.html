@@ -28,31 +28,20 @@
 				<tr style="font-size: 20px;">
 					<td colspan="5" style="padding: 20px 20px; text-align: center;">
 						<div
-							style="font-family: 'Lato', sans-serif; font-size: 22px; text-transform: uppercase; margin-top: 12px; letter-spacing: 1.5px; font-weight: 600;"><span th:text="${data2.userName}"></span></div>
-				<tr th:each="data1 : ${data2}" style="font-size: 20px;">
+							style="font-family: 'Lato', sans-serif; font-size: 22px; text-transform: uppercase; margin-top: 12px; letter-spacing: 1.5px; font-weight: 600;">
+							Product Has Been <span th:text="${orderItemStatus}"></span>
+						</div>
+				<tr style="font-size: 20px;">
 					<td colspan="5"
 						style="padding: 20px 20px; text-align: left; font-family: 'Lato', sans-serif;">
-						&nbsp; Hi .<span th:text="${data2.userName}"></span><br> <!-- <div style="font-family: 'Lato', sans-serif;text-align: left;font-size: 15px;font-weight: 500;line-height: 30px;color: #000;
+						&nbsp; Hi .<span th:text="${firstName}"></span><br> <!-- <div style="font-family: 'Lato', sans-serif;text-align: left;font-size: 15px;font-weight: 500;line-height: 30px;color: #000;
                             ">
                              &nbsp; &mailto:nbsp;chakraborty123@gmail.com
                         </div> -->
 						<div
 							style="font-family: 'Lato', sans-serif; text-align: center; font-size: 15px; margin-top: 12px; font-weight: bold; line-height: 25px; color: #5b5b5b;">
-							Your order has been <span th:text="${data2.designerName}"></span> by <span
-								th:text="${data2.designerName}"></span>
+							Your Product has been <span th:text="${orderItemStatus}"></span> by Designer
 						</div>
-						<div
-							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #ffffff; background-color: #87c048; padding: 6px 12px;"><span
-								th:text="${data2.OrderId}"></span>  <br />
-							<br /> Thanks,<br /> <span
-								style="font-family: 'Lato', sans-serif; text-align: center; font-size: 15px; font-weight: bold;"
-								th:text="${data2.designerName}"></span>
-						</div>
-						<!--<div style="margin-top: 40px;">Your cancel reason</div>-->
-						<!--<div
-							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #ffffff; background-color: #87c048; padding: 6px 12px;">
-							<span th:text="${data2.comment}"></span>
-						</div> -->
 						<hr
 							style="border-left: 0; border-width: 3px; border-bottom: 0; border-color: rgb(0, 0, 0); margin-top: 38px;">
 					</td>
@@ -84,36 +73,34 @@
 				</tr>
 			</thead>
 			<tbody style="font-family: 'Lato', sans-serif;">
-				<tr th:each="data1 : ${data2}">
 					<td
 						style="width: 10%; text-align: center; padding: 10px; padding-top: 2px; border-left: 1.6px solid #656262; border-bottom: 1.6px solid #656262;">
-						<a><img th:src="@{${data1.ProductImages}}"
+						<a><img th:src="@{${ProductImage}}"
 							style="width: 80%; margin: auto;"></a>
 					</td>
 					<td colspan="3"
 						style="width: 53%; margin-left: 10px; text-align: left; padding: 10px; border-bottom: 1.6px solid #656262; border-left: 1.6px solid #656262; color: #000;">
-						<a><th:block th:text="${data1.ProductName}"></th:block></a>
+						<a><th:block th:text="${productName}"></th:block></a>
 					</td>
 					<td
 						style="width: 15%; padding: 5px; text-align: center; border: 1.6px solid #656262;">
 						<table style="width: 100%;">
 							<tr>
 								<td style="width: 100%; color: #000;">Size :</td>
-								<td style="color: #000;"><th:block
-										th:text="${data1.ProductSize}"></th:block></td>
+								<td style="color: #000;"><th:block th:text="${size}"></th:block></td>
 							</tr>
 						</table>
 					</td>
 					<td
 						style="width: 10%;; font-weight: bold; font-size: 14px; border-bottom: 1.6px solid #656262; border-right: 1.5px solid #656262; text-align: center;">
-						<th:block th:text="${data1.OrderId}"></th:block>
+						<th:block th:text="${orderId}"></th:block>
 					</td>
 					<td
 						style="width: 16%;; font-weight: bold; font-size: 14px; border-bottom: 1.6px solid #656262; border-left: 1.6px solid #656262;">
 						<table style="width: 100%;">
 							<tr>
 								<td style="text-align: center; font-weight: 600; color: #000;">
-									<!--₹-->Rs. <th:block th:text="${data1.SalePrice}"></th:block>
+									<!--₹-->Rs. <th:block th:text="${mrp}"></th:block>
 								</td>
 							</tr>
 						</table>
