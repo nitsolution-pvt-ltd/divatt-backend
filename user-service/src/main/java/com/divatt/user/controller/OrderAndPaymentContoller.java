@@ -815,7 +815,8 @@ public class OrderAndPaymentContoller {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-	}	
+	}
+
 	@GetMapping("/skuList")
 	public Map<String, Object> skuList(@RequestHeader("Authorization") String token,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
@@ -826,17 +827,19 @@ public class OrderAndPaymentContoller {
 
 		try {
 			LOGGER.info("Order Status form controller ={}", orderItemStatus);
-			return orderAndPaymentService.getOrdersItemstatus(page, limit, sort, sortName, keyword, sortBy, token, orderItemStatus);
+			return orderAndPaymentService.getOrdersItemstatus(page, limit, sort, sortName, keyword, sortBy, token,
+					orderItemStatus);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
+
 	@GetMapping("/getInvoiceByOrderId/{orderId}")
-	public OrderInvoiceEntity getByOrderId(@PathVariable String orderId) {
+	public Optional<OrderInvoiceEntity> getByOrderId(@PathVariable String orderId) {
 		try {
 			return this.orderAndPaymentService.getInvoiceByOrderId(orderId);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

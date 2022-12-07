@@ -576,12 +576,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						objectss.put("customization", productById.getBody().get("customization"));
 						objectss.put("withGiftWrap", productById.getBody().get("giftWrap"));
 						String orderId2 = OrderSKUDetailsRow.get(0).getOrderId();
-						LOGGER.info(orderId2+"inside OrderID2");
-						OrderInvoiceEntity invoiceId = getInvoiceByOrderId(orderId2);
-						LOGGER.info(invoiceId + "Inside Invoice");
-						objectss.put("invoiceId", invoiceId.getInvoiceId());
-						LOGGER.info(objectss + "Inside objectss");
-
+						LOGGER.info(orderId2 + "inside OrderID2");
+						Optional<OrderInvoiceEntity> invoiceId = getInvoiceByOrderId(orderId2);
+//						LOGGER.info(invoiceId + "Inside Invoice");
+						if (invoiceId.isPresent()) {
+							objectss.put("invoiceId", invoiceId.get().getInvoiceId());
+							LOGGER.info(objectss + "Inside objectss");
+						} else {
+							throw new CustomException("After Delivered you can Download Your Invoice");
+						}
 						if (findByIdTracking.size() > 0) {
 							String writeValueAsStringd = null;
 							try {
@@ -638,7 +641,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						"Designer Service", host + contextPath + "/userOrder/getOrder/" + orderId,
 						exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			//return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new CustomException(exception.getLocalizedMessage());
 		}
 	}
 
@@ -2360,11 +2364,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	@Override
-	public OrderInvoiceEntity getInvoiceByOrderId(String orderId) {
+	public Optional<OrderInvoiceEntity> getInvoiceByOrderId(String orderId) {
 		try {
-			Query query = new Query();
-			query.addCriteria(Criteria.where("orderId").is(orderId));
-			return mongoOperations.findOne(query, OrderInvoiceEntity.class);
+			return this.orderInvoiceRepo.findByOrderId(orderId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

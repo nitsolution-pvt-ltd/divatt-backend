@@ -28,8 +28,7 @@
 				<tr style="font-size: 20px;">
 					<td colspan="5" style="padding: 20px 20px; text-align: center;">
 						<div
-							style="font-family: 'Lato', sans-serif; font-size: 22px; text-transform: uppercase; margin-top: 12px; letter-spacing: 1.5px; font-weight: 600;">Order
-							canceled.</div>
+							style="font-family: 'Lato', sans-serif; font-size: 22px; text-transform: uppercase; margin-top: 12px; letter-spacing: 1.5px; font-weight: 600;"><span th:text="${data2.userName}"></span></div>
 				<tr th:each="data1 : ${data2}" style="font-size: 20px;">
 					<td colspan="5"
 						style="padding: 20px 20px; text-align: left; font-family: 'Lato', sans-serif;">
@@ -39,30 +38,21 @@
                         </div> -->
 						<div
 							style="font-family: 'Lato', sans-serif; text-align: center; font-size: 15px; margin-top: 12px; font-weight: bold; line-height: 25px; color: #5b5b5b;">
-							Your order has been canceled by <span
-								th:text="${data2.designerName}"></span>. Reason of cancel.
+							Your order has been <span th:text="${data2.designerName}"></span> by <span
+								th:text="${data2.designerName}"></span>
 						</div>
 						<div
-							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #ffffff; background-color: #87c048; padding: 6px 12px;">
-							We are writing to you about your order <span
-								th:text="${data2.OrderId}"></span>. We are sorry to let you know
-							that the order has been cancelled due to unexpected constraints
-							experienced by the seller. We understand that you were keen on
-							getting this order. If you like, you can place a fresh order for
-							this item within the next 7 days. If the price for the item
-							increases, we will track your order and a Gift Card worth the
-							difference amount will be added to your Divatt account within 7
-							days of the product being delivered. We would like to thank you
-							for your understanding. Stay home. Stay safe <br />
+							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #ffffff; background-color: #87c048; padding: 6px 12px;"><span
+								th:text="${data2.OrderId}"></span>  <br />
 							<br /> Thanks,<br /> <span
 								style="font-family: 'Lato', sans-serif; text-align: center; font-size: 15px; font-weight: bold;"
 								th:text="${data2.designerName}"></span>
 						</div>
-						<div style="margin-top: 40px;">Your cancel reason</div>
-						<div
+						<!--<div style="margin-top: 40px;">Your cancel reason</div>-->
+						<!--<div
 							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #ffffff; background-color: #87c048; padding: 6px 12px;">
 							<span th:text="${data2.comment}"></span>
-						</div>
+						</div> -->
 						<hr
 							style="border-left: 0; border-width: 3px; border-bottom: 0; border-color: rgb(0, 0, 0); margin-top: 38px;">
 					</td>
