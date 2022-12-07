@@ -66,19 +66,19 @@ spring:
         predicates[0]: Path=/dev/order/**
       routes[15]:
         uri: https://localhost:8084/dev/hsn
-        id: Designer
+        id: Admin
         predicates[0]: Path=/dev/hsn/**
+#      routes[16]:
+#        uri: https://localhost:8085/dev/measurement
+#        id: Designer
+#        predicates[0]: Path=/dev/measurement/**
       routes[16]:
-        uri: https://localhost:8085/dev/measurement
-        id: Designer
-        predicates[0]: Path=/dev/measurement/**
-      routes[17]:
         uri: https://localhost:8083/dev/designerProducts
         id: Designer
         predicates[0]: Path=/dev/designerProducts/**
-      routes[18]:
+      routes[17]:
         uri: https://localhost:8082/dev/userMeasurement
-        id: Designer
+        id: User
         predicates[0]: Path=/dev/userMeasurement/**
       globalcors:
         corsConfigurations:
@@ -87,6 +87,7 @@ spring:
             allowedMethods: GET, POST, PUT, DELETE
             max-age: '3600'
             allowed-origins: '*'
+  profiles: dev
   application:
     name: ApiGatway
 server:
@@ -98,15 +99,110 @@ server:
     key-password: Divatt
     key-store-password: Divatt
     enabled: true
-#    key-store: classpath:gateway-server.jks
-#    key-store-type: JKS
-#    key-alias: gateway-server
-#    key-password: Dapp@1234
-#    key-store-password: Dapp@1234
-#    enabled: true
-#    protocol: TLS
-#    enabled-protocols: TLSv1.2
 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+      
+---
+spring:
+  cloud:
+    gateway:
+      httpclient:
+        ssl:
+          useInsecureTrustManager: true
+      routes[0]:
+        uri: https://localhost:9091/prod/auth
+        id: LoginService
+        predicates[0]: Path=/prod/auth/**
+      routes[1]:
+        id: Admin
+        predicates[0]: Path=/prod/category/**
+        uri: https://localhost:9093/prod/category
+      routes[2]:
+        id: Admin
+        uri: https://localhost:9093/prod/admin/profile
+        predicates[0]: Path=/prod/admin/profile/**
+      routes[3]:
+        predicates[0]: Path=/prod/admin/**
+        id: Admin
+        uri: https://localhost:9093/prod/admin
+      routes[4]:
+        uri: https://localhost:9093/prod/subcategory
+        id: Admin
+        predicates[0]: Path=/prod/subcategory/**
+      routes[5]:
+        uri: https://localhost:9093/prod/specification
+        id: Admin
+        predicates[0]: Path=/prod/specification/**
+      routes[6]:
+        uri: https://localhost:9093/prod/productMeasurement
+        id: Admin
+        predicates[0]: Path=/prod/productMeasurement/**
+      routes[7]:
+        uri: https://localhost:9093/prod/product
+        id: Admin
+        predicates[0]: Path=/prod/product/**
+      routes[8]:
+        uri: https://localhost:9093/prod/adminMData
+        id: Admin
+        predicates[0]: Path=/prod/adminMData/**
+      routes[9]:
+        uri: https://localhost:9094/prod/designerProduct
+        id: Designer
+        predicates[0]: Path=/prod/designerProduct/**
+      routes[10]:
+        uri: https://localhost:9094/prod/designer
+        id: Designer
+        predicates[0]: Path=/prod/designer/**
+      routes[11]:
+        uri: https://localhost:9094/prod/orderStatus
+        id: Designer
+        predicates[0]: Path=/prod/orderStatus/**
+      routes[12]:
+        uri: https://localhost:9092/prod/user
+        id: User
+        predicates[0]: Path=/prod/user/**
+      routes[13]:
+        uri: https://localhost:9092/prod/userOrder
+        id: User
+        predicates[0]: Path=/prod/userOrder/**
+      routes[14]:
+        uri: https://localhost:9094/prod/order
+        id: Designer
+        predicates[0]: Path=/prod/order/**
+      routes[15]:
+        uri: https://localhost:9093/prod/hsn
+        id: Admin
+        predicates[0]: Path=/prod/hsn/**
+      routes[16]:
+        uri: https://localhost:9094/prod/designerProducts
+        id: Designer
+        predicates[0]: Path=/prod/designerProducts/**
+      routes[17]:
+        uri: https://localhost:9092/prod/userMeasurement
+        id: User
+        predicates[0]: Path=/prod/userMeasurement/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowed-headers: '*'
+            allowedMethods: GET, POST, PUT, DELETE
+            max-age: '3600'
+            allowed-origins: '*'
+  profiles: prod
+  application:
+    name: ApiGatway
+server:
+  port: 9090
+  ssl:
+    key-store: classpath:local-ssl.p12
+    key-store-type: PKCS12
+    key-alias: local_ssl
+    key-password: Divatt
+    key-store-password: Divatt
+    enabled: true
 
 eureka:
   client:

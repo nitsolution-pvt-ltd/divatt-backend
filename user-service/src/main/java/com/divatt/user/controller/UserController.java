@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -41,6 +42,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.designerProductEntity.ProductMasterEntity;
@@ -66,6 +69,8 @@ import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.jsonwebtoken.ExpiredJwtException;
 
 
 @RestController
@@ -570,7 +575,13 @@ public class UserController {
 			if(findByUserId.size()<1)
 				throw new CustomException("No address added");
 			return ResponseEntity.ok(findByUserId);
+		}
+		catch(ExpiredJwtException e) {
+//			throw new CustomException(e.getMessage());
+			LOGGER.error("HttpStatusCodeException <><<>");
+			return new ResponseEntity(e.getMessage(), HttpStatus.UNAUTHORIZED);
 		}catch(Exception e) {
+			LOGGER.error("Exception");
 			throw new CustomException(e.getMessage());
 		}
 		

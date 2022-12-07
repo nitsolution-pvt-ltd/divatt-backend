@@ -1,23 +1,12 @@
 spring:
   profiles: default
   application: 
-     name: User 
-#  jpa:
-#    show-sql: true
-#    generate-ddl: true
-#    hibernate:
-#      ddl-auto: update
-#      format_sql: true
-#  datasource:
-#    driverClassName: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://15.207.103.249:3306/divatt
-#    username: divatt_user
-#    password: P@ssw0rd123
+     name: User
   data:
     mongodb:
       authentication-database: admin
       database: divatt
-      host: 65.1.190.195 #13.234.240.158  #65.1.190.195:27017
+      host: 65.1.190.195
       password: word_pass
       port: 27017
       username: dbuser 
@@ -45,29 +34,18 @@ logging:
         org.hibernate: ERROR
         
 jwt.secret.key: c2VjcmV0
-jwt.token.validity: 1296000000
+jwt.token.validity: 2592000000
 
 ---
 spring:
   profiles: dev
   application: 
      name: User 
-#  jpa:
-#    show-sql: true
-#    generate-ddl: true
-#    hibernate:
-#      ddl-auto: update
-#      format_sql: true
-#  datasource:
-#    driverClassName: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://15.207.103.249:3306/divatt
-#    username: divatt_user
-#    password: P@ssw0rd123
   data:
     mongodb:
       authentication-database: admin
       database: divatt
-      host: 65.1.190.195 #13.234.240.158  #65.1.190.195:27017,,,,, 65.0.194.170
+      host: 65.1.190.195
       password: word_pass
       port: 27017
       username: dbuser 
@@ -83,11 +61,6 @@ server:
     key-password: Divatt
     key-store-password: Divatt
     enabled: true
-#    key-store: classpath:gateway-server.jks
-#    key-store-type: JKS
-#    key-store-password: Dapp@1234
-#    key-alias: gateway-server
-#    key-password: Dapp@1234
 name: dev-yml
 environment: dev
 enabled: true
@@ -107,7 +80,7 @@ logging:
         org.hibernate: ERROR
         
 jwt.secret.key: c2VjcmV0
-jwt.token.validity: 1296000000
+jwt.token.validity: 2592000000
 
 
 ---
@@ -115,30 +88,26 @@ spring:
   profiles: prod
   application: 
      name: User 
-#  jpa:
-#    show-sql: true
-#    generate-ddl: true
-#    hibernate:
-#      ddl-auto: update
-#      format_sql: true
-#  datasource:
-#    driverClassName: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://15.207.103.249:3306/divatt
-#    username: divatt_user
-#    password: P@ssw0rd123
   data:
     mongodb:
       authentication-database: admin
       database: divatt
-      host: 13.234.240.158  #65.1.190.195:27017,,,,, 65.0.194.170
+      host: 65.1.190.195
       password: word_pass
       port: 27017
       username: dbuser 
  
 server: 
-  port: 8082
+  port: 9092
   servlet: 
     contextPath: /prod
+  ssl:
+    key-store: classpath:local-ssl.p12
+    key-store-type: PKCS12
+    key-alias: local_ssl
+    key-password: Divatt
+    key-store-password: Divatt
+    enabled: true
 name: prod-yml
 environment: prod
 enabled: true
@@ -158,8 +127,4 @@ logging:
         org.hibernate: ERROR
         
 jwt.secret.key: c2VjcmV0
-jwt.token.validity: 1296000000
-
-
-
-
+jwt.token.validity: 2592000000
