@@ -107,5 +107,7 @@ public interface OrderAndPaymentService {
 	public Map<String, Object> getOrdersItemstatus(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy, String token, String orderStatus);
 
+	public OrderInvoiceEntity getInvoiceByOrderId(String orderId);
+
 
 }

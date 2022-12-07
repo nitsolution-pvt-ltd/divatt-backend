@@ -541,7 +541,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 				LOGGER.info(e.getOrderId() + "Inside OrderId");
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
-
 				LOGGER.info(OrderPaymentRow + " Inside PaymentRow");
 				LOGGER.info(OrderSKUDetailsRow + " Inside OrderSku");
 				OrderSKUDetailsRow.forEach(D -> {
@@ -576,6 +575,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						LOGGER.info(objectss + "Inside objectss");
 						objectss.put("customization", productById.getBody().get("customization"));
 						objectss.put("withGiftWrap", productById.getBody().get("giftWrap"));
+						String orderId2 = OrderSKUDetailsRow.get(0).getOrderId();
+						LOGGER.info(orderId2+"inside OrderID2");
+						OrderInvoiceEntity invoiceId = getInvoiceByOrderId(orderId2);
+						LOGGER.info(invoiceId + "Inside Invoice");
+						objectss.put("invoiceId", invoiceId.getInvoiceId());
 						LOGGER.info(objectss + "Inside objectss");
 
 						if (findByIdTracking.size() > 0) {
@@ -1578,43 +1582,43 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					.filter(e -> e.getProductId() == Integer.parseInt(productId)).collect(Collectors.toList());
 			LOGGER.info(orderDetails + "");
 			String orderItemStatus = orderDetails.get(0).getOrderItemStatus();
-			LOGGER.info("orderItemStatus"+orderItemStatus);
+			LOGGER.info("orderItemStatus" + orderItemStatus);
 			orderDetails.get(0).setStatus(orderItemStatus);
 			String status = orderDetails.get(0).getStatus();
-			LOGGER.info("status"+ status);
-			if(!orderDetails.get(0).getOrderItemStatus().equals("New")) {
-			org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-			jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
-			jsonObject.put("cancelationTime", new Date());
-			OrderStatusDetails orderStatusDetails = orderDetails.get(0).getOrderStatusDetails();
-			try {
-			orderStatusDetails.setCancelOrderDetails(jsonObject);
-			orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-			orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-			orderSKUDetailsRepo.saveAll(orderDetails);
-			}catch (Exception e) {
-				orderStatusDetails.setCancelOrderDetails(jsonObject);
-				orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-				orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-				orderSKUDetailsRepo.saveAll(orderDetails);
-			}
-		}else {
-			org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-			jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
-			jsonObject.put("cancelationTime", new Date());
-			OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-			try {
-				orderStatusDetails.setCancelOrderDetails(jsonObject);
-				orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-				orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-				orderSKUDetailsRepo.saveAll(orderDetails);
-				}catch (Exception e) {
+			LOGGER.info("status" + status);
+			if (!orderDetails.get(0).getOrderItemStatus().equals("New")) {
+				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+				jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
+				jsonObject.put("cancelationTime", new Date());
+				OrderStatusDetails orderStatusDetails = orderDetails.get(0).getOrderStatusDetails();
+				try {
+					orderStatusDetails.setCancelOrderDetails(jsonObject);
+					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+					orderSKUDetailsRepo.saveAll(orderDetails);
+				} catch (Exception e) {
 					orderStatusDetails.setCancelOrderDetails(jsonObject);
 					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
 					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
 					orderSKUDetailsRepo.saveAll(orderDetails);
 				}
-		}
+			} else {
+				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+				jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
+				jsonObject.put("cancelationTime", new Date());
+				OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+				try {
+					orderStatusDetails.setCancelOrderDetails(jsonObject);
+					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+					orderSKUDetailsRepo.saveAll(orderDetails);
+				} catch (Exception e) {
+					orderStatusDetails.setCancelOrderDetails(jsonObject);
+					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+					orderSKUDetailsRepo.saveAll(orderDetails);
+				}
+			}
 			return new GlobalResponse("Success", "Cancelation request send successfully", 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1624,7 +1628,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public GlobalResponse cancelApproval(String designerId, String orderId, String productId,
-			CancelationRequestApproveAndRejectDTO cancelationRequestApproveAndRejectDTO ) {
+			CancelationRequestApproveAndRejectDTO cancelationRequestApproveAndRejectDTO) {
 		try {
 			List<OrderSKUDetailsEntity> orderDetails = orderSKUDetailsRepo
 					.findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatus(Integer.parseInt(productId),
@@ -1690,48 +1694,48 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 //						.findByProductIdAndDesignerIdAndOrderId(Integer.parseInt(productId),
 //								Integer.parseInt(designerId), orderId);
 				String orderItemStatus = orderDetails.get(0).getOrderItemStatus();
-				LOGGER.info("orderItemStatus"+orderItemStatus);
+				LOGGER.info("orderItemStatus" + orderItemStatus);
 //				sKUdetailsData.get(0).setStatus(orderItemStatus);
-					String status = orderDetails.get(0).getStatus();
-					LOGGER.info("status"+status);
-					CancelEmailJSON cancelEmailJSON = new CancelEmailJSON();
-					cancelEmailJSON.setOrderId(orderDetails.get(0).getOrderId());
-					cancelEmailJSON.setProductImages(orderDetails.get(0).getImages());
-					cancelEmailJSON.setProductName(orderDetails.get(0).getProductName());
-					cancelEmailJSON.setProductSize(orderDetails.get(0).getSize());
-					cancelEmailJSON.setSalePrice(orderDetails.get(0).getSalesPrice() + "");
-					cancelEmailJSON.setUserName(username);
-					cancelEmailJSON.setDesignerName(designerName);
-					cancelEmailJSON.setComment(cancelationRequestApproveAndRejectDTO.getComment());
-					orderDetails.get(0).setOrderItemStatus(status);
-					OrderStatusDetails details = orderDetails.get(0).getOrderStatusDetails();
-					org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-					jsonObject.put("rejectionTime", new Date());
-					jsonObject.put("adminRejectionComment", cancelationRequestApproveAndRejectDTO.getComment());
-					
-					try {
+				String status = orderDetails.get(0).getStatus();
+				LOGGER.info("status" + status);
+				CancelEmailJSON cancelEmailJSON = new CancelEmailJSON();
+				cancelEmailJSON.setOrderId(orderDetails.get(0).getOrderId());
+				cancelEmailJSON.setProductImages(orderDetails.get(0).getImages());
+				cancelEmailJSON.setProductName(orderDetails.get(0).getProductName());
+				cancelEmailJSON.setProductSize(orderDetails.get(0).getSize());
+				cancelEmailJSON.setSalePrice(orderDetails.get(0).getSalesPrice() + "");
+				cancelEmailJSON.setUserName(username);
+				cancelEmailJSON.setDesignerName(designerName);
+				cancelEmailJSON.setComment(cancelationRequestApproveAndRejectDTO.getComment());
+				orderDetails.get(0).setOrderItemStatus(status);
+				OrderStatusDetails details = orderDetails.get(0).getOrderStatusDetails();
+				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+				jsonObject.put("rejectionTime", new Date());
+				jsonObject.put("adminRejectionComment", cancelationRequestApproveAndRejectDTO.getComment());
 
-						details.setCancelRequestDetails(jsonObject);
-						orderDetails.get(0).setOrderStatusDetails(details);
-						orderSKUDetailsRepo.save(orderDetails.get(0));
-					} catch (Exception e) {
-						details.setCancelRequestDetails(jsonObject);
-						orderDetails.get(0).setOrderStatusDetails(details);
-						orderSKUDetailsRepo.save(orderDetails.get(0));
-					}
+				try {
+
+					details.setCancelRequestDetails(jsonObject);
+					orderDetails.get(0).setOrderStatusDetails(details);
 					orderSKUDetailsRepo.save(orderDetails.get(0));
-					// LOGGER.info(cancelEmailJSON+"");
-					data.put("data2", cancelEmailJSON);
-					// data1.put("designerName", designerName);
-					Context context = new Context();
-					context.setVariables(data);
-					// context.setVariables(data1);
-					LOGGER.info(designerEmail);
-					String htmlContent = templateEngine.process("ordercancelRejected.html", context);
-					EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail,
-							"Order cancelation rejected", htmlContent, true, null, restTemplate);
-					emailSenderThread.start();
-				
+				} catch (Exception e) {
+					details.setCancelRequestDetails(jsonObject);
+					orderDetails.get(0).setOrderStatusDetails(details);
+					orderSKUDetailsRepo.save(orderDetails.get(0));
+				}
+				orderSKUDetailsRepo.save(orderDetails.get(0));
+				// LOGGER.info(cancelEmailJSON+"");
+				data.put("data2", cancelEmailJSON);
+				// data1.put("designerName", designerName);
+				Context context = new Context();
+				context.setVariables(data);
+				// context.setVariables(data1);
+				LOGGER.info(designerEmail);
+				String htmlContent = templateEngine.process("ordercancelRejected.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail, "Order cancelation rejected",
+						htmlContent, true, null, restTemplate);
+				emailSenderThread.start();
+
 				return new GlobalResponse("Success", "Order cancelation request rejected successfully", 200);
 			}
 		} catch (Exception e) {
@@ -2347,10 +2351,20 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Cancelled", orderSKUDetailsRepo.findByOrderItemStatus("cancelled").size());
 			response.put("Orders", orderSKUDetailsRepo.findByOrderItemStatus("Orders").size());
 			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
-			
 
 			return response;
 
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@Override
+	public OrderInvoiceEntity getInvoiceByOrderId(String orderId) {
+		try {
+			Query query = new Query();
+			query.addCriteria(Criteria.where("orderId").is(orderId));
+			return mongoOperations.findOne(query, OrderInvoiceEntity.class);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

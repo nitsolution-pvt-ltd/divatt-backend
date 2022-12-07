@@ -832,4 +832,12 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
+	@GetMapping("/getInvoiceByOrderId/{orderId}")
+	public OrderInvoiceEntity getByOrderId(@PathVariable String orderId) {
+		try {
+			return this.orderAndPaymentService.getInvoiceByOrderId(orderId);
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
