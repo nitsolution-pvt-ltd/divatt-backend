@@ -1,6 +1,7 @@
 package com.divatt.auth.controller;
 
 import java.io.File;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Calendar;
@@ -375,7 +376,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
 			String decodedString = new String(decodedBytes);
 			String forgotPasswordLink = uuid.toString() + "/" + format;
-
+			StringBuilder sb = new StringBuilder();
 			// ** CHECKING THE EMAIL IS PREASENT IN DATABASE **//
 			Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(email);
 			LOGGER.info("Inside findbyusername " + loginRepository.findByEmail(email));
@@ -386,9 +387,15 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			if (!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent() && !findByUserName.isPresent()) {
 				throw new CustomException("Oops! No such user account found");
 			} else {
-//			if (findByUserName.isPresent()) {
-				if (findByUserNameDesigner.get().getIsDeleted() == true) {
-					throw new CustomException("Your account has been deleted and no need to do any action");
+//			if (findByUserName.isPresent()) 
+				try {
+					if (findByUserNameDesigner.get().getIsDeleted() == true) {
+						throw new CustomException("Your account has been deleted and no need to do any action");
+					}
+				} catch (Exception e) {
+					if (findByUserNameUser.get().getIsDeleted().equals(true)) {
+						throw new CustomException("Your account has been deleted and no need to do any action");
+					}
 				}
 				PasswordResetEntity loginResetEntity = new PasswordResetEntity();
 				Object id = null;
@@ -424,11 +431,22 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				} else {
 					// ** SEND MAIL IF DETAILS SAVE IN DATABASE **//
 					if (save.getUser_type().equals("ADMIN")) {
-						mailService.sendEmail(findByUserName.get().getEmail(), "Forgot Password Link",
-								"Hi " + findByUserName.get().getFirstName() + " " + findByUserName.get().getLastName()
-										+ " This is Your Link Reset Password "
-										+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink,
-								false);
+						LOGGER.info(findByUserName.get().getEmail() + "Inside Email");
+						URI uri = URI.create("https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink);
+						sb.append("Hi " + findByUserName.get().getFirstName() + "" + ",\n\n"
+								+ "We are sending you this email because you requested a password reset. You can change your Password by clicking the button below.");
+						sb.append("<br><br><br><div style=\"text-align:center\"><a href=\""
+								+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink
+								+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">CHANGE PASSWORD</a></div><br><br>We will verify your details and come back to you soon.");
+						SendMail mail = new SendMail(findByUserName.get().getEmail(), "Reset Divatt Password",
+								sb.toString(), false);
+						LOGGER.info(findByUserName.get().getEmail() + "Inside Email");
+						try {
+							ResponseEntity<String> response = restTemplate
+									.postForEntity("https://localhost:8080/dev/auth/sendMail", mail, String.class);
+						} catch (Exception e) {
+							System.out.println(e.getMessage());
+						}
 						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
 					} else if (save.getUser_type().equals("DESIGNER")) {
 						DesignerProfileEntity designerLogin = restTemplate.getForEntity(
@@ -436,19 +454,37 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 								DesignerProfileEntity.class).getBody();
 						LOGGER.info(designerLogin.getDesignerProfile().getFirstName1() + " "
 								+ designerLogin.getDesignerProfile().getLastName1() + "Inside json");
-						mailService.sendEmail(findByUserNameDesigner.get().getEmail(), "Forgot Password Link",
-								"Hi " + designerLogin.getDesignerProfile().getFirstName1() + " "
-										+ designerLogin.getDesignerProfile().getLastName1()
-										+ " This is Link for reset password "
-										+ "https://dev.divatt.com/designer/reset-password/" + forgotPasswordLink,
-								false);
+						URI uri = URI.create("https://dev.divatt.com/designer/reset-password/" + forgotPasswordLink);
+						sb.append("Hi " + designerLogin.getDesignerProfile().getFirstName1() + " "
+								+ designerLogin.getDesignerProfile().getLastName1() + "" + ",\n\n"
+								+ "We are sending you this email because you requested a password reset. You can change your Password by clicking the button below.");
+						sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
+								+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">CHANGE PASSWORD</a></div><br><br>If you didn't request a password reset, you can ignore this email.Your password will not be changed.");
+						SendMail mail = new SendMail(findByUserNameDesigner.get().getEmail(), "Reset Divatt Password",
+								sb.toString(), false);
+						LOGGER.info(findByUserNameDesigner.get().getEmail() + "Inside Email");
+						try {
+							ResponseEntity<String> response = restTemplate
+									.postForEntity("https://localhost:8080/dev/auth/sendMail", mail, String.class);
+						} catch (Exception e) {
+							System.out.println(e.getMessage());
+						}
 						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
 					} else {
-						mailService.sendEmail(findByUserNameUser.get().getEmail(), "Forgot Password Link",
-								"Hi " + findByUserNameUser.get().getFirstName() + " "
-										+ findByUserNameUser.get().getLastName() + " This is Link for reset password "
-										+ "https://dev.divatt.com/divatt/forgetpassword/" + forgotPasswordLink,
-								false);
+						URI uri = URI.create("https://dev.divatt.com/divatt/forgetpassword/" + forgotPasswordLink);
+						sb.append("Hi " + findByUserNameUser.get().getFirstName() + " "
+								+ findByUserNameUser.get().getLastName() + "" + ",\n\n"
+								+ "We are sending you this email because you requested a password reset. You can change your Password by clicking the button below.");
+						sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
+								+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">CHANGE PASSWORD</a></div><br><br>We will verify your details and come back to you soon.");
+						SendMail mail = new SendMail(findByUserNameUser.get().getEmail(), "Reset Divatt Password",
+								sb.toString(), false);
+						try {
+							ResponseEntity<String> response = restTemplate
+									.postForEntity("https://localhost:8080/dev/auth/sendMail", mail, String.class);
+						} catch (Exception e) {
+							System.out.println(e.getMessage());
+						}
 						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
 					}
 				}
