@@ -114,6 +114,7 @@ public class ProductMasterEntity2 implements Cloneable {
 	private String updatedBy;
 	private String subCategoryName;
 	private String categoryName;
+	private String weightUnit;
 	private DesignerProfile designerProfile;
 
 	public ProductMasterEntity2() {
@@ -127,12 +128,12 @@ public class ProductMasterEntity2 implements Cloneable {
 			com.divatt.designer.entity.product.productDetails productDetails, String designCustomizationFeatures,
 			Boolean withCustomization, Boolean withDesignCustomization, Boolean withGiftWrap, Boolean returnAcceptable,
 			Boolean cancelAcceptable, Boolean cod, @NotEmpty(message = "Price Type Required") String priceType,
-			@NotEmpty(message = "Price Type Required") String colour, List<String> sizes, Integer soh, Integer oos,
+			@NotEmpty(message = "Color Required") String colour, List<String> sizes, Integer soh, Integer oos,
 			Integer notify, String priceCode, Integer mrp, String adminStatus, Deal deal, Integer giftWrapAmount,
 			ExtraSpecifications extraSpecifications, String productWeight, String shipmentTime, ImageEntity[] images,
 			Boolean isActive, Boolean isDeleted, String productStage, ProductStageDetails productStageDetails,
 			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String subCategoryName,
-			String categoryName, DesignerProfile designerProfile) {
+			String categoryName, String weightUnit, DesignerProfile designerProfile) {
 		super();
 		this.productId = productId;
 		this.sku = sku;
@@ -175,6 +176,7 @@ public class ProductMasterEntity2 implements Cloneable {
 		this.updatedBy = updatedBy;
 		this.subCategoryName = subCategoryName;
 		this.categoryName = categoryName;
+		this.weightUnit = weightUnit;
 		this.designerProfile = designerProfile;
 	}
 
@@ -370,11 +372,11 @@ public class ProductMasterEntity2 implements Cloneable {
 		this.mrp = mrp;
 	}
 
-	public String getadminStatus() {
+	public String getAdminStatus() {
 		return adminStatus;
 	}
 
-	public void setadminStatus(String adminStatus) {
+	public void setAdminStatus(String adminStatus) {
 		this.adminStatus = adminStatus;
 	}
 
@@ -498,10 +500,6 @@ public class ProductMasterEntity2 implements Cloneable {
 		this.subCategoryName = subCategoryName;
 	}
 
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
-
 	public String getCategoryName() {
 		return categoryName;
 	}
@@ -510,12 +508,24 @@ public class ProductMasterEntity2 implements Cloneable {
 		this.categoryName = categoryName;
 	}
 
+	public String getWeightUnit() {
+		return weightUnit;
+	}
+
+	public void setWeightUnit(String weightUnit) {
+		this.weightUnit = weightUnit;
+	}
+
 	public DesignerProfile getDesignerProfile() {
 		return designerProfile;
 	}
 
 	public void setDesignerProfile(DesignerProfile designerProfile) {
 		this.designerProfile = designerProfile;
+	}
+
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
 	}
 
 	@Override
@@ -533,7 +543,8 @@ public class ProductMasterEntity2 implements Cloneable {
 				+ ", shipmentTime=" + shipmentTime + ", images=" + Arrays.toString(images) + ", isActive=" + isActive
 				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", productStageDetails="
 				+ productStageDetails + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", updatedOn="
-				+ updatedOn + ", updatedBy=" + updatedBy + ", subCategoryName=" + subCategoryName + ", categoryName"
-				+ categoryName + " ,designerProfile" + designerProfile + "]";
+				+ updatedOn + ", updatedBy=" + updatedBy + ", subCategoryName=" + subCategoryName + ", categoryName="
+				+ categoryName + ", weightUnit=" + weightUnit + ", designerProfile=" + designerProfile + "]";
 	}
+
 }
