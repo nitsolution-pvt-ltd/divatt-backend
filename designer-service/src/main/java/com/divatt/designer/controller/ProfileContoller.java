@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -251,8 +252,8 @@ public class ProfileContoller {
 				}
 
 				StringBuilder sb = new StringBuilder();
-				URI uri = URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
-				.encodeToString(designerLoginEntity.getEmail().toString().getBytes()));
+				URI uri = URI.create("https://65.1.190.195:8083/dev/designer/redirect/"
+						+ Base64.getEncoder().encodeToString(designerLoginEntity.getEmail().toString().getBytes()));
 				sb.append("Hi " + designerProfileEntity.getDesignerName() + "" + ",\n\n"
 						+ "Welcome to Divatt We are delighted to have you join us as a designer.\n"
 						+ "We are committed to providing our designer with a secure and safe platform to conduct business. Our website has been designed to make it easy for buyers to find the products they need and for designer to reach those buyers. We offer a wide range of tools and services to help you succeed, including payment processing, customer support, product listing, and promotions.\n\n"
@@ -268,7 +269,8 @@ public class ProfileContoller {
 //										.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
 //								+ " . We will verify your details and come back to you soon.",
 //						false);
-				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),"Successfully Registration", sb.toString(),false);
+				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
+						"Successfully Registration", sb.toString(), false);
 				try {
 					ResponseEntity<String> response = restTemplate
 							.postForEntity("https://65.1.190.195:8080/dev/auth/sendMail", mail, String.class);
@@ -302,7 +304,8 @@ public class ProfileContoller {
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getIsProfileCompleted());
 			LOGGER.info("DATATATATATAT = {}", !designerLoginEntity.getIsDeleted().equals(true));
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
-			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE") || !designerLoginEntity.getProfileStatus().equals("REJECTED"))
+			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
+					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
 					&& designerLoginEntity.getIsDeleted().equals(true)) {
 				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
 						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
@@ -541,12 +544,29 @@ public class ProfileContoller {
 
 			Page<DesignerLoginEntity> findAll = null;
 
+			List<DesignerLoginEntity> dataForSubmitted = designerLoginRepo
+					.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true, "SUBMITTED");
+			LOGGER.info("contentForSubmitted" + dataForSubmitted);
+			List<DesignerLoginEntity> dataForCompleted = designerLoginRepo
+					.findByIsDeletedAndIsProfileCompletedAndProfileStatusAndAccountStatus(isDeleted, true, "COMPLETED",
+							"ACTIVE");
+			LOGGER.info("contentForCompleted" + dataForCompleted);
 			if (!profileStatus.isBlank()) {
 				if (profileStatus.equals("changeRequest")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true,
 							"SUBMITTED", pagingSort);
 					LOGGER.info("DATA FOR CHANGE REQUEST = {}", findAll.getContent());
-				} else if (profileStatus.equals("SUBMITTED")) {
+				} else if (profileStatus.equals("COMPLETED")) {
+					List<DesignerLoginEntity> mergeList = new ArrayList<DesignerLoginEntity>();
+					mergeList.addAll(dataForSubmitted);
+					mergeList.addAll(dataForCompleted);
+					LOGGER.info("mergeList" + mergeList);
+					// findAll = designerLoginRepo.findByListIn(mergeList, pagingSort);
+					findAll = new PageImpl<DesignerLoginEntity>(mergeList, pagingSort, mergeList.size());
+					LOGGER.info("DATA FOR COMPLETED = {}" + findAll.getContent());
+				}
+
+				else if (profileStatus.equals("SUBMITTED")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, false,
 							"SUBMITTED", pagingSort);
 				} else {
@@ -566,8 +586,7 @@ public class ProfileContoller {
 						pagingSort);
 				LOGGER.info("Search data by email = {}", findAll.getContent());
 
-			}
-//			List<DesignerLoginEntity> designerLoginData = designerLoginRepo.findAll();
+			} // List<DesignerLoginEntity> designerLoginData = designerLoginRepo.findAll();
 			List<Long> collect = findAll.getContent().stream()
 					.filter(e -> !keyword.isBlank() ? e.getEmail().startsWith(keyword.toLowerCase()) : true)
 					.map(e -> e.getdId()).collect(Collectors.toList());
@@ -608,8 +627,10 @@ public class ProfileContoller {
 					.findByProfileStatusAndAccountStatusAndIsDeleted("APPROVE", "ACTIVE", false).size());
 			response.put("submitted", designerLoginRepo
 					.findByProfileStatusAndAccountStatusAndIsProfileCompleted("SUBMITTED", "ACTIVE", false).size());
-			response.put("completed", designerLoginRepo
-					.findByProfileStatusAndAccountStatusAndIsDeleted("COMPLETED", "ACTIVE", false).size());
+			response.put("completed", (designerLoginRepo
+					.findByProfileStatusAndAccountStatusAndIsDeleted("COMPLETED", "ACTIVE", false).size()
+					+ designerLoginRepo.findByDeletedAndIsProfileCompletedAndProfileStatus(false, true, "SUBMITTED")
+							.size()));
 			response.put("rejected", designerLoginRepo
 					.findByProfileStatusAndAccountStatusAndIsDeleted("REJECTED", "ACTIVE", false).size());
 			response.put("deleted", designerLoginRepo.findByDeleted(true).size());
@@ -897,14 +918,15 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@GetMapping("/getProfileImage/{designerId}")
-	public  Map<String,String> getProfileImage(@PathVariable Long designerId) {
+	public Map<String, String> getProfileImage(@PathVariable Long designerId) {
 		try {
-			 DesignerProfileEntity findByDesignerId = designerProfileRepo.findBydesignerId(designerId).get();
-			Map<String, String> map=new HashMap<>();
+			DesignerProfileEntity findByDesignerId = designerProfileRepo.findBydesignerId(designerId).get();
+			Map<String, String> map = new HashMap<>();
 			map.put("profilePic", findByDesignerId.getDesignerProfile().getProfilePic());
-			return  map;
-		}catch (Exception e) {
+			return map;
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
