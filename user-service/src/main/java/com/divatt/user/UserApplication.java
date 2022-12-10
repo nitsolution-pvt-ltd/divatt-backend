@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @SpringBootApplication(scanBasePackages = { "com.divatt.user" })
 @OpenAPIDefinition(info = @Info(title = "DIVATT USER", version = "3.0", description = "User"))
-@SecurityScheme(name = "javainuseapi", scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
+@SecurityScheme(name = "NIT SOLUTION PVT. LTD.", scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 public class UserApplication {
 
 	public static void main(String[] args) {

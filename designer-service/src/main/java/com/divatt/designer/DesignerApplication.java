@@ -46,7 +46,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication(scanBasePackages = { "com.divatt.designer" })
 @OpenAPIDefinition(info = @Info(title = "DIVATT DESIGNER", version = "3.0", description = "Designer"))
-@SecurityScheme(name = "javainuseapi", scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
+@SecurityScheme(name = "NIT SOLUTION PVT. LTD.", scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 @EnableEurekaClient
 @EnableScheduling
 public class DesignerApplication implements CommandLineRunner{
