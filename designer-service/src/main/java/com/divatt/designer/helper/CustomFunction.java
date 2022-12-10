@@ -38,7 +38,7 @@ public class CustomFunction {
 
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
-	
+
 	ProductMasterEntity2 productMasterEntity2;
 
 	RestTemplate restTemplate = new RestTemplate();
@@ -215,7 +215,8 @@ public class CustomFunction {
 			updateMasterEntity.setPriceCode(productMasterEntity2.getPriceCode());
 			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
 			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
-			updateMasterEntity.setadminStatus("Pending");
+			updateMasterEntity.setAdminStatus("Pending");
+			updateMasterEntity.setWeightUnit(productMasterEntity2.getWeightUnit());
 			updateMasterEntity.setImages(productMasterEntity2.getImages());
 			updateMasterEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
 			updateMasterEntity.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
@@ -278,13 +279,14 @@ public class CustomFunction {
 			filterProductEntity.setProductWeight(productMasterEntity2.getProductWeight());
 			filterProductEntity.setShipmentTime(productMasterEntity2.getShipmentTime());
 			filterProductEntity.setImages(productMasterEntity2.getImages());
+			filterProductEntity.setWeightUnit(productMasterEntity2.getWeightUnit());
 			filterProductEntity.setIsActive(true);
 			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setCreatedOn(new Date());
 			filterProductEntity.setCreatedBy(productMasterEntity2.getCreatedBy());
 			filterProductEntity.setUpdatedOn(productMasterEntity2.getUpdatedOn());
 			filterProductEntity.setUpdatedBy(productMasterEntity2.getUpdatedBy());
-			filterProductEntity.setadminStatus("Pending");
+			filterProductEntity.setAdminStatus("Pending");
 
 			// Product stage
 			productStageDetails.setSubmittedBy(productMasterEntity2.getProductStageDetails().getSubmittedBy());
@@ -332,9 +334,10 @@ public class CustomFunction {
 			designerProfile.setCity(body.getDesignerProfile().getCity());
 			designerProfile.setCountry(body.getDesignerProfile().getCountry());
 			designerProfile.setDob(body.getDesignerProfile().getDob());
-			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE") || !designerLoginEntity.getProfileStatus().equals("REJECTED"))
+			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
+					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
 					&& designerLoginEntity.getIsDeleted().equals(true)) {
-				
+
 				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
 						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
 						&& !designerLoginEntity.getIsDeleted().equals(true)) {
@@ -366,7 +369,7 @@ public class CustomFunction {
 		}
 
 	}
-	
+
 	public ProductMasterEntity2 setProduDetails(ProductMasterEntity2 productMasterEntity2, Integer qty) {
 		try {
 			this.productMasterEntity2 = new ProductMasterEntity2();
@@ -393,7 +396,8 @@ public class CustomFunction {
 			this.productMasterEntity2.setNotify(productMasterEntity2.getNotify());
 			this.productMasterEntity2.setPriceCode(productMasterEntity2.getPriceCode());
 			this.productMasterEntity2.setMrp(productMasterEntity2.getMrp());
-			this.productMasterEntity2.setadminStatus(productMasterEntity2.getadminStatus());
+			this.productMasterEntity2.setWeightUnit(productMasterEntity2.getWeightUnit());
+			this.productMasterEntity2.setAdminStatus(productMasterEntity2.getAdminStatus());
 			this.productMasterEntity2.setDeal(productMasterEntity2.getDeal());
 			this.productMasterEntity2.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
 			this.productMasterEntity2.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
@@ -405,7 +409,7 @@ public class CustomFunction {
 			this.productMasterEntity2.setProductStage(productMasterEntity2.getProductStage());
 			this.productMasterEntity2.setProductStageDetails(productMasterEntity2.getProductStageDetails());
 			this.productMasterEntity2.setCreatedOn(productMasterEntity2.getCreatedOn());
-			
+
 			return this.productMasterEntity2;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

@@ -28,9 +28,10 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 	@Query("{'isDeleted':?0,'profileStatus':?1, 'accountStatus':?2}")
 	public Page<DesignerLoginEntity> findByIsDeletedAndProfileStatusAndAccountStatus(Boolean isDeleted,
 			String profileStatus, String accountStatus, Pageable pagingSort);
-	
+
 	@Query("{'isDeleted':?0,'profileStatus':?1}")
-	public Page<DesignerLoginEntity> findByIsDeletedAndProfileStatus(Boolean isDeleted, String profileStatus, Pageable pagingSort);
+	public Page<DesignerLoginEntity> findByIsDeletedAndProfileStatus(Boolean isDeleted, String profileStatus,
+			Pageable pagingSort);
 
 //	@Query("{'isDeleted':?0,'profileStatus':?1}")
 //	@Query("{ $or: [ { 'profileStatus' : {$regex:?1,$options:'i'} }, {'profileStatus' : {$regex:'SAVED',$options:'i'} } ], $and: [{'isDeleted':?0}] }")
@@ -67,4 +68,12 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 			Boolean isProfileCompleted, String profileStatus, String accountStatus, Pageable pagingSort);
 
 	Page<DesignerLoginEntity> findBydIdIn(List<Long> dId, Pageable pagingSort);
+
+	@Query("{'isDeleted':?0,'isProfileCompleted':?1, 'profileStatus':?2}")
+	List<DesignerLoginEntity> findByIsDeletedAndIsProfileCompletedAndProfileStatus(Boolean isDeleted,
+			Boolean isProfileCompleted, String profileStatus);
+
+	@Query("{'isDeleted':?0,'isProfileCompleted':?1, 'profileStatus':?2, 'accountStatus':?3}")
+	List<DesignerLoginEntity> findByIsDeletedAndIsProfileCompletedAndProfileStatusAndAccountStatus(Boolean isDeleted,
+			Boolean isProfileCompleted, String profileStatus, String accountStatus);
 }

@@ -45,6 +45,7 @@ public class ProductEntity2 {
 	private Boolean isActive;
 	private Boolean isDeleted;
 	private String productStage;
+	private String weightUnit;
 	private ProductStageDetails productStageDetails;
 	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
 	private Date createdOn;
@@ -65,8 +66,8 @@ public class ProductEntity2 {
 			String colour, List<String> sizes, Integer soh, Integer oos, Integer notify, String priceCode, Integer mrp,
 			String adminStatus, Deal deal, Integer giftWrapAmount, ExtraSpecifications extraSpecifications,
 			String productWeight, String shipmentTime, ImageEntity[] images, Boolean isActive, Boolean isDeleted,
-			String productStage, ProductStageDetails productStageDetails, Date createdOn, String createdBy,
-			Date updatedOn, String updatedBy) {
+			String productStage, String weightUnit, ProductStageDetails productStageDetails, Date createdOn,
+			String createdBy, Date updatedOn, String updatedBy) {
 		super();
 		this.productId = productId;
 		this.sku = sku;
@@ -102,6 +103,7 @@ public class ProductEntity2 {
 		this.isActive = isActive;
 		this.isDeleted = isDeleted;
 		this.productStage = productStage;
+		this.weightUnit = weightUnit;
 		this.productStageDetails = productStageDetails;
 		this.createdOn = createdOn;
 		this.createdBy = createdBy;
@@ -381,6 +383,14 @@ public class ProductEntity2 {
 		this.productStage = productStage;
 	}
 
+	public String getWeightUnit() {
+		return weightUnit;
+	}
+
+	public void setWeightUnit(String weightUnit) {
+		this.weightUnit = weightUnit;
+	}
+
 	public ProductStageDetails getProductStageDetails() {
 		return productStageDetails;
 	}
@@ -433,10 +443,30 @@ public class ProductEntity2 {
 				+ sizes + ", soh=" + soh + ", oos=" + oos + ", notify=" + notify + ", priceCode=" + priceCode + ", mrp="
 				+ mrp + ", adminStatus=" + adminStatus + ", deal=" + deal + ", giftWrapAmount=" + giftWrapAmount
 				+ ", extraSpecifications=" + extraSpecifications + ", productWeight=" + productWeight
-				+ ", shipmentTime=" + shipmentTime + ", image=" + Arrays.toString(images) + ", isActive=" + isActive
-				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", productStageDetails="
-				+ productStageDetails + ", createdOn=" + createdOn + ", createdBy=" + createdBy + ", updatedOn="
-				+ updatedOn + ", updatedBy=" + updatedBy + "]";
+				+ ", shipmentTime=" + shipmentTime + ", images=" + Arrays.toString(images) + ", isActive=" + isActive
+				+ ", isDeleted=" + isDeleted + ", productStage=" + productStage + ", weightUnit=" + weightUnit
+				+ ", productStageDetails=" + productStageDetails + ", createdOn=" + createdOn + ", createdBy="
+				+ createdBy + ", updatedOn=" + updatedOn + ", updatedBy=" + updatedBy + ", getProductId()="
+				+ getProductId() + ", getSku()=" + getSku() + ", getDesignerId()=" + getDesignerId()
+				+ ", getCategoryId()=" + getCategoryId() + ", getSubCategoryId()=" + getSubCategoryId()
+				+ ", getPurchaseMinQuantity()=" + getPurchaseMinQuantity() + ", getPurchaseMaxQuantity()="
+				+ getPurchaseMaxQuantity() + ", getHsnCode()=" + getHsnCode() + ", getProductDetails()="
+				+ getProductDetails() + ", getDesignCustomizationFeatures()=" + getDesignCustomizationFeatures()
+				+ ", getWithCustomization()=" + getWithCustomization() + ", getWithDesignCustomization()="
+				+ getWithDesignCustomization() + ", getWithGiftWrap()=" + getWithGiftWrap() + ", getReturnAcceptable()="
+				+ getReturnAcceptable() + ", getCancelAcceptable()=" + getCancelAcceptable() + ", getCod()=" + getCod()
+				+ ", getPriceType()=" + getPriceType() + ", getColour()=" + getColour() + ", getSizes()=" + getSizes()
+				+ ", getSoh()=" + getSoh() + ", getOos()=" + getOos() + ", getNotify()=" + getNotify()
+				+ ", getPriceCode()=" + getPriceCode() + ", getMrp()=" + getMrp() + ", getAdminStatus()="
+				+ getAdminStatus() + ", getDeal()=" + getDeal() + ", getGiftWrapAmount()=" + getGiftWrapAmount()
+				+ ", getExtraSpecifications()=" + getExtraSpecifications() + ", getProductWeight()="
+				+ getProductWeight() + ", getShipmentTime()=" + getShipmentTime() + ", getImages()="
+				+ Arrays.toString(getImages()) + ", getIsActive()=" + getIsActive() + ", getIsDeleted()="
+				+ getIsDeleted() + ", getProductStage()=" + getProductStage() + ", getWeightUnit()=" + getWeightUnit()
+				+ ", getProductStageDetails()=" + getProductStageDetails() + ", getCreatedOn()=" + getCreatedOn()
+				+ ", getCreatedBy()=" + getCreatedBy() + ", getUpdatedOn()=" + getUpdatedOn() + ", getUpdatedBy()="
+				+ getUpdatedBy() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
+				+ super.toString() + "]";
 	}
 
 }

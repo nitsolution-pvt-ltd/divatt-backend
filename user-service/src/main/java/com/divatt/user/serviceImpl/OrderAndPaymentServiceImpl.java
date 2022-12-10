@@ -1595,10 +1595,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			orderDetails.get(0).setStatus(orderItemStatus);
 			String status = orderDetails.get(0).getStatus();
 			LOGGER.info("status" + status);
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			Date dates = new Date();
+			String format = formatter.format(dates);
 			if (!orderDetails.get(0).getOrderItemStatus().equals("New")) {
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 				jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
-				jsonObject.put("cancelationTime", new Date());
+				jsonObject.put("cancelationTime", format);
 				OrderStatusDetails orderStatusDetails = orderDetails.get(0).getOrderStatusDetails();
 				try {
 					orderStatusDetails.setCancelOrderDetails(jsonObject);
@@ -1614,7 +1617,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} else {
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 				jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
-				jsonObject.put("cancelationTime", new Date());
+				jsonObject.put("cancelationTime", format);
 				OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 				try {
 					orderStatusDetails.setCancelOrderDetails(jsonObject);
@@ -1656,6 +1659,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					.getBody();
 			String designerName = designerResponse.getDesignerId().toString();
 			String designerEmail = designerResponse.getDesignerProfile().get("email").toString();
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			Date dates = new Date();
+			String format = formatter.format(dates);
 			if (cancelationRequestApproveAndRejectDTO.getOrderStatus().equals("cancelled")) {
 
 				// org.json.simple.JSONObject data2= new org.json.simple.JSONObject();
@@ -1674,7 +1680,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				// OrderStatusDetails details= new OrderStatusDetails();
 				OrderStatusDetails details = orderDetails.get(0).getOrderStatusDetails();
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-				jsonObject.put("cancellationTime", new Date());
+				jsonObject.put("cancellationTime", format);
 				jsonObject.put("adminCancellationComment", cancelationRequestApproveAndRejectDTO.getComment());
 				try {
 
@@ -1719,7 +1725,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderDetails.get(0).setOrderItemStatus(status);
 				OrderStatusDetails details = orderDetails.get(0).getOrderStatusDetails();
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-				jsonObject.put("rejectionTime", new Date());
+				jsonObject.put("rejectionTime", format);
 				jsonObject.put("adminRejectionComment", cancelationRequestApproveAndRejectDTO.getComment());
 
 				try {
