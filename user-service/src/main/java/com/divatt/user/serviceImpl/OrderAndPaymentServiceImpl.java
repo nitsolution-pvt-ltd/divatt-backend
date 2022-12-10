@@ -46,6 +46,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.user.config.JWTConfig;
+import com.divatt.user.constant.MessageConstant;
+import com.divatt.user.constant.RestTemplateConstant;
 import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.InvoiceEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
@@ -148,7 +150,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	protected String getRandomString() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		String SALTCHARS = MessageConstant.RANDOM_STRING.getMessage();
 		StringBuilder salt = new StringBuilder();
 		Random rnd = new Random();
 		while (salt.length() < 16) {
@@ -160,7 +162,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	protected String getRandomStringInt() {
-		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		String SALTCHARS = MessageConstant.RANDOM_STRING_INT.getMessage();
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		StringBuilder salt = new StringBuilder();
 		Random rnd = new Random();
@@ -174,7 +176,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	protected String getRandomNumber() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-		String SALTCHARS = "1234567890";
+		String SALTCHARS = MessageConstant.RANDOM_INT.getMessage();
 		StringBuilder salt = new StringBuilder();
 		Random rnd = new Random();
 		while (salt.length() < 16) {
@@ -244,7 +246,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 //			LOGGER.info("FInd by order id");
 			LOGGER.info("Get order id from client end = {}", orderPaymentEntity.getOrderId());
 			if (findOrderRow.size() <= 0) {
-				throw new CustomException("Order not found");
+				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
 			Map<String, Object> map = null;
 			try {
@@ -272,7 +274,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				userOrderPaymentRepo.save(filterCatDetails);
 				return ResponseEntity.ok(mapPayId);
 			} else
-				throw new CustomException("OrderId Already Exist");
+				throw new CustomException(MessageConstant.ORDER_ID_EXIST.getMessage());
 		} catch (RazorpayException e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -284,7 +286,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderSKUService()");
 
 		try {
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date date = new Date();
 			String format = formatter.format(date);
 
@@ -311,11 +313,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			orderSKUDetailsEntityRow.setDesignerId(orderSKUDetailsEntityRow.getDesignerId());
 			orderSKUDetailsEntityRow.setOrderItemStatus("New");
-			int shipmentTime = Integer.parseInt(restTemplate
-					.getForEntity("https://localhost:8083/dev/designerProducts/productList/"
-							+ orderSKUDetailsEntityRow.getProductId(), org.json.simple.JSONObject.class)
-					.getBody().get("shipmentTime").toString());
-			// SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			int shipmentTime = Integer
+					.parseInt(restTemplate
+							.getForEntity(RestTemplateConstant.DESIGNER_PRODUCT.getLink()
+									+ orderSKUDetailsEntityRow.getProductId(), org.json.simple.JSONObject.class)
+							.getBody().get("shipmentTime").toString());
+			// SimpleDateFormat sdf = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 			c.add(Calendar.DATE, shipmentTime);
@@ -371,7 +374,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Payment not found!");
+				throw new CustomException(MessageConstant.PAYMENT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -526,7 +529,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
 			LOGGER.info(findById + " Inside FindBYid");
 			if (findById.size() <= 0) {
-				throw new CustomException("Order not found");
+				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
 			List<Object> productId = new ArrayList<>();
 			List<Object> productIds = new ArrayList<>();
@@ -552,13 +555,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
 					LOGGER.info("Top of try catch");
-
+//"https://localhost:8083/dev/designerProducts/productList/"
 					try {
 						LOGGER.info(D.getProductId() + " inside productid");
 						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
-								"https://localhost:8083/dev/designerProducts/productList/" + D.getProductId(),
+								RestTemplateConstant.DESIGNER_PRODUCT.getLink() + D.getProductId(),
 								org.json.simple.JSONObject.class);
-
 						LOGGER.info("Dta after rest call = {} ", productById);
 //						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));
 						D.setHsn(productById.getBody().get("hsnData"));
@@ -656,7 +658,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByUserIdOrderByIdDesc(userId);
 			if (findById.size() <= 0) {
-				throw new CustomException("Order not found");
+				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
 			List<Object> productId = new ArrayList<>();
 
@@ -677,7 +679,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				OrderSKUDetailsRow.forEach(order -> {
 					try {
 						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(
-								"https://localhost:8083/dev/designerProducts/productList/" + order.getProductId(),
+								RestTemplateConstant.DESIGNER_PRODUCT.getLink() + order.getProductId(),
 								org.json.simple.JSONObject.class);
 						LOGGER.info(getProductByID.getBody().get("hsnData").toString());
 						order.setHsn(getProductByID.getBody().get("hsnData"));
@@ -773,8 +775,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.filter(e -> {
 							if (!startDate.isBlank() && !endDate.isBlank()) {
 								try {
-									SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-									SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+									SimpleDateFormat dateFormat = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
+									SimpleDateFormat dateFormat2 = new SimpleDateFormat(
+											MessageConstant.DATE_FORMAT_TYPE.getMessage());
 									Date startdate = dateFormat.parse(startDate);
 									Date enddate = dateFormat.parse(endDate);
 									Date createDate = dateFormat2.parse(e.getCreatedOn());
@@ -806,8 +809,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.filter(e -> {
 							if (!startDate.isBlank() && !endDate.isBlank()) {
 								try {
-									SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-									SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+									SimpleDateFormat dateFormat = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
+									SimpleDateFormat dateFormat2 = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 									Date startdate = dateFormat.parse(startDate);
 									Date enddate = dateFormat.parse(endDate);
 									Date createDate = dateFormat2.parse(e.getCreatedOn());
@@ -932,7 +935,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				pdfRunner.fun1();
 				return pdfRunner.pdfPath(orderId);
 			} else {
-				return new GlobalResponse("Error", "Order not found", 400);
+				return new GlobalResponse(MessageConstant.ERROR.getMessage(),
+						MessageConstant.ORDER_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -986,7 +990,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				response.put("perPageElement", findAll.getNumberOfElements());
 
 				if (findAll.getSize() <= 1) {
-					throw new CustomException("Payment not found!");
+					throw new CustomException(MessageConstant.PAYMENT_NOT_FOUND.getMessage());
 				} else {
 					return response;
 				}
@@ -1008,9 +1012,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderSKUDetailsEntity1.setOrderId(orderDetailsRepo.findByOrderId(orderId).get(0).getOrderId());
 				orderSKUDetailsEntity1.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				orderSKUDetailsRepo.save(orderSKUDetailsEntity1);
-				return new GlobalResponse("Success", "Order status updated", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_STATUS_UPDATED.getMessage(), 200);
 			} else {
-				return new GlobalResponse("Error", "Order not found", 400);
+				return new GlobalResponse(MessageConstant.ERROR.getMessage(),
+						MessageConstant.ORDER_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1064,7 +1070,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			if (OrderRow.size() <= 0) {
 				LOGGER.info("Order id not found in order table");
-				throw new CustomException("Order not found");
+				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
 
 			List<Payment> payments = razorpayClient.Orders.fetchPayments(PayEntity.get("order_id").toString());
@@ -1083,7 +1089,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			if (payment.equals(null)) {
 				LOGGER.info("Payment not found in order table");
-				throw new CustomException("Payment not found");
+				throw new CustomException(MessageConstant.PAYMENT_NOT_FOUND.getMessage());
 			}
 
 			ObjectMapper obj = new ObjectMapper();
@@ -1154,7 +1160,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			OrderTrackingEntity data = orderTrackingRepo.save(filterCatDetails);
 
-			return ResponseEntity.ok(new GlobalResponse("Success", "Tracking updated successfully", 200));
+			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.TRACKING_UPDATED.getMessage(), 200));
 
 //			} else {
 //				throw new CustomException("Something went to wrong! from order related");
@@ -1191,10 +1198,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				OrderTrackingEntity data = orderTrackingRepo.save(filterCatDetails);
 
-				return ResponseEntity.ok(new GlobalResponse("Success", "Tracking updated successfully", 200));
+				return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.TRACKING_UPDATED.getMessage(), 200));
 
 			} else {
-				throw new CustomException("Something went to wrong! from order related");
+				throw new CustomException(MessageConstant.SOMETHING_WENT_WRONG.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1246,9 +1254,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
-				return new GlobalResponse("Success", "Ordered product cancelled successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_CANCEL.getMessage(), 200);
 			} else {
-				return new GlobalResponse("Error", "Product already cancelled", 400);
+				return new GlobalResponse(MessageConstant.ERROR.getMessage(),
+						MessageConstant.PRODUCT_ALREADY_CANCEL.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1274,7 +1284,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			billAddressData.setMobile(orderDetailsEntity.getBillingAddress().getMobile());
 			query2.addCriteria(Criteria.where("orderId").is(orderDetailsEntity.getOrderId()));
 			List<OrderSKUDetailsEntity> orderSKUDetails = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
-			String body = restTemplate.getForEntity("https://localhost:8083/dev/designer/designerIdList", String.class)
+			String body = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_IDLIST.getLink(), String.class)
 					.getBody();
 			JSONArray jsonArray = new JSONArray(body);
 			// System.out.println(jsonArray);
@@ -1362,7 +1372,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderSKUDetailsEntity> orderList = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
 			for (int i = 0; i < orderList.size(); i++) {
 				ResponseEntity<Object> designerData = restTemplate.getForEntity(
-						"https://localhost:9095/dev/designer/" + orderList.get(i).getDesignerId(), Object.class);
+						RestTemplateConstant.DESIGNER_BYID.getLink() + orderList.get(i).getDesignerId(), Object.class);
 				org.json.simple.JSONObject object = new org.json.simple.JSONObject();
 				object.put("ProductData", orderList.get(i));
 				object.put("DesignerData", designerData.getBody());
@@ -1383,7 +1393,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderInvoiceEntity> findByCategoryName = orderInvoiceRepo
 					.findByInvoiceId(orderInvoiceEntity.getInvoiceId());
 			if (findByCategoryName.size() > 0) {
-				throw new CustomException("Invoice already exist!");
+				throw new CustomException(MessageConstant.INVOICE_EXIST.getMessage());
 			} else {
 				OrderInvoiceEntity OrderLastRow = orderInvoiceRepo.findTopByOrderByIdDesc();
 
@@ -1392,7 +1402,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderInvoiceEntity.setInvoiceId("IV" + InvNumber);
 				saveData = orderInvoiceRepo.save(orderInvoiceEntity);
 			}
-			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Invoice added succesfully", 200));
+			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.INVOICE_ADDED.getMessage(), 200));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -1405,7 +1416,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			List<OrderInvoiceEntity> findByInvId = orderInvoiceRepo.findByInvoiceId(invoiceId);
 			if (findByInvId.size() <= 0) {
-				throw new CustomException("Invoice not found");
+				throw new CustomException(MessageConstant.INVOICE_NOT_FOUND.getMessage());
 			} else {
 				OrderInvoiceEntity orderInvoiceRow = findByInvId.get(0);
 				orderInvoiceRow.setInvoiceDatetime(orderInvoiceEntity.getInvoiceDatetime());
@@ -1417,7 +1428,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				orderInvoiceRepo.save(orderInvoiceRow);
 			}
-			return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Invoice updated succesfully", 200));
+			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.INVOICE_UPDATED.getMessage(), 200));
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -1458,7 +1470,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Invoice not found!");
+				throw new CustomException(MessageConstant.INVOICE_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -1556,7 +1568,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			LOGGER.info(jwtconfig.extractUsername(token.substring(7)));
 			org.json.simple.JSONObject designerObject = restTemplate
-					.getForEntity("https://localhost:8080/dev/auth/info/DESIGNER/"
+					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink()
 							+ jwtconfig.extractUsername(token.substring(7)), org.json.simple.JSONObject.class)
 					.getBody();
 			Integer designerId = Integer.parseInt(designerObject.get("designerId").toString());
@@ -1579,7 +1591,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			String designerEmail = jwtconfig.extractUsername(token.substring(7));
 			LOGGER.info(designerEmail);
 			String designerId = restTemplate
-					.getForEntity("https://localhost:8080/dev/auth/info/DESIGNER/" + designerEmail,
+					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail,
 							org.json.simple.JSONObject.class)
 					.getBody().get("designerId").toString();
 //			designerId=;
@@ -1595,7 +1607,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			orderDetails.get(0).setStatus(orderItemStatus);
 			String status = orderDetails.get(0).getStatus();
 			LOGGER.info("status" + status);
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
 			if (!orderDetails.get(0).getOrderItemStatus().equals("New")) {
@@ -1631,7 +1643,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					orderSKUDetailsRepo.saveAll(orderDetails);
 				}
 			}
-			return new GlobalResponse("Success", "Cancelation request send successfully", 200);
+			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.CANCELATION_REQUEST.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -1655,11 +1668,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			String username = userloginRepo.findById(orderDetails.get(0).getUserId()).get().getFirstName();
 			String userEmail = userloginRepo.findById(orderDetails.get(0).getUserId()).get().getEmail();
 			DesignerRequestDTO designerResponse = restTemplate
-					.getForEntity("https://localhost:8083/dev/designer/" + designerId, DesignerRequestDTO.class)
+					.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId, DesignerRequestDTO.class)
 					.getBody();
 			String designerName = designerResponse.getDesignerId().toString();
 			String designerEmail = designerResponse.getDesignerProfile().get("email").toString();
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
 			if (cancelationRequestApproveAndRejectDTO.getOrderStatus().equals("cancelled")) {
@@ -1700,9 +1713,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				// context.setVariables(data1);
 				String htmlContent = templateEngine.process("ordercancel.html", context);
 				EmailSenderThread emailSenderThread = new EmailSenderThread(userEmail,
-						"Order cnacelled from designer side", htmlContent, true, null, restTemplate);
+						MessageConstant.ORDER_CANCEL_FROM_DESIGNER.getMessage(), htmlContent, true, null, restTemplate);
 				emailSenderThread.start();
-				return new GlobalResponse("Success", "Order cancelled successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_CANCEL.getMessage(), 200);
 			} else {
 				Map<String, Object> data = new HashMap<String, Object>();
 //				List<OrderSKUDetailsEntity> sKUdetailsData = orderSKUDetailsRepo
@@ -1747,11 +1761,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				// context.setVariables(data1);
 				LOGGER.info(designerEmail);
 				String htmlContent = templateEngine.process("ordercancelRejected.html", context);
-				EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail, "Order cancelation rejected",
-						htmlContent, true, null, restTemplate);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail,
+						MessageConstant.ORDER_CANCELATION_REJECTED.getMessage(), htmlContent, true, null, restTemplate);
 				emailSenderThread.start();
 
-				return new GlobalResponse("Success", "Order cancelation request rejected successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_CANCEL_REQUEST_REJECTED.getMessage(), 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1767,7 +1782,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			String designerEmail = jwtconfig.extractUsername(token.substring(7));
 			LOGGER.info(designerEmail);
 			String designerId = restTemplate
-					.getForEntity("https://localhost:8080/dev/auth/info/DESIGNER/" + designerEmail,
+					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail,
 							org.json.simple.JSONObject.class)
 					.getBody().get("designerId").toString();
 			LOGGER.info(designerId);
@@ -1775,7 +1790,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				OrderSKUDetailsEntity item = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderId(
 						Integer.parseInt(productId), Integer.parseInt(designerId), orderId).get(0);
 				String itemStatus = item.getOrderItemStatus();
-				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+				SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 				Date dates = new Date();
 				String format = formatter.format(dates);
 				if (orderItemStatus.equals("Orders")) {
@@ -1842,9 +1857,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								}
 							}
 						} else
-							throw new CustomException("You Can't Skip Any Status");
+							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 					} else
-						throw new CustomException("The Product is Already " + itemStatus);
+						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				} else if (orderItemStatus.equals("Packed")) {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("Orders")) {
@@ -1912,9 +1927,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								}
 							}
 						} else
-							throw new CustomException("You Can't Skip Any Status");
+							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 					} else
-						throw new CustomException("The Product is Already " + itemStatus);
+						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 
 				} else if (orderItemStatus.equals("Shipped")) {
 					if (!itemStatus.equals(orderItemStatus)) {
@@ -1978,9 +1993,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 							}
 						} else
-							throw new CustomException("You Can't Skip Any Status");
+							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 					} else
-						throw new CustomException("The Product is Already " + itemStatus);
+						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 
 				} else if (orderItemStatus.equals("Delivered")) {
 					if (!itemStatus.equals(orderItemStatus)) {
@@ -1997,7 +2012,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 									org.json.simple.JSONObject.class);
 							LOGGER.info(fromJson.get("deliveredDate") + "Inside fromjson");
 							String deliveredDate = (String) fromJson.get("deliveredDate");
-							SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+							SimpleDateFormat dateFormat = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
 							DateFormat inputText = new SimpleDateFormat("yyyy-MM-dd");
 							Date date = inputText.parse(deliveredDate);
 							String format1 = dateFormat.format(date);
@@ -2020,10 +2035,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								orderSKUDetailsRepo.save(orderDetails);
 							}
 						} else
-							throw new CustomException("You Can't Skip Any Status");
+							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 
 					} else
-						throw new CustomException("The Product is Already " + itemStatus);
+						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				}
 				Long userId = item.getUserId();
 				UserLoginEntity userById = userServiceImpl.getUserById(userId);
@@ -2051,8 +2066,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				EmailSenderThread emailSenderThread = new EmailSenderThread(email,
 						"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
 				emailSenderThread.start();
-				return new GlobalResponse("Sucess",
-						"Item Status Changed " + itemStatus + " to " + orderItemStatus + " Sucessfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage()
+								+ orderItemStatus + MessageConstant.SUCCESSFULLY.getMessage(),
+						200);
 
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
@@ -2073,12 +2090,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			OrderSKUDetailsEntity item = orderSKUDetailsRepo
 					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 			String itemStatus = item.getOrderItemStatus();
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
 			if (!itemStatus.equals("New")) {
 				if (itemStatus.equals(orderItemStatus)) {
-					throw new CustomException("The Product is Already " + itemStatus);
+					throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				} else if (orderItemStatus.equals("Packed")) {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("Orders")) {
@@ -2142,9 +2159,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								}
 							}
 						} else
-							throw new CustomException("You Can't Skip Any Status");
+							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 					} else
-						throw new CustomException("The Product is Already " + itemStatus);
+						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				} else if (orderItemStatus.equals("Shipped")) {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("Packed")) {
@@ -2202,9 +2219,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								}
 							}
 						} else
-							throw new CustomException("You Can't Skip Any Status");
+							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 					} else
-						throw new CustomException("The Product is Already " + itemStatus);
+						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				} else if (orderItemStatus.equals("Delivered")) {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("Shipped")) {
@@ -2218,7 +2235,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 									org.json.simple.JSONObject.class);
 							LOGGER.info(fromJson.get("deliveredDate") + "Inside fromjson");
 							String deliveredDate = (String) fromJson.get("deliveredDate");
-							SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+							SimpleDateFormat dateFormat = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
 							DateFormat inputText = new SimpleDateFormat("yyyy-MM-dd");
 							Date date = inputText.parse(deliveredDate);
 							String format1 = dateFormat.format(date);
@@ -2240,14 +2257,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								orderSKUDetailsRepo.save(orderDetails);
 							}
 						} else
-							throw new CustomException("You Can't Skip Any Status");
+							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 					} else
-						throw new CustomException("The Product is Already " + itemStatus);
+						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				}
-				return new GlobalResponse("Sucess",
-						"Item Status Changed " + itemStatus + " to " + orderItemStatus + " Sucessfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage()
+								+ orderItemStatus + MessageConstant.SUCCESSFULLY.getMessage(),
+						200);
 			} else
-				throw new CustomException("Admin Can't Change this Status Now");
+				throw new CustomException(MessageConstant.ADMIN_CANNOT_CHANGE_STATUS_NOW.getMessage());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -2297,9 +2316,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						this.orderSKUDetailsRepo.save(findByProductIdAndOrderId);
 					}
 				}
-				return new GlobalResponse("Success", "Order cancelled successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_CANCEL.getMessage(), 200);
 			} else {
-				throw new CustomException("Order Already delivered");
+				throw new CustomException(MessageConstant.ORDER_DELIVERED.getMessage());
 			}
 
 		} catch (Exception e) {

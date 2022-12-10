@@ -12,6 +12,7 @@ import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.entity.product.ProductStageDetails;
+import com.divatt.designer.entity.profile.BoutiqueProfile;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
@@ -312,6 +313,7 @@ public class CustomFunction {
 			DesignerProfileEntity body = designerProfileRepo.findBydesignerId(getdId).get();
 			DesignerProfileEntity designerProfileEntity = new DesignerProfileEntity();
 			DesignerProfile designerProfile = new DesignerProfile();
+			BoutiqueProfile boutiqueProfile = new BoutiqueProfile();
 			designerProfileEntity.setId(body.getId());
 			designerProfileEntity.setAccountStatus(body.getAccountStatus());
 			designerProfileEntity.setBoutiqueProfile(body.getBoutiqueProfile());
@@ -334,10 +336,16 @@ public class CustomFunction {
 			designerProfile.setCity(body.getDesignerProfile().getCity());
 			designerProfile.setCountry(body.getDesignerProfile().getCountry());
 			designerProfile.setDob(body.getDesignerProfile().getDob());
+			boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
+			boutiqueProfile.setBoutiqueName(body.getBoutiqueProfile().getBoutiqueName());
+			boutiqueProfile.setExperience(body.getBoutiqueProfile().getExperience());
+			boutiqueProfile.setFirmName(body.getBoutiqueProfile().getFirmName());
+			boutiqueProfile.setOperatingCity(body.getBoutiqueProfile().getOperatingCity());
+			boutiqueProfile.setProfessionalCategory(body.getBoutiqueProfile().getProfessionalCategory());
+			boutiqueProfile.setYearOfOperation(body.getBoutiqueProfile().getYearOfOperation());
 			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
 					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
 					&& designerLoginEntity.getIsDeleted().equals(true)) {
-
 				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
 						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
 						&& !designerLoginEntity.getIsDeleted().equals(true)) {
@@ -362,6 +370,7 @@ public class CustomFunction {
 			designerProfile.setPinCode(body.getDesignerProfile().getPinCode());
 			designerProfile.setState(body.getDesignerProfile().getState());
 			designerProfileEntity.setDesignerProfile(designerProfile);
+			designerProfileEntity.setBoutiqueProfile(boutiqueProfile);
 
 			return designerProfileEntity;
 		} catch (Exception e) {

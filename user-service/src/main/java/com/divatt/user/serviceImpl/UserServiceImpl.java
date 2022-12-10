@@ -40,6 +40,8 @@ import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.divatt.user.constant.MessageConstant;
+import com.divatt.user.constant.RestTemplateConstant;
 import com.divatt.user.designerProductEntity.DesignerProfile;
 import com.divatt.user.designerProductEntity.DesignerProfileEntity;
 import com.divatt.user.designerProductEntity.ProductMasterEntity;
@@ -134,7 +136,7 @@ public class UserServiceImpl implements UserService {
 				Optional<WishlistEntity> findByCategoryName = wishlistRepo
 						.findByProductIdAndUserId(getRow.getProductId(), getRow.getUserId());
 				if (wishlistEntity.size() <= 1 && findByCategoryName.isPresent()) {
-					throw new CustomException("Wishlist already exist");
+					throw new CustomException(MessageConstant.WISHLIST_ALREADY_EXIST.getMessage());
 				}
 				if (!findByCategoryName.isPresent() && !getRow.getUserId().equals(null)
 						&& !getRow.getProductId().equals(null)) {
@@ -149,7 +151,8 @@ public class UserServiceImpl implements UserService {
 				}
 			}
 
-			return new GlobalResponse("SUCCESS", "Wishlist added succesfully", 200);
+			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.WISHLIST_ADDED_SUCESSFULLY.getMessage(), 200);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -161,10 +164,11 @@ public class UserServiceImpl implements UserService {
 		try {
 			Optional<WishlistEntity> findByProductRow = wishlistRepo.findByProductIdAndUserId(productId, userId);
 			if (!findByProductRow.isPresent()) {
-				throw new CustomException("Product not exist!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_EXIST.getMessage());
 			} else {
 				wishlistRepo.deleteByProductIdAndUserId(productId, userId);
-				return new GlobalResponse("SUCCESS", "Wishlist removed succesfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.WISHLIST_REMOVED.getMessage(), 200);
 			}
 
 		} catch (Exception e) {
@@ -212,7 +216,7 @@ public class UserServiceImpl implements UserService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Wishlist not found!");
+				throw new CustomException(MessageConstant.WISHLIST_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -242,9 +246,9 @@ public class UserServiceImpl implements UserService {
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
-				LOGGER.info("ENTITY DATA = {}",entity);
-				response1 = restTemplate.postForEntity(
-						"https://localhost:8083/dev/designerProducts/getWishlistProductList", entity, String.class);
+				LOGGER.info("ENTITY DATA = {}", entity);
+				response1 = restTemplate.postForEntity(RestTemplateConstant.WISHLIST_PRODUCTLIST.getLink(), entity,
+						String.class);
 
 			}
 			return ResponseEntity.ok(new Json(response1.getBody()));
@@ -265,7 +269,7 @@ public class UserServiceImpl implements UserService {
 						getRow.getUserId());
 
 				if (userCartEntity.size() <= 1 && findByCat.isPresent()) {
-					throw new CustomException("Product already added to the cart.");
+					throw new CustomException(MessageConstant.PRODUCT_ALREDY_CART.getMessage());
 				} else {
 					if (!findByCat.isPresent() && !getRow.getUserId().equals(null)
 							&& !getRow.getProductId().equals(null)) {
@@ -276,14 +280,15 @@ public class UserServiceImpl implements UserService {
 						filterCatDetails.setAddedOn(new Date());
 						filterCatDetails.setSelectedSize(getRow.getSelectedSize());
 						filterCatDetails.setCustomization(getRow.getCustomization());
-						if(getRow.getCustomization()) {
+						if (getRow.getCustomization()) {
 							filterCatDetails.setMeasurementObject(getRow.getMeasurementObject());
 						}
 						userCartRepo.save(filterCatDetails);
 					}
 				}
 			}
-			return new GlobalResponse("SUCCESS", "Cart added succesfully", 200);
+			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.CART_ADDED.getMessage(),
+					200);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -301,7 +306,7 @@ public class UserServiceImpl implements UserService {
 					userCartEntity.getUserId());
 
 			if (!findByCat.isPresent()) {
-				throw new CustomException("Product not found in the cart.");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND_IN_CART.getMessage());
 			} else {
 
 				UserCartEntity RowsDetails = findByCat.get();
@@ -312,8 +317,8 @@ public class UserServiceImpl implements UserService {
 
 				UserCartEntity getdata = userCartRepo.save(RowsDetails);
 
-				map.put("reason", "SUCCESS");
-				map.put("message", "Cart updated succesfully");
+				map.put("reason", MessageConstant.SUCCESS.getMessage());
+				map.put("message", MessageConstant.CART_UPDATED_SUCESSFULLY.getMessage());
 				map.put("status", 200);
 				map.put("qty", getdata.getQty());
 				return ResponseEntity.ok(map);
@@ -329,10 +334,11 @@ public class UserServiceImpl implements UserService {
 		try {
 			Optional<UserCartEntity> findByProductRow = userCartRepo.findById(pId);
 			if (!findByProductRow.isPresent()) {
-				throw new CustomException("Cart not exist!");
+				throw new CustomException(MessageConstant.CART_NOT_EXIST.getMessage());
 			} else {
 				userCartRepo.deleteById(pId);
-				return new GlobalResponse("SUCCESS", "Cart removed succesfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.CART_REMOVED.getMessage(), 200);
 			}
 
 		} catch (Exception e) {
@@ -359,7 +365,7 @@ public class UserServiceImpl implements UserService {
 
 			Map<String, Object> map = new HashMap<>();
 			map.put("reason", "ERROR");
-			map.put("message", "Product not found");
+			map.put("message", MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			map.put("status", 400);
 
 			if (productIds.isEmpty()) {
@@ -373,8 +379,8 @@ public class UserServiceImpl implements UserService {
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(maps, headers);
 
-				response1 = restTemplate.postForEntity("https://localhost:8083/dev/designerProducts/getCartProductList",
-						entity, String.class);
+				response1 = restTemplate.postForEntity(RestTemplateConstant.CART_PRODUCTLIST.getLink(), entity,
+						String.class);
 
 				String body = response1.getBody();
 				List<Object> cp = Arrays.asList(body);
@@ -388,7 +394,7 @@ public class UserServiceImpl implements UserService {
 					JSONObject object = jn.getObject();
 					LOGGER.info("Designer id is: " + object.get("designerId").toString());
 					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity(
-							"https://localhost:8083/dev/designer/" + object.get("designerId"),
+							RestTemplateConstant.DESIGNER_BYID.getLink() + object.get("designerId"),
 							org.json.simple.JSONObject.class);
 					LOGGER.info("get designer by id: " + getDesignerById.getBody().get("designerProfile").toString());
 					UserCartEntity cart = userCartRepo
@@ -431,7 +437,7 @@ public class UserServiceImpl implements UserService {
 			Optional<ProductCommentEntity> findByTitle = productCommentRepo
 					.findByProductIdAndUserId(productCommentEntity.getProductId(), productCommentEntity.getUserId());
 			if (findByTitle.isPresent()) {
-				throw new CustomException("Reviewed already exist!");
+				throw new CustomException(MessageConstant.REVIEWED_EXIST.getMessage());
 			} else {
 				ProductCommentEntity<?> RowsDetails = new ProductCommentEntity<Object>();
 
@@ -445,7 +451,8 @@ public class UserServiceImpl implements UserService {
 				RowsDetails.setCreatedOn(new Date());
 
 				productCommentRepo.save(RowsDetails);
-				return new GlobalResponse("SUCCESS", "Reviewed added succesfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.REVIEWED_ADDED.getMessage(), 200);
 			}
 
 		} catch (Exception e) {
@@ -463,7 +470,7 @@ public class UserServiceImpl implements UserService {
 			Optional<ProductCommentEntity> findByRow = productCommentRepo.findById(productCommentEntity.getId());
 
 			if (!findByRow.isPresent()) {
-				throw new CustomException("Reviewed not exist!");
+				throw new CustomException(MessageConstant.REVIEW_NOT_EXIST.getMessage());
 			} else {
 				ProductCommentEntity<?> RowsDetails = findByRow.get();
 
@@ -476,7 +483,8 @@ public class UserServiceImpl implements UserService {
 				RowsDetails.setCreatedOn(new Date());
 
 				productCommentRepo.save(RowsDetails);
-				return new GlobalResponse("SUCCESS", "Reviewed updated succesfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.REVIEW_UPDATE.getMessage(), 200);
 			}
 
 		} catch (Exception e) {
@@ -493,7 +501,7 @@ public class UserServiceImpl implements UserService {
 			Optional<ProductCommentEntity> findByRow = productCommentRepo.findById(productCommentEntity.getId());
 
 			if (!findByRow.isPresent()) {
-				throw new CustomException("Reviewed not exist!");
+				throw new CustomException(MessageConstant.REVIEW_NOT_EXIST.getMessage());
 			} else {
 				ProductCommentEntity<?> RowsDetails = findByRow.get();
 				Boolean Status = false;
@@ -509,7 +517,10 @@ public class UserServiceImpl implements UserService {
 				RowsDetails.setCreatedOn(new Date());
 
 				productCommentRepo.save(RowsDetails);
-				return new GlobalResponse("SUCCESS", "Reviewed status " + message + " successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.REVIEW_STATUS.getMessage() + message
+								+ MessageConstant.SUCCESSFULLY.getMessage(),
+						200);
 			}
 
 		} catch (Exception e) {
@@ -523,10 +534,11 @@ public class UserServiceImpl implements UserService {
 		try {
 			Optional<ProductCommentEntity> findByProductRow = productCommentRepo.findById(Id);
 			if (!findByProductRow.isPresent()) {
-				throw new CustomException("Reviewed not exist!");
+				throw new CustomException(MessageConstant.REVIEW_NOT_EXIST.getMessage());
 			} else {
 				productCommentRepo.deleteById(Id);
-				return new GlobalResponse("SUCCESS", "Reviewed removed succesfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.REVIEW_REMOVED.getMessage(), 200);
 			}
 
 		} catch (Exception e) {
@@ -537,8 +549,8 @@ public class UserServiceImpl implements UserService {
 
 	public ResponseEntity<?> getProductUser() {
 		try {
-			String body = restTemplate
-					.getForEntity("https://localhost:8083/dev/designerProducts/productListUser", String.class).getBody();
+			String body = restTemplate.getForEntity(RestTemplateConstant.PRODUCT_LIST_USER.getLink(), String.class)
+					.getBody();
 
 			Json js = new Json(body);
 			return ResponseEntity.ok(js);
@@ -583,10 +595,12 @@ public class UserServiceImpl implements UserService {
 				userDesignerEntity.setIsFollowing(true);
 				userDesignerEntity.setCreatedOn(date.toString());
 				userDesignerRepo.save(userDesignerEntity);
-				return ResponseEntity.ok(new GlobalResponse("Success", "Designer following successfully", 200));
+				return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.DESIGNER_FOLLOWING.getMessage(), 200));
 			} else {
 				userDesignerRepo.deleteById(collect.get(0).getId());
-				return ResponseEntity.ok(new GlobalResponse("Success", "Designer unfollowing successfully", 200));
+				return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.DESIGNER_UNFOLLOWING.getMessage(), 200));
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -596,9 +610,9 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> getDesignerDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
-			ResponseEntity<?> Response = restTemplate
-					.getForEntity("https://localhost:8083/dev/designerProduct/getDesignerProductListUser?page=" + page
-							+ "&limit=" + limit + "&", String.class);
+			ResponseEntity<?> Response = restTemplate.getForEntity(
+					RestTemplateConstant.DESIGNER_PRODUCT_LIST_USER.getLink() + page + "&limit=" + limit + "&",
+					String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
 
@@ -611,14 +625,13 @@ public class UserServiceImpl implements UserService {
 		try {
 			LOGGER.info("Inside - UserServiceImpl.productDetails() <><><><><><><>");
 			ResponseEntity<String> exchange = restTemplate.exchange(
-					"https://localhost:8083/dev/designerProducts/productList/" + productId, HttpMethod.GET, null,
-					String.class);
-			LOGGER.info("DATAAAAAAAAAAAAAAAAAAAAAAAA = {}",exchange);
+					RestTemplateConstant.DESIGNER_PRODUCT.getLink() + productId, HttpMethod.GET, null, String.class);
+			LOGGER.info("DATAAAAAAAAAAAAAAAAAAAAAAAA = {}", exchange);
 			Json js = new Json(exchange.getBody());
 
 			if (!userId.equals("")) {
 				List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
-				LOGGER.info("Cart Data : = {}",cart);
+				LOGGER.info("Cart Data : = {}", cart);
 
 				if (!cart.isEmpty()) {
 
@@ -631,7 +644,7 @@ public class UserServiceImpl implements UserService {
 						ObjectMapper obj = new ObjectMapper();
 						String writeValueAsString = null;
 						ResponseEntity<org.json.simple.JSONObject> categoryById = restTemplate.getForEntity(
-								"https://localhost:8084/dev/category/view/" + object.get("categoryId"),
+								RestTemplateConstant.CATEGORY_VIEW.getLink() + object.get("categoryId"),
 								org.json.simple.JSONObject.class);
 						Object categoryName = categoryById.getBody().get("categoryName");
 						LOGGER.info(categoryName.toString());
@@ -663,8 +676,8 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> getDesignerUser() {
 		try {
 
-			String body = restTemplate
-					.getForEntity("https://localhost:8083/dev/designer/userDesignerList", String.class).getBody();
+			String body = restTemplate.getForEntity(RestTemplateConstant.USER_DESIGNER_LIST.getLink(), String.class)
+					.getBody();
 
 			Json js = new Json(body);
 			return ResponseEntity.ok(js);
@@ -678,18 +691,19 @@ public class UserServiceImpl implements UserService {
 		try {
 
 			String body = restTemplate
-					.getForEntity("https://localhost:8083/dev/designer/user/" + designerId, String.class).getBody();
+					.getForEntity(RestTemplateConstant.DESIGNER_USER.getLink() + designerId, String.class).getBody();
 			JsonNode jn = new JsonNode(body);
 			JSONObject object = jn.getObject();
 //			System.out.println(object);
-			LOGGER.info("Data after service call = {}",object);
+			LOGGER.info("Data after service call = {}", object);
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
 			if (userId != 0) {
-			    Query query= new Query();
-			    query.addCriteria(Criteria.where("designerId").is(designerId));
-			    List<UserDesignerEntity> userDesignerList=mongoOperations.find(query, UserDesignerEntity.class);
-				//List<UserDesignerEntity> findByUserId = userDesignerRepo.findByUserId(userId);
+				Query query = new Query();
+				query.addCriteria(Criteria.where("designerId").is(designerId));
+				List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
+				// List<UserDesignerEntity> findByUserId =
+				// userDesignerRepo.findByUserId(userId);
 				if (!userDesignerList.isEmpty()) {
 					object.put("isFollowing", userDesignerList.get(0).getIsFollowing());
 					object.put("rating", userDesignerList.get(0).getRaiting());
@@ -711,9 +725,8 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> getPerDesignerProductListService(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, String keyword, Optional<String> sortBy, Integer designerId) {
 		try {
-			ResponseEntity<?> Response = restTemplate
-					.getForEntity("https://localhost:8083/dev/designerProduct/getPerDesignerProductUser/" + designerId
-							+ "?page=" + page + "&limit=" + limit + "&", String.class);
+			ResponseEntity<?> Response = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_PER_PRODUCT.getLink()
+					+ designerId + "?page=" + page + "&limit=" + limit + "&", String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
 
@@ -726,10 +739,12 @@ public class UserServiceImpl implements UserService {
 		try {
 			List<UserCartEntity> allData = userCartRepo.findByUserId(userId);
 			if (allData.isEmpty()) {
-				return new GlobalResponse("Error!!", "No product found", 400);
+				return new GlobalResponse(MessageConstant.ERROR.getMessage(),
+						MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
 			}
 			userCartRepo.deleteByUserId(userId);
-			return new GlobalResponse("Success", "Cart data deleted successfully", 200);
+			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.CART_DATA_DELETED.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -784,7 +799,7 @@ public class UserServiceImpl implements UserService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Wishlist not found!");
+				throw new CustomException(MessageConstant.WISHLIST_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -816,7 +831,7 @@ public class UserServiceImpl implements UserService {
 	public GlobalResponse getCountFollowers(Long designerId) {
 		try {
 			Long countByDesignerId = userDesignerRepo.countByDesignerId(designerId);
-			return new GlobalResponse("Successfull", "" + countByDesignerId, 200);
+			return new GlobalResponse(MessageConstant.SUCCESSFULLY.getMessage(), "" + countByDesignerId, 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -871,13 +886,11 @@ public class UserServiceImpl implements UserService {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("userId").is(userId));
 			List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
-			userDesignerList
-					.stream()
-					.forEach(e -> {
-						designerList.add(restTemplate
-								.getForEntity("https://localhost:8083/dev/designer/" + e.getDesignerId(), Object.class)
-								.getBody());
-					});
+			userDesignerList.stream().forEach(e -> {
+				designerList.add(restTemplate
+						.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), Object.class)
+						.getBody());
+			});
 			return designerList;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -903,7 +916,7 @@ public class UserServiceImpl implements UserService {
 			LOGGER.info(id.toString());
 
 			try {
-				UserLoginEntity entity = restTemplate.getForObject("https://localhost:8082/dev/user/getUserId/" + id,
+				UserLoginEntity entity = restTemplate.getForObject(RestTemplateConstant.USER_BY_ID.getLink() + id,
 						UserLoginEntity.class);
 
 				String dob = entity.getDob();
@@ -917,8 +930,10 @@ public class UserServiceImpl implements UserService {
 				try {
 
 					ProductMasterEntity entity2;
-					entity2 = restTemplate.getForEntity("https://localhost:8083/dev/designerProduct/view/" + productId,
-							ProductMasterEntity.class).getBody();
+					entity2 = restTemplate
+							.getForEntity(RestTemplateConstant.DESIGNER_PRODUCT_VIEW.getLink() + productId,
+									ProductMasterEntity.class)
+							.getBody();
 
 					LOGGER.info(entity2.getDesignerName());
 
@@ -962,7 +977,7 @@ public class UserServiceImpl implements UserService {
 						// DesignerProfile designerProfile = mapper.map(mapper, DesignerProfile.class);
 						LOGGER.info(entity2.getDesignerId().toString());
 						DesignerProfileEntity profile = restTemplate.getForObject(
-								"https://localhost:8083/dev/designer/" + entity2.getDesignerId(),
+								RestTemplateConstant.DESIGNER_BYID.getLink() + entity2.getDesignerId(),
 								DesignerProfileEntity.class);
 
 						Long designerId = profile.getDesignerId();
@@ -1006,86 +1021,79 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
+	public Page<OrderDetailsEntity> findByOrder(int page, int limit, String sort, String orderId, Boolean isDeleted,
+			Optional<String> sortBy) {
+		try {
+			int CountData = (int) detailsRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
 
-    @Override
-    public Page<OrderDetailsEntity> findByOrder(int page, int limit, String sort, String orderId, Boolean isDeleted,
-            Optional<String> sortBy) {
-        try {
-            int CountData = (int) detailsRepo.count();
-            Pageable pagingSort = null;
-            if (limit == 0) {
-                limit = CountData;
-            }
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderId));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderId));
+			}
+			return this.detailsRepo.findOrderId(orderId, pagingSort);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 
-            if (sort.equals("ASC")) {
-                pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderId));
-            } else {
-                pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderId));
-            }
-            return this.detailsRepo.findOrderId(orderId,pagingSort );
-        }catch (Exception e) {
-            throw new CustomException(e.getMessage());
-        }
-       
-    }
+	}
 
-    @Override
-    public Map<String, Object> find(int page, int limit, String sort, String orderItemStatus, Boolean isDeleted,
-            Optional<String> sortBy) {
-        try {
-            int CountData = (int) orderSKUDetailsRepo.count();
-            Pageable pagingSort = null;
-            if (limit == 0) {
-                limit = CountData;
-            }
+	@Override
+	public Map<String, Object> find(int page, int limit, String sort, String orderItemStatus, Boolean isDeleted,
+			Optional<String> sortBy) {
+		try {
+			int CountData = (int) orderSKUDetailsRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
 
-            if (sort.equals("ASC")) {
-                pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderItemStatus));
-            } else {
-                pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderItemStatus));
-            }
-            Page<OrderSKUDetailsEntity> findAll=null;
-            if(orderItemStatus.isEmpty()) {
-                findAll=orderSKUDetailsRepo.findAll(pagingSort);
-            }else {
-            findAll= orderSKUDetailsRepo.Search(orderItemStatus,pagingSort );
-            }
-            int totalPage=findAll.getTotalPages()-1;
-            if(totalPage<0) {
-                totalPage=0;
-            }
-            Map<String, Object> response = new HashMap<>();
-            response.put("data", findAll.getContent());
-            response.put("currentPage", findAll.getNumber());
-            response.put("total", findAll.getTotalElements());
-            response.put("totalPage", totalPage);
-            response.put("perPage", findAll.getSize());
-            response.put("perPageElement", findAll.getNumberOfElements());
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(orderItemStatus));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(orderItemStatus));
+			}
+			Page<OrderSKUDetailsEntity> findAll = null;
+			if (orderItemStatus.isEmpty()) {
+				findAll = orderSKUDetailsRepo.findAll(pagingSort);
+			} else {
+				findAll = orderSKUDetailsRepo.Search(orderItemStatus, pagingSort);
+			}
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
 
-            if (findAll.getSize() <= 1) {
-                throw new CustomException("Invoice not found!");
-            } else {
-                return response;
-            }
-        }catch (Exception e) {
-            throw new CustomException(e.getMessage());
-        }
-    
-    }
-    
-    public List<OrderSKUDetailsEntity> findByorderID( String orderId){
-        try {
-           return this.orderSKUDetailsRepo.findByOrderId(orderId);
-        }catch (Exception e) {
-           throw new CustomException(e.getMessage());
-        }
-       
-    }
+			if (findAll.getSize() <= 1) {
+				throw new CustomException(MessageConstant.INVOICE_NOT_FOUND.getMessage());
+			} else {
+				return response;
+			}
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 
- 
+	}
 
-    
+	public List<OrderSKUDetailsEntity> findByorderID(String orderId) {
+		try {
+			return this.orderSKUDetailsRepo.findByOrderId(orderId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 
-   
+	}
 
 }
