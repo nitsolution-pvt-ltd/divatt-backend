@@ -63,10 +63,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.user.constant.MessageConstant;
+import com.divatt.user.constant.RestTemplateConstant;
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.UserLoginEntity;
+import com.divatt.user.entity.order.HsnData;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
@@ -125,7 +128,7 @@ public class OrderAndPaymentContoller {
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
-				throw new CustomException("Unauthorized");
+				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 			return orderAndPaymentService.postRazorpayOrderCreateService(orderDetailsEntity);
 
 		} catch (Exception e) {
@@ -142,7 +145,7 @@ public class OrderAndPaymentContoller {
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
-				throw new CustomException("Unauthorized");
+				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 			return orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
 
 		} catch (Exception e) {
@@ -159,7 +162,7 @@ public class OrderAndPaymentContoller {
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
-				throw new CustomException("Unauthorized");
+				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 
 			return orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
 		} catch (Exception e) {
@@ -206,6 +209,7 @@ public class OrderAndPaymentContoller {
 			@RequestBody OrderAndPaymentGlobalEntity orderAndPaymentGlobalEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.addOrder()");
 
+		LOGGER.info(orderAndPaymentGlobalEntity + "Inside main");
 		try {
 			LOGGER.info("Data for add order = {}", orderAndPaymentGlobalEntity);
 			Map<String, Object> map = new HashMap<>();
@@ -240,21 +244,24 @@ public class OrderAndPaymentContoller {
 							.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
+					LOGGER.info(orderSKUDetailsEntityRow + "Inside Sku before Save");
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
+					LOGGER.info(orderSKUDetailsEntityRow.toString() + "inside skurow");
 				}
 
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
-				map.put("message", "Order placed successfully");
+				map.put("message", MessageConstant.ORDER_PLACED.getMessage());
 
 				Query query = new Query();
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
 
+				LOGGER.info(orderSKUDetailsEntity.toString());
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-				sendEmailWithAttachment(
-						extractUsername, "Order summary", "Hi " + userLoginEntity.getFirstName() + ""
-								+ ",\n                           " + " Your order created successfully. ",
+				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(),
+						"Hi " + userLoginEntity.getFirstName() + "" + ",\n                           "
+								+ MessageConstant.ORDER_CREATED.getMessage(),
 						false, createPdfSupplier);
 
 				createPdfSupplier.delete();
@@ -308,7 +315,7 @@ public class OrderAndPaymentContoller {
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
-				throw new CustomException("Unauthorized");
+				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 			return orderAndPaymentService.getUserOrderDetailsService(userId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -418,7 +425,7 @@ public class OrderAndPaymentContoller {
 			xmlWorkerHelper.parseXHtml(pdfWriter, document, stringReader);
 			// close the document
 			document.close();
-			System.out.println("PDF generated successfully");
+			System.out.println(MessageConstant.PDF_GENERATED.getMessage());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -433,7 +440,7 @@ public class OrderAndPaymentContoller {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setSubject(subject);
-			helper.setFrom("no-reply@nitsolution.in");
+			helper.setFrom(RestTemplateConstant.NO_REPLY_MAIL.getLink());
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 			helper.addAttachment("order-summary", file);

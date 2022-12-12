@@ -36,6 +36,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.divatt.auth.entity.GlobalEntity;
 import com.divatt.auth.entity.GlobalResponse;
+import com.divatt.auth.constant.MessageConstant;
+import com.divatt.auth.constant.RestTemplateConstant;
 import com.divatt.auth.entity.AdminLoginEntity;
 import com.divatt.auth.entity.DesignerLoginEntity;
 import com.divatt.auth.entity.DesignerProfileEntity;
@@ -110,7 +112,8 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 
 		System.out.println("hi");
 		// this.restTemplate.setRequestFactory(null);
-		this.restTemplate.postForEntity("https://localhost:8082/dev/user/add", userEntity, UserLoginEntity.class);
+		this.restTemplate.postForEntity(RestTemplateConstant.USER_LOGIN_ADD.getLink(), userEntity,
+				UserLoginEntity.class);
 		return "Add";
 	}
 
@@ -141,6 +144,25 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					throw new CustomException("Email not found");
 				}
 
+				LOGGER.info(loginEntity.getEmail() + "inside email");
+				try {
+					String s = loginEntity.getName().trim();
+					String str[] = s.split(" ");
+					entity.setFirstName(str[0]);
+					entity.setLastName(str[1]);
+					entity.setName(loginEntity.getName());
+					entity.setEmail(loginEntity.getEmail());
+					entity.setPassword(loginEntity.getPassword());
+					entity.setProfilePic(loginEntity.getProfilePic());
+					entity.setMobileNo("9784563210");
+					entity.setSocialType(loginEntity.getSocialType());
+					entity.setSocialId(loginEntity.getSocialId());
+					entity.setDob("14/09/2022");
+					this.restTemplate.postForEntity(RestTemplateConstant.USER_LOGIN_ADD.getLink(), entity,
+							UserLoginEntity.class);
+				} catch (Exception e) {
+					throw new CustomException(MessageConstant.EMAIL_NOT_FOUND.getMessage());
+				}
 			}
 		}
 
@@ -156,8 +178,8 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
 
 				} catch (Exception e) {
-					if (e.getMessage().equals("Bad credentials"))
-						throw new CustomException("Please check your password");
+					if (e.getMessage().equals(MessageConstant.BADCREDENTIAL.getMessage()))
+						throw new CustomException(MessageConstant.CHECKPASSWORD.getMessage());
 					else
 						throw new CustomException(e.getMessage());
 
@@ -174,12 +196,12 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 						this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
 								loginEntity.getEmail(), loginEntity.getPassword()));
 					} else {
-						throw new CustomException("Your social loginType don't match , please try with another");
+						throw new CustomException(MessageConstant.SOCIAL_LOGIN_NOT_MATCH.getMessage());
 					}
 
 				} catch (Exception e) {
-					if (e.getMessage().equals("Bad credentials"))
-						throw new CustomException("Please check your password");
+					if (e.getMessage().equals(MessageConstant.BADCREDENTIAL.getMessage()))
+						throw new CustomException(MessageConstant.CHECKPASSWORD.getMessage());
 					else
 						throw new CustomException(e.getMessage());
 
@@ -193,8 +215,8 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
 
 				} catch (Exception e) {
-					if (e.getMessage().equals("Bad credentials"))
-						throw new CustomException("Please check your password");
+					if (e.getMessage().equals(MessageConstant.BADCREDENTIAL.getMessage()))
+						throw new CustomException(MessageConstant.CHECKPASSWORD.getMessage());
 					else
 						throw new CustomException(e.getMessage());
 
@@ -214,10 +236,10 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(vendor.getUsername());
 				if (findByUserName.isPresent()) {
 					if (!findByUserName.get().isActive())
-						throw new CustomException("This account has been deactive");
-					return ResponseEntity.ok(
-							new LoginAdminData(token, findByUserName.get().getUid(), findByUserName.get().getEmail(),
-									findByUserName.get().getPassword(), "Login successful", 200, "ADMIN"));
+						throw new CustomException(MessageConstant.ACCOUNT_DEACTIVE.getMessage());
+					return ResponseEntity.ok(new LoginAdminData(token, findByUserName.get().getUid(),
+							findByUserName.get().getEmail(), findByUserName.get().getPassword(),
+							MessageConstant.LOGIN_SUCESSFULL.getMessage(), 200, "ADMIN"));
 				}
 			}
 //			Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(vendor.getUsername());
@@ -237,17 +259,17 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 						.findByEmail(vendor.getUsername());
 				if (findByUserNameDesigner.isPresent()) {
 					if (findByUserNameDesigner.get().getAccountStatus().equals("INACTIVE"))
-						throw new CustomException("You got a mail. please go to that mail and activate your account");
+						throw new CustomException(MessageConstant.ACCOUNT_INACTIVE.getMessage());
 					if (findByUserNameDesigner.get().getProfileStatus().equals("REJECTED")
 							&& findByUserNameDesigner.get().getIsProfileCompleted() == false)
-						throw new CustomException("Your profile is rejected.");
+						throw new CustomException(MessageConstant.PROFILE_REJECTED.getMessage());
 					if (findByUserNameDesigner.get().getProfileStatus().equals("waitForApprove"))
-						throw new CustomException("Waiting for Approval");
+						throw new CustomException(MessageConstant.WAIT_FOR_APPROVAL.getMessage());
 					if (findByUserNameDesigner.get().getIsDeleted().equals(true))
-						throw new CustomException("Your profile has been deleted and no need to take into profile.");
+						throw new CustomException(MessageConstant.PROFILE_DELETED.getMessage());
 					try {
 						if (!findByUserNameDesigner.get().getAccountStatus().equals("INACTIVE"))
-							throw new CustomException("This account has been deactive");
+							throw new CustomException(MessageConstant.ACCOUNT_DEACTIVE.getMessage());
 					} catch (Exception e) {
 					}
 
@@ -256,30 +278,31 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					designerLoginRepo.save(designerLoginEntity);
 					LoginDesignerData loginDesignerData = new LoginDesignerData(findByUserNameDesigner.get().getUid(),
 							findByUserNameDesigner.get().getEmail(), findByUserNameDesigner.get().getPassword(),
-							"Login successful",
+							MessageConstant.LOGIN_SUCESSFULL.getMessage(),
 							Stream.of("DESIGNER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()), 200,
 							findByUserNameDesigner.get().getAdminComment(),
 							findByUserNameDesigner.get().getProfileStatus(), token, "DESIGNER");
 
 					return new ResponseEntity<>(loginDesignerData, HttpStatus.OK);
 				} else {
-					throw new CustomException("Email not found");
+					throw new CustomException(MessageConstant.EMAIL_NOT_FOUND.getMessage());
 				}
 			}
 			if (loginEntity.getType().equals("USER")) {
 				Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(vendor.getUsername());
 				if (findByEmail.isPresent()) {
 					if (findByEmail.get().getIsActive() == false)
-						throw new CustomException("Please active your account");
+						throw new CustomException(MessageConstant.ACCOUNT_INACTIVE.getMessage());
 					return ResponseEntity.ok(new LoginUserData(token, findByEmail.get().getuId(),
-							findByEmail.get().getEmail(), findByEmail.get().getPassword(), "Login Successfully",
+							findByEmail.get().getEmail(), findByEmail.get().getPassword(),
+							MessageConstant.LOGIN_SUCESSFULL.getMessage(),
 							Stream.of("USER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()), 200));
 				} else {
-					throw new CustomException("Email not found");
+					throw new CustomException(MessageConstant.EMAIL_NOT_FOUND.getMessage());
 				}
 			}
 
-			throw new CustomException("No data found");
+			throw new CustomException(MessageConstant.NODATAFOUND.getMessage());
 //				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo
 //						.findByEmail(vendor.getUsername());
 //				if (findByUserNameDesigner.isPresent()) {
@@ -338,7 +361,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		try {
 			mailService.sendEmail(senderMailId.getSenderMailId(), senderMailId.getSubject(), senderMailId.getBody(),
 					senderMailId.isEnableHtml());
-			return new ResponseEntity<>("Mail sent successfully", HttpStatus.OK);
+			return new ResponseEntity<>(MessageConstant.MAIL_SENT_SUCESS.getMessage(), HttpStatus.OK);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -354,7 +377,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			File file = new File("invoice.pdf");
 			mailService.sendEmailWithAttachment(senderMailId.getSenderMailId(), senderMailId.getSubject(),
 					senderMailId.getBody(), senderMailId.isEnableHtml(), file);
-			return new ResponseEntity<>("Mail sent successfully", HttpStatus.OK);
+			return new ResponseEntity<>(MessageConstant.MAIL_SENT_SUCESS.getMessage(), HttpStatus.OK);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -389,16 +412,16 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			Optional<UserLoginEntity> findByUserNameUser = userLoginRepo.findByEmail(email);
 			LOGGER.info("Inside findByUserNameUser " + userLoginRepo.findByEmail(email));
 			if (!findByUserNameDesigner.isPresent() && !findByUserNameUser.isPresent() && !findByUserName.isPresent()) {
-				throw new CustomException("Oops! No such user account found");
+				throw new CustomException(MessageConstant.USERNAME_NOT_FOUND.getMessage());
 			} else {
 //			if (findByUserName.isPresent()) 
 				try {
 					if (findByUserNameDesigner.get().getIsDeleted() == true) {
-						throw new CustomException("Your account has been deleted and no need to do any action");
+						throw new CustomException(MessageConstant.PROFILE_DELETED.getMessage());
 					}
 				} catch (Exception e) {
 					if (findByUserNameUser.get().getIsDeleted().equals(true)) {
-						throw new CustomException("Your account has been deleted and no need to do any action");
+						throw new CustomException(MessageConstant.PROFILE_DELETED.getMessage());
 					}
 				}
 				PasswordResetEntity loginResetEntity = new PasswordResetEntity();
@@ -431,65 +454,71 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				PasswordResetEntity save = loginResetRepo.save(loginResetEntity);
 
 				if (save.equals(null)) {
-					throw new CustomException("Data not save! try again");
+					throw new CustomException(MessageConstant.DATANOTSAVE.getMessage());
 				} else {
 					// ** SEND MAIL IF DETAILS SAVE IN DATABASE **//
 					if (save.getUser_type().equals("ADMIN")) {
 						LOGGER.info(findByUserName.get().getEmail() + "Inside Email");
-						URI uri = URI.create("https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink);
+						URI uri = URI
+								.create(RestTemplateConstant.ADMIN_RESET_PASSWORD_LINK.getLink() + forgotPasswordLink);
 						sb.append("Hi " + findByUserName.get().getFirstName() + "" + ",\n\n"
-								+ "We are sending you this email because you requested a password reset. You can change your Password by clicking the button below.");
-						sb.append("<br><br><br><div style=\"text-align:center\"><a href=\""
-								+ "https://dev.divatt.com/admin/auth/reset-password/" + forgotPasswordLink
+								+ MessageConstant.FORGET_PASSWORDBODY.getMessage());
+						sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
 								+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">CHANGE PASSWORD</a></div><br><br>We will verify your details and come back to you soon.");
-						SendMail mail = new SendMail(findByUserName.get().getEmail(), "Reset Divatt Password",
-								sb.toString(), false);
+						SendMail mail = new SendMail(findByUserName.get().getEmail(),
+								MessageConstant.RESET_DIVATT_PASSWORD.getMessage(), sb.toString(), false);
 						LOGGER.info(findByUserName.get().getEmail() + "Inside Email");
 						try {
 							ResponseEntity<String> response = restTemplate
-									.postForEntity("https://localhost:8080/dev/auth/sendMail", mail, String.class);
+									.postForEntity(RestTemplateConstant.SEND_EMAIL.getLink(), mail, String.class);
 						} catch (Exception e) {
 							System.out.println(e.getMessage());
 						}
-						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
+						return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+								MessageConstant.MAIL_SENT_SUCESS.getMessage(), 200);
 					} else if (save.getUser_type().equals("DESIGNER")) {
 						DesignerProfileEntity designerLogin = restTemplate.getForEntity(
 								"https://localhost:8083/dev/designer/" + findByUserNameDesigner.get().getUid(),
 								DesignerProfileEntity.class).getBody();
 						LOGGER.info(designerLogin.getDesignerProfile().getFirstName1() + " "
 								+ designerLogin.getDesignerProfile().getLastName1() + "Inside json");
-						URI uri = URI.create("https://dev.divatt.com/designer/reset-password/" + forgotPasswordLink);
+						URI uri = URI.create(
+								RestTemplateConstant.DESIGNER_RESET_PASSWORD_LINK.getLink() + forgotPasswordLink);
 						sb.append("Hi " + designerLogin.getDesignerProfile().getFirstName1() + " "
 								+ designerLogin.getDesignerProfile().getLastName1() + "" + ",\n\n"
-								+ "We are sending you this email because you requested a password reset. You can change your Password by clicking the button below.");
+								+ MessageConstant.FORGET_PASSWORDBODY.getMessage());
 						sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
 								+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">CHANGE PASSWORD</a></div><br><br>If you didn't request a password reset, you can ignore this email.Your password will not be changed.");
-						SendMail mail = new SendMail(findByUserNameDesigner.get().getEmail(), "Reset Divatt Password",
-								sb.toString(), false);
+						SendMail mail = new SendMail(findByUserNameDesigner.get().getEmail(),
+								MessageConstant.RESET_DIVATT_PASSWORD.getMessage(), sb.toString(), false);
 						LOGGER.info(findByUserNameDesigner.get().getEmail() + "Inside Email");
 						try {
 							ResponseEntity<String> response = restTemplate
-									.postForEntity("https://localhost:8080/dev/auth/sendMail", mail, String.class);
+									.postForEntity(RestTemplateConstant.SEND_EMAIL.getLink(), mail, String.class);
 						} catch (Exception e) {
 							System.out.println(e.getMessage());
 						}
-						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
+						return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+								MessageConstant.MAIL_SENT_SUCESS.getMessage(), 200);
 					} else {
-						URI uri = URI.create("https://dev.divatt.com/divatt/forgetpassword/" + forgotPasswordLink);
+						URI uri = URI
+								.create(RestTemplateConstant.USER_RESET_PASSWORD_LINK.getLink() + forgotPasswordLink);
 						sb.append("Hi " + findByUserNameUser.get().getFirstName() + " "
 								+ findByUserNameUser.get().getLastName() + "" + ",\n\n"
-								+ "We are sending you this email because you requested a password reset. You can change your Password by clicking the button below.");
+								+ MessageConstant.FORGET_PASSWORDBODY.getMessage());
 						sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
 								+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">CHANGE PASSWORD</a></div><br><br>We will verify your details and come back to you soon.");
-						SendMail mail = new SendMail(findByUserNameUser.get().getEmail(), "Reset Divatt Password",
-								sb.toString(), false);
+						SendMail mail = new SendMail(findByUserNameUser.get().getEmail(),
+								MessageConstant.RESET_DIVATT_PASSWORD.getMessage(), sb.toString(), false);
 						try {
 							ResponseEntity<String> response = restTemplate
-									.postForEntity("https://localhost:8080/dev/auth/sendMail", mail, String.class);
+									.postForEntity(RestTemplateConstant.SEND_EMAIL.getLink(), mail, String.class);
 						} catch (Exception e) {
 							System.out.println(e.getMessage());
 						}
-						return new GlobalResponse("SUCCESS", "Mail sent successfully", 200);
+						LOGGER.info(MessageConstant.MAIL_SENT_SUCESS.getMessage() + "inside Msg");
+						return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+								MessageConstant.MAIL_SENT_SUCESS.getMessage(), 200);
 					}
 				}
 			}
@@ -530,7 +559,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 									+ 5) {
 
 					} else {
-						throw new CustomException("This link has been expierd");
+						throw new CustomException(MessageConstant.LINKEXPIRED.getMessage());
 					}
 					// ** FIND THE USER CORRESPONDING THE LINK IN LOGIN TABLE **//
 					PasswordResetEntity loginResetEntity = findByPrToken.get();
@@ -544,12 +573,13 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 						loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
 						AdminLoginEntity save = loginRepository.save(loginEntity);
 						if (save.equals(null)) {
-							throw new CustomException("Data not save! try again");
+							throw new CustomException(MessageConstant.DATANOTSAVE.getMessage());
 						} else {
 							loginResetEntity.setStatus("DEACTIVE");
 							PasswordResetEntity save2 = loginResetRepo.save(loginResetEntity);
 							jo.addProperty("senderMailId", save2.getEmail());
-							return new GlobalResponse("SUCCESS", "Password changed successfully", 200);
+							return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+									MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
 						}
 					} else {
 
@@ -563,12 +593,13 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
 							DesignerLoginEntity save = designerLoginRepo.save(loginEntity);
 							if (save.equals(null)) {
-								throw new CustomException("Data not save! try again");
+								throw new CustomException(MessageConstant.DATANOTSAVE.getMessage());
 							} else {
 								loginResetEntity.setStatus("DEACTIVE");
 								PasswordResetEntity save2 = loginResetRepo.save(loginResetEntity);
 								jo.addProperty("senderMailId", save2.getEmail());
-								return new GlobalResponse("SUCCESS", "Password generate successfully", 200);
+								return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+										MessageConstant.PASSWORD_GENERATE_SUCESS.getMessage(), 200);
 							}
 						} else {
 							Optional<UserLoginEntity> findByUserId = userLoginRepo
@@ -576,27 +607,28 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							Optional<UserLoginEntity> findByUserEmail = userLoginRepo
 									.findByEmail(loginResetEntity.getEmail());
 							if (!findByUserEmail.isPresent())
-								throw new CustomException("Username is not found");
+								throw new CustomException(MessageConstant.USERNAME_NOT_FOUND.getMessage());
 							UserLoginEntity loginEntity = findByUserId.get();
 							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
 							UserLoginEntity save = userLoginRepo.save(loginEntity);
 							if (save.equals(null)) {
-								throw new CustomException("Data not save! try again");
+								throw new CustomException(MessageConstant.DATANOTSAVE.getMessage());
 							} else {
 								loginResetEntity.setStatus("DEACTIVE");
 								PasswordResetEntity save2 = loginResetRepo.save(loginResetEntity);
 								jo.addProperty("senderMailId", save2.getEmail());
-								return new GlobalResponse("SUCCESS", "Password changed successfully", 200);
+								return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+										MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
 							}
 						}
 
 					}
 
 				} else {
-					throw new CustomException("This link has been expierd");
+					throw new CustomException(MessageConstant.LINKEXPIRED.getMessage());
 				}
 			} else {
-				throw new CustomException("This URL is not valid");
+				throw new CustomException(MessageConstant.URL_NOT_VALID.getMessage());
 			}
 
 		} catch (Exception e) {
@@ -618,36 +650,39 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 						.findByEmail(globalEntity.getUserName());
 				Optional<UserLoginEntity> findByUserEmail = userLoginRepo.findByEmail(globalEntity.getUserName());
 				if (!findByUserName.isPresent() && !findByUserNameDesigner.isPresent() && !findByUserEmail.isPresent())
-					throw new CustomException("Username not Found");
+					throw new CustomException(MessageConstant.USERNAME_NOT_FOUND.getMessage());
 				if (globalEntity.getUserName().equals(jwtUtil.extractUsername(token.substring(7)))) {
 					try {
 						if (!passwordEncoder.matches(globalEntity.getOldPass(), findByUserName.get().getPassword()))
-							throw new CustomException("Old password is not valid");
+							throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
 						AdminLoginEntity loginEntity = findByUserName.get();
 						loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
 						AdminLoginEntity save = loginRepository.save(loginEntity);
-						return new GlobalResponse("SUCCESS", "Password changed successfully", 200);
+						return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+								MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
 					} catch (Exception e) {
 						try {
 							if (!passwordEncoder.matches(globalEntity.getOldPass(),
 									findByUserNameDesigner.get().getPassword()))
-								throw new CustomException("Old password is not valid");
+								throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
 							DesignerLoginEntity loginEntity = findByUserNameDesigner.get();
 							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
 							DesignerLoginEntity save = designerLoginRepo.save(loginEntity);
-							return new GlobalResponse("SUCCESS", "Password changed successfully", 200);
+							return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+									MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
 
 						} catch (Exception Z) {
 							try {
 								if (!passwordEncoder.matches(globalEntity.getOldPass(),
 										findByUserEmail.get().getPassword()))
-									throw new CustomException("Old password is not valid");
+									throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
 								UserLoginEntity loginEntity = findByUserEmail.get();
 								loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
 								UserLoginEntity save = userLoginRepo.save(loginEntity);
-								return new GlobalResponse("SUCCESS", "Password changed successfully", 200);
+								return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+										MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
 							} catch (Exception o) {
-								throw new CustomException("Old password is not valid");
+								throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
 							}
 
 						}
@@ -655,10 +690,10 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					}
 
 				} else {
-					throw new CustomException("Username not found");
+					throw new CustomException(MessageConstant.USERNAME_NOT_FOUND.getMessage());
 				}
 			} else {
-				throw new CustomException("Token not valid");
+				throw new CustomException(MessageConstant.TOKEN_NOT_VALID.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -677,7 +712,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				if (findByEmail.isPresent()) {
 					return ResponseEntity.ok(findByEmail);
 				} else {
-					throw new CustomException("Email not present");
+					throw new CustomException(MessageConstant.EMAIL_NOT_FOUND.getMessage());
 				}
 			} else if (role.equals("DESIGNER")) {
 				Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(id);
@@ -686,14 +721,14 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					return ResponseEntity.ok(designerProfileRepo
 							.findByDesignerId(Long.parseLong(findByEmail.get().getUid().toString())));
 				} else {
-					throw new CustomException("Email not present");
+					throw new CustomException(MessageConstant.EMAIL_NOT_FOUND.getMessage());
 				}
 			} else {
 				Optional<AdminLoginEntity> findByEmail = loginRepository.findByEmail(id);
 				if (findByEmail.isPresent()) {
 					return ResponseEntity.ok(findByEmail);
 				} else {
-					throw new CustomException("Email not present");
+					throw new CustomException(MessageConstant.EMAIL_NOT_FOUND.getMessage());
 				}
 			}
 		} catch (Exception e) {
