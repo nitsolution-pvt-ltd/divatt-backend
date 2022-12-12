@@ -125,26 +125,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		if (loginEntity.getType().equals("USER")) {
 			UserLoginEntity entity = new UserLoginEntity();
 			if (userLoginRepo.findByEmail(loginEntity.getEmail()).isEmpty()) {
-				try {
-				String s = loginEntity.getName().trim();
-				String str[] = s.split(" ");
-
-				entity.setFirstName(str[0]);
-				entity.setLastName(str[1]);
-				entity.setName(loginEntity.getName());
-				entity.setEmail(loginEntity.getEmail());
-				entity.setPassword(loginEntity.getPassword());
-				entity.setProfilePic(loginEntity.getProfilePic());
-				entity.setMobileNo("9784563210");
-				entity.setSocialType(loginEntity.getSocialType());
-				entity.setSocialId(loginEntity.getSocialId());
-				entity.setDob("14/09/2022");
-				this.restTemplate.postForEntity("https://localhost:8082/dev/user/add", entity, UserLoginEntity.class);
-				}catch (Exception e) {
-					throw new CustomException("Email not found");
-				}
-
-				LOGGER.info(loginEntity.getEmail() + "inside email");
+                LOGGER.info(loginEntity.getEmail() + "inside email");
 				try {
 					String s = loginEntity.getName().trim();
 					String str[] = s.split(" ");
