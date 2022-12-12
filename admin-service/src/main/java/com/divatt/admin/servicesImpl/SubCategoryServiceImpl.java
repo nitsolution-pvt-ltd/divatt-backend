@@ -21,6 +21,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.divatt.admin.constant.MessageConstant;
+import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
@@ -59,7 +61,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 			query.addCriteria(Criteria.where("parentId").is(subCategoryEntity.getParentId()).and("categoryName").is(subCategoryEntity.getCategoryName()));
 			List<SubCategoryEntity> findBySubCategoryName=mongoOperations.find(query, SubCategoryEntity.class);
 			if (findBySubCategoryName.size() >= 1) {
-				throw new CustomException("Subcategory already exist!");
+				throw new CustomException(MessageConstant.SUBCATEGORY_ALREADY_EXIST.getMessage());
 			} else {
 				SubCategoryEntity filterSubCatDetails = new SubCategoryEntity();
 
@@ -75,7 +77,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 				filterSubCatDetails.setIsDeleted(false);
 
 				subCategoryRepo.save(filterSubCatDetails);
-				return new GlobalResponse("SUCCESS", "Subcategory added successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SUBCATEGORY_ADDED.getMessage(), 200);
 
 			}
 
@@ -122,7 +124,12 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 				}
 
 			});
-
+//            LOGGER.info("MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage()"+MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage());
+//            LOGGER.info("USER_STATUS_INFORMATION"+ RestTemplateConstant.USER_STATUS_INFORMATION.getMessage());
+//            LOGGER.info("DESIGNER_STATUS_INFORMATION"+ RestTemplateConstant.DESIGNER_STATUS_INFORMATION.getMessage());
+//            LOGGER.info("MessageConstant"+MessageConstant.ALL_CATEGORY_NOT_DELETED.getMessage());
+//            LOGGER.info("MessageConstant"+MessageConstant.BANNER_ADDED.getMessage());
+       
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
@@ -137,7 +144,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 			response.put("perPageElement", map.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Subcategory not found!");
+				throw new CustomException(MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -151,7 +158,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 			Optional<SubCategoryEntity> findById = this.subCategoryRepo.findById(catId);
 
 			if (!(findById.isPresent())) {
-				throw new CustomException("Subcategory not found!");
+				throw new CustomException(MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage());
 			} else {
 				return findById;
 			}
@@ -167,7 +174,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 			Optional<SubCategoryEntity> findByCategoryRow = subCategoryRepo.findById(catId);
 
 			if (!findByCategoryRow.isPresent()) {
-				throw new CustomException("Subcategory not exist!");
+				throw new CustomException(MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage());
 			} else {
 				SubCategoryEntity filterSubCatDetails = findByCategoryRow.get();
 
@@ -182,7 +189,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 				filterSubCatDetails.setIsDeleted(false);
 				subCategoryRepo.save(filterSubCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Subcategory updated succesfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SUBCATEGORY_UPDATED.getMessage(), 200);
 			}
 
 		} catch (Exception e) {
@@ -196,13 +203,13 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 			Optional<SubCategoryEntity> findById = subCategoryRepo.findById(CatId);
 			SubCategoryEntity filterSubCatDetails = findById.get();
 			if (!findById.isPresent()) {
-				throw new CustomException("Subcategory not exist!");
+				throw new CustomException(MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage());
 			} else {
 				filterSubCatDetails.setIsDeleted(true);
 				filterSubCatDetails.setCreatedOn(new Date());
 				subCategoryRepo.save(filterSubCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Subcategory deleted successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SUBCATEGORY_DELETED.getMessage(), 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -216,7 +223,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 			SubCategoryEntity filterSubCatDetails = findById.get();
 
 			if (filterSubCatDetails.getId() == null) {
-				throw new CustomException("Subcategory not exist!");
+				throw new CustomException(MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage());
 			} else {
 				Boolean isStatus = null;
 				String message = null;
@@ -232,7 +239,8 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 				filterSubCatDetails.setCreatedOn(new Date());
 				subCategoryRepo.save(filterSubCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Status " + message + " successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.STATUS.getMessage() + message + MessageConstant.SUCCESSFULLY.getMessage(), 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -252,7 +260,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 					subCategoryRepo.save(filterCatDetails);
 				}
 			}
-			return new GlobalResponse("SUCCESS", "Subcategory deleted successfully", 200);
+			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SUBCATEGORY_DELETED.getMessage(), 200);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -285,7 +293,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 					isDeleted, Status);
 
 			if (findAll.isEmpty()) {
-				throw new CustomException("Subcategory not found!");
+				throw new CustomException(MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage());
 			} else {
 				return findAll;
 			}

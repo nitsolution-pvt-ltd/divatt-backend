@@ -23,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.designer.constant.MessageConstant;
+import com.divatt.designer.constant.RestTemplateConstant;
 import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.SubCategoryEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
@@ -54,6 +56,7 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
+	//@Autowired private RestTemplateConstant restTemplateConstant ;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImp2.class);
 
@@ -62,7 +65,8 @@ public class ProductServiceImp2 implements ProductService2 {
 		try {
 			LOGGER.info("Inside-ProductServiceImp2.addProductMasterData()");
 			productRepo2.save(customFunction.addProductMasterData(productMasterEntity2));
-			return new GlobalResponce("Success", "Product added successfully", 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.PRODUCT_ADDED_SUCCESSFULLY.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -77,9 +81,10 @@ public class ProductServiceImp2 implements ProductService2 {
 				LOGGER.info("inside if");
 				productRepo2.save(customFunction.updateProductData(productMasterEntity2, productId));
 
-				return new GlobalResponce("Success", "Product updated successfully", 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.PRODUCT_UPDATED.getMessage(), 200);
 			} else {
-				throw new CustomException("Product Not Found");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -123,7 +128,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			response.put("perPageElement", findall.getNumberOfElements());
 
 			if (findall.getSize() < 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -140,11 +145,20 @@ public class ProductServiceImp2 implements ProductService2 {
 			DesignerProfileEntity designerProfileEntity = designerProfileRepo
 					.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get();
 			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-					"https://localhost:8084/dev/subcategory/view/" + productMasterEntity2.getSubCategoryId(),
+					RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productMasterEntity2.getSubCategoryId(),
 					SubCategoryEntity.class);
+			LOGGER.info("RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()"+RestTemplateConstant.SUBCATEGORY_VIEW.getMessage());
 			ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-					"https://localhost:8084/dev/category/view/" + productMasterEntity2.getCategoryId(),
+					RestTemplateConstant.CATEGORY_VIEW.getMessage() + productMasterEntity2.getCategoryId(),
 					CategoryEntity.class);
+//			LOGGER.info("RestTemplateConstant.CATEGORY_VIEW.getMessage()"+RestTemplateConstant.CATEGORY_VIEW.getMessage());
+//			LOGGER.info("MessageConstant.PRODUCT_NOT_FOUND.getMessage()"+MessageConstant.PRODUCT_NOT_FOUND.getMessage());
+//			LOGGER.info("MessageConstant.SUCCESS.getMessage()"+MessageConstant.SUCCESS.getMessage());
+//			LOGGER.info("MessageConstant.BAD_REQUEST.getMessage()"+MessageConstant.BAD_REQUEST.getMessage());
+//			LOGGER.info("MessageConstant.DELETED.getMessage()"+MessageConstant.DELETED.getMessage());
+//			LOGGER.info("RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage()"+RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage());
+//			LOGGER.info("RestTemplateConstant.USER_GET_USER_ID.getMessage()"+RestTemplateConstant.USER_GET_USER_ID.getMessage());
+			
 			productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
 			productMasterEntity2.setCategoryName(catagory.getBody().getCategoryName());
 			productMasterEntity2.setDesignerProfile(designerProfileEntity.getDesignerProfile());
@@ -189,10 +203,10 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.findByIsDeleted(isDeleted, pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
 								SubCategoryEntity.class);
 						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
 								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -202,10 +216,10 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Pending", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
 								SubCategoryEntity.class);
 						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
 								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -215,10 +229,10 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Approved", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
 								SubCategoryEntity.class);
 						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
 								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -228,10 +242,10 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Rejected", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
 								SubCategoryEntity.class);
 						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
 								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -243,10 +257,10 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.SearchAndfindByIsDeleted(keyword, isDeleted, pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
 								SubCategoryEntity.class);
 						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
 								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -257,10 +271,10 @@ public class ProductServiceImp2 implements ProductService2 {
 							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
 								SubCategoryEntity.class);
 						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
 								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -271,10 +285,10 @@ public class ProductServiceImp2 implements ProductService2 {
 							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
 								SubCategoryEntity.class);
 						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
 								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -285,10 +299,10 @@ public class ProductServiceImp2 implements ProductService2 {
 							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/subcategory/view/" + catagoryData.getSubCategoryId(),
+								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
 								SubCategoryEntity.class);
 						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								"https://localhost:8084/dev/category/view/" + catagoryData.getCategoryId(),
+								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
 								CategoryEntity.class);
 						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
 						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -313,7 +327,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			response.put("rejected", rejected);
 
 			if (findAll.getSize() < 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -424,7 +438,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			response.put("oos", oos);
 
 			if (findAll.getSize() < 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -444,15 +458,15 @@ public class ProductServiceImp2 implements ProductService2 {
 				if (productMasterEntity2.getIsDeleted().equals(false)) {
 					isDelete = true;
 				} else {
-					return new GlobalResponce("Bad request!!", "Product allready deleted", 400);
+					return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.ALREADY_DELETED.getMessage(), 400);
 				}
 				productMasterEntity2.setIsDeleted(isDelete);
 				productMasterEntity2.setUpdatedBy(productMasterEntity2.getDesignerId().toString());
 				productMasterEntity2.setUpdatedOn(new Date());
 				productRepo2.save(productMasterEntity2);
-				return new GlobalResponce("Success", "Deleted successfully", 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.DELETED.getMessage(), 200);
 			} else {
-				return new GlobalResponce("Bad request", "Product does not exist", 400);
+				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -468,7 +482,7 @@ public class ProductServiceImp2 implements ProductService2 {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		return new GlobalResponce("Sucess", "Product Approved", 200);
+		return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_APPROVED.getMessage(), 200);
 	}
 
 	@Override
@@ -485,18 +499,18 @@ public class ProductServiceImp2 implements ProductService2 {
 					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 					productEntity.setUpdatedOn(new Date());
 					productRepo2.save(productEntity);
-					return new GlobalResponce("Success", "Status Inactive successfully", 200);
+					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STATUS_INACTIVATED.getMessage(), 200);
 				} else {
 					adminStatus = true;
 					productEntity.setIsActive(adminStatus);
 					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 					productEntity.setUpdatedOn(new Date());
 					productRepo2.save(productEntity);
-					return new GlobalResponce("Success", "Status Active successfully", 200);
+					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STATUS_ACTIVATED.getMessage(), 200);
 				}
 
 			} else {
-				return new GlobalResponce("Bad request", "Product does not exist", 400);
+				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -567,10 +581,10 @@ public class ProductServiceImp2 implements ProductService2 {
 //				List<ProductMasterEntity2> findByProductIdIn1 = new ArrayList<>();
 				findByProductIdIn.getContent().forEach(productData -> {
 					ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-							"https://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
+							RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productData.getSubCategoryId(),
 							SubCategoryEntity.class);
 					ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-							"https://localhost:8084/dev/category/view/" + productData.getCategoryId(),
+							RestTemplateConstant.CATEGORY_VIEW.getMessage() + productData.getCategoryId(),
 							CategoryEntity.class);
 					DesignerProfileEntity designerProfileEntity = designerProfileRepo
 							.findBydesignerId(Long.parseLong(productData.getDesignerId().toString())).get();
@@ -590,7 +604,7 @@ public class ProductServiceImp2 implements ProductService2 {
 				response.put("perPage", findByProductIdIn.getSize());
 				response.put("perPageElement", findByProductIdIn.getNumberOfElements());
 				if (findByProductIdIn.getSize() <= 0) {
-					throw new CustomException("Product not found!");
+					throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 				} else {
 					return response;
 				}
@@ -606,11 +620,11 @@ public class ProductServiceImp2 implements ProductService2 {
 		try {
 			LOGGER.info("Inside - ProductServiceImp2.allCartProductData()");
 			if (productIdList.isEmpty()) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				List<ProductMasterEntity2> getProductByLiatOfProductId = productRepo2.findByProductIdIn(productIdList);
 				if (getProductByLiatOfProductId.size() <= 0) {
-					throw new CustomException("Product not found!");
+					throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 				} else {
 					return ResponseEntity.ok(getProductByLiatOfProductId);
 				}

@@ -48,6 +48,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.divatt.admin.constant.MessageConstant;
+import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AdminModule;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
@@ -105,7 +107,7 @@ public class ProfileContoller {
 
 		try {
 			if (!checkPermission(token, "module7", "list"))
-				throw new CustomException("Don't have list permission");
+				throw new CustomException(MessageConstant.NO_LIST_PERMISSION.getMessage());
 			return this.getAdminProfDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -119,12 +121,12 @@ public class ProfileContoller {
 
 		try {
 			if (!checkPermission(token, "module7", "list"))
-				throw new CustomException("Don't have list permission");
+				throw new CustomException(MessageConstant.NO_LIST_PERMISSION.getMessage());
 			List<LoginEntity> orElseThrow = Optional
 					.of(mongoOperations.find(query(where("is_deleted").is(false)), LoginEntity.class))
-					.orElseThrow(() -> new CustomException("Internal Server Error"));
+					.orElseThrow(() -> new CustomException(MessageConstant.INTERNAL_SERVER_ERROR.getMessage()));
 			if (orElseThrow.size() < 1)
-				throw new CustomException("Data not found");
+				throw new CustomException(MessageConstant.NO_DATA.getMessage());
 			return orElseThrow;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -137,12 +139,12 @@ public class ProfileContoller {
 		LOGGER.info("Inside - ProfileContoller.getProfById()");
 		try {
 			if (!checkPermission(token, "module7", "list"))
-				throw new CustomException("Don't have get permission");
+				throw new CustomException(MessageConstant.NO_GET_PERMISSION.getMessage());
 			List<LoginEntity> orElseThrow = Optional.of(mongoOperations
 					.find(query(where("_id").is(id).andOperator(where("is_deleted").is(false))), LoginEntity.class))
-					.orElseThrow(() -> new RuntimeException("Internal Server Error"));
+					.orElseThrow(() -> new RuntimeException(MessageConstant.INTERNAL_SERVER_ERROR.getMessage()));
 			if (orElseThrow.size() < 1)
-				throw new CustomException("Data not found");
+				throw new CustomException(MessageConstant.NO_DATA.getMessage());
 			return orElseThrow.get(0);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -157,18 +159,18 @@ public class ProfileContoller {
 		String pass=loginEntity.getPassword();
 		try {
 			if (error.hasErrors()) {
-				throw new CustomException("Please check all input fields");
+				throw new CustomException(MessageConstant.CHECK_ALL_FIELDS.getMessage());
 			}
 			ResponseEntity<String> forEntity = restTemplate
-					.getForEntity("https://localhost:8080/dev/auth/Present/" + loginEntity.getEmail(), String.class);
+					.getForEntity(RestTemplateConstant.AUTH_PRESENT.getMessage() + loginEntity.getEmail(), String.class);
 			JSONObject jsonObject = new JSONObject(forEntity.getBody());
 			if ((boolean) jsonObject.get("isPresent"))
-				throw new CustomException("Email already present");
+				throw new CustomException(MessageConstant.EMAIL_ALREADY_PRESENT.getMessage());
 			if (!checkPermission(token, "module7", "create"))
-				throw new CustomException("Don't have create permission");
+				throw new CustomException(MessageConstant.NO_CREATE_PERMISSION.getMessage());
 			Optional<LoginEntity> findByEmail = loginRepository.findByEmail(loginEntity.getEmail());
 			if (findByEmail.isPresent()) {
-				throw new CustomException("This email already present");
+				throw new CustomException(MessageConstant.EMAIL_ALREADY_PRESENT.getMessage());
 			}
 
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
@@ -183,22 +185,22 @@ public class ProfileContoller {
 			loginEntity.setCreatedOn(date.toString());
 			loginEntity.setModifiedOn(date.toString());
 
-			SendMail mail = new SendMail(loginEntity.getEmail(), "Successfully Registration",
-					"Welcome " + loginEntity.getFirstName() + "" + ",\n   "
-							+ " Your account created successfully. Please login your account by bellow credentials "
-							+ "\n Username:-  " + loginEntity.getEmail() + "\n Password:-  "
+			SendMail mail = new SendMail(loginEntity.getEmail(), MessageConstant.REGISTER_SUCCESSFULL.getMessage(),
+					MessageConstant.WELCOME.getMessage() + loginEntity.getFirstName() + "" + ",\n   "
+							+ MessageConstant.ACCOUNT_CREATED_AND_LOGIN.getMessage()
+							+ MessageConstant.NAME.getMessage() + loginEntity.getEmail() + MessageConstant.PASSWORD.getMessage()
 							+ pass,
 					false);
 
 			try {
 				ResponseEntity<String> response = restTemplate
-						.postForEntity("https://65.1.190.195:8080/dev/auth/sendMail", mail, String.class);
+						.postForEntity(RestTemplateConstant.AUTH_SEND_MAIL.getMessage(), mail, String.class);
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
 			}
 
 			loginRepository.save(loginEntity);
-			return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Sub admin added successfully", 200),
+			return new ResponseEntity<>(new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SUB_ADMIN_ADDED.getMessage(), 200),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -214,17 +216,17 @@ public class ProfileContoller {
 		try {
 
 			if (error.hasErrors()) {
-				throw new CustomException("Check The Fields");
+				throw new CustomException(MessageConstant.CHECK.getMessage());
 			}
 			if (!checkPermission(token, "module7", "update"))
-				throw new CustomException("Don't have update permission");
+				throw new CustomException(MessageConstant.NO_UPDATE_PERMISSION.getMessage());
 			if (loginEntity.getUid() == null || loginEntity.getUid().equals(""))
-				throw new CustomException("Id is Null");
+				throw new CustomException(MessageConstant.ID_NOT_EXIST.getMessage());
 			if (!loginRepository.findByEmail(loginEntity.getEmail()).stream()
 					.anyMatch(e -> e.getUid() == loginEntity.getUid()))
-				throw new CustomException("This Email is Already Present");
+				throw new CustomException(MessageConstant.EMAIL_ALREADY_PRESENT.getMessage());
 			if (!mongoOperations.exists(query(where("uid").is(loginEntity.getUid())), LoginEntity.class)) {
-				throw new CustomException("Id Not Found");
+				throw new CustomException(MessageConstant.ID_NOT_EXIST.getMessage());
 			}
 //			loginRepository.findByRole(loginEntity.getRole()).ifPresentOrElse((value)->{throw new CustomException("This Role is Already Present");} , ()->{});
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
@@ -239,7 +241,8 @@ public class ProfileContoller {
 			loginEntity.setRole(loginEntity.getRole());
 			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName().toUpperCase());
 			loginRepository.save(loginEntity);
-			return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Updated successfully", 200), HttpStatus.OK);
+			return new ResponseEntity<>(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.UPDATED_SUCCESSFULLY.getMessage(), 200), HttpStatus.OK);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -250,14 +253,15 @@ public class ProfileContoller {
 		LOGGER.info("Inside - ProfileContoller.deleteProfById()");
 		try {
 			if (!checkPermission(token, "module7", "delete"))
-				throw new CustomException("Don't have delete permission");
+				throw new CustomException(MessageConstant.NO_DELETE_PERMISSION.getMessage());
 			if (mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
 				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)),
 						new Update().set("is_deleted", true), LoginEntity.class))
-						.orElseThrow(() -> new RuntimeException("Internal Server Error"));
-				return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Deleted successfully", 200), HttpStatus.OK);
+						.orElseThrow(() -> new RuntimeException(MessageConstant.INTERNAL_SERVER_ERROR.getMessage()));
+				return new ResponseEntity<>(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.DELETED_SUCCESSFULLY.getMessage(), 200), HttpStatus.OK);
 			}
-			throw new CustomException("Id Not Found");
+			throw new CustomException(MessageConstant.ID_NOT_EXIST.getMessage());
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -271,15 +275,15 @@ public class ProfileContoller {
 		LOGGER.info("Inside - ProfileContoller.changeStatusById()");
 		try {
 			if (!checkPermission(token, "module7", "update"))
-				throw new CustomException("Don't have update permission");
+				throw new CustomException(MessageConstant.NO_UPDATE_PERMISSION.getMessage());
 			if (mongoOperations.exists(query(where("uid").is(id)), LoginEntity.class)) {
 				Optional.of(mongoOperations.findAndModify(query(where("uid").is(id)),
 						new Update().set("is_active", status), LoginEntity.class))
-						.orElseThrow(() -> new RuntimeException("Internal Server Error"));
-				return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Status changed successfully", 200),
-						HttpStatus.OK);
+						.orElseThrow(() -> new RuntimeException(MessageConstant.INTERNAL_SERVER_ERROR.getMessage()));
+				return new ResponseEntity<>(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.STATUS_CHANGED_SUCCESSFULLY.getMessage(), 200), HttpStatus.OK);
 			}
-			throw new CustomException("Id Not Found");
+			throw new CustomException(MessageConstant.ID_NOT_EXIST.getMessage());
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -293,7 +297,7 @@ public class ProfileContoller {
 		LOGGER.info("Inside - ProfileContoller.subAdminMulDelete()");
 		try {
 			if (!checkPermission(token, "module7", "delete"))
-				throw new CustomException("Don't have delete permission");
+				throw new CustomException(MessageConstant.NO_DELETE_PERMISSION.getMessage());
 			if (!CateID.equals(null)) {
 				for (Integer CateIdRowId : CateID) {
 
@@ -306,9 +310,9 @@ public class ProfileContoller {
 						loginRepository.save(filterCatDetails);
 					}
 				}
-				return new GlobalResponse("SUCCESS", "Subadmin deleted successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SUB_ADMIN_DELETED.getMessage(), 200);
 			} else {
-				throw new CustomException("Subadmin Id Not Found!");
+				throw new CustomException(MessageConstant.ID_NOT_EXIST.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -354,7 +358,7 @@ public class ProfileContoller {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Profile not found!");
+				throw new CustomException(MessageConstant.NO_DATA.getMessage());
 			} else {
 				return response;
 			}

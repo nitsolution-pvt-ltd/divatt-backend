@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.entity.category.SubCategoryEntity;
@@ -111,7 +112,7 @@ public class SubCategoryController {
 			if (subCategoryEntity.getId() != null) {
 				return this.subCategoryService.putSubCategoryDeleteService(subCategoryEntity.getId());
 			} else {
-				throw new CustomException("Sub Category Not Found!");
+				throw new CustomException(MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -125,7 +126,7 @@ public class SubCategoryController {
 			if (subCategoryEntity.getId() != null) {
 				return this.subCategoryService.putSubCategoryStatusService(subCategoryEntity.getId());
 			} else {
-				throw new CustomException("SubCategory Not Found!");
+				throw new CustomException(MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -139,7 +140,7 @@ public class SubCategoryController {
 			if (!CateID.equals(null)) {
 				return this.subCategoryService.putSubCategoryMulDeleteService(CateID);
 			} else {
-				throw new CustomException("Subcategory Id Not Found!");
+				throw new CustomException(MessageConstant.SUBCATEGORY_NOT_FOUND.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

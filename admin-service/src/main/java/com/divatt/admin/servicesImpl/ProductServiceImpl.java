@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.admin.constant.MessageConstant;
+import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.product.ProductEntity;
 import com.divatt.admin.entity.product.ProductEntity2;
@@ -42,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
 			String ApprovedBy, String adminStatus) {
 		try {
 			ResponseEntity<ProductEntity2> exchange = restTemplate.exchange(
-					"https://localhost:8083/dev/designerProducts/productList/" + productId, HttpMethod.GET, null,
+					RestTemplateConstant.DESIGNER_PRODUCTS_PRODUCT_LIST.getMessage() + productId, HttpMethod.GET, null,
 					ProductEntity2.class);
 			ProductEntity2 productdata = exchange.getBody();
 			LOGGER.info("Product data is = {}",productdata);
@@ -64,12 +66,12 @@ public class ProductServiceImpl implements ProductService {
 //					status = "pending";
 //				}
 				LOGGER.info("Data for update = {}",productdata);
-				restTemplate.put("https://localhost:8083/dev/designerProducts/approvalUpdate/" + productId, productdata,
+				restTemplate.put(RestTemplateConstant.DESIGNER_PRODUCTS_APPROVAL_UPDATE.getMessage() + productId, productdata,
 						String.class);
 
-				return new GlobalResponse("Status Updated", "Product " + "" + " successfully", 200);
+				return new GlobalResponse(MessageConstant.STATUS_UPDATED.getMessage(), MessageConstant.PRODUCT_STATUS_UPDATED.getMessage(), 200);
 			} else {
-				return new GlobalResponse("Bad Request", "ProductID and designerId are mismatched", 400);
+				return new GlobalResponse(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.PRODUCT_AND_DESIGNER_ID_MISMATCH.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

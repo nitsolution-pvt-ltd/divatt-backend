@@ -122,6 +122,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		if (loginEntity.getType().equals("USER")) {
 			UserLoginEntity entity = new UserLoginEntity();
 			if (userLoginRepo.findByEmail(loginEntity.getEmail()).isEmpty()) {
+				try {
 				String s = loginEntity.getName().trim();
 				String str[] = s.split(" ");
 
@@ -136,6 +137,9 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				entity.setSocialId(loginEntity.getSocialId());
 				entity.setDob("14/09/2022");
 				this.restTemplate.postForEntity("https://localhost:8082/dev/user/add", entity, UserLoginEntity.class);
+				}catch (Exception e) {
+					throw new CustomException("Email not found");
+				}
 
 			}
 		}
