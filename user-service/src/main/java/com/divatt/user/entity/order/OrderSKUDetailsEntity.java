@@ -110,7 +110,7 @@ public class OrderSKUDetailsEntity {
 	private String reachedCentralHub;
 
 	@Field(name = "created_on")
-	@JsonFormat(shape = Shape.STRING,pattern = "dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(shape = Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
 	private String createdOn;
 
 	@Field(name = "updated_on")
@@ -131,10 +131,12 @@ public class OrderSKUDetailsEntity {
 
 	private String userComment;
 
-	@JsonFormat(shape = Shape.STRING,pattern = "dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(shape = Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
 	private String shippingDate;
-	
+
 	private String status;
+
+	private HsnData hsnData;
 
 	public OrderSKUDetailsEntity() {
 		super();
@@ -156,7 +158,8 @@ public class OrderSKUDetailsEntity {
 			Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST, String taxType,
 			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn,
 			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
-			Boolean giftwrapStatus, JSONObject giftWrapObject, String userComment, String shippingDate, String status) {
+			Boolean giftwrapStatus, JSONObject giftWrapObject, String userComment, String shippingDate, String status,
+			HsnData hsnData) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -194,6 +197,7 @@ public class OrderSKUDetailsEntity {
 		this.userComment = userComment;
 		this.shippingDate = shippingDate;
 		this.status = status;
+		this.hsnData = hsnData;
 	}
 
 	public Integer getId() {
@@ -476,16 +480,24 @@ public class OrderSKUDetailsEntity {
 		this.shippingDate = shippingDate;
 	}
 
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
-
 	public String getStatus() {
 		return status;
 	}
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public HsnData getHsnData() {
+		return hsnData;
+	}
+
+	public void setHsnData(HsnData hsnData) {
+		this.hsnData = hsnData;
+	}
+
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
 	}
 
 	@Override
@@ -501,22 +513,24 @@ public class OrderSKUDetailsEntity {
 				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + ", customObject="
 				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
 				+ ", giftWrapObject=" + giftWrapObject + ", userComment=" + userComment + ", shippingDate="
-				+ shippingDate + ", status=" + status +", getId()=" + getId() + ", getUserId()=" + getUserId() + ", getOrderId()="
-				+ getOrderId() + ", getHsn()=" + getHsn() + ", getDesignerId()=" + getDesignerId() + ", getProductId()="
-				+ getProductId() + ", getProductName()=" + getProductName() + ", getProductSku()=" + getProductSku()
-				+ ", getSize()=" + getSize() + ", getImages()=" + getImages() + ", getColour()=" + getColour()
-				+ ", getUnits()=" + getUnits() + ", getMrp()=" + getMrp() + ", getSalesPrice()=" + getSalesPrice()
-				+ ", getDiscount()=" + getDiscount() + ", getTaxAmount()=" + getTaxAmount() + ", getCgst()=" + getCgst()
-				+ ", getSgst()=" + getSgst() + ", getIgst()=" + getIgst() + ", getShippingCharge()="
-				+ getShippingCharge() + ", getShippingCGST()=" + getShippingCGST() + ", getShippingSGST()="
-				+ getShippingSGST() + ", getShippingIGST()=" + getShippingIGST() + ", getTaxType()=" + getTaxType()
-				+ ", getOrderItemStatus()=" + getOrderItemStatus() + ", getReachedCentralHub()="
-				+ getReachedCentralHub() + ", getCreatedOn()=" + getCreatedOn() + ", getUpdatedOn()=" + getUpdatedOn()
-				+ ", getOrderStatusDetails()=" + getOrderStatusDetails() + ", getCustomObject()=" + getCustomObject()
-				+ ", getCustomizationStatus()=" + getCustomizationStatus() + ", getGiftwrapStatus()="
-				+ getGiftwrapStatus() + ", getGiftWrapObject()=" + getGiftWrapObject() + ", getUserComment()="
-				+ getUserComment() + ", getShippingDate()=" + getShippingDate() + ", getClass()=" + getClass()
-				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+				+ shippingDate + ", status=" + status + ", hsnData=" + hsnData + ", getId()=" + getId()
+				+ ", getUserId()=" + getUserId() + ", getOrderId()=" + getOrderId() + ", getHsn()=" + getHsn()
+				+ ", getDesignerId()=" + getDesignerId() + ", getProductId()=" + getProductId() + ", getProductName()="
+				+ getProductName() + ", getProductSku()=" + getProductSku() + ", getSize()=" + getSize()
+				+ ", getImages()=" + getImages() + ", getColour()=" + getColour() + ", getUnits()=" + getUnits()
+				+ ", getMrp()=" + getMrp() + ", getSalesPrice()=" + getSalesPrice() + ", getDiscount()=" + getDiscount()
+				+ ", getTaxAmount()=" + getTaxAmount() + ", getCgst()=" + getCgst() + ", getSgst()=" + getSgst()
+				+ ", getIgst()=" + getIgst() + ", getShippingCharge()=" + getShippingCharge() + ", getShippingCGST()="
+				+ getShippingCGST() + ", getShippingSGST()=" + getShippingSGST() + ", getShippingIGST()="
+				+ getShippingIGST() + ", getTaxType()=" + getTaxType() + ", getOrderItemStatus()="
+				+ getOrderItemStatus() + ", getReachedCentralHub()=" + getReachedCentralHub() + ", getCreatedOn()="
+				+ getCreatedOn() + ", getUpdatedOn()=" + getUpdatedOn() + ", getOrderStatusDetails()="
+				+ getOrderStatusDetails() + ", getCustomObject()=" + getCustomObject() + ", getCustomizationStatus()="
+				+ getCustomizationStatus() + ", getGiftwrapStatus()=" + getGiftwrapStatus() + ", getGiftWrapObject()="
+				+ getGiftWrapObject() + ", getUserComment()=" + getUserComment() + ", getShippingDate()="
+				+ getShippingDate() + ", getStatus()=" + getStatus() + ", getHsnData()=" + getHsnData()
+				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
+				+ "]";
 	}
 
 }

@@ -69,6 +69,7 @@ import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.UserLoginEntity;
+import com.divatt.user.entity.order.HsnData;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
@@ -208,6 +209,7 @@ public class OrderAndPaymentContoller {
 			@RequestBody OrderAndPaymentGlobalEntity orderAndPaymentGlobalEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.addOrder()");
 
+		LOGGER.info(orderAndPaymentGlobalEntity + "Inside main");
 		try {
 			LOGGER.info("Data for add order = {}", orderAndPaymentGlobalEntity);
 			Map<String, Object> map = new HashMap<>();
@@ -242,7 +244,9 @@ public class OrderAndPaymentContoller {
 							.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
+					LOGGER.info(orderSKUDetailsEntityRow + "Inside Sku before Save");
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
+					LOGGER.info(orderSKUDetailsEntityRow.toString() + "inside skurow");
 				}
 
 				map.put("orderId", OrderData.getOrderId());
@@ -253,6 +257,7 @@ public class OrderAndPaymentContoller {
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
 
+				LOGGER.info(orderSKUDetailsEntity.toString());
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(),
 						"Hi " + userLoginEntity.getFirstName() + "" + ",\n                           "

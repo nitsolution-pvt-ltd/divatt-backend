@@ -54,6 +54,7 @@ import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.ProductInvoice;
 import com.divatt.user.entity.UserLoginEntity;
+import com.divatt.user.entity.order.HsnData;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.order.OrderStatusDetails;
@@ -318,12 +319,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							.getForEntity(RestTemplateConstant.DESIGNER_PRODUCT.getLink()
 									+ orderSKUDetailsEntityRow.getProductId(), org.json.simple.JSONObject.class)
 							.getBody().get("shipmentTime").toString());
-			// SimpleDateFormat sdf = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
+			// SimpleDateFormat sdf = new
+			// SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 			c.add(Calendar.DATE, shipmentTime);
 			String output = formatter.format(c.getTime());
 			LOGGER.info(output);
+			HsnData hsndata = new HsnData();
+			hsndata.setCgst(
+					orderSKUDetailsEntityRow.getHsnData().getCgst());
+			hsndata.setIgst(
+					orderSKUDetailsEntityRow.getHsnData().getIgst());
+			hsndata.setSgst(
+					orderSKUDetailsEntityRow.getHsnData().getSgst());
+			orderSKUDetailsEntityRow.setHsnData(hsndata);
 			orderSKUDetailsEntityRow.setShippingDate(output);
 			orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
 			LOGGER.info(orderSKUDetailsEntityRow + "");
@@ -775,7 +785,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.filter(e -> {
 							if (!startDate.isBlank() && !endDate.isBlank()) {
 								try {
-									SimpleDateFormat dateFormat = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
+									SimpleDateFormat dateFormat = new SimpleDateFormat(
+											MessageConstant.DATA_TYPE_FORMAT.getMessage());
 									SimpleDateFormat dateFormat2 = new SimpleDateFormat(
 											MessageConstant.DATE_FORMAT_TYPE.getMessage());
 									Date startdate = dateFormat.parse(startDate);
@@ -809,8 +820,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.filter(e -> {
 							if (!startDate.isBlank() && !endDate.isBlank()) {
 								try {
-									SimpleDateFormat dateFormat = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
-									SimpleDateFormat dateFormat2 = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
+									SimpleDateFormat dateFormat = new SimpleDateFormat(
+											MessageConstant.DATA_TYPE_FORMAT.getMessage());
+									SimpleDateFormat dateFormat2 = new SimpleDateFormat(
+											MessageConstant.DATE_FORMAT_TYPE.getMessage());
 									Date startdate = dateFormat.parse(startDate);
 									Date enddate = dateFormat.parse(endDate);
 									Date createDate = dateFormat2.parse(e.getCreatedOn());
@@ -2012,7 +2025,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 									org.json.simple.JSONObject.class);
 							LOGGER.info(fromJson.get("deliveredDate") + "Inside fromjson");
 							String deliveredDate = (String) fromJson.get("deliveredDate");
-							SimpleDateFormat dateFormat = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
+							SimpleDateFormat dateFormat = new SimpleDateFormat(
+									MessageConstant.DATA_TYPE_FORMAT.getMessage());
 							DateFormat inputText = new SimpleDateFormat("yyyy-MM-dd");
 							Date date = inputText.parse(deliveredDate);
 							String format1 = dateFormat.format(date);
@@ -2235,7 +2249,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 									org.json.simple.JSONObject.class);
 							LOGGER.info(fromJson.get("deliveredDate") + "Inside fromjson");
 							String deliveredDate = (String) fromJson.get("deliveredDate");
-							SimpleDateFormat dateFormat = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
+							SimpleDateFormat dateFormat = new SimpleDateFormat(
+									MessageConstant.DATA_TYPE_FORMAT.getMessage());
 							DateFormat inputText = new SimpleDateFormat("yyyy-MM-dd");
 							Date date = inputText.parse(deliveredDate);
 							String format1 = dateFormat.format(date);
