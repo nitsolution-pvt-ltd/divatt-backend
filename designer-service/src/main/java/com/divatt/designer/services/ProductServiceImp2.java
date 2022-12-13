@@ -391,6 +391,12 @@ public class ProductServiceImp2 implements ProductService2 {
 			LOGGER.info("Behind Reject " + reject);
 			oos = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, false,
 					"Approved");
+			
+			ls = productRepo2
+					.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved", true)
+					.stream()
+					.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
+					.collect(Collectors.toList()).size();
 
 			if (keyword.isEmpty()) {
 				if (adminStatus.equals("live")) {
@@ -408,7 +414,6 @@ public class ProductServiceImp2 implements ProductService2 {
 					List<ProductMasterEntity2> filter = data.stream()
 							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
 							.collect(Collectors.toList());
-					ls = filter.size();
 					LOGGER.info(ls + "Inside ls count");
 					findAll = new PageImpl<>(filter, pagingSort, filter.size());
 					LOGGER.info(findAll.getContent() + "Inside Findalll in ls");
@@ -432,7 +437,6 @@ public class ProductServiceImp2 implements ProductService2 {
 					List<ProductMasterEntity2> filter = data.stream()
 							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
 							.collect(Collectors.toList());
-					ls = filter.size();
 					LOGGER.info(ls + "Inside ls count");
 					findAll = new PageImpl<>(filter, pagingSort, filter.size());
 					LOGGER.info(findAll.getContent() + "Inside Findalll in ls");
