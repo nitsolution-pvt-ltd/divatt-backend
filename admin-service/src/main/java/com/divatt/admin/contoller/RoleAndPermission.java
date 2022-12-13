@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.entity.AdminModule;
 import com.divatt.admin.entity.AdminModules;
 import com.divatt.admin.entity.GlobalResponse;
@@ -80,7 +81,7 @@ public class RoleAndPermission {
 			Stream<AdminModules> orElseThrow = Optional
 					.of(adminModulesRepo.findAll().stream()
 							.filter(e -> e.getMetaKey() != null && e.getMetaKey().equals("admin_modules")))
-					.orElseThrow(() -> new CustomException("Data not found"));
+					.orElseThrow(() -> new CustomException(MessageConstant.NO_DATA.getMessage()));
 
 			orElseThrow.forEach(e -> {
 				adminModules = e;
@@ -113,7 +114,7 @@ public class RoleAndPermission {
 				roles.put("roleKey", e.getId());
 				roles.put("roleName", e.getRoleName());
 				return roles;
-			})).orElseThrow(() -> new CustomException("Data not found")));
+			})).orElseThrow(() -> new CustomException(MessageConstant.NO_DATA.getMessage())));
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -141,7 +142,7 @@ public class RoleAndPermission {
 				return ResponseEntity.ok(adminModules2);
 			}
 			else
-				throw new CustomException("Data not found");
+				throw new CustomException(MessageConstant.NO_DATA.getMessage());
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -154,7 +155,7 @@ public class RoleAndPermission {
 		List<AdminModules> find = mongoOperations
 		.find(query(where("roleName").is(adminModules.getRoleName().toUpperCase())), AdminModules.class);
 		if(find.size()>0) {
-			throw new CustomException("This role Already exist");
+			throw new CustomException(MessageConstant.ROLE_ALREADY_EXIST.getMessage());
 		}
 		adminModules.setId((long) sequenceGenerator.getNextSequence(AdminModules.SEQUENCE_NAME));
 		adminModules.setMetaKey("ROLE");
@@ -175,7 +176,7 @@ public class RoleAndPermission {
 		adminModules.setRoleName(adminModules.getRoleName().toUpperCase());
 		adminModules.setIsDeleted(false);
 		adminModulesRepo.save(adminModules);
-		return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Role added successfully", 200));
+		return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.ROLE_ADDED.getMessage(), 200));
 	}
 	
 	
@@ -195,22 +196,22 @@ public class RoleAndPermission {
 		}
 	}
 	
-	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteRoleId(@RequestHeader("Authorization") String token,@PathVariable("id") Long id) {
+	public ResponseEntity<?> deleteRoleId(@RequestHeader("Authorization") String token, @PathVariable("id") Long id) {
 		LOGGER.info("Inside - RoleAndPermission.deleteRoleId()");
 		try {
 //			if(!roleAndPermissionService.checkPermission(token, "module6", "delete"))
 //				throw new CustomException("Don't have delete permission");
 			if (mongoOperations.exists(query(where("id").is(id)), AdminModules.class)) {
-				if (mongoOperations.exists(query(where("role").is(id+"")), LoginEntity.class))
-					throw new CustomException("Role is given to an admin");
+				if (mongoOperations.exists(query(where("role").is(id + "")), LoginEntity.class))
+					throw new CustomException(MessageConstant.ROLE_GIVEN_TO_ADMIN.getMessage());
 				Optional.of(mongoOperations.findAndModify(query(where("id").is(id)),
 						new Update().set("isDeleted", true), AdminModules.class))
-						.orElseThrow(() -> new RuntimeException("Internal Server Error"));
-				return new ResponseEntity<>(new GlobalResponse("SUCCESS", "Deleted successfully", 200), HttpStatus.OK);
+						.orElseThrow(() -> new RuntimeException(MessageConstant.INTERNAL_SERVER_ERROR.getMessage()));
+				return new ResponseEntity<>(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.DELETED_SUCCESSFULLY.getMessage(), 200), HttpStatus.OK);
 			}
-			throw new CustomException("Id Not Found");
+			throw new CustomException(MessageConstant.ID_NOT_EXIST.getMessage());
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -236,9 +237,9 @@ public class RoleAndPermission {
 						adminModulesRepo.save(filterCatDetails);
 					}
 				}
-				return new GlobalResponse("SUCCESS", "Role deleted successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.ROLE_DELETED.getMessage(), 200);
 			}else {
-				throw new CustomException("Role Id Not Found!");
+				throw new CustomException(MessageConstant.ID_NOT_EXIST.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -287,7 +288,7 @@ public class RoleAndPermission {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Profile not found!");
+				throw new CustomException(MessageConstant.NO_DATA.getMessage());
 			} else {
 				return ResponseEntity.ok(response) ;
 			}

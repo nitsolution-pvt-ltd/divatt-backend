@@ -125,7 +125,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		if (loginEntity.getType().equals("USER")) {
 			UserLoginEntity entity = new UserLoginEntity();
 			if (userLoginRepo.findByEmail(loginEntity.getEmail()).isEmpty()) {
-				LOGGER.info(loginEntity.getEmail() + "inside email");
+                LOGGER.info(loginEntity.getEmail() + "inside email");
 				try {
 					String s = loginEntity.getName().trim();
 					String str[] = s.split(" ");

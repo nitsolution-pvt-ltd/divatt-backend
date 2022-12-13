@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.services.applicationdiscovery.model.ResourceNotFoundException;
+import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.entity.BannerEntity;
 import com.divatt.admin.entity.ColourEntity;
 import com.divatt.admin.entity.ColourMetaEntity;
@@ -106,9 +107,9 @@ public class AdminMServiceImpl implements AdminMService{
 					colourMetaEntity.setMetaKey("colors");
 					colourMetaEntity.setId(colourMetaEntity.getId());
 					adminMDataRepo.save(colourMetaEntity);
-					return new GlobalResponse("Success", "colore added successfully",200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.COLOUR_ADDED.getMessage(),200);
 				}
-			return new GlobalResponse("Failed", "colore not added ",404);
+			return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.COLOUR_NOT_ADDED.getMessage(), 404);
 		}catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -137,10 +138,10 @@ public class AdminMServiceImpl implements AdminMService{
 						coloEntity.setMetaKey(colour.getMetaKey());
 						coloEntity.setColors(colourEntities);
 						adminMDataRepo.save(coloEntity);
-						return new GlobalResponse("Success", "colore updated successfully", 200);
+						return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.COLOUR_UPDATED.getMessage(), 200);
 				}
 		    }
-			return new GlobalResponse("Failed", "colore not updated ", 404);
+			return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.COLOUR_NOT_UPDATED.getMessage(), 404);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -168,10 +169,10 @@ public class AdminMServiceImpl implements AdminMService{
 				coloEntity.setMetaKey(colour.getMetaKey());
 				coloEntity.setColors(colourEntities);
 				adminMDataRepo.save(coloEntity);
-				return new GlobalResponse("Success", "Colour inActivated successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.COLOUR_INACTIVATED.getMessage(), 200);
 		 }
 		}
-		return new GlobalResponse("Failed", "Colour not inActivated ",404 ) ;
+		return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.COLOUR_ACTIVATED.getMessage() ,404 ) ;
 	} catch (Exception e) {
 		throw new CustomException(e.getMessage());
 	}
@@ -200,12 +201,12 @@ public class AdminMServiceImpl implements AdminMService{
     							colourMetaEntity.setColors(listColour);
     							colourMetaEntity.setMetaKey("colors");
     							adminMDataRepo.save(colourMetaEntity);
-    							return new GlobalResponse("Success", "Colour deleted successfully", 200);
+    							return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.COLOUR_DELETED.getMessage(), 200);
     					 }
     				}
     			}
     			
-    		 return new GlobalResponse("Failed", "Colour not deleted",404);
+    		 return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.COLOUR_NOT_DELETED.getMessage() ,404);
     		}
     		catch (Exception e) {
     		    throw new CustomException(e.getMessage()) ;
@@ -284,7 +285,7 @@ public ColourEntity getColour(String name) {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Colour Not Found");
+				throw new CustomException(MessageConstant.COLOUR_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -302,7 +303,7 @@ public ColourEntity getColour(String name) {
 			List<BannerEntity> findByBannerName = mongoOperations.find(query, BannerEntity.class);
 
 			if (findByBannerName.size() >= 1) {
-				throw new CustomException("Banner title already exist");
+				throw new CustomException(MessageConstant.BANNER_ALREADY_EXIST.getMessage());
 			} else {
 
 				BannerEntity banEntity = new BannerEntity();
@@ -317,7 +318,7 @@ public ColourEntity getColour(String name) {
 				banEntity.setCreatedOn(new Date());
 
 				bannerRepo.save(banEntity);
-				return new GlobalResponse("Success", "Banner added successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.BANNER_ADDED.getMessage(), 200);
 
 			}
 		} catch (Exception e) {
@@ -331,7 +332,7 @@ public ColourEntity getColour(String name) {
 
 		try {
 			BannerEntity banEntity = bannerRepo.findById(id)
-					.orElseThrow(() -> new ResourceNotFoundException("Id not exist :" + id));
+					.orElseThrow(() -> new ResourceNotFoundException(MessageConstant.ID_NOT_EXIST.getMessage() + id));
 
 			
 			//BannerEntity updateEntity= new BannerEntity();
@@ -350,11 +351,11 @@ public ColourEntity getColour(String name) {
 					banEntity.setStartDate(bannerEntity.getStartDate());
 					bannerRepo.save(banEntity);
 					
-					return new GlobalResponse("Success", "Banner updated successfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.BANNER_UPDATED.getMessage(), 200);
 					
 				}
 				else {
-					return new GlobalResponse("Failed , banner is deleted", "Banner not updated", 200);
+					return new GlobalResponse(MessageConstant.FAILED_BANNER.getMessage(), MessageConstant.BANNER_NOT_UPDATED.getMessage(), 200);
 				}
 				
 				
@@ -371,17 +372,17 @@ public ColourEntity getColour(String name) {
 		LOGGER.info("Inside - AdminMServiceImpl.deleteBanner()");		
 		
 		BannerEntity bannerEntity = bannerRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Id not exist" + id));
+				.orElseThrow(() -> new ResourceNotFoundException(MessageConstant.ID_NOT_EXIST.getMessage() + id));
 
 		if (bannerEntity.getIsDeleted().equals(false)) {
 
 			bannerEntity.setIsDeleted(true);
 			bannerRepo.save(bannerEntity);
-            return new GlobalResponse("success", "Banner Deleted successfully", 200);
+            return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.BANNER_DELETED.getMessage(), 200);
 
 		} else {
 
-			return new GlobalResponse("Failed", "Banner not deleted", 404);
+			return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.BANNER_NOT_DELETED.getMessage(), 404);
 		}
 
 	}
@@ -425,7 +426,7 @@ public ColourEntity getColour(String name) {
 	 			response.put("perPageElement", findAll.getNumberOfElements());
 	 	
 	 			if (findAll.getSize() <= 1) {
-	 				throw new CustomException("Banner not found!");
+	 				throw new CustomException(MessageConstant.BANNER_NOT_FOUND.getMessage());
 	 			} else {
 	 				return response;
 	 			}
@@ -452,10 +453,10 @@ public ColourEntity getColour(String name) {
 					designerEntity.setMetakey("DESIGNER_LEVELS");
 					System.out.println(designerEntity);
 					designerCategoryRepo.save(designerEntity);
-					return new GlobalResponse("Success", "designer category added successfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.DESIGNER_CATEGORY_ADDED.getMessage(), 200);
 				}
 			}
-			return new GlobalResponse("Failed", "designer category not added", 404);
+			return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.DESIGNER_CATEGORY_NOT_ADDED.getMessage(), 404);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -507,10 +508,10 @@ public ColourEntity getColour(String name) {
 					designerEntity.setMetakey("DESIGNER_LEVELS");
 					System.out.println(designerEntity);
 					designerCategoryRepo.save(designerEntity);
-					return new GlobalResponse("Success", "Designer category updated successfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.DESIGNER_CATEGORY_UPDATED.getMessage(), 200);
 					}
 				else {
-					return new GlobalResponse("Failed", "Designerlevel not update, May not exist this level", 404);
+					return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.DESIGNER_CATEGORY_NOT_UPDATED.getMessage(), 404);
 					
 				}
 			}
@@ -541,10 +542,10 @@ public ColourEntity getColour(String name) {
 					designerEntity.setMetakey("DESIGNER_LEVELS");
 					System.out.println(designerEntity);
 					designerCategoryRepo.save(designerEntity);
-					return new GlobalResponse("Success", "Designerlevels deleted successfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.DESIGNER_LEVEL_DELETED.getMessage(), 200);
 				}
 				else {
-					return new GlobalResponse("Failed", "Designerlevels not exist ", 404);
+					return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.DESIGNER_LEVEL_NOT_EXIST.getMessage(), 404);
 				}
 			}
 			return null;
@@ -581,7 +582,7 @@ public ColourEntity getColour(String name) {
 LOGGER.info("Inside - AdminMServiceImpl.getBanner()");		
 		
 		BannerEntity bannerEntity = bannerRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Id not exist " + id));
+				.orElseThrow(() -> new ResourceNotFoundException(MessageConstant.ID_NOT_EXIST.getMessage() + id));
 		
 		if(bannerEntity.getIsDeleted().equals(false)) {
 			return bannerEntity;
@@ -597,17 +598,17 @@ LOGGER.info("Inside - AdminMServiceImpl.getBanner()");
 	public GlobalResponse changeBannerStatus(Long id) {
 		
 		BannerEntity bannerEntity = bannerRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Id not exist " + id));
+				.orElseThrow(() -> new ResourceNotFoundException(MessageConstant.ID_NOT_EXIST.getMessage() + id));
 		if(bannerEntity.getIsDeleted().equals(false) && bannerEntity.getIsActive().equals(true)) {
 			
 			bannerEntity.setIsActive(false);
 			bannerRepo.save(bannerEntity);
-			return new GlobalResponse("Success", "Banner inactive ", 200);
+			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.BANNER_INACTIVE.getMessage(), 200);
 		}
 		else {
 			bannerEntity.setIsActive(true);
 			bannerRepo.save(bannerEntity);
-			return new GlobalResponse("Success", "Banner active ", 200);
+			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.BANNER_ACTIVE.getMessage(), 200);
 		}
 		
 		

@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.ProductMeasurementEntity;
 import com.divatt.admin.exception.CustomException;
@@ -48,12 +49,12 @@ public class ProductMeasurementServiceImpl implements ProductMeasurementService 
 				productMeasurementEntity.setIsActive(false);
 				productMeasurementEntity.setIsDelete(false);
 				measurementRepo.save(productMeasurementEntity);
-				return new GlobalResponse("Success", "Measurement Added Successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.MEASUREMENT_ADDED.getMessage(), 200);
 
 			}
 
 			else {
-				throw new CustomException("SubCategory name allready exists");
+				throw new CustomException(MessageConstant.SUBCATEGORY_ALREADY_EXIST.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -115,7 +116,7 @@ public class ProductMeasurementServiceImpl implements ProductMeasurementService 
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Measurement data not found");
+				throw new CustomException(MessageConstant.MEASUREMENT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -134,14 +135,14 @@ public class ProductMeasurementServiceImpl implements ProductMeasurementService 
 				if (productMeasurementEntity.getIsActive().equals(false)) {
 					productMeasurementEntity.setIsActive(true);
 					measurementRepo.save(productMeasurementEntity);
-					return new GlobalResponse("Suucess", "Measurement status active", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.MEASUREMENT_STATUS_ACTIVE.getMessage(), 200);
 				} else {
 					productMeasurementEntity.setIsActive(false);
 					measurementRepo.save(productMeasurementEntity);
-					return new GlobalResponse("Suucess", "Measurement status deactive", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.MEASUREMENT_STATUS_DEACTIVE.getMessage(), 200);
 				}
 			} else {
-				return new GlobalResponse("Error!!", "Measurement Id does not exist", 400);
+				return new GlobalResponse(MessageConstant.ERROR.getMessage(), MessageConstant.MEASUREMENT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -159,15 +160,15 @@ public class ProductMeasurementServiceImpl implements ProductMeasurementService 
 					productMeasurementEntity.setIsActive(false);
 					productMeasurementEntity.setIsDelete(true);
 					measurementRepo.save(productMeasurementEntity);
-					return new GlobalResponse("Suucess", "Measurement deleted successfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.MEASUREMENT_DELETED.getMessage(), 200);
 				} else {
 					productMeasurementEntity.setIsActive(false);
 					productMeasurementEntity.setIsDelete(false);
 					measurementRepo.save(productMeasurementEntity);
-					return new GlobalResponse("Suucess", "Measurement recover succesfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.MEASUREMENT_RECOVER.getMessage(), 200);
 				}
 			} else {
-				return new GlobalResponse("Error!!", "Measurement Id does not exist", 400);
+				return new GlobalResponse(MessageConstant.ERROR.getMessage(), MessageConstant.MEASUREMENT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -184,9 +185,9 @@ public class ProductMeasurementServiceImpl implements ProductMeasurementService 
 				productMeasurementEntity.setIsDelete(measurementData.getIsDelete());
 				productMeasurementEntity.setMetaKey(measurementData.getMetaKey());
 				measurementRepo.save(productMeasurementEntity);
-				return new GlobalResponse("Success", "Measurement updated", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.MEASUREMENT_UPDATED.getMessage(), 200);
 			} else {
-				return new GlobalResponse("Error!!", "Measurement Id does not exist", 400);
+				return new GlobalResponse(MessageConstant.ERROR.getMessage(), MessageConstant.MEASUREMENT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

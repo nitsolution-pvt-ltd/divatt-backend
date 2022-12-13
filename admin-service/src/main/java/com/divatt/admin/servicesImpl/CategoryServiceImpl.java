@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.UserCategoryResponse;
 import com.divatt.admin.entity.UserResponseEntity;
@@ -59,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
 			List<CategoryEntity> findByCategoryName = categoryRepo
 					.findByCategoryNameAndIsDeleted(categoryEntity.getCategoryName(), false);
 			if (findByCategoryName.size() >= 1) {
-				throw new CustomException("Category already exist!");
+				throw new CustomException(MessageConstant.CATEGORY_ALREADY_EXIST.getMessage());
 			} else {
 				CategoryEntity filterCatDetails = new CategoryEntity();
 
@@ -75,7 +76,7 @@ public class CategoryServiceImpl implements CategoryService {
 				filterCatDetails.setIsDeleted(false);
 
 				categoryRepo.save(filterCatDetails);
-				return new GlobalResponse("SUCCESS", "Category added succesfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.CATEGORY_ADDED.getMessage(), 200);
 			}
 
 		} catch (Exception e) {
@@ -122,7 +123,7 @@ public class CategoryServiceImpl implements CategoryService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Category Not Found!");
+				throw new CustomException(MessageConstant.CATEGORY_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -135,7 +136,7 @@ public class CategoryServiceImpl implements CategoryService {
 		try {
 			Optional<CategoryEntity> findById = this.categoryRepo.findById(catId);
 			if (!(findById.isPresent())) {
-				throw new CustomException("Category not found!");
+				throw new CustomException(MessageConstant.CATEGORY_NOT_FOUND.getMessage());
 			} else {
 				return findById;
 			}
@@ -151,7 +152,7 @@ public class CategoryServiceImpl implements CategoryService {
 			Optional<CategoryEntity> findByCategoryRow = categoryRepo.findById(catId);
 
 			if (!findByCategoryRow.isPresent()) {
-				throw new CustomException("Category not found!");
+				throw new CustomException(MessageConstant.CATEGORY_NOT_FOUND.getMessage());
 			} else {
 				CategoryEntity filterCatDetails = findByCategoryRow.get();
 
@@ -166,7 +167,7 @@ public class CategoryServiceImpl implements CategoryService {
 				filterCatDetails.setIsDeleted(false);
 				categoryRepo.save(filterCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Category updated successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.CATEGORY_UPDATED.getMessage(), 200);
 			}
 
 		} catch (Exception e) {
@@ -184,16 +185,16 @@ public class CategoryServiceImpl implements CategoryService {
 
 			if (!findByVerify.isEmpty()) {
 				throw new CustomException(
-						"This category has been assigned a subcategory. Please delete the subcategory then you can delete this category.");
+						MessageConstant.CATEGORY_DELETE.getMessage());
 			} else {
 				if (!findById.isPresent()) {
-					throw new CustomException("Category not found!");
+					throw new CustomException(MessageConstant.CATEGORY_NOT_FOUND.getMessage());
 				} else {
 					filterCatDetails.setIsDeleted(true);
 					filterCatDetails.setCreatedOn(new Date());
 					categoryRepo.save(filterCatDetails);
 
-					return new GlobalResponse("SUCCESS", "Category deleted successfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.CATEGORY_DELETED.getMessage(), 200);
 				}
 			}
 		} catch (Exception e) {
@@ -208,7 +209,7 @@ public class CategoryServiceImpl implements CategoryService {
 			CategoryEntity filterCatDetails = findById.get();
 
 			if (filterCatDetails.getId() == null) {
-				throw new CustomException("Category not found!");
+				throw new CustomException(MessageConstant.CATEGORY_NOT_FOUND.getMessage());
 
 			} else {
 				Boolean isStatus = null;
@@ -225,7 +226,8 @@ public class CategoryServiceImpl implements CategoryService {
 				filterCatDetails.setCreatedOn(new Date());
 				categoryRepo.save(filterCatDetails);
 
-				return new GlobalResponse("SUCCESS", "Status " + message + " successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.STATUS.getMessage() + message + MessageConstant.SUCCESSFULLY.getMessage(), 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -247,15 +249,15 @@ public class CategoryServiceImpl implements CategoryService {
 					filterCatDetails.setIsDeleted(true);
 					filterCatDetails.setCreatedOn(new Date());
 					if (findByVerify.isEmpty()) {
-						message = "Category deleted successfully";
+						message = MessageConstant.CATEGORY_DELETED.getMessage();
 						status = 200;
 						categoryRepo.save(filterCatDetails);
 					} else {
-						message = "All category not deleted successfully! It has subcategory";
+						message = MessageConstant.ALL_CATEGORY_NOT_DELETED.getMessage();
 					}
 				}
 			}
-			return new GlobalResponse("SUCCESS", message, status);
+			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), message, status);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -286,7 +288,7 @@ public class CategoryServiceImpl implements CategoryService {
 			List<CategoryEntity> findAll = categoryRepo.findByIsDeletedAndIsActiveAndParentId(isDeleted, Status, "0");
 
 			if (findAll.isEmpty()) {
-				throw new CustomException("Category not found!");
+				throw new CustomException(MessageConstant.CATEGORY_NOT_FOUND.getMessage());
 			} else {
 				return findAll;
 			}
@@ -311,7 +313,7 @@ public class CategoryServiceImpl implements CategoryService {
 					}).collect(Collectors.toList());
 
 			if (catList.isEmpty()) {
-				throw new CustomException("Category not found!");
+				throw new CustomException(MessageConstant.CATEGORY_NOT_FOUND.getMessage());
 			} else {
 				return ResponseEntity.ok(catList);
 			}
