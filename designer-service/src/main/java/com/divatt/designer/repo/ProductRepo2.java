@@ -68,4 +68,13 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
 	@Query(value = "{$or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ]}")
 	List<ProductMasterEntity2> findbySearchKey(String searchKey);
 
+	List<ProductMasterEntity2> findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(Boolean isDeleted,
+			Integer designerId, String adminStatus, Boolean isActive);
+
+	List<ProductMasterEntity2> findByDesignerIdAndIsDeletedAndAdminStatusAndIsActive(Integer designerId, Boolean isDeleted,
+			String adminStatus, Boolean isActive);
+
+	@Query(value = "{$or: [ { 'filter.soh==filter.notify' : {$regex:?0,$options:'i'} }, { 'filter.soh<=filter.notify' : {$regex:?0,$options:'i'} } } ]}")
+	Page<ProductMasterEntity2> findProduct(List<ProductMasterEntity2> filter, Pageable pagingSort);
+
 }
