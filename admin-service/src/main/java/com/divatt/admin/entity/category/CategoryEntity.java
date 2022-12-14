@@ -36,7 +36,6 @@ public class CategoryEntity {
 	
 	public CategoryEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public CategoryEntity(Integer id, @NotEmpty(message = "Category name is required") String categoryName,
