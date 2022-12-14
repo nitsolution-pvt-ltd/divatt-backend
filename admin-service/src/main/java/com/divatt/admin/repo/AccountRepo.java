@@ -33,6 +33,7 @@ public interface AccountRepo extends MongoRepository<AccountEntity, Long>{
 	@Query("{$or :[{'order_details': { $elemMatch: {'order_id':'?0'} }},{'order_details': { $elemMatch: {'invoice_id':'?1'} }}]}")
 	List<AccountEntity> findByOrderIdAndInvoiceId(String order_id, String invoice_id);
 
+	Page<AccountEntity> findAllByOrderByIdDesc(Pageable pagingSort);
 
 
 }
