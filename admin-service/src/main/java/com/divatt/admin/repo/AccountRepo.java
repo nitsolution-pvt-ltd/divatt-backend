@@ -1,5 +1,7 @@
 package com.divatt.admin.repo;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -27,5 +29,10 @@ public interface AccountRepo extends MongoRepository<AccountEntity, Long>{
 
 	@Query(" {$or :[{'admin_details.admin_id': {$regex:?0,$options:'i'} }, {'admin_details.name': {$regex:?0,$options:'i'} } ]}")
 	Page<AccountEntity> AccountSearchByKeywords(String pattern, Pageable pagingSort);
+
+	@Query("{$or :[{'order_details': { $elemMatch: {'order_id':'?0'} }},{'order_details': { $elemMatch: {'invoice_id':'?1'} }}]}")
+	List<AccountEntity> findByOrderIdAndInvoiceId(String order_id, String invoice_id);
+
+
 
 }

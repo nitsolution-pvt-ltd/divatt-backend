@@ -3,15 +3,22 @@ package com.divatt.admin.contoller;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.admin.entity.AccountEntity;
+import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.category.CategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.services.AccountService;
 
@@ -23,6 +30,25 @@ public class AccountController {
 
 	@Autowired
 	private AccountService accountService;
+	
+	
+	@PostMapping("/add")
+	public GlobalResponse postAccountDetails(@Valid @RequestBody AccountEntity accountEntity) {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountController.postAccountDetails()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountController.postAccountDetails()");
+		}
+		
+		try {
+			return this.accountService.postAccountDetails(accountEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
 
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getAccountDetails(@RequestParam(defaultValue = "0") int page,
