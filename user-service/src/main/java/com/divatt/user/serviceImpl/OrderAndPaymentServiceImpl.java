@@ -559,7 +559,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				LOGGER.info(e.getOrderId() + "Inside OrderId");
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 				LOGGER.info(OrderPaymentRow + " Inside PaymentRow");
-				LOGGER.info(OrderSKUDetailsRow + " Inside OrderSku");
+				LOGGER.info(" Inside OrderSku"+OrderSKUDetailsRow);
 				OrderSKUDetailsRow.forEach(D -> {
 					LOGGER.info("Data in for each method" + D.getProductId());
 					ObjectMapper objs = new ObjectMapper();
