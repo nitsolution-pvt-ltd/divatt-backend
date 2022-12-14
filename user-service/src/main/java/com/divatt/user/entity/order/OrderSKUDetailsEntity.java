@@ -131,7 +131,7 @@ public class OrderSKUDetailsEntity {
 
 	private String userComment;
 
-	@JsonFormat(shape = Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/dd/MM HH:mm:ss")
 	private String shippingDate;
 
 	private String status;
