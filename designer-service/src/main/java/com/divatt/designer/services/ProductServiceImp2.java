@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.json.simple.JSONObject;
@@ -16,9 +18,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -50,6 +56,9 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	@Autowired
 	private SequenceGenerator sequenceGenarator;
+
+	@Autowired
+	private MongoOperations mongoOperations;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -382,6 +391,13 @@ public class ProductServiceImp2 implements ProductService2 {
 			LOGGER.info("Behind Reject " + reject);
 			oos = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, false,
 					"Approved");
+			
+			ls = productRepo2
+					.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved", true)
+					.stream()
+					.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
+					.collect(Collectors.toList()).size();
+
 			if (keyword.isEmpty()) {
 				if (adminStatus.equals("live")) {
 					findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
@@ -393,8 +409,14 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
 							"Rejected", isActive, pagingSort);
 				} else if (adminStatus.equals("ls")) {
-					findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
-							"ls", isActive, pagingSort);
+					List<ProductMasterEntity2> data = productRepo2
+							.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved", true);
+					List<ProductMasterEntity2> filter = data.stream()
+							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
+							.collect(Collectors.toList());
+					LOGGER.info(ls + "Inside ls count");
+					findAll = new PageImpl<>(filter, pagingSort, filter.size());
+					LOGGER.info(findAll.getContent() + "Inside Findalll in ls");
 				} else if (adminStatus.equals("oos")) {
 					findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
 							"Approved", false, pagingSort);
@@ -410,8 +432,14 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
 							"Reject", pagingSort);
 				} else if (adminStatus.equals("ls")) {
-					findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
-							"notify", pagingSort);
+					List<ProductMasterEntity2> data = productRepo2
+							.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved",true);
+					List<ProductMasterEntity2> filter = data.stream()
+							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
+							.collect(Collectors.toList());
+					LOGGER.info(ls + "Inside ls count");
+					findAll = new PageImpl<>(filter, pagingSort, filter.size());
+					LOGGER.info(findAll.getContent() + "Inside Findalll in ls");
 				} else if (adminStatus.equals("oos")) {
 					findAll = productRepo2.listDesignerProductsearchByAdminStatusForOos(keyword, isDeleted, designerId,
 							"Approved", false, pagingSort);
@@ -423,7 +451,6 @@ public class ProductServiceImp2 implements ProductService2 {
 			if (totalPage < 0) {
 				totalPage = 0;
 			}
-
 			Map<String, Object> response = new HashMap<>();
 			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
@@ -442,7 +469,9 @@ public class ProductServiceImp2 implements ProductService2 {
 			} else {
 				return response;
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -653,11 +682,8 @@ public class ProductServiceImp2 implements ProductService2 {
 									: true)
 							.filter(product -> !minPrice.equals("-1") ? product.getMrp() >= Long.parseLong(minPrice)
 									: true)
-							.filter(product -> !size.equals("") 
-									? Arrays.asList(size.split(",")).stream()
-											.anyMatch(s -> product.getSizes().stream()
-													.anyMatch(sizee -> sizee.equals(s))) 
-									: true)
+							.filter(product -> !size.equals("") ? Arrays.asList(size.split(",")).stream().anyMatch(
+									s -> product.getSizes().stream().anyMatch(sizee -> sizee.equals(s))) : true)
 //							.filter(product -> !colour.equals("")
 //									? Arrays.asList(colour.split(",")).stream()
 //											.anyMatch(color -> Arrays.asList(product.getImages()).stream()
