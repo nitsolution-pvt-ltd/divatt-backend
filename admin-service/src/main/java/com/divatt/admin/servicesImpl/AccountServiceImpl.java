@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +41,15 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
+	
+	@Value("${spring.profiles.active}")
+	private String contextPath;
+
+	@Value("${host}")
+	private String host;
+	
+	@Value("${interfaceId}")
+	private String interfaceId;
 
 	public GlobalResponse postAccountDetails(@RequestBody AccountEntity accountEntity) {
 
@@ -57,7 +67,7 @@ public class AccountServiceImpl implements AccountService {
 			if (findByRow.size() > 0) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/add", MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
+							interfaceId, host + contextPath + "account/add", MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
 							HttpStatus.BAD_REQUEST);
 				}
 				throw new CustomException(MessageConstant.ORDER_ALREADY_EXIST.getMessage());
@@ -67,11 +77,11 @@ public class AccountServiceImpl implements AccountService {
 
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/add", "Success", HttpStatus.OK);
+							interfaceId, host + contextPath + "account/add", "Success", HttpStatus.OK);
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/add", accountEntity.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "account/add", accountEntity.toString(), HttpStatus.OK);
 				}
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ACCOUNT_ADDED.getMessage(), HttpStatus.OK.value());
@@ -80,7 +90,7 @@ public class AccountServiceImpl implements AccountService {
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						"Admin Service", "account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+						interfaceId, host + contextPath + "account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
 		}
@@ -103,7 +113,7 @@ public class AccountServiceImpl implements AccountService {
 			if (findByRow.size() < 0) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/view/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
+							interfaceId, host + contextPath + "account/view/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
 							HttpStatus.BAD_REQUEST);
 				}
 				return new ResponseEntity<>(MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),HttpStatus.BAD_REQUEST);
@@ -111,18 +121,18 @@ public class AccountServiceImpl implements AccountService {
 				
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/view/"+accountId, "Success", HttpStatus.OK);
+							interfaceId, host + contextPath + "account/view/"+accountId, "Success", HttpStatus.OK);
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service","account/view/"+accountId, findByRow.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "account/view/"+accountId, findByRow.toString(), HttpStatus.OK);
 				}
 				return new ResponseEntity<>(findByRow.get(0), HttpStatus.OK);
 
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						"Admin Service", "account/view/"+accountId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+						interfaceId, host + contextPath + "account/view/"+accountId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -145,7 +155,7 @@ public class AccountServiceImpl implements AccountService {
 			if (!findByRow.isPresent()) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/update/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
+							interfaceId, host + contextPath + "account/update/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
 							HttpStatus.BAD_REQUEST);
 				}
 				throw new CustomException(MessageConstant.ACCOUNT_NOT_FOUND.getMessage());
@@ -155,20 +165,19 @@ public class AccountServiceImpl implements AccountService {
 
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/update/"+accountId, "Success", HttpStatus.OK);
+							interfaceId, host + contextPath + "account/update/"+accountId, "Success", HttpStatus.OK);
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/update/"+accountId, accountEntity.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "account/update/"+accountId, accountEntity.toString(), HttpStatus.OK);
 				}
-				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
-						MessageConstant.ACCOUNT_UPDATED.getMessage(), HttpStatus.OK.value());
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.ACCOUNT_UPDATED.getMessage(), HttpStatus.OK.value());
 			
 
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						"Admin Service", "account/update/"+accountId, e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+						interfaceId, host + contextPath + "account/update/"+accountId, e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
 		}
@@ -218,18 +227,18 @@ public class AccountServiceImpl implements AccountService {
 			if (findAll.getSize() <= 1) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/list", MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
+							interfaceId, host + contextPath + "account/list", MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
 							HttpStatus.BAD_REQUEST);
 				}
 				throw new CustomException(MessageConstant.CATEGORY_NOT_FOUND.getMessage());
 			} else {
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/list", "Success", HttpStatus.OK);
+							interfaceId, host + contextPath + "account/list", "Success", HttpStatus.OK);
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							"Admin Service", "account/list", response.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "account/list", response.toString(), HttpStatus.OK);
 				}
 				return response;
 			}
@@ -237,7 +246,7 @@ public class AccountServiceImpl implements AccountService {
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						"Admin Service", "account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+						interfaceId, host + contextPath + "account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
 		}
