@@ -108,6 +108,7 @@ public enum MessageConstant {
 	SUBCATEGORY_DELETED("Subcategory deleted successfully"),
 	
 	ACCOUNT_ADDED("Account data added successfully"),
+	ACCOUNT_UPDATED("Account data updated successfully"),
 	ACCOUNT_NOT_FOUND("Account data not found"),
 	ORDER_ALREADY_EXIST("Account data already exist!"),
 	

@@ -9,7 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,8 +47,76 @@ public class AccountController {
 		}
 		
 		try {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/add", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/add", "Success", HttpStatus.OK);
+			}
 			return this.accountService.postAccountDetails(accountEntity);
 		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	@GetMapping("/view/{accountId}")
+	public ResponseEntity<?> viewAccountDetails(@PathVariable() long accountId) {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountController.viewAccountDetails()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountController.viewAccountDetails()");
+		}
+		
+		try {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/view/"+accountId, "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/view/"+accountId, "Success", HttpStatus.OK);
+			}
+			return this.accountService.viewAccountDetails(accountId);
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/view/"+accountId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	@PutMapping("/update/{accountId}")
+	public GlobalResponse putAccountDetails(@Valid @RequestBody AccountEntity accountEntity, @PathVariable() Integer accountId) {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountController.putAccountDetails()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountController.putAccountDetails()");
+		}
+		
+		try {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/update/"+accountId, "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/update/"+accountId, "Success", HttpStatus.OK);
+			}
+			return this.accountService.putAccountDetails(accountId,accountEntity);
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/update/"+accountId, e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			}
 			throw new CustomException(e.getMessage());
 		}
 
@@ -67,6 +139,10 @@ public class AccountController {
 		try {
 			if (LOGGER.isInfoEnabled()) {
 				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/list", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
 						"Admin Service", "account/list", "Success", HttpStatus.OK);
 			}
 			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword, sortBy);

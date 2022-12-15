@@ -1,6 +1,7 @@
 package com.divatt.admin.repo;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,11 @@ public interface AccountRepo extends MongoRepository<AccountEntity, Long>{
 	List<AccountEntity> findByOrderIdAndInvoiceId(String order_id, String invoice_id);
 
 	Page<AccountEntity> findAllByOrderByIdDesc(Pageable pagingSort);
+
+	List<AccountEntity> findById(long accountId);
+	
+	@Query(value = "{ '_id': ?0 }")
+	Optional<AccountEntity> findByAccountId(long accountId);
 
 
 }

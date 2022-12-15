@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -80,6 +81,94 @@ public class AccountServiceImpl implements AccountService {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
 						"Admin Service", "account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			}
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+	
+	public ResponseEntity<?> viewAccountDetails(long accountId) {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountServiceImpl.viewAccountDetails()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountServiceImpl.viewAccountDetails()");
+		}
+
+		try {
+
+			List<AccountEntity> findByRow = accountRepo.findById(accountId);
+
+			if (findByRow.size() < 0) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							"Admin Service", "account/view/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
+							HttpStatus.BAD_REQUEST);
+				}
+				return new ResponseEntity<>(MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),HttpStatus.BAD_REQUEST);
+			}
+				
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							"Admin Service", "account/view/"+accountId, "Success", HttpStatus.OK);
+				}
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							"Admin Service","account/view/"+accountId, findByRow.toString(), HttpStatus.OK);
+				}
+				return new ResponseEntity<>(findByRow.get(0), HttpStatus.OK);
+
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/view/"+accountId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	public GlobalResponse putAccountDetails(long accountId, @RequestBody AccountEntity accountEntity) {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountServiceImpl.putAccountDetails()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountServiceImpl.putAccountDetails()");
+		}
+
+		try {
+
+			Optional<AccountEntity> findByRow = accountRepo.findByAccountId(accountId);
+
+			if (!findByRow.isPresent()) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							"Admin Service", "account/update/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
+							HttpStatus.BAD_REQUEST);
+				}
+				throw new CustomException(MessageConstant.ACCOUNT_NOT_FOUND.getMessage());
+			}
+
+			accountTemplateRepo.update(accountId, accountEntity);
+
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							"Admin Service", "account/update/"+accountId, "Success", HttpStatus.OK);
+				}
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							"Admin Service", "account/update/"+accountId, accountEntity.toString(), HttpStatus.OK);
+				}
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ACCOUNT_UPDATED.getMessage(), HttpStatus.OK.value());
+			
+
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						"Admin Service", "account/update/"+accountId, e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
 		}

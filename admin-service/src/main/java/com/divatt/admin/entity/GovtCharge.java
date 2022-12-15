@@ -20,6 +20,8 @@ public class GovtCharge {
 	public String datetime;
 	public float total_amount;
 	public int units;
+	public String updated_by;
+	public String updated_datetime;
 	public String remarks;
 	
 	public GovtCharge() {
@@ -27,7 +29,8 @@ public class GovtCharge {
 	}
 
 	public GovtCharge(String designer_invoice_id, int rate, float fee, float cgst, float sgst, float igst, int tcs_rate,
-			float tcs, float total_tax, String status, String datetime, float total_amount, int units, String remarks) {
+			float tcs, float total_tax, String status, String datetime, float total_amount, int units,
+			String updated_by, String updated_datetime, String remarks) {
 		super();
 		this.designer_invoice_id = designer_invoice_id;
 		this.rate = rate;
@@ -42,6 +45,8 @@ public class GovtCharge {
 		this.datetime = datetime;
 		this.total_amount = total_amount;
 		this.units = units;
+		this.updated_by = updated_by;
+		this.updated_datetime = updated_datetime;
 		this.remarks = remarks;
 	}
 
@@ -149,6 +154,22 @@ public class GovtCharge {
 		this.units = units;
 	}
 
+	public String getUpdated_by() {
+		return updated_by;
+	}
+
+	public void setUpdated_by(String updated_by) {
+		this.updated_by = updated_by;
+	}
+
+	public String getUpdated_datetime() {
+		return updated_datetime;
+	}
+
+	public void setUpdated_datetime(String updated_datetime) {
+		this.updated_datetime = updated_datetime;
+	}
+
 	public String getRemarks() {
 		return remarks;
 	}
@@ -157,9 +178,6 @@ public class GovtCharge {
 		this.remarks = remarks;
 	}
 
-	
-	
-	
 	
 
 }
