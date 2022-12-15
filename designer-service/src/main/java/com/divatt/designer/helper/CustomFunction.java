@@ -336,7 +336,20 @@ public class CustomFunction {
 			designerProfile.setCity(body.getDesignerProfile().getCity());
 			designerProfile.setCountry(body.getDesignerProfile().getCountry());
 			designerProfile.setDob(body.getDesignerProfile().getDob());
-			boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
+			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
+					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
+					&& designerLoginEntity.getIsDeleted().equals(true)) {
+				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
+						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
+						&& !designerLoginEntity.getIsDeleted().equals(true)) {
+					boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
+				}else {
+					boutiqueProfile.setGSTIN(body.getBoutiqueProfile().getGSTIN());	
+				}
+				}else {
+				boutiqueProfile.setGSTIN(body.getBoutiqueProfile().getGSTIN());
+			}
+			//boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
 			boutiqueProfile.setBoutiqueName(body.getBoutiqueProfile().getBoutiqueName());
 			boutiqueProfile.setExperience(body.getBoutiqueProfile().getExperience());
 			boutiqueProfile.setFirmName(body.getBoutiqueProfile().getFirmName());

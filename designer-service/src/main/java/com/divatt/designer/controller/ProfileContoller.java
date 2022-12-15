@@ -280,7 +280,8 @@ public class ProfileContoller {
 					System.out.println(e.getMessage());
 				}
 
-				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.REGISTERED.getMessage(), 200));
+				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.REGISTERED.getMessage(), 200));
 			} else {
 				throw new CustomException(MessageConstant.BOUTIQUE_NAME.getMessage());
 			}
@@ -363,7 +364,8 @@ public class ProfileContoller {
 			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
 
 		}
-		return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.UPDATED.getMessage(), 200));
+		return ResponseEntity.ok(
+				new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.UPDATED.getMessage(), 200));
 	}
 
 	@PutMapping("/profile/update")
@@ -440,7 +442,8 @@ public class ProfileContoller {
 			LOGGER.info("AFTER SAVE DATA IN DATABASE = {}", save);
 		}
 
-		return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.UPDATED.getMessage(), 200));
+		return ResponseEntity.ok(
+				new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.UPDATED.getMessage(), 200));
 	}
 
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
@@ -652,8 +655,8 @@ public class ProfileContoller {
 	public org.json.simple.JSONObject countData(@PathVariable Long designerId) {
 		try {
 			org.json.simple.JSONObject response = new org.json.simple.JSONObject();
-			ResponseEntity<GlobalResponce> userData = restTemplate
-					.getForEntity(RestTemplateConstant.USER_FOLLOWER_COUNT.getMessage() + designerId, GlobalResponce.class);
+			ResponseEntity<GlobalResponce> userData = restTemplate.getForEntity(
+					RestTemplateConstant.USER_FOLLOWER_COUNT.getMessage() + designerId, GlobalResponce.class);
 			String followersData = userData.getBody().getMessage();
 			response.put("FollowersData", followersData);
 			response.put("Products", productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,
@@ -670,12 +673,24 @@ public class ProfileContoller {
 		try {
 			List<DesignerLoginEntity> designerProfileList = designerLoginRepo
 					.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
+			List<Long> list = new ArrayList<>();
+			for (int i = 0; i < designerProfileList.size(); i++) {
+				list.add(designerProfileList.get(i).getdId());
+				List<DesignerProfileEntity> designerProfileData = this.designerProfileRepo
+						.findByDesignerIdIn(list);
+				designerProfileList.get(i)
+						.setDesignerCategory(designerProfileData.get(i).getDesignerProfile().getDesignerCategory());
+				//LOGGER.info("designerProfileList"+designerProfileList.get(i).getDesignerCategory());
+			}
+			//LOGGER.info("designerProfileList"+designerProfileList.get(2).getDesignerCategory());
+			//LOGGER.info("designerProfileList" + designerProfileList);
+
 			org.json.simple.JSONObject response = new org.json.simple.JSONObject();
 			List<Object> designercategories = new ArrayList<Object>();
 			for (int i = 0; i < designerProfileList.size(); i++) {
-				if (designerProfileList.get(i).getCategories() != null) {
+				if (designerProfileList.get(i).getDesignerCategory() != null) {
 					org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-					jsonObject.put("Name", designerProfileList.get(i).getCategories());
+					jsonObject.put("Name", designerProfileList.get(i).getDesignerCategory());
 					if (!designercategories.contains(jsonObject)) {
 						designercategories.add(jsonObject);
 					}
@@ -695,14 +710,28 @@ public class ProfileContoller {
 
 			// LOGGER.info(asList+"");
 			if (!designerCategories.equals("all")) {
-				Query query = new Query();
-				query.addCriteria(Criteria.where("categories").is(designerCategories));
-				List<DesignerLoginEntity> designerData = mongoOperations.find(query, DesignerLoginEntity.class);
+				List<DesignerProfileEntity> designerProfileDetailsByCategory = this.designerProfileRepo
+						.findByDesignerCategory(designerCategories);
+				String designerCategory = designerProfileDetailsByCategory.get(0).getDesignerProfile()
+						.getDesignerCategory();
+				List<Long> list = new ArrayList<>();
+				for (int i = 0; i < designerProfileDetailsByCategory.size(); i++) {
+					list.add(designerProfileDetailsByCategory.get(i).getDesignerId());
+					List<DesignerLoginEntity> designerLoginDetails = this.designerLoginRepo.findBydIdIn(list);
+					designerLoginDetails.get(i).setDesignerCategory(designerCategory);
+					LOGGER.info("findBydId" + designerLoginDetails.get(i));
+				}
+//              designerProfileDetailsByCategory.get(0).getDesignerId();
+//				Query query = new Query();
+//				query.addCriteria(Criteria.where("designerCategory").is(designerCategories));
+//				List<DesignerLoginEntity> designerData = mongoOperations.find(query, DesignerLoginEntity.class);
+				List<DesignerLoginEntity> designerData = this.designerLoginRepo.findBydIdIn(list);
 				for (int i = 0; i < designerData.size(); i++) {
 					Query query2 = new Query();
 					query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
 					DesignerProfileEntity designerProfileData = mongoOperations.findOne(query2,
 							DesignerProfileEntity.class);
+					// designerData.get(i).setDesignerCategory(designerProfileData.getDesignerProfile().getDesignerCategory());
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
 					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
 					String productCount = countData.get("Products").toString();
@@ -737,6 +766,7 @@ public class ProfileContoller {
 					DesignerProfileEntity designerProfileData = mongoOperations.findOne(query2,
 							DesignerProfileEntity.class);
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
+					// designerData.get(i).setDesignerCategory(designerProfileData.getDesignerProfile().getDesignerCategory());
 					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
 
 					if (designerData.get(i).getdId() == 264) {
@@ -847,7 +877,8 @@ public class ProfileContoller {
 				designerProfileEntity.setEmail(findByEmail.get().getEmail());
 				designerProfileEntity.setDesignerCurrentStatus(status);
 				designerLoginRepo.save(designerProfileEntity);
-				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.DESIGNER_STATUS_CHANGE.getMessage(), 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.DESIGNER_STATUS_CHANGE.getMessage(), 200);
 			} else {
 				throw new CustomException(MessageConstant.USER_NOT_FOUND.getMessage());
 			}
@@ -911,7 +942,8 @@ public class ProfileContoller {
 				designerProfileRepo.save(designerProfileEntity);
 				LOGGER.info(designerProfileEntity + "inside profileentity");
 
-				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PROFILE_IMAGE_UPDATED.getMessage(), 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.PROFILE_IMAGE_UPDATED.getMessage(), 200);
 			} else {
 				throw new CustomException(MessageConstant.DESIGNER_ID_DOES_NOT_EXIST.getMessage());
 			}
