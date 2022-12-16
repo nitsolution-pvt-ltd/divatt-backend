@@ -6,6 +6,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.codec.CharEncoding;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,6 +19,9 @@ import com.divatt.auth.exception.CustomException;
 public class MailService {
 	@Autowired
 	JavaMailSender mailSender;
+	
+	@Value("${mail.from}")
+	private String mail;
 
 //	public void sendEmail(String to, String subject, String body,Boolean enableHtml) {
 //
@@ -45,7 +49,7 @@ public class MailService {
 			MimeMessageHelper helper = new MimeMessageHelper(message);
 
 			helper.setSubject(subject);
-			helper.setFrom("no-reply@nitsolution.in");
+			helper.setFrom(mail);
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 //			helper.addAttachment(body, null);
@@ -63,7 +67,7 @@ public class MailService {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message,true);
 			helper.setSubject(subject);
-			helper.setFrom("no-reply@nitsolution.in");
+			helper.setFrom(mail);
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 			helper.addAttachment("Invoice", file);
