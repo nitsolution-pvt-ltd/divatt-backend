@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -62,26 +63,26 @@ public class AccountServiceImpl implements AccountService {
 
 		try {
 
-			List<AccountEntity> findByRow = accountRepo.findByOrderIdAndInvoiceId(accountEntity.getOrder_details().get(0).getOrder_id(), accountEntity.getOrder_details().get(0).getInvoice_id());
-
-			if (findByRow.size() > 0) {
-				if (LOGGER.isErrorEnabled()) {
-					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/add", MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
-							HttpStatus.BAD_REQUEST);
-				}
-				throw new CustomException(MessageConstant.ORDER_ALREADY_EXIST.getMessage());
-			}
+//			List<AccountEntity> findByRow = accountRepo.findByOrderIdAndInvoiceId(accountEntity.getOrder_details().get(0).getOrder_id(), accountEntity.getOrder_details().get(0).getInvoice_id());
+//
+//			if (findByRow.size() > 0) {
+//				if (LOGGER.isErrorEnabled()) {
+//					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
+//							interfaceId, host + contextPath + "/account/add", MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
+//							HttpStatus.BAD_REQUEST);
+//				}
+//				throw new CustomException(MessageConstant.ORDER_ALREADY_EXIST.getMessage());
+//			}
 				accountEntity.set_id(sequenceGenerator.getNextSequence(AccountEntity.SEQUENCE_NAME));
 				accountRepo.save(accountEntity);
 
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/add", "Success", HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/add", "Success", HttpStatus.OK);
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/add", accountEntity.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/add", accountEntity.toString(), HttpStatus.OK);
 				}
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ACCOUNT_ADDED.getMessage(), HttpStatus.OK.value());
@@ -90,7 +91,7 @@ public class AccountServiceImpl implements AccountService {
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+						interfaceId, host + contextPath + "/account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
 		}
@@ -113,7 +114,7 @@ public class AccountServiceImpl implements AccountService {
 			if (findByRow.size() < 0) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/view/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
+							interfaceId, host + contextPath + "/account/view/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
 							HttpStatus.BAD_REQUEST);
 				}
 				return new ResponseEntity<>(MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),HttpStatus.BAD_REQUEST);
@@ -121,18 +122,18 @@ public class AccountServiceImpl implements AccountService {
 				
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/view/"+accountId, "Success", HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/view/"+accountId, "Success", HttpStatus.OK);
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/view/"+accountId, findByRow.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/view/"+accountId, findByRow.toString(), HttpStatus.OK);
 				}
 				return new ResponseEntity<>(findByRow.get(0), HttpStatus.OK);
 
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "account/view/"+accountId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+						interfaceId, host + contextPath + "/account/view/"+accountId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -155,7 +156,7 @@ public class AccountServiceImpl implements AccountService {
 			if (!findByRow.isPresent()) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/update/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
+							interfaceId, host + contextPath + "/account/update/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
 							HttpStatus.BAD_REQUEST);
 				}
 				throw new CustomException(MessageConstant.ACCOUNT_NOT_FOUND.getMessage());
@@ -165,11 +166,11 @@ public class AccountServiceImpl implements AccountService {
 
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/update/"+accountId, "Success", HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/update/"+accountId, "Success", HttpStatus.OK);
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/update/"+accountId, accountEntity.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/update/"+accountId, accountEntity.toString(), HttpStatus.OK);
 				}
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.ACCOUNT_UPDATED.getMessage(), HttpStatus.OK.value());
 			
@@ -177,7 +178,7 @@ public class AccountServiceImpl implements AccountService {
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "account/update/"+accountId, e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+						interfaceId, host + contextPath + "/account/update/"+accountId, e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
 		}
@@ -185,7 +186,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	public Map<String, Object> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			String keyword, Optional<String> sortBy) {
+			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder, Optional<String> sortBy) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.getAccountDetails()");
@@ -205,7 +206,8 @@ public class AccountServiceImpl implements AccountService {
 			Page<AccountEntity> findAll = null;
 
 			if (keyword.isEmpty()) {
-				findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);
+//				findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);
+				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder, pagingSort);
 			} else {
 				findAll = accountTemplateRepo.AccountSearchByKeywords(keyword, pagingSort);
 //				findAll = accountRepo.AccountSearchByKeywords(keyword, pagingSort);
@@ -224,21 +226,21 @@ public class AccountServiceImpl implements AccountService {
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
 
-			if (findAll.getSize() <= 1) {
+			if (findAll.getSize() < 1) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/list", MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
+							interfaceId, host + contextPath + "/account/list", MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
 							HttpStatus.BAD_REQUEST);
 				}
-				throw new CustomException(MessageConstant.CATEGORY_NOT_FOUND.getMessage());
+				throw new CustomException(MessageConstant.ACCOUNT_NOT_FOUND.getMessage());
 			} else {
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/list", "Success", HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/list", "Success", HttpStatus.OK);
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "account/list", response.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/list", response.toString(), HttpStatus.OK);
 				}
 				return response;
 			}
@@ -246,7 +248,7 @@ public class AccountServiceImpl implements AccountService {
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+						interfaceId, host + contextPath + "/account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
 		}

@@ -1,5 +1,7 @@
 package com.divatt.admin.repo;
 
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,25 +12,36 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
-import org.springframework.data.mongodb.core.aggregation.UnwindOperation;
+import org.springframework.data.mongodb.core.aggregation.SkipOperation;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.DesignerReturnAmount;
 import com.divatt.admin.entity.GovtCharge;
 import com.divatt.admin.entity.OrderDetails;
-import com.divatt.admin.entity.ServiceCharge;
+import com.google.gson.Gson;
 
 @Repository
 public class AccountTemplateRepo {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private MongoOperations mongoOperations;
+
+	@Autowired
+	private Gson gson;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AccountTemplateRepo.class);
 
@@ -76,7 +89,7 @@ public class AccountTemplateRepo {
 		countQuery.with(pagingSort);
 		long total = mongoTemplate.count(countQuery, AccountEntity.class);
 
-		List<AccountEntity> find = mongoTemplate.find(query, AccountEntity.class);
+		final List<AccountEntity> find = mongoTemplate.find(query, AccountEntity.class);
 		Page<AccountEntity> dataPageable = new PageImpl<AccountEntity>(find, pagingSort, total);
 
 		return dataPageable;
@@ -84,7 +97,8 @@ public class AccountTemplateRepo {
 
 	public AccountEntity update(long accountId, AccountEntity findByRows) {
 
-		AccountEntity findOne = mongoTemplate.findOne(Query.query(Criteria.where("_id").is(accountId)), AccountEntity.class);
+		AccountEntity findOne = mongoTemplate.findOne(Query.query(Criteria.where("_id").is(accountId)),
+				AccountEntity.class);
 
 		findOne.setDatetime(findByRows.getDatetime());
 
@@ -211,6 +225,46 @@ public class AccountTemplateRepo {
 
 		return mongoTemplate.save(findOne);
 
+	}
+
+	@SuppressWarnings("all")
+	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, Pageable pagingSort) {
+
+		LocalDate today = LocalDate.now();
+		LocalDate plusDays = today.plusDays(7);
+
+		/***
+		String pattern = "dd/MM/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		Instant instant = Instant.from(plusDays.atStartOfDay(ZoneId.of("GMT")));
+		Date date = Date.from(instant);
+		String format = simpleDateFormat.format(date);
+		System.out.println("simpleDateFormat " + format);
+		***/
+
+//		AggregationOperation groupByStateAndSumPop = Aggregation.group("_id").sum("service_charge.fee").as("feeAmount");
+		
+		MatchOperation filterByCondition = Aggregation.match(Criteria.where("datetime").gte(plusDays.toString()));
+		if(designerReturn != "" && !designerReturn.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is(designerReturn.trim())));
+		}
+		if(serviceCharge != "" && !serviceCharge.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("service_charge.status").is(serviceCharge.trim()));
+		}
+		if(govtCharge != "" && !govtCharge.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("govt_charge").elemMatch(Criteria.where("status").is(govtCharge.trim())));
+		}
+		if(userOrder != "" && !userOrder.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
+		}
+		SortOperation sortByIdDesc = Aggregation.sort(Direction.DESC, "_id");
+		SkipOperation skip = Aggregation.skip(pagingSort.getPageNumber() * pagingSort.getPageSize());
+		LimitOperation limit = Aggregation.limit(pagingSort.getPageSize());
+
+		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, sortByIdDesc, skip, limit);
+		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations, mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
+
+	    return new PageImpl<AccountEntity>(results.getMappedResults(), pagingSort, results.getMappedResults().size());
 	}
 
 }
