@@ -80,6 +80,11 @@ spring:
         uri: https://localhost:8082/dev/userMeasurement
         id: User
         predicates[0]: Path=/dev/userMeasurement/**
+      routes[18]:
+        uri: https://localhost:8084/dev/account
+        id: Admin
+        predicates[0]: Path=/dev/account/**
+        
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -184,6 +189,10 @@ spring:
         uri: https://localhost:9092/prod/userMeasurement
         id: User
         predicates[0]: Path=/prod/userMeasurement/**
+      routes[18]:
+        uri: https://localhost:9093/prod/account
+        id: Admin
+        predicates[0]: Path=/prod/account/**
       globalcors:
         corsConfigurations:
           '[/**]':

@@ -35,6 +35,7 @@ logging:
         
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
+mail.from: no-reply@nitsolution.in
 
 ---
 spring:
@@ -81,6 +82,7 @@ logging:
         
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
+mail.from: no-reply@nitsolution.in
 
 ---
 spring:
@@ -126,3 +128,4 @@ logging:
         
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
+mail.from: no-reply@nitsolution.in

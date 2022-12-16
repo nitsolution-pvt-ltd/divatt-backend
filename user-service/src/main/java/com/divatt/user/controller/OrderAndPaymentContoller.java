@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
@@ -440,7 +442,7 @@ public class OrderAndPaymentContoller {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setSubject(subject);
-			helper.setFrom(RestTemplateConstant.NO_REPLY_MAIL.getLink());
+			helper.setFrom("no-reply@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 			helper.addAttachment("order-summary", file);
@@ -850,4 +852,5 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 }
