@@ -1,6 +1,5 @@
 package com.divatt.admin.servicesImpl;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,6 +26,7 @@ import com.divatt.admin.repo.AccountRepo;
 import com.divatt.admin.repo.AccountTemplateRepo;
 import com.divatt.admin.services.AccountService;
 import com.divatt.admin.services.SequenceGenerator;
+import com.google.gson.Gson;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -51,6 +50,9 @@ public class AccountServiceImpl implements AccountService {
 	
 	@Value("${interfaceId}")
 	private String interfaceId;
+	
+	@Autowired
+	private Gson gson;
 
 	public GlobalResponse postAccountDetails(@RequestBody AccountEntity accountEntity) {
 
@@ -82,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "/account/add", accountEntity.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/add", gson.toJson(accountEntity), HttpStatus.OK);
 				}
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ACCOUNT_ADDED.getMessage(), HttpStatus.OK.value());
@@ -126,7 +128,7 @@ public class AccountServiceImpl implements AccountService {
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "/account/view/"+accountId, findByRow.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/view/"+accountId, gson.toJson(findByRow), HttpStatus.OK);
 				}
 				return new ResponseEntity<>(findByRow.get(0), HttpStatus.OK);
 
@@ -170,7 +172,7 @@ public class AccountServiceImpl implements AccountService {
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "/account/update/"+accountId, accountEntity.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/update/"+accountId, gson.toJson(accountEntity), HttpStatus.OK);
 				}
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.ACCOUNT_UPDATED.getMessage(), HttpStatus.OK.value());
 			
@@ -240,7 +242,7 @@ public class AccountServiceImpl implements AccountService {
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "/account/list", response.toString(), HttpStatus.OK);
+							interfaceId, host + contextPath + "/account/list", gson.toJson(response), HttpStatus.OK);
 				}
 				return response;
 			}
