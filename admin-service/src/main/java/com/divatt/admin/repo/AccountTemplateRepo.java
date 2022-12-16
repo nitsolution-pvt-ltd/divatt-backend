@@ -242,7 +242,7 @@ public class AccountTemplateRepo {
 		System.out.println("simpleDateFormat " + format);
 		***/
 
-//		AggregationOperation groupByStateAndSumPop = Aggregation.group("_id").sum("service_charge.fee").as("feeAmount");
+//		AggregationOperation groupByIdAndSumFee = Aggregation.group("_id").sum("service_charge.fee").as("feeAmount");
 		
 		MatchOperation filterByCondition = Aggregation.match(Criteria.where("datetime").gte(plusDays.toString()));
 		if(designerReturn != "" && !designerReturn.isEmpty()) {
@@ -257,7 +257,7 @@ public class AccountTemplateRepo {
 		if(userOrder != "" && !userOrder.isEmpty()) {
 			filterByCondition = Aggregation.match(Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
 		}
-		SortOperation sortByIdDesc = Aggregation.sort(Direction.DESC, "_id");
+		SortOperation sortByIdDesc = Aggregation.sort(pagingSort.getSort());
 		SkipOperation skip = Aggregation.skip(pagingSort.getPageNumber() * pagingSort.getPageSize());
 		LimitOperation limit = Aggregation.limit(pagingSort.getPageSize());
 

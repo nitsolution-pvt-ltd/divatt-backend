@@ -133,7 +133,7 @@ public class AccountController {
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public Map<String, Object> getAccountDetails(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
-			@RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "_id") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam(defaultValue = "") String designerReturn, @RequestParam(defaultValue = "") String serviceCharge,
 			@RequestParam(defaultValue = "") String govtCharge, @RequestParam(defaultValue = "") String userOrder,
