@@ -39,8 +39,9 @@
 				<tr style="font-size: 20px;">
 					<td colspan="5" style="padding: 0; text-align: left;">
 						<div
-							style="font-size: 17px; text-transform: capitalize; margin-top: 6px; letter-spacing: 1.5px; font-weight: 900; font-family: system-ui; color: #3d3c3c;">Hello
-							<span th:text="${firstName}"></span>,</div>
+							style="font-size: 17px; text-transform: capitalize; margin-top: 6px; letter-spacing: 1.5px; font-weight: 900; font-family: system-ui; color: #3d3c3c;">
+							Hello <span th:text="${firstName}"></span>,
+						</div>
 						<div
 							style="font-size: 14px; text-transform: capitalize; margin-top: 17px; letter-spacing: 1.5px; font-weight: 600; color: #3d3c3c;">
 							Your order has been <span th:text="${orderItemStatus}"></span>
@@ -116,12 +117,36 @@
 					</td>
 					<td
 						style="vertical-align: top; padding-top: 27px; padding-bottom: 27px;">
-						<div style="line-height: 12px; text-align: right; color: #000">
-							Rs.&nbsp;<span th:text="${mrp}"></span>
+						<div style="line-height: 27px; text-align: right; color: #000">
+							Net Amount.&nbsp;<span th:text="${mrp}"></span>
+						</div>
+						<div style="margin-top: 5px; text-align: right; color: #000">
+							Tax. &nbsp;<span th:text="${taxAmount}"></span>
+						</div>
+						<div style="margin-top: 5px; text-align: right; color: #000">
+							Discount - &nbsp;<span th:text="${discount}"></span>
 						</div>
 					</td>
 				</tr>
 			</tbody>
+		</table>
+		<table
+			style="border-collapse: collapse; font-size: 16px; width: 100%; margin: auto; margin-top: 1em;">
+			<tr>
+				<td style="width: 55%;">&nbsp;</td>
+				<td style="width: 45%;">
+					<table
+						style="border-collapse: collapse; font-size: 16px; width: 100%; margin: auto;">
+						<tr>
+							<td>Total</td>
+							<td
+								style="text-align: right; font-weight: 600; padding-top: 4px;">
+								<span th:text="${mrp}+${taxAmount}">
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
 		</table>
 		<div
 			style="margin-top: 2.5rem; font-size: 15px; font-weight: 600; color: #626262">

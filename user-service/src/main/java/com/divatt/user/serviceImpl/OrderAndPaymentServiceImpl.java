@@ -565,13 +565,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				LOGGER.info(e.getOrderId() + "Inside OrderId");
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 				LOGGER.info(OrderPaymentRow + " Inside PaymentRow");
-				LOGGER.info(" Inside OrderSku"+OrderSKUDetailsRow);
+				LOGGER.info(" Inside OrderSku" + OrderSKUDetailsRow);
 				OrderSKUDetailsRow.forEach(D -> {
 					LOGGER.info("Data in for each method" + D.getProductId());
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
 					LOGGER.info("Top of try catch");
-               //"https://localhost:8083/dev/designerProducts/productList/"
+					// "https://localhost:8083/dev/designerProducts/productList/"
 					try {
 						LOGGER.info(D.getProductId() + " inside productid");
 						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
@@ -2084,23 +2084,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.replaceAll("=", " : ");
 //				LOGGER.info("<><><><><>!!!!! = {}",substring);
 //			    String substring2 = substring.substring(0,substring.length() - 1);
-				String replace = substring2.replace("address1 : ", "")
-				.replace("address2 : ", "")
-				.replace("country : ", "")
-				.replace("state : ", "")
-				.replace("city : ", "")
-				.replace("postalCode : ", "")
-				.replace("landmark : ", "")
-				.replace("fullName : ", "")
-				.replace("email : ", "")
-				.replace("mobile : ", "");
+				String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
+						.replace("country : ", "").replace("state : ", "").replace("city : ", "")
+						.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
+						.replace("email : ", "").replace("mobile : ", "");
 				LOGGER.info("DATA = {}", replace);
 				String orderDate = item.getCreatedOn();
+				Double discount = orderDetailsEntity.getDiscount();
+				Double taxAmount = orderDetailsEntity.getTaxAmount();
 				Context context = new Context();
 				context.setVariable("firstName", firstName);
 				context.setVariable("productId", productId);
 				context.setVariable("productName", productName);
 				context.setVariable("mrp", mrp);
+				context.setVariable("discount", discount);
+				context.setVariable("taxAmount", taxAmount);
 				context.setVariable("size", size);
 				context.setVariable("displayName", displayName);
 				context.setVariable("paymentMode", paymentMode);
@@ -2116,7 +2114,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 				context.setVariable("orderId", orderId);
 				context.setVariable("productImage", images);
-				LOGGER.info(images+"inside");
+				LOGGER.info(images + "inside");
 				String htmlContent = templateEngine.process("statusChange.html", context);
 				EmailSenderThread emailSenderThread = new EmailSenderThread(email,
 						"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
@@ -2317,6 +2315,57 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					} else
 						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				}
+				Long userId = item.getUserId();
+				UserLoginEntity userById = userServiceImpl.getUserById(userId);
+				String email = userById.getEmail();
+				LOGGER.info(email + "Inside Email");
+				String firstName = userById.getFirstName();
+				String productName = item.getProductName();
+				Long mrp = item.getMrp();
+				String size = item.getSize();
+				String images = item.getImages();
+				Long units = item.getUnits();
+				String colour = item.getColour();
+
+				String paymentMode = userOrderPaymentRepo.findByOrderId(orderId).get().getPaymentMode();
+				OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
+//				String shippingAddress = orderDetailsEntity.getShippingAddress().toString();
+				Object shippingAddress = orderDetailsEntity.getShippingAddress();
+				String substring2 = shippingAddress.toString().substring(1, shippingAddress.toString().length() - 1)
+						.replaceAll("=", " : ");
+//				LOGGER.info("<><><><><>!!!!! = {}",substring);
+//			    String substring2 = substring.substring(0,substring.length() - 1);
+				String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
+						.replace("country : ", "").replace("state : ", "").replace("city : ", "")
+						.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
+						.replace("email : ", "").replace("mobile : ", "");
+				LOGGER.info("DATA = {}", replace);
+				String orderDate = item.getCreatedOn();
+				Context context = new Context();
+				context.setVariable("firstName", firstName);
+				context.setVariable("productId", productId);
+				context.setVariable("productName", productName);
+				context.setVariable("mrp", mrp);
+				context.setVariable("size", size);
+				// context.setVariable("displayName", displayName);
+				context.setVariable("paymentMode", paymentMode);
+				context.setVariable("shippingAddress", replace);
+				context.setVariable("orderDate", orderDate);
+				context.setVariable("orderId", orderId);
+				context.setVariable("quantity", units);
+				context.setVariable("colour", colour);
+				if (orderItemStatus.equals("Orders")) {
+					context.setVariable("orderItemStatus", "Verified");
+				} else {
+					context.setVariable("orderItemStatus", orderItemStatus);
+				}
+				context.setVariable("orderId", orderId);
+				context.setVariable("productImage", images);
+				LOGGER.info(images + "inside");
+				String htmlContent = templateEngine.process("statusChange.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+						"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
+				emailSenderThread.start();
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage()
 								+ orderItemStatus + MessageConstant.SUCCESSFULLY.getMessage(),
