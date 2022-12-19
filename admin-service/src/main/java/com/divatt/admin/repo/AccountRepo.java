@@ -24,9 +24,6 @@ public interface AccountRepo extends MongoRepository<AccountEntity, Long>{
 
 //	@Query(value = "{ 'designer_details': { $elemMatch: { 'designer_id' : ?0 } }}")
 //	Page<AccountEntity> findByDesignerId(long i, Pageable pagingSort);
-	
-//	@Query(value = "{ 'designer_details': { $elemMatch: { 'designer_id' : ?0 } }}")
-//	Page<AccountEntity> searchByKeywords(String key, Pageable pagingSort);
 
 	@Query(" {$or :[{'admin_details.admin_id': {$regex:?0,$options:'i'} }, {'admin_details.name': {$regex:?0,$options:'i'} } ]}")
 	Page<AccountEntity> AccountSearchByKeywords(String pattern, Pageable pagingSort);

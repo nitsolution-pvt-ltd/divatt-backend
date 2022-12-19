@@ -2070,26 +2070,31 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				LOGGER.info(email + "Inside Email");
 				String firstName = userById.getFirstName();
 				String productName = item.getProductName();
-				Long mrp = item.getMrp();
+				Long mrp = item.getSalesPrice();
 				String size = item.getSize();
 				String images = item.getImages();
 				Long units = item.getUnits();
 				String colour = item.getColour();
-
 				String paymentMode = userOrderPaymentRepo.findByOrderId(orderId).get().getPaymentMode();
 				OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
-//				String shippingAddress = orderDetailsEntity.getShippingAddress().toString();
 				Object shippingAddress = orderDetailsEntity.getShippingAddress();
 				String substring2 = shippingAddress.toString().substring(1, shippingAddress.toString().length() - 1)
 						.replaceAll("=", " : ");
-//				LOGGER.info("<><><><><>!!!!! = {}",substring);
-//			    String substring2 = substring.substring(0,substring.length() - 1);
 				String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
 						.replace("country : ", "").replace("state : ", "").replace("city : ", "")
 						.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
 						.replace("email : ", "").replace("mobile : ", "");
 				LOGGER.info("DATA = {}", replace);
 				String orderDate = item.getCreatedOn();
+				LOGGER.info(orderDate + "hi");
+				LOGGER.info(orderDate + "hi");
+				Date parse = formatter.parse(orderDate);
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(parse);
+				Date time = calendar.getTime();
+				LOGGER.info("time is" + time);
+				DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+				String format1 = dateFormat2.format(time);
 				Double discount = orderDetailsEntity.getDiscount();
 				Double taxAmount = orderDetailsEntity.getTaxAmount();
 				Context context = new Context();
@@ -2103,7 +2108,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				context.setVariable("displayName", displayName);
 				context.setVariable("paymentMode", paymentMode);
 				context.setVariable("shippingAddress", replace);
-				context.setVariable("orderDate", orderDate);
+				context.setVariable("orderDate", format1);
 				context.setVariable("orderId", orderId);
 				context.setVariable("quantity", units);
 				context.setVariable("colour", colour);
@@ -2143,6 +2148,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			OrderSKUDetailsEntity item = orderSKUDetailsRepo
 					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 			String itemStatus = item.getOrderItemStatus();
+			int designerId = item.getDesignerId();
+			DesignerProfileEntity forEntity = restTemplate
+					.getForEntity("https://localhost:8083/dev/designer/" + designerId, DesignerProfileEntity.class)
+					.getBody();
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
@@ -2321,14 +2330,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				LOGGER.info(email + "Inside Email");
 				String firstName = userById.getFirstName();
 				String productName = item.getProductName();
-				Long mrp = item.getMrp();
+				Long mrp = item.getSalesPrice();
 				String size = item.getSize();
 				String images = item.getImages();
 				Long units = item.getUnits();
 				String colour = item.getColour();
-
+				LOGGER.info(forEntity.getDesignerProfile().getDisplayName());
+				String email2 = forEntity.getDesignerProfile().getEmail();
+				String displayName = forEntity.getDesignerProfile().getDisplayName();
+				String city = forEntity.getDesignerProfile().getCity();
+				String country = forEntity.getDesignerProfile().getCountry();
+				String state = forEntity.getDesignerProfile().getState();
 				String paymentMode = userOrderPaymentRepo.findByOrderId(orderId).get().getPaymentMode();
 				OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
+				Double discount = orderDetailsEntity.getDiscount();
+				Double taxAmount = orderDetailsEntity.getTaxAmount();
 //				String shippingAddress = orderDetailsEntity.getShippingAddress().toString();
 				Object shippingAddress = orderDetailsEntity.getShippingAddress();
 				String substring2 = shippingAddress.toString().substring(1, shippingAddress.toString().length() - 1)
@@ -2341,16 +2357,30 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.replace("email : ", "").replace("mobile : ", "");
 				LOGGER.info("DATA = {}", replace);
 				String orderDate = item.getCreatedOn();
+				LOGGER.info(orderDate + "hi");
+				Date parse = formatter.parse(orderDate);
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(parse);
+				Date time = calendar.getTime();
+				LOGGER.info("time is" + time);
+				DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+				String format1 = dateFormat2.format(time);
+				LOGGER.info(format1 + "inside");
 				Context context = new Context();
 				context.setVariable("firstName", firstName);
 				context.setVariable("productId", productId);
 				context.setVariable("productName", productName);
 				context.setVariable("mrp", mrp);
 				context.setVariable("size", size);
-				// context.setVariable("displayName", displayName);
+				context.setVariable("displayName", displayName);
+				context.setVariable("city", city);
+				context.setVariable("country", country);
+				context.setVariable("state", state);
+				context.setVariable("discount", discount);
+				context.setVariable("taxAmount", taxAmount);
 				context.setVariable("paymentMode", paymentMode);
 				context.setVariable("shippingAddress", replace);
-				context.setVariable("orderDate", orderDate);
+				context.setVariable("orderDate", format1);
 				context.setVariable("orderId", orderId);
 				context.setVariable("quantity", units);
 				context.setVariable("colour", colour);
@@ -2362,9 +2392,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				context.setVariable("orderId", orderId);
 				context.setVariable("productImage", images);
 				LOGGER.info(images + "inside");
-				String htmlContent = templateEngine.process("statusChange.html", context);
+				String htmlContent = templateEngine.process("statusChangeDesigner.html", context);
 				EmailSenderThread emailSenderThread = new EmailSenderThread(email,
 						"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
+				String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
+				EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+						"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null, restTemplate);
+				emailSenderThreadDesigner.start();
 				emailSenderThread.start();
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage()

@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -112,6 +113,9 @@ public class UserController {
 
 	@Autowired
 	private OrderSKUDetailsRepo detailsRepo;
+	
+	@Value("${mail.from}")
+	private String mail;
 
 	@PostMapping("/wishlist/add")
 	public GlobalResponse postWishlistDetails(@Valid @RequestBody ArrayList<WishlistEntity> wishlistEntity) {
@@ -207,7 +211,7 @@ public class UserController {
 			MimeMessageHelper helper = new MimeMessageHelper(message);
 
 			helper.setSubject(subject);
-			helper.setFrom(RestTemplateConstant.NO_REPLY_MAIL.getLink());
+			helper.setFrom(mail);
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
 			mailSender.send(message);

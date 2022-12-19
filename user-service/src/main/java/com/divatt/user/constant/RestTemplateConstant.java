@@ -4,7 +4,7 @@ public enum RestTemplateConstant {
 
 	// dev
 
-	DESIGNER_PRODUCT_VIEW("https://localhost:8083/dev/designerProduct/view/"), NO_REPLY_MAIL("no-reply@nitsolution.in"),
+	DESIGNER_PRODUCT_VIEW("https://localhost:8083/dev/designerProduct/view/"),
 	USER_LOGIN_PRESENT("https://localhost:8080/dev/auth/Present/USER/"),
 	DESIGNER_DETAILS("https://localhost:8080/dev/auth/info/DESIGNER/"),
 	MAIL_SEND("https://localhost:8080/dev/auth/sendMail"),
