@@ -241,5 +241,15 @@ public class ProductController2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@PutMapping("/approval/{productId}")
+	public GlobalResponce approvaladmin(@PathVariable Integer productId,
+			@RequestBody ProductMasterEntity2 masterEntity) {
+		try {
+			return this.productServiceImp2.adminApproval(productId, masterEntity);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
 }

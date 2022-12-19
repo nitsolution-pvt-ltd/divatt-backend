@@ -363,9 +363,15 @@ public class ProfileContoller {
 			designerLoginRepo.save(designerLoginEntityDB);
 			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
 
+			if (designerLoginEntityDB.getIsDeleted() == true) {
+				return ResponseEntity.ok(
+						new GlobalResponce(MessageConstant.SUCCESS.getMessage(), "Profile deleted Sucessfully", 200));
+			} else {
+				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.UPDATED.getMessage(), 200));
+			}
+
 		}
-		return ResponseEntity.ok(
-				new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.UPDATED.getMessage(), 200));
 	}
 
 	@PutMapping("/profile/update")
@@ -676,14 +682,13 @@ public class ProfileContoller {
 			List<Long> list = new ArrayList<>();
 			for (int i = 0; i < designerProfileList.size(); i++) {
 				list.add(designerProfileList.get(i).getdId());
-				List<DesignerProfileEntity> designerProfileData = this.designerProfileRepo
-						.findByDesignerIdIn(list);
+				List<DesignerProfileEntity> designerProfileData = this.designerProfileRepo.findByDesignerIdIn(list);
 				designerProfileList.get(i)
 						.setDesignerCategory(designerProfileData.get(i).getDesignerProfile().getDesignerCategory());
-				//LOGGER.info("designerProfileList"+designerProfileList.get(i).getDesignerCategory());
+				// LOGGER.info("designerProfileList"+designerProfileList.get(i).getDesignerCategory());
 			}
-			//LOGGER.info("designerProfileList"+designerProfileList.get(2).getDesignerCategory());
-			//LOGGER.info("designerProfileList" + designerProfileList);
+			// LOGGER.info("designerProfileList"+designerProfileList.get(2).getDesignerCategory());
+			// LOGGER.info("designerProfileList" + designerProfileList);
 
 			org.json.simple.JSONObject response = new org.json.simple.JSONObject();
 			List<Object> designercategories = new ArrayList<Object>();
