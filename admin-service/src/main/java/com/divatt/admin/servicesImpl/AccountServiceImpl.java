@@ -110,9 +110,7 @@ public class AccountServiceImpl implements AccountService {
 		}
 
 		try {
-
-			List<AccountEntity> findByRow = accountRepo.findById(accountId);
-
+            List<AccountEntity> findByRow = accountRepo.findById(accountId);
 			if (findByRow.size() < 0) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",

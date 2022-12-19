@@ -216,7 +216,14 @@ public class CustomFunction {
 			updateMasterEntity.setPriceCode(productMasterEntity2.getPriceCode());
 			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
 			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
+			if(masterEntity2.getAdminStatus().equals("Pending")) {
 			updateMasterEntity.setAdminStatus("Pending");
+			}else if(masterEntity2.getAdminStatus().equals("Approved")) {
+			updateMasterEntity.setAdminStatus("Approved");
+			}else {
+			updateMasterEntity.setAdminStatus("Pending");
+			}
+				
 			updateMasterEntity.setWeightUnit(productMasterEntity2.getWeightUnit());
 			updateMasterEntity.setImages(productMasterEntity2.getImages());
 			updateMasterEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
