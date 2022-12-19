@@ -146,9 +146,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@Autowired
 	private UserServiceImpl userServiceImpl;
 
-	@Value("${pdf.directory}")
-	private String pdfDirectory;
-
 	@Value("${spring.profiles.active}")
 	private String contextPath;
 

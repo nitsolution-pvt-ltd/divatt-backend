@@ -228,11 +228,11 @@ public class AccountTemplateRepo {
 	}
 
 	@SuppressWarnings("all")
-	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, Pageable pagingSort) {
+	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, Pageable pagingSort) {
 
 		LocalDate today = LocalDate.now();
 		LocalDate plusDays = today.plusDays(7);
-
+		//System.out.println("plusDays "+plusDays);
 		/***
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -244,7 +244,29 @@ public class AccountTemplateRepo {
 
 //		AggregationOperation groupByIdAndSumFee = Aggregation.group("_id").sum("service_charge.fee").as("feeAmount");
 		
-		MatchOperation filterByCondition = Aggregation.match(Criteria.where("datetime").gte(plusDays.toString()));
+//		MatchOperation filterByCondition = Aggregation.match(Criteria.where("datetime").gte(plusDays.toString())
+//				.orOperator(Criteria.where("datetime").lte(plusDays.toString())
+//				.andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN")))
+//						));
+		
+		MatchOperation filterByCondition = null;
+//				Aggregation.match(new Criteria().orOperator(
+//		        Criteria.where("datetime").lte(plusDays.toString()).and("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN")),
+//		        Criteria.where("datetime").gte(plusDays.toString())));
+		
+		if(ReturnStatus.equals("NotPaid") && !ReturnStatus.isEmpty()) {
+			filterByCondition = Aggregation.match(new Criteria().orOperator(
+			        Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
+		}else if(ReturnStatus.equals("Paid") && !ReturnStatus.isEmpty()) {
+			filterByCondition = Aggregation.match(
+					Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("RETURN")));
+		}else {
+			filterByCondition = Aggregation.match(new Criteria().orOperator(
+			        Criteria.where("datetime").lte(plusDays.toString()),
+			        Criteria.where("datetime").gte(plusDays.toString())));
+		}
+		
+		
 		if(designerReturn != "" && !designerReturn.isEmpty()) {
 			filterByCondition = Aggregation.match(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is(designerReturn.trim())));
 		}

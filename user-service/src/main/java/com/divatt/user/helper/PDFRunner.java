@@ -29,8 +29,8 @@ public class PDFRunner {
 	private TemplateEngine templateEngine;
 	
 	
-	@Value("${pdf.directory}")
-	private String pdfDirectory;
+//	@Value("${pdf.directory}")
+//	private String pdfDirectory;
 	
 	@Autowired
 	private InvoiceEntity invoiceEntity;
@@ -53,37 +53,29 @@ public class PDFRunner {
 		InvoiceEntity thisInvoiceEntity=this.invoiceEntity;
 		HashMap<String, Object> data= new HashMap<String, Object>();
 		data.put("OrderDetails", thisInvoiceEntity.getOrderDetailsEntity());
-		//System.out.println(data);
-		//data.put("UserDetails", thisInvoiceEntity.getUserEntity());
-		generatePdfFile("invoice", data, "invoice.pdf");
+//		generatePdfFile("invoice", data, "invoice.pdf");
 	}
-	 public String generatePdfFile(String templateName, Map<String, Object> data, String pdfFileName) {
-		
-	        Context context = new Context();
-	        context.setVariables(data);	
-	        String htmlContent = templateEngine.process(templateName, context);
-//	        System.out.println(htmlContent);
-	        //System.out.println(htmlContent);
-	        try {
-//	        	 System.out.println("hi");
-	            FileOutputStream fileOutputStream = new FileOutputStream(pdfDirectory + pdfFileName);
-	            ITextRenderer renderer = new ITextRenderer();
-	            renderer.setDocumentFromString(htmlContent);
-	            renderer.layout();
-	            renderer.createPDF(fileOutputStream, false);
-	            renderer.finishPDF();
-	            OrderDetailsEntity orderDetailsEntity= new OrderDetailsEntity();
-//	            orderDetailsEntity.setUserInv(pdfDirectory + pdfFileName);
-//	            System.out.println(pdfDirectory + pdfFileName);
-	            detailsRepo.save(orderDetailsEntity);
-	            return pdfDirectory + pdfFileName;
-	        } catch (FileNotFoundException e) {
-	           // System.out.println(e.getMessage());
-	            throw new CustomException(e.getMessage());
-	        } catch (DocumentException e) {
-	           throw new CustomException(e.getMessage());
-	        }
-	 }
+//	 public String generatePdfFile(String templateName, Map<String, Object> data, String pdfFileName) {
+//		
+//	        Context context = new Context();
+//	        context.setVariables(data);	
+//	        String htmlContent = templateEngine.process(templateName, context);
+//	        try {
+//	            FileOutputStream fileOutputStream = new FileOutputStream(pdfDirectory + pdfFileName);
+//	            ITextRenderer renderer = new ITextRenderer();
+//	            renderer.setDocumentFromString(htmlContent);
+//	            renderer.layout();
+//	            renderer.createPDF(fileOutputStream, false);
+//	            renderer.finishPDF();
+//	            OrderDetailsEntity orderDetailsEntity= new OrderDetailsEntity();
+//	            detailsRepo.save(orderDetailsEntity);
+//	            return pdfDirectory + pdfFileName;
+//	        } catch (FileNotFoundException e) {
+//	            throw new CustomException(e.getMessage());
+//	        } catch (DocumentException e) {
+//	           throw new CustomException(e.getMessage());
+//	        }
+//	 }
 	 
 	 public GlobalResponse pdfPath(String orderId)
 	 {

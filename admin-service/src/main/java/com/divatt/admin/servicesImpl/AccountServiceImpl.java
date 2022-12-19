@@ -188,7 +188,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	public Map<String, Object> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder, Optional<String> sortBy) {
+			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, Optional<String> sortBy) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.getAccountDetails()");
@@ -209,7 +209,7 @@ public class AccountServiceImpl implements AccountService {
 
 			if (keyword.isEmpty()) {
 //				findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);
-				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder, pagingSort);
+				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, pagingSort);
 			} else {
 				findAll = accountTemplateRepo.AccountSearchByKeywords(keyword, pagingSort);
 //				findAll = accountRepo.AccountSearchByKeywords(keyword, pagingSort);

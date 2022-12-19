@@ -137,6 +137,7 @@ public class AccountController {
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam(defaultValue = "") String designerReturn, @RequestParam(defaultValue = "") String serviceCharge,
 			@RequestParam(defaultValue = "") String govtCharge, @RequestParam(defaultValue = "") String userOrder,
+			@RequestParam(defaultValue = "") String ReturnStatus,
 			@RequestParam Optional<String> sortBy) {
 
 		if (LOGGER.isInfoEnabled()) {
@@ -155,7 +156,7 @@ public class AccountController {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
 						interfaceId, host + contextPath + "/account/list", "Success", HttpStatus.OK);
 			}
-			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword, designerReturn, serviceCharge, govtCharge, userOrder, sortBy);
+			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword, designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, sortBy);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
