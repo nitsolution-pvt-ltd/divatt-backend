@@ -35,6 +35,7 @@ import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.SubCategoryEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
+import com.divatt.designer.entity.profile.DesignerProfile;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
@@ -65,7 +66,7 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
-	//@Autowired private RestTemplateConstant restTemplateConstant ;
+	// @Autowired private RestTemplateConstant restTemplateConstant ;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImp2.class);
 
@@ -156,7 +157,8 @@ public class ProductServiceImp2 implements ProductService2 {
 			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
 					RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productMasterEntity2.getSubCategoryId(),
 					SubCategoryEntity.class);
-			LOGGER.info("RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()"+RestTemplateConstant.SUBCATEGORY_VIEW.getMessage());
+			LOGGER.info("RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()"
+					+ RestTemplateConstant.SUBCATEGORY_VIEW.getMessage());
 			ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
 					RestTemplateConstant.CATEGORY_VIEW.getMessage() + productMasterEntity2.getCategoryId(),
 					CategoryEntity.class);
@@ -167,7 +169,7 @@ public class ProductServiceImp2 implements ProductService2 {
 //			LOGGER.info("MessageConstant.DELETED.getMessage()"+MessageConstant.DELETED.getMessage());
 //			LOGGER.info("RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage()"+RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage());
 //			LOGGER.info("RestTemplateConstant.USER_GET_USER_ID.getMessage()"+RestTemplateConstant.USER_GET_USER_ID.getMessage());
-			
+
 			productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
 			productMasterEntity2.setCategoryName(catagory.getBody().getCategoryName());
 			productMasterEntity2.setDesignerProfile(designerProfileEntity.getDesignerProfile());
@@ -211,53 +213,170 @@ public class ProductServiceImp2 implements ProductService2 {
 					LOGGER.info("Behind all");
 					findAll = productRepo2.findByIsDeleted(isDeleted, pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
-								SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
-								CategoryEntity.class);
-						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
-						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						try {
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
+									.getForEntity(RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()
+											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
+									CategoryEntity.class);
+							DesignerProfile designerProfile = new DesignerProfile();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity("https://localhost:8083/dev/designer/" + catagoryData.getDesignerId(),
+											DesignerProfileEntity.class)
+									.getBody();
+							LOGGER.info(forEntity + "Inside Forentity");
+							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
+							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
+							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
+							designerProfile.setDesignerCategory(forEntity.getDesignerProfile().getDesignerCategory());
+							designerProfile.setDigitalSignature(forEntity.getDesignerProfile().getDigitalSignature());
+							designerProfile.setDisplayName(forEntity.getDesignerProfile().getDisplayName());
+							designerProfile.setDob(forEntity.getDesignerProfile().getDob());
+							designerProfile.setEmail(forEntity.getDesignerProfile().getEmail());
+							designerProfile.setFirstName1(forEntity.getDesignerProfile().getFirstName1());
+							designerProfile.setFirstName2(forEntity.getDesignerProfile().getFirstName2());
+							designerProfile.setGender(forEntity.getDesignerProfile().getGender());
+							designerProfile.setLastName1(forEntity.getDesignerProfile().getLastName1());
+							designerProfile.setLastName2(forEntity.getDesignerProfile().getLastName2());
+							designerProfile.setMobileNo(forEntity.getDesignerProfile().getMobileNo());
+							designerProfile.setPassword(forEntity.getDesignerProfile().getPassword());
+							designerProfile.setPinCode(forEntity.getDesignerProfile().getPinCode());
+							designerProfile.setProfilePic(forEntity.getDesignerProfile().getProfilePic());
+							designerProfile.setState(forEntity.getDesignerProfile().getState());
+							catagoryData.setDesignerProfile(designerProfile);
+							catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+							catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					});
 				} else if (adminStatus.equals("pending")) {
 					LOGGER.info("Behind pending");
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Pending", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
-								SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
-								CategoryEntity.class);
-						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
-						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						try {
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
+									.getForEntity(RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()
+											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
+									CategoryEntity.class);
+							DesignerProfile designerProfile = new DesignerProfile();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity("https://localhost:8083/dev/designer/" + catagoryData.getDesignerId(),
+											DesignerProfileEntity.class)
+									.getBody();
+							LOGGER.info(forEntity + "Inside Forentity");
+							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
+							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
+							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
+							designerProfile.setDesignerCategory(forEntity.getDesignerProfile().getDesignerCategory());
+							designerProfile.setDigitalSignature(forEntity.getDesignerProfile().getDigitalSignature());
+							designerProfile.setDisplayName(forEntity.getDesignerProfile().getDisplayName());
+							designerProfile.setDob(forEntity.getDesignerProfile().getDob());
+							designerProfile.setEmail(forEntity.getDesignerProfile().getEmail());
+							designerProfile.setFirstName1(forEntity.getDesignerProfile().getFirstName1());
+							designerProfile.setFirstName2(forEntity.getDesignerProfile().getFirstName2());
+							designerProfile.setGender(forEntity.getDesignerProfile().getGender());
+							designerProfile.setLastName1(forEntity.getDesignerProfile().getLastName1());
+							designerProfile.setLastName2(forEntity.getDesignerProfile().getLastName2());
+							designerProfile.setMobileNo(forEntity.getDesignerProfile().getMobileNo());
+							designerProfile.setPassword(forEntity.getDesignerProfile().getPassword());
+							designerProfile.setPinCode(forEntity.getDesignerProfile().getPinCode());
+							designerProfile.setProfilePic(forEntity.getDesignerProfile().getProfilePic());
+							designerProfile.setState(forEntity.getDesignerProfile().getState());
+							catagoryData.setDesignerProfile(designerProfile);
+							catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+							catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					});
 				} else if (adminStatus.equals("approved")) {
 					LOGGER.info("Behind approved");
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Approved", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
-								SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
-								CategoryEntity.class);
-						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
-						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						try {
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
+									.getForEntity(RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()
+											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
+									CategoryEntity.class);
+							DesignerProfile designerProfile = new DesignerProfile();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity("https://localhost:8083/dev/designer/" + catagoryData.getDesignerId(),
+											DesignerProfileEntity.class)
+									.getBody();
+							LOGGER.info(forEntity + "Inside Forentity");
+							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
+							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
+							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
+							designerProfile.setDesignerCategory(forEntity.getDesignerProfile().getDesignerCategory());
+							designerProfile.setDigitalSignature(forEntity.getDesignerProfile().getDigitalSignature());
+							designerProfile.setDisplayName(forEntity.getDesignerProfile().getDisplayName());
+							designerProfile.setDob(forEntity.getDesignerProfile().getDob());
+							designerProfile.setEmail(forEntity.getDesignerProfile().getEmail());
+							designerProfile.setFirstName1(forEntity.getDesignerProfile().getFirstName1());
+							designerProfile.setFirstName2(forEntity.getDesignerProfile().getFirstName2());
+							designerProfile.setGender(forEntity.getDesignerProfile().getGender());
+							designerProfile.setLastName1(forEntity.getDesignerProfile().getLastName1());
+							designerProfile.setLastName2(forEntity.getDesignerProfile().getLastName2());
+							designerProfile.setMobileNo(forEntity.getDesignerProfile().getMobileNo());
+							designerProfile.setPassword(forEntity.getDesignerProfile().getPassword());
+							designerProfile.setPinCode(forEntity.getDesignerProfile().getPinCode());
+							designerProfile.setProfilePic(forEntity.getDesignerProfile().getProfilePic());
+							designerProfile.setState(forEntity.getDesignerProfile().getState());
+							catagoryData.setDesignerProfile(designerProfile);
+							catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+							catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					});
 				} else if (adminStatus.equals("rejected")) {
 					LOGGER.info("Behind rejected");
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Rejected", pagingSort);
+					LOGGER.info("inside findall getContent" + findAll.getContent());
 					findAll.getContent().forEach(catagoryData -> {
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
-								SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
-								CategoryEntity.class);
-						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
-						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						try {
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
+									.getForEntity(RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()
+											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
+									CategoryEntity.class);
+							DesignerProfile designerProfile = new DesignerProfile();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity("https://localhost:8083/dev/designer/" + catagoryData.getDesignerId(),
+											DesignerProfileEntity.class)
+									.getBody();
+							LOGGER.info(forEntity + "Inside Forentity");
+							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
+							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
+							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
+							designerProfile.setDesignerCategory(forEntity.getDesignerProfile().getDesignerCategory());
+							designerProfile.setDigitalSignature(forEntity.getDesignerProfile().getDigitalSignature());
+							designerProfile.setDisplayName(forEntity.getDesignerProfile().getDisplayName());
+							designerProfile.setDob(forEntity.getDesignerProfile().getDob());
+							designerProfile.setEmail(forEntity.getDesignerProfile().getEmail());
+							designerProfile.setFirstName1(forEntity.getDesignerProfile().getFirstName1());
+							designerProfile.setFirstName2(forEntity.getDesignerProfile().getFirstName2());
+							designerProfile.setGender(forEntity.getDesignerProfile().getGender());
+							designerProfile.setLastName1(forEntity.getDesignerProfile().getLastName1());
+							designerProfile.setLastName2(forEntity.getDesignerProfile().getLastName2());
+							designerProfile.setMobileNo(forEntity.getDesignerProfile().getMobileNo());
+							designerProfile.setPassword(forEntity.getDesignerProfile().getPassword());
+							designerProfile.setPinCode(forEntity.getDesignerProfile().getPinCode());
+							designerProfile.setProfilePic(forEntity.getDesignerProfile().getProfilePic());
+							designerProfile.setState(forEntity.getDesignerProfile().getState());
+							catagoryData.setDesignerProfile(designerProfile);
+							catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+							catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					});
 				}
 			} else {
@@ -265,56 +384,172 @@ public class ProductServiceImp2 implements ProductService2 {
 					LOGGER.info("Behind into else all");
 					findAll = productRepo2.SearchAndfindByIsDeleted(keyword, isDeleted, pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
-								SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
-								CategoryEntity.class);
-						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
-						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						try {
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
+									.getForEntity(RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()
+											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
+									CategoryEntity.class);
+							DesignerProfile designerProfile = new DesignerProfile();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity("https://localhost:8083/dev/designer/" + catagoryData.getDesignerId(),
+											DesignerProfileEntity.class)
+									.getBody();
+							LOGGER.info(forEntity + "Inside Forentity");
+							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
+							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
+							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
+							designerProfile.setDesignerCategory(forEntity.getDesignerProfile().getDesignerCategory());
+							designerProfile.setDigitalSignature(forEntity.getDesignerProfile().getDigitalSignature());
+							designerProfile.setDisplayName(forEntity.getDesignerProfile().getDisplayName());
+							designerProfile.setDob(forEntity.getDesignerProfile().getDob());
+							designerProfile.setEmail(forEntity.getDesignerProfile().getEmail());
+							designerProfile.setFirstName1(forEntity.getDesignerProfile().getFirstName1());
+							designerProfile.setFirstName2(forEntity.getDesignerProfile().getFirstName2());
+							designerProfile.setGender(forEntity.getDesignerProfile().getGender());
+							designerProfile.setLastName1(forEntity.getDesignerProfile().getLastName1());
+							designerProfile.setLastName2(forEntity.getDesignerProfile().getLastName2());
+							designerProfile.setMobileNo(forEntity.getDesignerProfile().getMobileNo());
+							designerProfile.setPassword(forEntity.getDesignerProfile().getPassword());
+							designerProfile.setPinCode(forEntity.getDesignerProfile().getPinCode());
+							designerProfile.setProfilePic(forEntity.getDesignerProfile().getProfilePic());
+							designerProfile.setState(forEntity.getDesignerProfile().getState());
+							catagoryData.setDesignerProfile(designerProfile);
+							catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+							catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					});
 				} else if (adminStatus.equals("pending")) {
 					LOGGER.info("Behind into else pending");
 					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Pending",
 							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
-								SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
-								CategoryEntity.class);
-						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
-						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						try {
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
+									.getForEntity(RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()
+											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
+									CategoryEntity.class);
+							DesignerProfile designerProfile = new DesignerProfile();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity("https://localhost:8083/dev/designer/" + catagoryData.getDesignerId(),
+											DesignerProfileEntity.class)
+									.getBody();
+							LOGGER.info(forEntity + "Inside Forentity");
+							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
+							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
+							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
+							designerProfile.setDesignerCategory(forEntity.getDesignerProfile().getDesignerCategory());
+							designerProfile.setDigitalSignature(forEntity.getDesignerProfile().getDigitalSignature());
+							designerProfile.setDisplayName(forEntity.getDesignerProfile().getDisplayName());
+							designerProfile.setDob(forEntity.getDesignerProfile().getDob());
+							designerProfile.setEmail(forEntity.getDesignerProfile().getEmail());
+							designerProfile.setFirstName1(forEntity.getDesignerProfile().getFirstName1());
+							designerProfile.setFirstName2(forEntity.getDesignerProfile().getFirstName2());
+							designerProfile.setGender(forEntity.getDesignerProfile().getGender());
+							designerProfile.setLastName1(forEntity.getDesignerProfile().getLastName1());
+							designerProfile.setLastName2(forEntity.getDesignerProfile().getLastName2());
+							designerProfile.setMobileNo(forEntity.getDesignerProfile().getMobileNo());
+							designerProfile.setPassword(forEntity.getDesignerProfile().getPassword());
+							designerProfile.setPinCode(forEntity.getDesignerProfile().getPinCode());
+							designerProfile.setProfilePic(forEntity.getDesignerProfile().getProfilePic());
+							designerProfile.setState(forEntity.getDesignerProfile().getState());
+							catagoryData.setDesignerProfile(designerProfile);
+							catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+							catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					});
 				} else if (adminStatus.equals("approved")) {
 					LOGGER.info("Behind into else approved");
 					findAll = productRepo2.SearchAppAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",
 							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
-								SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
-								CategoryEntity.class);
-						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
-						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						try {
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
+									.getForEntity(RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()
+											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
+									CategoryEntity.class);
+							DesignerProfile designerProfile = new DesignerProfile();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity("https://localhost:8083/dev/designer/" + catagoryData.getDesignerId(),
+											DesignerProfileEntity.class)
+									.getBody();
+							LOGGER.info(forEntity + "Inside Forentity");
+							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
+							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
+							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
+							designerProfile.setDesignerCategory(forEntity.getDesignerProfile().getDesignerCategory());
+							designerProfile.setDigitalSignature(forEntity.getDesignerProfile().getDigitalSignature());
+							designerProfile.setDisplayName(forEntity.getDesignerProfile().getDisplayName());
+							designerProfile.setDob(forEntity.getDesignerProfile().getDob());
+							designerProfile.setEmail(forEntity.getDesignerProfile().getEmail());
+							designerProfile.setFirstName1(forEntity.getDesignerProfile().getFirstName1());
+							designerProfile.setFirstName2(forEntity.getDesignerProfile().getFirstName2());
+							designerProfile.setGender(forEntity.getDesignerProfile().getGender());
+							designerProfile.setLastName1(forEntity.getDesignerProfile().getLastName1());
+							designerProfile.setLastName2(forEntity.getDesignerProfile().getLastName2());
+							designerProfile.setMobileNo(forEntity.getDesignerProfile().getMobileNo());
+							designerProfile.setPassword(forEntity.getDesignerProfile().getPassword());
+							designerProfile.setPinCode(forEntity.getDesignerProfile().getPinCode());
+							designerProfile.setProfilePic(forEntity.getDesignerProfile().getProfilePic());
+							designerProfile.setState(forEntity.getDesignerProfile().getState());
+							catagoryData.setDesignerProfile(designerProfile);
+							catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+							catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					});
 				} else if (adminStatus.equals("rejected")) {
 					LOGGER.info("Behind into else rejected");
 					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Rejected",
 							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
-						ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + catagoryData.getSubCategoryId(),
-								SubCategoryEntity.class);
-						ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
-								CategoryEntity.class);
-						catagoryData.setCategoryName(catagory.getBody().getCategoryName());
-						catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						try {
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
+									.getForEntity(RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()
+											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									RestTemplateConstant.CATEGORY_VIEW.getMessage() + catagoryData.getCategoryId(),
+									CategoryEntity.class);
+							DesignerProfile designerProfile = new DesignerProfile();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity("https://localhost:8083/dev/designer/" + catagoryData.getDesignerId(),
+											DesignerProfileEntity.class)
+									.getBody();
+							LOGGER.info(forEntity + "Inside Forentity");
+							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
+							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
+							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
+							designerProfile.setDesignerCategory(forEntity.getDesignerProfile().getDesignerCategory());
+							designerProfile.setDigitalSignature(forEntity.getDesignerProfile().getDigitalSignature());
+							designerProfile.setDisplayName(forEntity.getDesignerProfile().getDisplayName());
+							designerProfile.setDob(forEntity.getDesignerProfile().getDob());
+							designerProfile.setEmail(forEntity.getDesignerProfile().getEmail());
+							designerProfile.setFirstName1(forEntity.getDesignerProfile().getFirstName1());
+							designerProfile.setFirstName2(forEntity.getDesignerProfile().getFirstName2());
+							designerProfile.setGender(forEntity.getDesignerProfile().getGender());
+							designerProfile.setLastName1(forEntity.getDesignerProfile().getLastName1());
+							designerProfile.setLastName2(forEntity.getDesignerProfile().getLastName2());
+							designerProfile.setMobileNo(forEntity.getDesignerProfile().getMobileNo());
+							designerProfile.setPassword(forEntity.getDesignerProfile().getPassword());
+							designerProfile.setPinCode(forEntity.getDesignerProfile().getPinCode());
+							designerProfile.setProfilePic(forEntity.getDesignerProfile().getProfilePic());
+							designerProfile.setState(forEntity.getDesignerProfile().getState());
+							catagoryData.setDesignerProfile(designerProfile);
+							catagoryData.setCategoryName(catagory.getBody().getCategoryName());
+							catagoryData.setSubCategoryName(subCatagory.getBody().getCategoryName());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					});
 				}
 
@@ -391,11 +626,9 @@ public class ProductServiceImp2 implements ProductService2 {
 			LOGGER.info("Behind Reject " + reject);
 			oos = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, false,
 					"Approved");
-			
-			ls = productRepo2
-					.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved", true)
-					.stream()
-					.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
+
+			ls = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved", true)
+					.stream().filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
 					.collect(Collectors.toList()).size();
 
 			if (keyword.isEmpty()) {
@@ -433,7 +666,7 @@ public class ProductServiceImp2 implements ProductService2 {
 							"Reject", pagingSort);
 				} else if (adminStatus.equals("ls")) {
 					List<ProductMasterEntity2> data = productRepo2
-							.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved",true);
+							.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved", true);
 					List<ProductMasterEntity2> filter = data.stream()
 							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
 							.collect(Collectors.toList());
@@ -487,15 +720,18 @@ public class ProductServiceImp2 implements ProductService2 {
 				if (productMasterEntity2.getIsDeleted().equals(false)) {
 					isDelete = true;
 				} else {
-					return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.ALREADY_DELETED.getMessage(), 400);
+					return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(),
+							MessageConstant.ALREADY_DELETED.getMessage(), 400);
 				}
 				productMasterEntity2.setIsDeleted(isDelete);
 				productMasterEntity2.setUpdatedBy(productMasterEntity2.getDesignerId().toString());
 				productMasterEntity2.setUpdatedOn(new Date());
 				productRepo2.save(productMasterEntity2);
-				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.DELETED.getMessage(), 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.DELETED.getMessage(),
+						200);
 			} else {
-				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
+				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(),
+						MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -511,7 +747,8 @@ public class ProductServiceImp2 implements ProductService2 {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-		return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_APPROVED.getMessage(), 200);
+		return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_APPROVED.getMessage(),
+				200);
 	}
 
 	@Override
@@ -528,18 +765,21 @@ public class ProductServiceImp2 implements ProductService2 {
 					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 					productEntity.setUpdatedOn(new Date());
 					productRepo2.save(productEntity);
-					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STATUS_INACTIVATED.getMessage(), 200);
+					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+							MessageConstant.STATUS_INACTIVATED.getMessage(), 200);
 				} else {
 					adminStatus = true;
 					productEntity.setIsActive(adminStatus);
 					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 					productEntity.setUpdatedOn(new Date());
 					productRepo2.save(productEntity);
-					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STATUS_ACTIVATED.getMessage(), 200);
+					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+							MessageConstant.STATUS_ACTIVATED.getMessage(), 200);
 				}
 
 			} else {
-				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
+				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(),
+						MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
