@@ -34,7 +34,8 @@ public enum MessageConstant {
     CHECK_FIELDS("Please check the fields"),
     USER_NOT_FOUND("User not found"),
     DESIGNER_STATUS_CHANGE("Designer current status Changed"),
-    PROFILE_IMAGE_UPDATED("Profile Image Updated Sucessfully")
+    PROFILE_IMAGE_UPDATED("Profile Image Updated Sucessfully"),
+    PROFILE_DELETE("Profile deleted Sucessfuly")
     ;
 	private String message;
 

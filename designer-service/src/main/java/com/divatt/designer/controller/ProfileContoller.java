@@ -364,8 +364,8 @@ public class ProfileContoller {
 			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
 
 			if (designerLoginEntityDB.getIsDeleted() == true) {
-				return ResponseEntity.ok(
-						new GlobalResponce(MessageConstant.SUCCESS.getMessage(), "Profile deleted Sucessfully", 200));
+				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.PROFILE_DELETE.getMessage(), 200));
 			} else {
 				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.UPDATED.getMessage(), 200));

@@ -86,6 +86,75 @@ public class ProductServiceImp2 implements ProductService2 {
 		try {
 			LOGGER.info("Inside-ProductServiceImp2.addProductMasterData()");
 			productRepo2.save(customFunction.addProductMasterData(productMasterEntity2));
+			String newProductData = productMasterEntity2.getProductDetails().getProductName();
+			List<UserProfileInfo> userInfoList = new ArrayList<UserProfileInfo>();
+			List<Long> userId = new ArrayList<Long>();
+
+			ResponseEntity<String> forEntity = restTemplate.getForEntity(
+					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + productMasterEntity2.getDesignerId(),
+					String.class);
+			String data = forEntity.getBody();
+			JSONArray jsonArray = new JSONArray(data);
+			String designerImageData = designerProfileRepo
+					.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get().getDesignerProfile()
+					.getProfilePic();
+			jsonArray.forEach(array -> {
+				ObjectMapper objectMapper = new ObjectMapper();
+				UserProfile readValue;
+				try {
+					readValue = objectMapper.readValue(array.toString(), UserProfile.class);
+					ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(
+							RestTemplateConstant.USER_GET_USER_ID.getMessage() + readValue.getUserId(),
+							UserProfileInfo.class);
+					userInfoList.add(userInfo.getBody());
+				} catch (JsonMappingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			});
+			userId.forEach(user -> {
+				ResponseEntity<UserProfileInfo> userProfileList = restTemplate
+						.getForEntity(RestTemplateConstant.INFO_USER.getMessage() + user, UserProfileInfo.class);
+
+			});
+			ProductMasterEntity2 productMasterEntity = productRepo2.findById(productMasterEntity2.getProductId()).get();
+			ImageEntity[] images = productMasterEntity.getImages();
+			String image1 = images[0].getLarge();
+			System.out.println(images[0].getLarge());
+			Map<String, Object> data2 = new HashMap<String, Object>();
+			userInfoList.forEach(user -> {
+				EmailEntity emailEntity = new EmailEntity();
+				emailEntity.setProductDesc(productMasterEntity.getProductDetails().getProductDescription());
+				emailEntity.setProductDesignerName(productMasterEntity.getDesignerProfile().getDisplayName());
+				emailEntity.setProductImage(image1);
+				emailEntity.setProductName(productMasterEntity.getProductDetails().getProductName());
+				if (productMasterEntity.getDeal().getDealType().equals("None")) {
+					emailEntity.setProducyDiscount("No discount");
+				} else if (productMasterEntity.getDeal().getDealType().equals("Flat")) {
+					emailEntity.setProducyDiscount("Rs." + productMasterEntity.getDeal().getDealValue().toString());
+
+				} else {
+					emailEntity.setProducyDiscount(productMasterEntity.getDeal().getDealValue().toString() + "%");
+				}
+				emailEntity.setProductPrice(productMasterEntity.getMrp().toString());
+				emailEntity.setUserName(user.getFirstName());
+				emailEntity.setProductId(productMasterEntity.getProductId().toString());
+				emailEntity.setDesignerImage(designerImageData);
+				emailEntity.setUserName(user.getFirstName());
+				System.out.println(user.getEmail());
+				data2.put("data", emailEntity);
+				Context context = new Context();
+				context.setVariables(data2);
+				String htmlContent = templateEngine.process("emailTemplate", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(user.getEmail(), "New product Arrived",
+						htmlContent, true, null, restTemplate);
+				emailSenderThread.start();
+			});
+
 			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 					MessageConstant.PRODUCT_ADDED_SUCCESSFULLY.getMessage(), 200);
 		} catch (Exception e) {
@@ -969,83 +1038,4 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	}
 
-	public GlobalResponce adminApproval(Integer productId, ProductMasterEntity2 masterEntity) {
-		try {
-			masterEntity.setProductId(productId);
-			productRepo2.save(masterEntity);
-			LOGGER.info(masterEntity+"inside");
-			String newProductData = masterEntity.getProductDetails().getProductName();
-			List<UserProfileInfo> userInfoList = new ArrayList<UserProfileInfo>();
-			List<Long> userId = new ArrayList<Long>();
-
-			ResponseEntity<String> forEntity = restTemplate.getForEntity(
-					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + masterEntity.getDesignerId(),
-					String.class);
-			String data = forEntity.getBody();
-			JSONArray jsonArray = new JSONArray(data);
-			String designerImageData = designerProfileRepo.findBydesignerId(masterEntity.getDesignerId().longValue())
-					.get().getDesignerProfile().getProfilePic();
-			jsonArray.forEach(array -> {
-				ObjectMapper objectMapper = new ObjectMapper();
-				UserProfile readValue;
-				try {
-					readValue = objectMapper.readValue(array.toString(), UserProfile.class);
-					ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(
-							RestTemplateConstant.USER_GET_USER_ID.getMessage() + readValue.getUserId(),
-							UserProfileInfo.class);
-					userInfoList.add(userInfo.getBody());
-				} catch (JsonMappingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JsonProcessingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			});
-			userId.forEach(user -> {
-				ResponseEntity<UserProfileInfo> userProfileList = restTemplate
-						.getForEntity(RestTemplateConstant.INFO_USER.getMessage() + user, UserProfileInfo.class);
-
-			});
-			ProductMasterEntity2 productMasterEntity = productRepo2.findById(masterEntity.getProductId()).get();
-			ImageEntity[] images = productMasterEntity.getImages();
-			String image1 = images[0].getLarge();
-			System.out.println(images[0].getLarge());
-			Map<String, Object> data2 = new HashMap<String, Object>();
-			userInfoList.forEach(user -> {
-				EmailEntity emailEntity = new EmailEntity();
-				emailEntity.setProductDesc(productMasterEntity.getProductDetails().getProductDescription());
-				emailEntity.setProductDesignerName(productMasterEntity.getDesignerProfile().getDisplayName());
-				emailEntity.setProductImage(image1);
-				emailEntity.setProductName(productMasterEntity.getProductDetails().getProductName());
-				if (productMasterEntity.getDeal().getDealType().equals("None")) {
-					emailEntity.setProducyDiscount("No discount");
-				} else if (productMasterEntity.getDeal().getDealType().equals("Flat")) {
-					emailEntity.setProducyDiscount("Rs." + productMasterEntity.getDeal().getDealValue().toString());
-
-				} else {
-					emailEntity.setProducyDiscount(productMasterEntity.getDeal().getDealValue().toString() + "%");
-				}
-				emailEntity.setProductPrice(productMasterEntity.getMrp().toString());
-				emailEntity.setUserName(user.getFirstName());
-				emailEntity.setProductId(productMasterEntity.getProductId().toString());
-				emailEntity.setDesignerImage(designerImageData);
-				emailEntity.setUserName(user.getFirstName());
-				System.out.println(user.getEmail());
-				data2.put("data", emailEntity);
-				Context context = new Context();
-				context.setVariables(data2);
-				String htmlContent = templateEngine.process("emailTemplate", context);
-				EmailSenderThread emailSenderThread = new EmailSenderThread(user.getEmail(), "New product Arrived",
-						htmlContent, true, null, restTemplate);
-				emailSenderThread.start();
-			});
-			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
-					MessageConstant.PRODUCT_APPROVED.getMessage(), 200);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-
-	}
 }

@@ -235,18 +235,8 @@ public class ProductController2 {
 		try {
 			LOGGER.info("Inside- ProductController.productSearching()");
 			LOGGER.info("COD data = {}", cod);
-			return this.productServiceImp2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour, cod,
-					customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-	}
-	
-	@PutMapping("/approval/{productId}")
-	public GlobalResponce approvaladmin(@PathVariable Integer productId,
-			@RequestBody ProductMasterEntity2 masterEntity) {
-		try {
-			return this.productServiceImp2.adminApproval(productId, masterEntity);
+			return this.productServiceImp2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour,
+					cod, customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

@@ -46,6 +46,4 @@ public interface ProductService2 {
 			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
 			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey);
 
-	GlobalResponce adminApproval(Integer productId, ProductMasterEntity2 masterEntity);
-
 }
