@@ -308,11 +308,9 @@ public class ProfileContoller {
 			LOGGER.info("DATATATATATAT = {}", !designerLoginEntity.getIsDeleted().equals(true));
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
 			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
-					&& designerLoginEntity.getIsDeleted().equals(true)) {
+					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
 				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
-						&& !designerLoginEntity.getIsDeleted().equals(true)) {
+						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
 					LOGGER.info("INSIDE IF <><><><><><@!!!");
 					// update designer personal information from admin update
 					DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
@@ -970,4 +968,19 @@ public class ProfileContoller {
 		}
 	}
 
+	@PutMapping("/designerProfileDelete")
+	public GlobalResponce designerProfileDelete(@RequestHeader("Authorization") String token) {
+		try {
+			DesignerLoginEntity designerLoginEntity=designerLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7))).get();
+			if(designerLoginEntity.getIsDeleted()) {
+				designerLoginEntity.setIsDeleted(true);
+				designerLoginRepo.save(designerLoginEntity);
+				return new GlobalResponce("Success", "Designer is successfully deleted", 200);
+			}else {
+				return new GlobalResponce("Error", "Designer is already deleted", 400);
+			}
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
