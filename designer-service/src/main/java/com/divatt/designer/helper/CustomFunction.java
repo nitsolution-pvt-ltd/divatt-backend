@@ -343,17 +343,11 @@ public class CustomFunction {
 			designerProfile.setCity(body.getDesignerProfile().getCity());
 			designerProfile.setCountry(body.getDesignerProfile().getCountry());
 			designerProfile.setDob(body.getDesignerProfile().getDob());
-			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
-					&& designerLoginEntity.getIsDeleted().equals(true)) {
-				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
-						&& !designerLoginEntity.getIsDeleted().equals(true)) {
-					boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
-				}else {
-					boutiqueProfile.setGSTIN(body.getBoutiqueProfile().getGSTIN());	
-				}
-				}else {
+			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
+					|| designerLoginEntity.getProfileStatus().equals("COMPLETED"))){
+				boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
+				}if ((designerLoginEntity.getProfileStatus().equals("APPROVE")
+						|| designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
 				boutiqueProfile.setGSTIN(body.getBoutiqueProfile().getGSTIN());
 			}
 			//boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
@@ -363,19 +357,13 @@ public class CustomFunction {
 			boutiqueProfile.setOperatingCity(body.getBoutiqueProfile().getOperatingCity());
 			boutiqueProfile.setProfessionalCategory(body.getBoutiqueProfile().getProfessionalCategory());
 			boutiqueProfile.setYearOfOperation(body.getBoutiqueProfile().getYearOfOperation());
-			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
-					&& designerLoginEntity.getIsDeleted().equals(true)) {
-				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
-						&& !designerLoginEntity.getIsDeleted().equals(true)) {
-					LOGGER.info("Status <><><><><> !!!!! = {}", designerLoginEntity.getProfileStatus());
+			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
+					|| designerLoginEntity.getProfileStatus().equals("COMPLETED"))) {
+			LOGGER.info("Status <><><><><> !!!!! = {}", designerLoginEntity.getProfileStatus());
 					designerProfile.setDigitalSignature(
 							designerLoginEntity.getDesignerProfileEntity().getDesignerProfile().getDigitalSignature());
-				} else {
-					designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
-				}
-			} else {
+				} if ((designerLoginEntity.getProfileStatus().equals("APPROVE")
+					|| designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
 				designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
 			}
 			designerProfile.setEmail(body.getDesignerProfile().getEmail());
