@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SkipOperation;
@@ -26,6 +28,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.divatt.admin.entity.AccountEntity;
+import com.divatt.admin.entity.AccountMapEntity;
 import com.divatt.admin.entity.DesignerReturnAmount;
 import com.divatt.admin.entity.GovtCharge;
 import com.divatt.admin.entity.OrderDetails;
@@ -218,6 +221,7 @@ public class AccountTemplateRepo {
 			designerReturnAmount.setTotal_amount_received(value.getTotal_amount_received());
 			designerReturnAmount.setTotal_tax_amount(value.getTotal_tax_amount());
 			designerReturnAmount.setUnits(value.getUnits());
+			designerReturnAmount.setPayment_datetime(value.getPayment_datetime());
 
 			DesignerReturnAmountList.add(designerReturnAmount);
 		});
@@ -227,12 +231,23 @@ public class AccountTemplateRepo {
 
 	}
 
+	public List<AccountMapEntity> getAccountSingleMapData() {
+
+		GroupOperation mapCondition = Aggregation.group().sum("service_charge.fee").as("serviceFee");
+
+		MatchOperation match = Aggregation.match(
+				Criteria.where("service_charge.status").is("NOT PAID"));
+		
+		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+	    return results.getMappedResults();
+	}
+	
 	@SuppressWarnings("all")
 	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, Pageable pagingSort) {
 
 		LocalDate today = LocalDate.now();
 		LocalDate plusDays = today.plusDays(7);
-		//System.out.println("plusDays "+plusDays);
 		/***
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -265,7 +280,7 @@ public class AccountTemplateRepo {
 			        Criteria.where("datetime").lte(plusDays.toString()),
 			        Criteria.where("datetime").gte(plusDays.toString())));
 		}
-		
+
 		
 		if(designerReturn != "" && !designerReturn.isEmpty()) {
 			filterByCondition = Aggregation.match(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is(designerReturn.trim())));
@@ -285,7 +300,6 @@ public class AccountTemplateRepo {
 
 		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, sortByIdDesc, skip, limit);
 		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations, mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
-
 	    return new PageImpl<AccountEntity>(results.getMappedResults(), pagingSort, results.getMappedResults().size());
 	}
 

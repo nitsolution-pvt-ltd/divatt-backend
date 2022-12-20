@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.entity.AccountEntity;
+import com.divatt.admin.entity.AccountMapEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AccountRepo;
@@ -204,9 +205,11 @@ public class AccountServiceImpl implements AccountService {
 			}
 
 			Page<AccountEntity> findAll = null;
-
+			List<AccountMapEntity> accountSingleMapData = accountTemplateRepo.getAccountSingleMapData();
+			
 			if (keyword.isEmpty()) {
 //				findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);
+				
 				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, pagingSort);
 			} else {
 				findAll = accountTemplateRepo.AccountSearchByKeywords(keyword, pagingSort);
@@ -225,6 +228,9 @@ public class AccountServiceImpl implements AccountService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
+			if(accountSingleMapData.size() > 0) {
+				response.put("totalServiceFee", accountSingleMapData.get(0).getServiceFee());
+			}
 
 			if (findAll.getSize() < 1) {
 				if (LOGGER.isErrorEnabled()) {
