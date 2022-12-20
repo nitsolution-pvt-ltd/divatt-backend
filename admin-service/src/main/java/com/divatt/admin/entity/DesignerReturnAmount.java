@@ -23,6 +23,8 @@ public class DesignerReturnAmount {
 	public float total_amount_received;
 	public float net_payable_designer;
 	public String status;
+	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd hh:mm:ss")
+	public String payment_datetime;
 	public String orderd;
 	public int product_id;
 	public String product_sku;
@@ -42,8 +44,8 @@ public class DesignerReturnAmount {
 	public DesignerReturnAmount(String datetime, long designer_id, int units, float mrp, float discount,
 			float sales_price, int hsn_rate, float hsn_amount, float hsn_cgst, float hsn_sgst, float hsn_igst,
 			float tcs, float total_tax_amount, float total_amount_received, float net_payable_designer, String status,
-			String orderd, int product_id, String product_sku, String size, String tax_type, String updated_by,
-			String updated_datetime, String remarks) {
+			String payment_datetime, String orderd, int product_id, String product_sku, String size, String tax_type,
+			String updated_by, String updated_datetime, String remarks) {
 		super();
 		this.datetime = datetime;
 		this.designer_id = designer_id;
@@ -61,6 +63,7 @@ public class DesignerReturnAmount {
 		this.total_amount_received = total_amount_received;
 		this.net_payable_designer = net_payable_designer;
 		this.status = status;
+		this.payment_datetime = payment_datetime;
 		this.orderd = orderd;
 		this.product_id = product_id;
 		this.product_sku = product_sku;
@@ -232,6 +235,16 @@ public class DesignerReturnAmount {
 	}
 
 
+	public String getPayment_datetime() {
+		return payment_datetime;
+	}
+
+
+	public void setPayment_datetime(String payment_datetime) {
+		this.payment_datetime = payment_datetime;
+	}
+
+
 	public String getOrderd() {
 		return orderd;
 	}
@@ -310,8 +323,8 @@ public class DesignerReturnAmount {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
-	
-	
+
+
 	
 
 }
