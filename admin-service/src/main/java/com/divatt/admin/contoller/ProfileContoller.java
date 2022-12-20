@@ -48,12 +48,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.cloudfront.model.CustomErrorResponse;
 import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AdminModule;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.entity.SendMail;
+import com.divatt.admin.exception.CustomErrorMessage;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.helper.JwtUtil;
 import com.divatt.admin.repo.AdminModulesRepo;
@@ -140,8 +142,9 @@ public class ProfileContoller {
 		try {
 			if (!checkPermission(token, "module7", "list"))
 				throw new CustomException(MessageConstant.NO_GET_PERMISSION.getMessage());
-			List<LoginEntity> orElseThrow = Optional.of(mongoOperations
-					.find(query(where("_id").is(id).andOperator(where("is_deleted").is(false))), LoginEntity.class))
+			List<LoginEntity> orElseThrow = Optional
+					.of(mongoOperations.find(query(where("_id").is(id).andOperator(where("is_deleted").is(false))),
+							LoginEntity.class))
 					.orElseThrow(() -> new RuntimeException(MessageConstant.INTERNAL_SERVER_ERROR.getMessage()));
 			if (orElseThrow.size() < 1)
 				throw new CustomException(MessageConstant.NO_DATA.getMessage());
@@ -156,13 +159,13 @@ public class ProfileContoller {
 	public ResponseEntity<?> addProfile(@RequestHeader("Authorization") String token,
 			@Valid @RequestBody LoginEntity loginEntity, Errors error) {
 		LOGGER.info("Inside - ProfileContoller.addProfile()");
-		String pass=loginEntity.getPassword();
+		String pass = loginEntity.getPassword();
 		try {
 			if (error.hasErrors()) {
 				throw new CustomException(MessageConstant.CHECK_ALL_FIELDS.getMessage());
 			}
-			ResponseEntity<String> forEntity = restTemplate
-					.getForEntity(RestTemplateConstant.AUTH_PRESENT.getMessage() + loginEntity.getEmail(), String.class);
+			ResponseEntity<String> forEntity = restTemplate.getForEntity(
+					RestTemplateConstant.AUTH_PRESENT.getMessage() + loginEntity.getEmail(), String.class);
 			JSONObject jsonObject = new JSONObject(forEntity.getBody());
 			if ((boolean) jsonObject.get("isPresent"))
 				throw new CustomException(MessageConstant.EMAIL_ALREADY_PRESENT.getMessage());
@@ -187,9 +190,8 @@ public class ProfileContoller {
 
 			SendMail mail = new SendMail(loginEntity.getEmail(), MessageConstant.REGISTER_SUCCESSFULL.getMessage(),
 					MessageConstant.WELCOME.getMessage() + loginEntity.getFirstName() + "" + ",\n   "
-							+ MessageConstant.ACCOUNT_CREATED_AND_LOGIN.getMessage()
-							+ MessageConstant.NAME.getMessage() + loginEntity.getEmail() + MessageConstant.PASSWORD.getMessage()
-							+ pass,
+							+ MessageConstant.ACCOUNT_CREATED_AND_LOGIN.getMessage() + MessageConstant.NAME.getMessage()
+							+ loginEntity.getEmail() + MessageConstant.PASSWORD.getMessage() + pass,
 					false);
 
 			try {
@@ -200,8 +202,8 @@ public class ProfileContoller {
 			}
 
 			loginRepository.save(loginEntity);
-			return new ResponseEntity<>(new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SUB_ADMIN_ADDED.getMessage(), 200),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.SUB_ADMIN_ADDED.getMessage(), 200), HttpStatus.OK);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -310,7 +312,8 @@ public class ProfileContoller {
 						loginRepository.save(filterCatDetails);
 					}
 				}
-				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SUB_ADMIN_DELETED.getMessage(), 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.SUB_ADMIN_DELETED.getMessage(), 200);
 			} else {
 				throw new CustomException(MessageConstant.ID_NOT_EXIST.getMessage());
 			}
@@ -396,8 +399,11 @@ public class ProfileContoller {
 
 	@PostMapping("/s3/upload")
 	public ResponseEntity<?> uploadFiles(@RequestPart(value = "file", required = false) MultipartFile file)
-			throws IOException {
+			throws IOException{
+		if(file.getSize()>10681340)
+			throw new CustomException("File size not excepted....");
 		return ResponseEntity.ok(s3Service.uploadFile(file.getOriginalFilename(), file.getBytes()));
+		
 	}
 
 	@GetMapping("/testResize")

@@ -307,33 +307,31 @@ public class ProfileContoller {
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getIsProfileCompleted());
 			LOGGER.info("DATATATATATAT = {}", !designerLoginEntity.getIsDeleted().equals(true));
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
-			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
-					&& designerLoginEntity.getIsDeleted().equals(true)) {
-				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
-						&& !designerLoginEntity.getIsDeleted().equals(true)) {
-					LOGGER.info("INSIDE IF <><><><><><@!!!");
-					// update designer personal information from admin update
-					DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
-							.findByDesignerId(designerLoginEntity.getdId()).get();
-					DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
-					designerPersonalInfoEntity.setId(infoEntity.getId());
-					designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
-					designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity()
-							.getDesignerPersonalInfoEntity().getBankDetails());
-					designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity()
-							.getDesignerPersonalInfoEntity().getDesignerDocuments());
-					designerPersonalInfoRepo.save(designerPersonalInfoEntity);
-					// end update designer personal information from admin update
-				}
+			if ((designerLoginEntity.getProfileStatus().equals("APPROVE")
+					|| designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
+				designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
+				designerLoginEntityDB.setCategories(designerLoginEntity.getCategories());
+				designerLoginEntityDB.setAccountStatus("ACTIVE");
+				designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
+				designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
+			}
+			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
+					|| designerLoginEntity.getProfileStatus().equals("COMPLETED"))) {
+				LOGGER.info("INSIDE IF <><><><><><@!!!");
+				// update designer personal information from admin update
+				DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
+						.findByDesignerId(designerLoginEntity.getdId()).get();
+				DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
+				designerPersonalInfoEntity.setId(infoEntity.getId());
+				designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
+				designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity()
+						.getDesignerPersonalInfoEntity().getBankDetails());
+				designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity()
+						.getDesignerPersonalInfoEntity().getDesignerDocuments());
+				designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+				// end update designer personal information from admin update
 			}
 			// Old
-			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
-			designerLoginEntityDB.setCategories(designerLoginEntity.getCategories());
-			designerLoginEntityDB.setAccountStatus("ACTIVE");
-			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
-			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
 				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
 				LOGGER.info(getDesigner(designerLoginEntityDB.getdId()).getBody().toString() + "Inside Did");
@@ -363,9 +361,15 @@ public class ProfileContoller {
 			designerLoginRepo.save(designerLoginEntityDB);
 			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
 
+			if (designerLoginEntityDB.getIsDeleted() == true) {
+				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.PROFILE_DELETE.getMessage(), 200));
+			} else {
+				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.UPDATED.getMessage(), 200));
+			}
+
 		}
-		return ResponseEntity.ok(
-				new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.UPDATED.getMessage(), 200));
 	}
 
 	@PutMapping("/profile/update")
@@ -676,14 +680,13 @@ public class ProfileContoller {
 			List<Long> list = new ArrayList<>();
 			for (int i = 0; i < designerProfileList.size(); i++) {
 				list.add(designerProfileList.get(i).getdId());
-				List<DesignerProfileEntity> designerProfileData = this.designerProfileRepo
-						.findByDesignerIdIn(list);
+				List<DesignerProfileEntity> designerProfileData = this.designerProfileRepo.findByDesignerIdIn(list);
 				designerProfileList.get(i)
 						.setDesignerCategory(designerProfileData.get(i).getDesignerProfile().getDesignerCategory());
-				//LOGGER.info("designerProfileList"+designerProfileList.get(i).getDesignerCategory());
+				// LOGGER.info("designerProfileList"+designerProfileList.get(i).getDesignerCategory());
 			}
-			//LOGGER.info("designerProfileList"+designerProfileList.get(2).getDesignerCategory());
-			//LOGGER.info("designerProfileList" + designerProfileList);
+			// LOGGER.info("designerProfileList"+designerProfileList.get(2).getDesignerCategory());
+			// LOGGER.info("designerProfileList" + designerProfileList);
 
 			org.json.simple.JSONObject response = new org.json.simple.JSONObject();
 			List<Object> designercategories = new ArrayList<Object>();
@@ -965,4 +968,19 @@ public class ProfileContoller {
 		}
 	}
 
+	@PutMapping("/designerProfileDelete")
+	public GlobalResponce designerProfileDelete(@RequestHeader("Authorization") String token) {
+		try {
+			DesignerLoginEntity designerLoginEntity=designerLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7))).get();
+			if(designerLoginEntity.getIsDeleted()) {
+				designerLoginEntity.setIsDeleted(true);
+				designerLoginRepo.save(designerLoginEntity);
+				return new GlobalResponce("Success", "Designer is successfully deleted", 200);
+			}else {
+				return new GlobalResponce("Error", "Designer is already deleted", 400);
+			}
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }
