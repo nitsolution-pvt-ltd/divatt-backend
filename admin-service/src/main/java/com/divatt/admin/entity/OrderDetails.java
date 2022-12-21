@@ -14,6 +14,7 @@ public class OrderDetails {
 	public float discount;
 	public float mrp;
 	public String order_id;
+	public String image;
 	public String invoice_id;
 	public int product_id;
 	public String product_sku;
@@ -34,46 +35,6 @@ public class OrderDetails {
 	
 	public OrderDetails() {
 		super();
-	}
-
-	public OrderDetails(String datetime, int designer_id, int user_id, float discount, float mrp, String order_id,
-			String invoice_id, int product_id, String product_sku, float sales_price, String size, String tax_type,
-			int units, int hsn_rate, float hsn_amount, float hsn_cgst, float hsn_sgst, float hsn_igst, float total_tax,
-			String order_status, String delivery_datetime, String remarks) {
-		super();
-		this.datetime = datetime;
-		this.designer_id = designer_id;
-		this.user_id = user_id;
-		this.discount = discount;
-		this.mrp = mrp;
-		this.order_id = order_id;
-		this.invoice_id = invoice_id;
-		this.product_id = product_id;
-		this.product_sku = product_sku;
-		this.sales_price = sales_price;
-		this.size = size;
-		this.tax_type = tax_type;
-		this.units = units;
-		this.hsn_rate = hsn_rate;
-		this.hsn_amount = hsn_amount;
-		this.hsn_cgst = hsn_cgst;
-		this.hsn_sgst = hsn_sgst;
-		this.hsn_igst = hsn_igst;
-		this.total_tax = total_tax;
-		this.order_status = order_status;
-		this.delivery_datetime = delivery_datetime;
-		this.remarks = remarks;
-	}
-
-	@Override
-	public String toString() {
-		return "OrderDetails [datetime=" + datetime + ", designer_id=" + designer_id + ", user_id=" + user_id
-				+ ", discount=" + discount + ", mrp=" + mrp + ", order_id=" + order_id + ", invoice_id=" + invoice_id
-				+ ", product_id=" + product_id + ", product_sku=" + product_sku + ", sales_price=" + sales_price
-				+ ", size=" + size + ", tax_type=" + tax_type + ", units=" + units + ", hsn_rate=" + hsn_rate
-				+ ", hsn_amount=" + hsn_amount + ", hsn_cgst=" + hsn_cgst + ", hsn_sgst=" + hsn_sgst + ", hsn_igst="
-				+ hsn_igst + ", total_tax=" + total_tax + ", order_status=" + order_status + ", delivery_datetime="
-				+ delivery_datetime + ", remarks=" + remarks + "]";
 	}
 
 	public String getDatetime() {
@@ -122,6 +83,14 @@ public class OrderDetails {
 
 	public void setOrder_id(String order_id) {
 		this.order_id = order_id;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 	public String getInvoice_id() {
@@ -252,5 +221,6 @@ public class OrderDetails {
 		this.remarks = remarks;
 	}
 
+	
 	
 }

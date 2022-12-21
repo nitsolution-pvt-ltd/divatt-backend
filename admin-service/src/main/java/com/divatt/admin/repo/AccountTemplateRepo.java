@@ -16,11 +16,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AccumulatorOperators;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationExpression;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -187,6 +191,7 @@ public class AccountTemplateRepo {
 			orderDetails.setTotal_tax(value.getTotal_tax());
 			orderDetails.setUnits(value.getUnits());
 			orderDetails.setUser_id(value.getUser_id());
+			orderDetails.setImage(value.getImage());
 
 			orderDetailsList.add(orderDetails);
 		});
@@ -233,15 +238,39 @@ public class AccountTemplateRepo {
 
 	public List<AccountMapEntity> getAccountSingleMapData() {
 
-		GroupOperation mapCondition = Aggregation.group().sum("service_charge.fee").as("serviceFee");
+		GroupOperation mapCondition = Aggregation.group().sum("service_charge.total_amount").as("serviceFee");
 
 		MatchOperation match = Aggregation.match(
 				Criteria.where("service_charge.status").is("NOT PAID"));
 		
-		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
+		Aggregation aggregations = Aggregation.newAggregation(mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
-	    return results.getMappedResults();
+		return results.getMappedResults();
 	}
+	
+	public List<AccountMapEntity> getBasicAmount() {
+
+		AggregationOperation unwind = Aggregation.unwind("designer_return_amount.sales_price");
+
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.sales_price").as("basicAmount");
+
+		MatchOperation match = Aggregation.match(
+				Criteria.where("service_charge.status").is("NOT PAID"));
+		
+		AggregationExpression homeworkExpression = AccumulatorOperators.Sum.sumOf("designer_return_amount.sales_price");
+		AggregationExpression quizExpression = AccumulatorOperators.Sum.sumOf("service_charge.total_amount");
+		ProjectionOperation projectionOperation = Aggregation.project("_id").and(homeworkExpression).as("basicAmount")
+		        .and(quizExpression).as("qSum");
+		
+		Aggregation aggregations = Aggregation.newAggregation(projectionOperation);
+
+		
+//		Aggregation aggregations = Aggregation.newAggregation(unwind, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+	    System.out.println("results "+results.getRawResults());
+		return results.getMappedResults();
+	}
+	
 	
 	@SuppressWarnings("all")
 	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, Pageable pagingSort) {
