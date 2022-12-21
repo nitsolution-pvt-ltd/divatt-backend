@@ -17,6 +17,7 @@ public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEnti
 	
 	@Query("{'designer_profile.designer_category':?0}")
 	List<DesignerProfileEntity> findByDesignerCategory(String designerCategory);
+	
 	List<DesignerProfileEntity> findByDesignerIdIn(List<Long> designerId);
 	
 
