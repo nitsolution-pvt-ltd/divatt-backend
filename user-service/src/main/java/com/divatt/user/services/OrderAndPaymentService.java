@@ -108,5 +108,7 @@ public interface OrderAndPaymentService {
 			Optional<String> sortBy, String token, String orderStatus);
 
 	public Optional<OrderInvoiceEntity> getInvoiceByOrderId(String orderId);
+	
+	public List<OrderInvoiceEntity> getInvoiceByOrder(String orderId);
 
 }
