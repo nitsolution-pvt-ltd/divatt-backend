@@ -84,6 +84,10 @@ spring:
         uri: https://localhost:8084/dev/account
         id: Admin
         predicates[0]: Path=/dev/account/**
+      routes[19]:
+        uri: https://localhost:8083/dev/designerAccount
+        id: Designer
+        predicates[0]: Path=/dev/designerAccount/**
         
       globalcors:
         corsConfigurations:
@@ -193,6 +197,10 @@ spring:
         uri: https://localhost:9093/prod/account
         id: Admin
         predicates[0]: Path=/prod/account/**
+      routes[19]:
+        uri: https://localhost:8083/prod/designerAccount
+        id: Designer
+        predicates[0]: Path=/prod/designerAccount/**
       globalcors:
         corsConfigurations:
           '[/**]':
