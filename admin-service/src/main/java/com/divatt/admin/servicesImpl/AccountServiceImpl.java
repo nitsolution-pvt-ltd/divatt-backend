@@ -206,6 +206,8 @@ public class AccountServiceImpl implements AccountService {
 
 			Page<AccountEntity> findAll = null;
 			List<AccountMapEntity> accountSingleMapData = accountTemplateRepo.getAccountSingleMapData();
+			List<AccountMapEntity> getBasicAmount = accountTemplateRepo.getBasicAmount();
+			
 			
 			if (keyword.isEmpty()) {
 //				findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);
@@ -220,6 +222,15 @@ public class AccountServiceImpl implements AccountService {
 			if (totalPage < 0) {
 				totalPage = 0;
 			}
+			double totalServiceFee = 0.00;
+			if(accountSingleMapData.size() > 0) {
+				totalServiceFee = accountSingleMapData.get(0).getServiceFee();
+			}
+			double basicAmount = 0.00;
+			if(getBasicAmount.size() > 0) {
+				basicAmount = getBasicAmount.get(0).getBasicAmount();
+			}
+			
 
 			Map<String, Object> response = new HashMap<>();
 			response.put("data", findAll.getContent());
@@ -228,9 +239,9 @@ public class AccountServiceImpl implements AccountService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			if(accountSingleMapData.size() > 0) {
-				response.put("totalServiceFee", accountSingleMapData.get(0).getServiceFee());
-			}
+			response.put("totalServiceFee", totalServiceFee);
+			response.put("basicAmount", basicAmount);
+			
 
 			if (findAll.getSize() < 1) {
 				if (LOGGER.isErrorEnabled()) {
