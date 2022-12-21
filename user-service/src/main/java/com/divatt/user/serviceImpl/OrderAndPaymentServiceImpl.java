@@ -562,12 +562,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				LOGGER.info(e.getOrderId() + "Inside OrderId");
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 				LOGGER.info(OrderPaymentRow + " Inside PaymentRow");
-				LOGGER.info(" Inside OrderSku" + OrderSKUDetailsRow);
-				OrderSKUDetailsRow.forEach(D -> {
+				LOGGER.info(" Inside OrderSku" + OrderSKUDetailsRow);			
+                 OrderSKUDetailsRow.forEach(D -> {
 					LOGGER.info("Data in for each method" + D.getProductId());
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
 					LOGGER.info("Top of try catch");
+					
 					// "https://localhost:8083/dev/designerProducts/productList/"
 					try {
 						LOGGER.info(D.getProductId() + " inside productid");
@@ -594,12 +595,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						LOGGER.info(objectss + "Inside objectss");
 						objectss.put("customization", productById.getBody().get("customization"));
 						objectss.put("withGiftWrap", productById.getBody().get("giftWrap"));
-						String orderId2 = OrderSKUDetailsRow.get(0).getOrderId();
+						String orderId2 = D.getOrderId();
 						LOGGER.info(orderId2 + "inside OrderID2");
-						Optional<OrderInvoiceEntity> invoiceId = getInvoiceByOrderId(orderId2);
-//						LOGGER.info(invoiceId + "Inside Invoice");
-						if (invoiceId.isPresent()) {
-							objectss.put("invoiceId", invoiceId.get().getInvoiceId());
+						//Optional<OrderInvoiceEntity> invoiceId = getInvoiceByOrderId(orderId2);
+						List<OrderInvoiceEntity> invoiceId = getInvoiceByOrder(orderId2);
+						if (invoiceId.size() >0) {
+							invoiceId.forEach(invoice-> {
+								objectss.put("invoiceId", invoice.getInvoiceId());
+							});
+							//objectss.put("invoiceId", invoiceId.getInvoiceId());
 							LOGGER.info(objectss + "Inside objectss");
 						} else {
 							objectss.put("invoiceId", JSONObject.NULL);
@@ -1418,8 +1422,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderInvoiceEntity.setInvoiceId("IV" + InvNumber);
 				saveData = orderInvoiceRepo.save(orderInvoiceEntity);
 			}
-			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
-					MessageConstant.INVOICE_ADDED.getMessage(), 200));
+			org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+			jsonObject.put("reason", MessageConstant.SUCCESS.getMessage());
+			jsonObject.put("message", MessageConstant.INVOICE_ADDED.getMessage());
+			jsonObject.put("invoiceId", orderInvoiceEntity.getInvoiceId());
+			jsonObject.put("status", 200);
+			return ResponseEntity.ok(jsonObject);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -2561,6 +2569,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	public Optional<OrderInvoiceEntity> getInvoiceByOrderId(String orderId) {
 		try {
 			return this.orderInvoiceRepo.findByOrderId(orderId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	@Override
+	public List<OrderInvoiceEntity> getInvoiceByOrder(String orderId) {
+		try {
+			return this.orderInvoiceRepo.findByOrder(orderId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
