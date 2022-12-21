@@ -20,5 +20,7 @@ public interface OrderInvoiceRepo extends MongoRepository<OrderInvoiceEntity, Lo
 	OrderInvoiceEntity findTopByOrderByIdDesc();
 
 	Optional<OrderInvoiceEntity> findByOrderId(String orderId);
+	@Query("{ 'orderId' : ?0}")
+	List<OrderInvoiceEntity> findByOrder(String orderId);
 
 }
