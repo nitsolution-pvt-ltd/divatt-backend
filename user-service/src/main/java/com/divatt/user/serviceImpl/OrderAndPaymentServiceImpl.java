@@ -1422,8 +1422,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderInvoiceEntity.setInvoiceId("IV" + InvNumber);
 				saveData = orderInvoiceRepo.save(orderInvoiceEntity);
 			}
-			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
-					MessageConstant.INVOICE_ADDED.getMessage(), 200));
+			org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+			jsonObject.put("reason", MessageConstant.SUCCESS.getMessage());
+			jsonObject.put("message", MessageConstant.INVOICE_ADDED.getMessage());
+			jsonObject.put("invoiceId", orderInvoiceEntity.getInvoiceId());
+			jsonObject.put("status", 200);
+			return ResponseEntity.ok(jsonObject);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
