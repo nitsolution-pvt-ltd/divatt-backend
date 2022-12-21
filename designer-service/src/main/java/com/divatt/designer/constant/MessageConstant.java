@@ -35,7 +35,11 @@ public enum MessageConstant {
     USER_NOT_FOUND("User not found"),
     DESIGNER_STATUS_CHANGE("Designer current status Changed"),
     PROFILE_IMAGE_UPDATED("Profile Image Updated Sucessfully"),
-    PROFILE_DELETE("Profile deleted Sucessfuly")
+    PROFILE_DELETE("Profile deleted Sucessfuly"),
+    
+    ACCOUNT_ADDED_MESSAGE("Accoount added Sucessfully"),
+    UNAUTHORIZED("Unauthorized"),
+    ACCOUNT_UPDATED_MESSAGE("Account Updated Successfully")
     ;
 	private String message;
 
