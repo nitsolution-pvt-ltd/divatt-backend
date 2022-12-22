@@ -1,5 +1,6 @@
 package com.divatt.designer.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -74,15 +75,28 @@ public class AccountController {
 		}
 
 		try {
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/add", "Success", HttpStatus.OK);
+			String extractUsername = config.extractUsername(token.substring(7));
+			LOGGER.info(extractUsername);
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
+			LOGGER.info(findByEmail + "Inside FindbyEmail");
+			if (!findByEmail.isEmpty()) {
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/designerAccount/add", "Success", HttpStatus.OK);
+				}
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/designerAccount/add", "Success", HttpStatus.OK);
+				}
+				return accountService.postAccountDetails(accountEntity, token);
+			} else {
+				Map<String, Object> map = new HashMap<>();
+				map.put("reason", "Error");
+				map.put("message", "Unauthorized");
+				map.put("status", HttpStatus.UNAUTHORIZED.value());
+				map.put("timeStamp", new Date());
+				return new ResponseEntity<>(map,HttpStatus.UNAUTHORIZED);
 			}
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/add", "Success", HttpStatus.OK);
-			}
-			return accountService.postAccountDetails(accountEntity, token);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -101,11 +115,11 @@ public class AccountController {
 		try {
 			if (LOGGER.isInfoEnabled()) {
 				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/view/" + accountId, "Success", HttpStatus.OK);
+						host + contextPath + "/designerAccount/view/" + accountId, "Success", HttpStatus.OK);
 			}
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/view/" + accountId, "Success", HttpStatus.OK);
+						host + contextPath + "/designerAccount/view/" + accountId, "Success", HttpStatus.OK);
 			}
 			String extractUsername = config.extractUsername(token.substring(7));
 			LOGGER.info(extractUsername);
@@ -119,7 +133,7 @@ public class AccountController {
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/view/" + accountId, e.getLocalizedMessage(),
+						host + contextPath + "/designerAccount/view/" + accountId, e.getLocalizedMessage(),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			return ResponseEntity.badRequest().body(new GlobalResponce(MessageConstant.ERROR.getMessage(),
@@ -141,17 +155,17 @@ public class AccountController {
 		try {
 			if (LOGGER.isInfoEnabled()) {
 				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/update/" + accountId, "Success", HttpStatus.OK);
+						host + contextPath + "/designerAccount/update/" + accountId, "Success", HttpStatus.OK);
 			}
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/update/" + accountId, "Success", HttpStatus.OK);
+						host + contextPath + "/designerAccount/update/" + accountId, "Success", HttpStatus.OK);
 			}
 			return this.accountService.putAccountDetails(accountId, accountEntity, token);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/update/" + accountId, e.getLocalizedMessage(),
+						host + contextPath + "/designerAccount/update/" + accountId, e.getLocalizedMessage(),
 						HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
@@ -179,20 +193,20 @@ public class AccountController {
 		try {
 			if (LOGGER.isInfoEnabled()) {
 				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/list", "Success", HttpStatus.OK);
+						host + contextPath + "/designerAccount/list", "Success", HttpStatus.OK);
 			}
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/list", "Success", HttpStatus.OK);
+						host + contextPath + "/designerAccount/list", "Success", HttpStatus.OK);
 			}
-			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword, designerReturn,
-					serviceCharge, govtCharge, userOrder, ReturnStatus, sortBy, token);
+			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword,
+					designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, sortBy, token);
 		} catch (
 
 		Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+						host + contextPath + "/designerAccount/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
 		}
