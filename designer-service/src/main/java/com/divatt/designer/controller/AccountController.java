@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.config.JWTConfig;
+import com.divatt.designer.constant.MessageConstant;
+import com.divatt.designer.constant.RestTemplateConstant;
 import com.divatt.designer.entity.account.AccountEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.exception.CustomException;
@@ -81,11 +83,12 @@ public class AccountController {
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
 			LOGGER.info(findByEmail + "Inside FindbyEmail");
 			if (!findByEmail.isEmpty()) {
-				restTemplate.postForObject("https://localhost:8084/dev/account/add", accountEntity,
+				restTemplate.postForObject(RestTemplateConstant.ACCOUNT_ADD.getMessage(), accountEntity,
 						GlobalResponce.class);
-				return new GlobalResponce("Success", "Accoount added Sucessfully", 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ACCOUNT_ADDED_MESSAGE.getMessage(), 200);
 			} else
-				throw new CustomException("Unauthorized");
+				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -116,17 +119,18 @@ public class AccountController {
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
 			LOGGER.info(findByEmail + "Inside FindbyEmail");
 			if (!findByEmail.isEmpty()) {
-				return restTemplate.getForEntity("https://localhost:8084/dev/account/view/" + accountId,
+				return restTemplate.getForEntity(RestTemplateConstant.ACCOUNT_VIEW_BY_ID.getMessage() + accountId,
 						AccountEntity.class);
 			} else
-				throw new CustomException("Unauthorized");
+				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/account/view/" + accountId, e.getLocalizedMessage(),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			return ResponseEntity.badRequest().body(new GlobalResponce("Error", "Unauthorized", 400));
+			return ResponseEntity.badRequest().body(new GlobalResponce(MessageConstant.ERROR.getMessage(),
+					MessageConstant.UNAUTHORIZED.getMessage(), 400));
 		}
 	}
 
@@ -155,10 +159,11 @@ public class AccountController {
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
 			LOGGER.info(findByEmail + "Inside FindbyEmail");
 			if (!findByEmail.isEmpty()) {
-				restTemplate.put("https://localhost:8084/dev/account/update/" + accountId, accountEntity);
-				return new GlobalResponce("Success", "Account Updated Successfully", 200);
+				restTemplate.put(RestTemplateConstant.ACCOUNT_UPDATE_BY_ID.getMessage() + accountId, accountEntity);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ACCOUNT_UPDATED_MESSAGE.getMessage(), 200);
 			} else
-				throw new CustomException("Unauthorized");
+				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
@@ -201,7 +206,7 @@ public class AccountController {
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
 			LOGGER.info(findByEmail + "Inside FindbyEmail");
 			if (!findByEmail.isEmpty()) {
-				String url = "https://localhost:8084/dev/account/list";
+				String url = RestTemplateConstant.ACCOUNT_LIST.getMessage();
 				HttpHeaders headers = new HttpHeaders();
 				headers.set("Accept", "application/json");
 
@@ -222,7 +227,7 @@ public class AccountController {
 
 				return restTemplate.exchange(url, HttpMethod.GET, entity, String.class, params);
 			} else
-				throw new CustomException("Unauthorized");
+				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
