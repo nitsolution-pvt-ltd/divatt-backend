@@ -70,6 +70,7 @@ import com.divatt.user.constant.RestTemplateConstant;
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
+import com.divatt.user.entity.ProductDetails;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.HsnData;
 import com.divatt.user.entity.order.OrderDetailsEntity;
@@ -84,6 +85,7 @@ import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.serviceDTO.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.serviceDTO.CancelationRequestDTO;
+import com.divatt.user.serviceDTO.InvoiceUpdatedModel;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
 import com.itextpdf.text.Document;
@@ -852,5 +854,13 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
+	
+	@GetMapping("/getOrderSummary/{orderId}")
+	public String getOrderSummary(@PathVariable String orderId) {
+		try {
+			return this.orderAndPaymentService.getOrderSummary(orderId);
+		}catch(Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

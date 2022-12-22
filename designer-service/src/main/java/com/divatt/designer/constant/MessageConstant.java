@@ -39,7 +39,8 @@ public enum MessageConstant {
     
     ACCOUNT_ADDED_MESSAGE("Accoount added Sucessfully"),
     UNAUTHORIZED("Unauthorized"),
-    ACCOUNT_UPDATED_MESSAGE("Account Updated Successfully")
+    ACCOUNT_UPDATED_MESSAGE("Account Updated Successfully"),
+    ACCOUNT_NOT_FOUND("Account data not found"),
     ;
 	private String message;
 

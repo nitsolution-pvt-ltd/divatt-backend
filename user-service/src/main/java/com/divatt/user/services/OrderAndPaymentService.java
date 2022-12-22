@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
+import com.divatt.user.entity.ProductDetails;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
@@ -21,6 +22,7 @@ import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.serviceDTO.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.serviceDTO.CancelationRequestDTO;
+import com.divatt.user.serviceDTO.InvoiceUpdatedModel;
 
 public interface OrderAndPaymentService {
 
@@ -110,5 +112,7 @@ public interface OrderAndPaymentService {
 	public Optional<OrderInvoiceEntity> getInvoiceByOrderId(String orderId);
 	
 	public List<OrderInvoiceEntity> getInvoiceByOrder(String orderId);
+
+	public String getOrderSummary(String orderId);
 
 }
