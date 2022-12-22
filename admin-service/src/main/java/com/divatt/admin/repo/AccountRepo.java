@@ -33,6 +33,7 @@ public interface AccountRepo extends MongoRepository<AccountEntity, Long>{
 
 	Page<AccountEntity> findAllByOrderByIdDesc(Pageable pagingSort);
 
+	@Query(value = "{ '_id': ?0 }")
 	List<AccountEntity> findById(long accountId);
 	
 	@Query(value = "{ '_id': ?0 }")
