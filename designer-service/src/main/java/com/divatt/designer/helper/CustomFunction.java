@@ -344,13 +344,13 @@ public class CustomFunction {
 			designerProfile.setCountry(body.getDesignerProfile().getCountry());
 			designerProfile.setDob(body.getDesignerProfile().getDob());
 			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
-					|| designerLoginEntity.getProfileStatus().equals("COMPLETED"))){
+					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
+					|| designerLoginEntity.getProfileStatus().equals("SAVED"))){
 				boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
-				}if ((designerLoginEntity.getProfileStatus().equals("APPROVE")
-						|| designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
+				}
+			else{
 				boutiqueProfile.setGSTIN(body.getBoutiqueProfile().getGSTIN());
 			}
-			//boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
 			boutiqueProfile.setBoutiqueName(body.getBoutiqueProfile().getBoutiqueName());
 			boutiqueProfile.setExperience(body.getBoutiqueProfile().getExperience());
 			boutiqueProfile.setFirmName(body.getBoutiqueProfile().getFirmName());
@@ -358,12 +358,13 @@ public class CustomFunction {
 			boutiqueProfile.setProfessionalCategory(body.getBoutiqueProfile().getProfessionalCategory());
 			boutiqueProfile.setYearOfOperation(body.getBoutiqueProfile().getYearOfOperation());
 			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
-					|| designerLoginEntity.getProfileStatus().equals("COMPLETED"))) {
+					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
+					|| designerLoginEntity.getProfileStatus().equals("SAVED"))) {
 			LOGGER.info("Status <><><><><> !!!!! = {}", designerLoginEntity.getProfileStatus());
 					designerProfile.setDigitalSignature(
 							designerLoginEntity.getDesignerProfileEntity().getDesignerProfile().getDigitalSignature());
-				} if ((designerLoginEntity.getProfileStatus().equals("APPROVE")
-					|| designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
+				}  
+			else{
 				designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
 			}
 			designerProfile.setEmail(body.getDesignerProfile().getEmail());

@@ -25,6 +25,7 @@ import javax.validation.Valid;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,7 @@ import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.InvoiceEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
+import com.divatt.user.entity.ProductDetails;
 import com.divatt.user.entity.ProductInvoice;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.HsnData;
@@ -71,6 +73,7 @@ import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.helper.PDFRunner;
+import com.divatt.user.helper.UtillUserService;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.OrderInvoiceRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
@@ -82,6 +85,7 @@ import com.divatt.user.serviceDTO.CancelEmailJSON;
 import com.divatt.user.serviceDTO.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.serviceDTO.CancelationRequestDTO;
 import com.divatt.user.serviceDTO.DesignerRequestDTO;
+import com.divatt.user.serviceDTO.InvoiceUpdatedModel;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.utill.EmailSenderThread;
@@ -2578,6 +2582,47 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			return this.orderInvoiceRepo.findByOrder(orderId);
 		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String  getOrderSummary(String orderId) {
+		try {
+			Query query= new Query();
+			query.addCriteria(Criteria.where("orderId").is(orderId));
+			List<OrderInvoiceEntity> invoiceDataList=mongoOperations.find(query, OrderInvoiceEntity.class);
+			List<String> keyList= new ArrayList<>();
+			//LOGGER.info(invoiceDataList+"");
+			Map<String, List<InvoiceUpdatedModel>> responceData= new HashMap<>();
+			for(OrderInvoiceEntity invoiceEntity:invoiceDataList) {
+				String gstNo=invoiceEntity.getDesignerDetails().getGSTIN();
+				try {
+					 List<InvoiceUpdatedModel> productDetailsList=responceData.get(gstNo);
+					 productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity));
+					responceData.put(gstNo, productDetailsList);
+				}catch(Exception e) {
+					List<InvoiceUpdatedModel> productList= new ArrayList<>();
+					keyList.add(gstNo);
+					productList.add(UtillUserService.invoiceUpdatedModelMapper(invoiceEntity));
+					responceData.put(gstNo,productList);
+				}
+			}
+			StringBuilder invoiceData= new StringBuilder();
+			for(String  key:keyList) {
+				
+				List<InvoiceUpdatedModel> invoiceUpdatedModels=responceData.get(key);
+				Map<String, Object> data= new HashMap<>();
+				data.put("data", invoiceUpdatedModels);
+				Context context = new Context();
+				context.setVariables(data);
+				String htmlContent = templateEngine.process("new_invoice_User.html", context);
+				invoiceData.append(htmlContent);
+			}
+			
+			return invoiceData.toString();
+		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
