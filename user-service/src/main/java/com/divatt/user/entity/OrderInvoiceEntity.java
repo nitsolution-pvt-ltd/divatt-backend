@@ -4,6 +4,7 @@ package com.divatt.user.entity;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -34,13 +35,13 @@ public class OrderInvoiceEntity {
 	private String orderDatetime;
 	
 	@Field(name = "designer_details") 
-	private Object designerDetails;
+	private DesignerDetails designerDetails;
 	
 	@Field(name = "user_details") 
-	private Object userDetails;
+	private UserDetails userDetails;
 	
 	@Field(name = "product_details") 
-	private Object productDetails;
+	private ProductDetails productDetails;
 
 	public OrderInvoiceEntity() {
 		super();
@@ -52,6 +53,21 @@ public class OrderInvoiceEntity {
 		return "OrderInvoiceEntity [id=" + id + ", invoiceId=" + invoiceId + ", invoiceDatetime=" + invoiceDatetime
 				+ ", orderId=" + orderId + ", orderDatetime=" + orderDatetime + ", designerDetails=" + designerDetails
 				+ ", userDetails=" + userDetails + ", productDetails=" + productDetails + "]";
+	}
+
+	public OrderInvoiceEntity(Integer id, String invoiceId, String invoiceDatetime,
+			@NotEmpty(message = "Order id is required") String orderId,
+			@NotEmpty(message = "Order datetime is required") String orderDatetime, DesignerDetails designerDetails,
+			UserDetails userDetails, ProductDetails productDetails) {
+		super();
+		this.id = id;
+		this.invoiceId = invoiceId;
+		this.invoiceDatetime = invoiceDatetime;
+		this.orderId = orderId;
+		this.orderDatetime = orderDatetime;
+		this.designerDetails = designerDetails;
+		this.userDetails = userDetails;
+		this.productDetails = productDetails;
 	}
 
 	public Integer getId() {
@@ -94,27 +110,27 @@ public class OrderInvoiceEntity {
 		this.orderDatetime = orderDatetime;
 	}
 
-	public Object getDesignerDetails() {
+	public DesignerDetails getDesignerDetails() {
 		return designerDetails;
 	}
 
-	public void setDesignerDetails(Object designerDetails) {
+	public void setDesignerDetails(DesignerDetails designerDetails) {
 		this.designerDetails = designerDetails;
 	}
 
-	public Object getUserDetails() {
+	public UserDetails getUserDetails() {
 		return userDetails;
 	}
 
-	public void setUserDetails(Object userDetails) {
+	public void setUserDetails(UserDetails userDetails) {
 		this.userDetails = userDetails;
 	}
 
-	public Object getProductDetails() {
+	public ProductDetails getProductDetails() {
 		return productDetails;
 	}
 
-	public void setProductDetails(Object productDetails) {
+	public void setProductDetails(ProductDetails productDetails) {
 		this.productDetails = productDetails;
 	}
 
@@ -122,22 +138,6 @@ public class OrderInvoiceEntity {
 		return SEQUENCE_NAME;
 	}
 
-	public OrderInvoiceEntity(Integer id, String invoiceId, String invoiceDatetime,
-			@NotEmpty(message = "Order id is required") String orderId,
-			@NotEmpty(message = "Order datetime is required") String orderDatetime, Object designerDetails,
-			Object userDetails, Object productDetails) {
-		super();
-		this.id = id;
-		this.invoiceId = invoiceId;
-		this.invoiceDatetime = invoiceDatetime;
-		this.orderId = orderId;
-		this.orderDatetime = orderDatetime;
-		this.designerDetails = designerDetails;
-		this.userDetails = userDetails;
-		this.productDetails = productDetails;
-	}
-
-	
 	
 
 }
