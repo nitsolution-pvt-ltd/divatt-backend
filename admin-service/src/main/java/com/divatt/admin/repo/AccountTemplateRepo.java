@@ -2,6 +2,7 @@ package com.divatt.admin.repo;
 
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -203,7 +204,7 @@ public class AccountTemplateRepo {
 		findByRows.getDesigner_return_amount().forEach(value -> {
 
 			designerReturnAmount.setDatetime(value.getDatetime());
-			designerReturnAmount.setOrderd(value.getOrderd());
+			designerReturnAmount.setOrder_id(value.getOrder_id());
 			designerReturnAmount.setProduct_sku(value.getProduct_sku());
 			designerReturnAmount.setRemarks(value.getRemarks());
 			designerReturnAmount.setSize(value.getSize());
@@ -236,38 +237,85 @@ public class AccountTemplateRepo {
 
 	}
 
-	public List<AccountMapEntity> getAccountSingleMapData() {
+	public List<AccountMapEntity> getServiceFee() {
 
 		GroupOperation mapCondition = Aggregation.group().sum("service_charge.total_amount").as("serviceFee");
-
-		MatchOperation match = Aggregation.match(
-				Criteria.where("service_charge.status").is("NOT PAID"));
-		
 		Aggregation aggregations = Aggregation.newAggregation(mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		return results.getMappedResults();
+	}
+	public List<AccountMapEntity> getGstAmount() {
+
+		GroupOperation mapCondition = Aggregation.group().sum("service_charge.total_amount").as("gstAmount");
+		Aggregation aggregations = Aggregation.newAggregation(mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		return results.getMappedResults();
+	}
+	public List<AccountMapEntity> getGovtChargeAmount() {
+		AggregationOperation unwind = Aggregation.unwind("govt_charge");
+		GroupOperation mapCondition = Aggregation.group().sum("govt_charge.total_amount").as("govtGstAmount");
+		Aggregation aggregations = Aggregation.newAggregation(unwind, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		return results.getMappedResults();
+	}
+	public List<AccountMapEntity> getDesignerGstAmount() {
+
+		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.total_tax_amount").as("designerGstAmount");
+		Aggregation aggregations = Aggregation.newAggregation(unwind, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		return results.getMappedResults();
+	}
+	public List<AccountMapEntity> getTcsAmount() {
+
+		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.tcs").as("tcs");
+		Aggregation aggregations = Aggregation.newAggregation(unwind, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		return results.getMappedResults();
+	}
+	public List<AccountMapEntity> getTotalAmount() {
+
+		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.total_amount_received").as("totalAmount");
+		Aggregation aggregations = Aggregation.newAggregation(unwind, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		return results.getMappedResults();
+	}
+	public List<AccountMapEntity> getPayableAmount() {
+
+		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.net_payable_designer").as("payableAmount");
+		Aggregation aggregations = Aggregation.newAggregation(unwind, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		return results.getMappedResults();
+	}
+	public List<AccountMapEntity> getPendingAmount() {
+
+		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.net_payable_designer").as("pendingAmount");
+		MatchOperation match = Aggregation.match(
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN")));
+		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
 		return results.getMappedResults();
 	}
 	
 	public List<AccountMapEntity> getBasicAmount() {
 
-		AggregationOperation unwind = Aggregation.unwind("designer_return_amount.sales_price");
-
+		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
 		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.sales_price").as("basicAmount");
 
-		MatchOperation match = Aggregation.match(
-				Criteria.where("service_charge.status").is("NOT PAID"));
-		
+		/**
 		AggregationExpression homeworkExpression = AccumulatorOperators.Sum.sumOf("designer_return_amount.sales_price");
 		AggregationExpression quizExpression = AccumulatorOperators.Sum.sumOf("service_charge.total_amount");
 		ProjectionOperation projectionOperation = Aggregation.project("_id").and(homeworkExpression).as("basicAmount")
 		        .and(quizExpression).as("qSum");
-		
 		Aggregation aggregations = Aggregation.newAggregation(projectionOperation);
-
+		**/
 		
-//		Aggregation aggregations = Aggregation.newAggregation(unwind, mapCondition);
+		Aggregation aggregations = Aggregation.newAggregation(unwind, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
-	    System.out.println("results "+results.getRawResults());
 		return results.getMappedResults();
 	}
 	
@@ -277,6 +325,17 @@ public class AccountTemplateRepo {
 
 		LocalDate today = LocalDate.now();
 		LocalDate plusDays = today.plusDays(7);
+		
+		int year = 2022;
+		int month = 12;
+		YearMonth yearMonth = YearMonth.of(year, month);
+		int lengthOfMonth = yearMonth.lengthOfMonth();
+		
+
+		int dayDivide= lengthOfMonth / 2;
+//		System.out.println(plusDays.toString()+" ** "+(lengthOfMonth-dayDivide)+" // "+lengthOfMonth);
+//		System.out.println(yearMonth.atDay(1)+" MMMMMMMMM "+today.getDayOfMonth()+" $$$ "+yearMonth.atDay(dayDivide));
+		
 		/***
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -308,8 +367,17 @@ public class AccountTemplateRepo {
 			filterByCondition = Aggregation.match(new Criteria().orOperator(
 			        Criteria.where("datetime").lte(plusDays.toString()),
 			        Criteria.where("datetime").gte(plusDays.toString())));
+			
+			filterByCondition = Aggregation.match(new Criteria()
+					.orOperator(
+			        Criteria.where("datetime").lte(yearMonth.atDay(dayDivide).toString()),
+//					Criteria.where("datetime").gte(plusDays.toString()),
+			        Criteria.where("datetime").gte(yearMonth.atDay(1).toString())
+			        
+			        )
+//					.andOperator(Criteria.where("datetime").gte(plusDays.toString()))
+					);
 		}
-
 		
 		if(designerReturn != "" && !designerReturn.isEmpty()) {
 			filterByCondition = Aggregation.match(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is(designerReturn.trim())));

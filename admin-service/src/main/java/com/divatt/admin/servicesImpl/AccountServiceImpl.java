@@ -1,5 +1,6 @@
 package com.divatt.admin.servicesImpl;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,11 @@ public class AccountServiceImpl implements AccountService {
 //				}
 //				throw new CustomException(MessageConstant.ORDER_ALREADY_EXIST.getMessage());
 //			}
+				
+				long currentTimeMillis = System.currentTimeMillis();
+			
+				accountEntity.getService_charge().setDesigner_invoice_id("INV"+currentTimeMillis);
+				accountEntity.getGovt_charge().get(0).setDesigner_invoice_id("INV"+currentTimeMillis);
 				accountEntity.set_id(sequenceGenerator.getNextSequence(AccountEntity.SEQUENCE_NAME));
 				accountRepo.save(accountEntity);
 
@@ -205,13 +211,18 @@ public class AccountServiceImpl implements AccountService {
 			}
 
 			Page<AccountEntity> findAll = null;
-			List<AccountMapEntity> accountSingleMapData = accountTemplateRepo.getAccountSingleMapData();
+			List<AccountMapEntity> getServiceFee = accountTemplateRepo.getServiceFee();
 			List<AccountMapEntity> getBasicAmount = accountTemplateRepo.getBasicAmount();
-			
+			List<AccountMapEntity> getDesignerGstAmount = accountTemplateRepo.getDesignerGstAmount();
+			List<AccountMapEntity> getGovtGstAmount = accountTemplateRepo.getGovtChargeAmount();
+			List<AccountMapEntity> getGstAmount = accountTemplateRepo.getGstAmount();
+			List<AccountMapEntity> getPayableAmount = accountTemplateRepo.getPayableAmount();
+			List<AccountMapEntity> getPendingAmount = accountTemplateRepo.getPendingAmount();
+			List<AccountMapEntity> getTotalTcs = accountTemplateRepo.getTcsAmount();
+			List<AccountMapEntity> getTotalAmount = accountTemplateRepo.getTotalAmount();
 			
 			if (keyword.isEmpty()) {
 //				findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);
-				
 				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, pagingSort);
 			} else {
 				findAll = accountTemplateRepo.AccountSearchByKeywords(keyword, pagingSort);
@@ -223,14 +234,44 @@ public class AccountServiceImpl implements AccountService {
 				totalPage = 0;
 			}
 			double totalServiceFee = 0.00;
-			if(accountSingleMapData.size() > 0) {
-				totalServiceFee = accountSingleMapData.get(0).getServiceFee();
-			}
 			double basicAmount = 0.00;
+			double gstAmount = 0.00;
+			double totalAmount = 0.00;
+			double totalTcs = 0.00;
+			double pendingAmount = 0.00;
+			double govtGstAmount = 0.00;
+			double payableAmount = 0.00;
+			double designerGstAmount = 0.00;
+			
+			if(getServiceFee.size() > 0) {
+				totalServiceFee = getServiceFee.get(0).getServiceFee();
+			}
 			if(getBasicAmount.size() > 0) {
 				basicAmount = getBasicAmount.get(0).getBasicAmount();
 			}
+			if(getDesignerGstAmount.size() > 0) {
+				designerGstAmount = getDesignerGstAmount.get(0).getDesignerGstAmount();
+			}
+			if(getGovtGstAmount.size() > 0) {
+				govtGstAmount = getGovtGstAmount.get(0).getGovtGstAmount();
+			}
+			if(getGstAmount.size() > 0) {
+				gstAmount = getGstAmount.get(0).getGstAmount();
+			}
+			if(getPayableAmount.size() > 0) {
+				payableAmount = getPayableAmount.get(0).getPayableAmount();
+			}
+			if(getPendingAmount.size() > 0) {
+				pendingAmount = getPendingAmount.get(0).getPendingAmount();
+			}
+			if(getTotalTcs.size() > 0) {
+				totalTcs = getTotalTcs.get(0).getTcs();
+			}
+			if(getTotalAmount.size() > 0) {
+				totalAmount = getTotalAmount.get(0).getTotalAmount();
+			}
 			
+		    final DecimalFormat df = new DecimalFormat("0.00");
 
 			Map<String, Object> response = new HashMap<>();
 			response.put("data", findAll.getContent());
@@ -239,9 +280,15 @@ public class AccountServiceImpl implements AccountService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("totalServiceFee", totalServiceFee);
-			response.put("basicAmount", basicAmount);
-			
+			response.put("totalServiceFee", Double.valueOf(df.format(totalServiceFee)));
+			response.put("basicAmount", Double.valueOf(df.format(basicAmount)));
+			response.put("designerGstAmount", Double.valueOf(df.format(designerGstAmount)));
+			response.put("govtGstAmount", Double.valueOf(df.format(govtGstAmount)));
+			response.put("gstAmount", Double.valueOf(df.format(gstAmount)));
+			response.put("payableAmount", Double.valueOf(df.format(payableAmount)));
+			response.put("totalAmount", Double.valueOf(df.format(totalAmount)));
+			response.put("totalTcs", Double.valueOf(df.format(totalTcs)));
+			response.put("pendingAmount", Double.valueOf(df.format(pendingAmount)));
 
 			if (findAll.getSize() < 1) {
 				if (LOGGER.isErrorEnabled()) {

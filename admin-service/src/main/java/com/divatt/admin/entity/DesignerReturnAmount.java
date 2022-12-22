@@ -25,7 +25,7 @@ public class DesignerReturnAmount {
 	public String status;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd hh:mm:ss")
 	public String payment_datetime;
-	public String orderd;
+	public String order_id;
 	public int product_id;
 	public String product_sku;
 	public String size;
@@ -38,40 +38,6 @@ public class DesignerReturnAmount {
 	
 	public DesignerReturnAmount() {
 		super();
-	}
-
-
-	public DesignerReturnAmount(String datetime, long designer_id, int units, float mrp, float discount,
-			float sales_price, int hsn_rate, float hsn_amount, float hsn_cgst, float hsn_sgst, float hsn_igst,
-			float tcs, float total_tax_amount, float total_amount_received, float net_payable_designer, String status,
-			String payment_datetime, String orderd, int product_id, String product_sku, String size, String tax_type,
-			String updated_by, String updated_datetime, String remarks) {
-		super();
-		this.datetime = datetime;
-		this.designer_id = designer_id;
-		this.units = units;
-		this.mrp = mrp;
-		this.discount = discount;
-		this.sales_price = sales_price;
-		this.hsn_rate = hsn_rate;
-		this.hsn_amount = hsn_amount;
-		this.hsn_cgst = hsn_cgst;
-		this.hsn_sgst = hsn_sgst;
-		this.hsn_igst = hsn_igst;
-		this.tcs = tcs;
-		this.total_tax_amount = total_tax_amount;
-		this.total_amount_received = total_amount_received;
-		this.net_payable_designer = net_payable_designer;
-		this.status = status;
-		this.payment_datetime = payment_datetime;
-		this.orderd = orderd;
-		this.product_id = product_id;
-		this.product_sku = product_sku;
-		this.size = size;
-		this.tax_type = tax_type;
-		this.updated_by = updated_by;
-		this.updated_datetime = updated_datetime;
-		this.remarks = remarks;
 	}
 
 
@@ -245,13 +211,13 @@ public class DesignerReturnAmount {
 	}
 
 
-	public String getOrderd() {
-		return orderd;
+	public String getOrder_id() {
+		return order_id;
 	}
 
 
-	public void setOrderd(String orderd) {
-		this.orderd = orderd;
+	public void setOrder_id(String order_id) {
+		this.order_id = order_id;
 	}
 
 
@@ -325,6 +291,5 @@ public class DesignerReturnAmount {
 	}
 
 
-	
 
 }
