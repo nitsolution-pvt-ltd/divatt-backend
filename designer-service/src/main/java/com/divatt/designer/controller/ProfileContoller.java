@@ -307,10 +307,11 @@ public class ProfileContoller {
 			LOGGER.info("Designer profile status = {}", designerLoginEntity.getIsProfileCompleted());
 			LOGGER.info("DATATATATATAT = {}", !designerLoginEntity.getIsDeleted().equals(true));
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
-			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
-				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
+			if (designerLoginEntity.getProfileStatus().equals("SUBMITTED")
+					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
+					|| designerLoginEntity.getProfileStatus().equals("SAVED")){
+//				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
+//						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
 					LOGGER.info("INSIDE IF <><><><><><@!!!");
 					// update designer personal information from admin update
 					DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
@@ -324,7 +325,7 @@ public class ProfileContoller {
 							.getDesignerPersonalInfoEntity().getDesignerDocuments());
 					designerPersonalInfoRepo.save(designerPersonalInfoEntity);
 					// end update designer personal information from admin update
-				}
+				//}
 			}
 			// Old
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
