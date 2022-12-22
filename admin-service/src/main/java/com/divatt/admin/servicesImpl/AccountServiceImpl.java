@@ -212,15 +212,15 @@ public class AccountServiceImpl implements AccountService {
 			}
 
 			Page<AccountEntity> findAll = null;
-			List<AccountMapEntity> getServiceFee = accountTemplateRepo.getServiceFee();
-			List<AccountMapEntity> getBasicAmount = accountTemplateRepo.getBasicAmount();
-			List<AccountMapEntity> getDesignerGstAmount = accountTemplateRepo.getDesignerGstAmount();
-			List<AccountMapEntity> getGovtGstAmount = accountTemplateRepo.getGovtChargeAmount();
-			List<AccountMapEntity> getGstAmount = accountTemplateRepo.getGstAmount();
-			List<AccountMapEntity> getPayableAmount = accountTemplateRepo.getPayableAmount();
-			List<AccountMapEntity> getPendingAmount = accountTemplateRepo.getPendingAmount();
-			List<AccountMapEntity> getTotalTcs = accountTemplateRepo.getTcsAmount();
-			List<AccountMapEntity> getTotalAmount = accountTemplateRepo.getTotalAmount();
+			List<AccountMapEntity> getServiceFee = accountTemplateRepo.getServiceFee(settlement, year, month);
+			List<AccountMapEntity> getBasicAmount = accountTemplateRepo.getBasicAmount(settlement, year, month);
+			List<AccountMapEntity> getDesignerGstAmount = accountTemplateRepo.getDesignerGstAmount(settlement, year, month);
+			List<AccountMapEntity> getGovtGstAmount = accountTemplateRepo.getGovtChargeAmount(settlement, year, month);
+			List<AccountMapEntity> getGstAmount = accountTemplateRepo.getGstAmount(settlement, year, month);
+			List<AccountMapEntity> getPayableAmount = accountTemplateRepo.getPayableAmount(settlement, year, month);
+			List<AccountMapEntity> getPendingAmount = accountTemplateRepo.getPendingAmount(settlement, year, month);
+			List<AccountMapEntity> getTotalTcs = accountTemplateRepo.getTcsAmount(settlement, year, month);
+			List<AccountMapEntity> getTotalAmount = accountTemplateRepo.getTotalAmount(settlement, year, month);
 			
 			if (keyword.isEmpty()) {
 //				findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);
