@@ -67,44 +67,47 @@ public class AccountServiceImpl implements AccountService {
 		}
 
 		try {
-			String extractUsername = config.extractUsername(token.substring(7));
-			LOGGER.info(extractUsername);
-			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
-			LOGGER.info(findByEmail + "Inside FindbyEmail");
-			if (!findByEmail.isEmpty()) {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/designerAccount/add", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/designerAccount/add", gson.toJson(accountEntity), HttpStatus.OK);
+			}
+			try {
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "/account/add", "Success", HttpStatus.OK);
+							interfaceId, host + contextPath + "/designerAccount/add", "Success", HttpStatus.OK);
 				}
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "/account/add", gson.toJson(accountEntity),
+							interfaceId, host + contextPath + "/designerAccount/add", gson.toJson(accountEntity),
 							HttpStatus.OK);
 				}
 				restTemplate.postForObject(RestTemplateConstant.ACCOUNT_ADD.getMessage(), accountEntity,
-						GlobalResponce.class);
+						AccountEntity.class);
 				return ResponseEntity.ok().body(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ACCOUNT_ADDED_MESSAGE.getMessage(), HttpStatus.OK.value()));
-			} else {
-				Map<String,Object> map = new HashMap<>();
-				map.put("reason", "Error !!");
-				map.put("message", "Unauthorized");
-				map.put("status", HttpStatus.UNAUTHORIZED.value());
-				map.put("timeStamp", new Date());
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
+			} catch (HttpStatusCodeException ex) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>",
+							interfaceId, host + contextPath + "/designerAccount/add", ex.getResponseBodyAsString(),
+							ex.getStatusCode());
+				}
+				return new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
+			} catch (Exception exception) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>",
+							interfaceId, host + contextPath + "/designerAccount/add", exception.getMessage(),
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+				throw new CustomException(exception.getLocalizedMessage());
 			}
-
-		} catch (HttpStatusCodeException ex) {
-			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>",
-						interfaceId, host + contextPath + "/account/add", ex.getResponseBodyAsString(),
-						ex.getStatusCode());
-			}
-			return new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
 		} catch (Exception exception) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>",
-						interfaceId, host + contextPath + "/account/add", exception.getMessage(),
+						interfaceId, host + contextPath + "/designerAccount/add", exception.getMessage(),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			throw new CustomException(exception.getLocalizedMessage());
