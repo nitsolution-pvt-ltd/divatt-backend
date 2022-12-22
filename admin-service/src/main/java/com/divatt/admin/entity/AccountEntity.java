@@ -21,6 +21,7 @@ public class AccountEntity {
 	public Integer id;
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd hh:mm:ss")
     public String datetime;
+	public String filter_date;
     public ServiceCharge service_charge;
     public AdminDetails admin_details;
     public DesignerDetails designer_details;
@@ -32,12 +33,13 @@ public class AccountEntity {
 		super();
 	}
 
-	public AccountEntity(Integer id, String datetime, ServiceCharge service_charge, AdminDetails admin_details,
-			DesignerDetails designer_details, List<OrderDetails> order_details, List<GovtCharge> govt_charge,
-			List<DesignerReturnAmount> designer_return_amount) {
+	public AccountEntity(Integer id, String datetime, String filter_date, ServiceCharge service_charge,
+			AdminDetails admin_details, DesignerDetails designer_details, List<OrderDetails> order_details,
+			List<GovtCharge> govt_charge, List<DesignerReturnAmount> designer_return_amount) {
 		super();
 		this.id = id;
 		this.datetime = datetime;
+		this.filter_date = filter_date;
 		this.service_charge = service_charge;
 		this.admin_details = admin_details;
 		this.designer_details = designer_details;
@@ -48,17 +50,17 @@ public class AccountEntity {
 
 	@Override
 	public String toString() {
-		return "AccountEntity [id=" + id + ", datetime=" + datetime + ", service_charge=" + service_charge
-				+ ", admin_details=" + admin_details + ", designer_details=" + designer_details + ", order_details="
-				+ order_details + ", govt_charge=" + govt_charge + ", designer_return_amount=" + designer_return_amount
-				+ "]";
+		return "AccountEntity [id=" + id + ", datetime=" + datetime + ", filter_date=" + filter_date
+				+ ", service_charge=" + service_charge + ", admin_details=" + admin_details + ", designer_details="
+				+ designer_details + ", order_details=" + order_details + ", govt_charge=" + govt_charge
+				+ ", designer_return_amount=" + designer_return_amount + "]";
 	}
 
-	public Integer get_id() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void set_id(Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -68,6 +70,14 @@ public class AccountEntity {
 
 	public void setDatetime(String datetime) {
 		this.datetime = datetime;
+	}
+
+	public String getFilter_date() {
+		return filter_date;
+	}
+
+	public void setFilter_date(String filter_date) {
+		this.filter_date = filter_date;
 	}
 
 	public ServiceCharge getService_charge() {
@@ -117,10 +127,12 @@ public class AccountEntity {
 	public void setDesigner_return_amount(List<DesignerReturnAmount> designer_return_amount) {
 		this.designer_return_amount = designer_return_amount;
 	}
-    
-    
-    
-    
+
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
+	}
+
+	
     
 
 }

@@ -1,9 +1,13 @@
 package com.divatt.admin.repo;
 
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
@@ -109,6 +113,7 @@ public class AccountTemplateRepo {
 				AccountEntity.class);
 
 		findOne.setDatetime(findByRows.getDatetime());
+		findOne.setFilter_date(findByRows.getFilter_date());
 
 		findOne.getService_charge().setCgst(findByRows.getService_charge().getCgst());
 		findOne.getService_charge().setSgst(findByRows.getService_charge().getSgst());
@@ -124,6 +129,8 @@ public class AccountTemplateRepo {
 		findOne.getService_charge().setDesigner_invoice_id(findByRows.getService_charge().getDesigner_invoice_id());
 		findOne.getService_charge().setRemarks(findByRows.getService_charge().getRemarks());
 		findOne.getService_charge().setStatus(findByRows.getService_charge().getStatus());
+		findOne.getService_charge().setUpdated_by(findByRows.getService_charge().getUpdated_by());
+		findOne.getService_charge().setUpdated_datetime(findByRows.getService_charge().getUpdated_datetime());
 
 		findOne.getAdmin_details().setAddress(findByRows.getAdmin_details().getAddress());
 		findOne.getAdmin_details().setGst_in(findByRows.getAdmin_details().getGst_in());
@@ -321,28 +328,33 @@ public class AccountTemplateRepo {
 	
 	
 	@SuppressWarnings("all")
-	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, Pageable pagingSort) {
+	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, 
+			String ReturnStatus, String settlement, int year, int month, Pageable pagingSort) {
 
 		LocalDate today = LocalDate.now();
-		LocalDate plusDays = today.plusDays(7);
+//		LocalDate plusDays = today.plusDays(7);
 		
-		int year = 2022;
-		int month = 12;
-		YearMonth yearMonth = YearMonth.of(year, month);
-		int lengthOfMonth = yearMonth.lengthOfMonth();
+		int dayDivide = 0;
+		int lengthOfMonth = 0;
+		YearMonth yearMonth = null;
 		
-
-		int dayDivide= lengthOfMonth / 2;
-//		System.out.println(plusDays.toString()+" ** "+(lengthOfMonth-dayDivide)+" // "+lengthOfMonth);
-//		System.out.println(yearMonth.atDay(1)+" MMMMMMMMM "+today.getDayOfMonth()+" $$$ "+yearMonth.atDay(dayDivide));
-		
+		if(year != 0 && month !=0 && !settlement.equals(null)) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide= lengthOfMonth / 2;
+			
+//			System.out.println(plusDays.toString()+" ** "+(lengthOfMonth-dayDivide)+" // "+lengthOfMonth);
+//			System.out.println(yearMonth.atDay(1)+" MMMMMMMMM "+today.getDayOfMonth()+" $$$ "+yearMonth.atDay(dayDivide));
+//			System.out.println("dayDivide "+dayDivide);
+		}
 		/***
-		String pattern = "dd/MM/yyyy";
+		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		Instant instant = Instant.from(plusDays.atStartOfDay(ZoneId.of("GMT")));
 		Date date = Date.from(instant);
-		String format = simpleDateFormat.format(date);
-		System.out.println("simpleDateFormat " + format);
+//		String format = simpleDateFormat.format(date);
+		String currentDate = simpleDateFormat.format(new Date());
+		System.out.println(today+" simpleDateFormat " + currentDate);
 		***/
 
 //		AggregationOperation groupByIdAndSumFee = Aggregation.group("_id").sum("service_charge.fee").as("feeAmount");
@@ -364,19 +376,21 @@ public class AccountTemplateRepo {
 			filterByCondition = Aggregation.match(
 					Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("RETURN")));
 		}else {
-			filterByCondition = Aggregation.match(new Criteria().orOperator(
-			        Criteria.where("datetime").lte(plusDays.toString()),
-			        Criteria.where("datetime").gte(plusDays.toString())));
-			
+			if(settlement.equals("firstSettlement") && year != 0 && month !=0) {
 			filterByCondition = Aggregation.match(new Criteria()
-					.orOperator(
-			        Criteria.where("datetime").lte(yearMonth.atDay(dayDivide).toString()),
-//					Criteria.where("datetime").gte(plusDays.toString()),
-			        Criteria.where("datetime").gte(yearMonth.atDay(1).toString())
-			        
-			        )
-//					.andOperator(Criteria.where("datetime").gte(plusDays.toString()))
-					);
+					.andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+					.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
+					)));
+			}else if(settlement.equals("secondSettlement") && year != 0 && month !=0) {
+			filterByCondition = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+					.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))
+					)));
+			}else {
+				filterByCondition = Aggregation.match(new Criteria());
+			}
 		}
 		
 		if(designerReturn != "" && !designerReturn.isEmpty()) {
