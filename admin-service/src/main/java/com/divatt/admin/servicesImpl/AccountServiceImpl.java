@@ -82,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
 			
 				accountEntity.getService_charge().setDesigner_invoice_id("INV"+currentTimeMillis);
 				accountEntity.getGovt_charge().get(0).setDesigner_invoice_id("INV"+currentTimeMillis);
-				accountEntity.set_id(sequenceGenerator.getNextSequence(AccountEntity.SEQUENCE_NAME));
+				accountEntity.setId(sequenceGenerator.getNextSequence(AccountEntity.SEQUENCE_NAME));
 				accountRepo.save(accountEntity);
 
 				if (LOGGER.isInfoEnabled()) {
@@ -193,7 +193,8 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	public Map<String, Object> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, Optional<String> sortBy) {
+			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, 
+			String settlement, int year, int month, Optional<String> sortBy) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.getAccountDetails()");
@@ -211,19 +212,20 @@ public class AccountServiceImpl implements AccountService {
 			}
 
 			Page<AccountEntity> findAll = null;
-			List<AccountMapEntity> getServiceFee = accountTemplateRepo.getServiceFee();
-			List<AccountMapEntity> getBasicAmount = accountTemplateRepo.getBasicAmount();
-			List<AccountMapEntity> getDesignerGstAmount = accountTemplateRepo.getDesignerGstAmount();
-			List<AccountMapEntity> getGovtGstAmount = accountTemplateRepo.getGovtChargeAmount();
-			List<AccountMapEntity> getGstAmount = accountTemplateRepo.getGstAmount();
-			List<AccountMapEntity> getPayableAmount = accountTemplateRepo.getPayableAmount();
-			List<AccountMapEntity> getPendingAmount = accountTemplateRepo.getPendingAmount();
-			List<AccountMapEntity> getTotalTcs = accountTemplateRepo.getTcsAmount();
-			List<AccountMapEntity> getTotalAmount = accountTemplateRepo.getTotalAmount();
+			List<AccountMapEntity> getServiceFee = accountTemplateRepo.getServiceFee(settlement, year, month);
+			List<AccountMapEntity> getBasicAmount = accountTemplateRepo.getBasicAmount(settlement, year, month);
+			List<AccountMapEntity> getDesignerGstAmount = accountTemplateRepo.getDesignerGstAmount(settlement, year, month);
+			List<AccountMapEntity> getGovtGstAmount = accountTemplateRepo.getGovtChargeAmount(settlement, year, month);
+			List<AccountMapEntity> getGstAmount = accountTemplateRepo.getGstAmount(settlement, year, month);
+			List<AccountMapEntity> getPayableAmount = accountTemplateRepo.getPayableAmount(settlement, year, month);
+			List<AccountMapEntity> getPendingAmount = accountTemplateRepo.getPendingAmount(settlement, year, month);
+			List<AccountMapEntity> getTotalTcs = accountTemplateRepo.getTcsAmount(settlement, year, month);
+			List<AccountMapEntity> getTotalAmount = accountTemplateRepo.getTotalAmount(settlement, year, month);
 			
 			if (keyword.isEmpty()) {
 //				findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);
-				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, pagingSort);
+				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, 
+						settlement, year, month, pagingSort);
 			} else {
 				findAll = accountTemplateRepo.AccountSearchByKeywords(keyword, pagingSort);
 //				findAll = accountRepo.AccountSearchByKeywords(keyword, pagingSort);
@@ -233,6 +235,7 @@ public class AccountServiceImpl implements AccountService {
 			if (totalPage < 0) {
 				totalPage = 0;
 			}
+			final DecimalFormat df = new DecimalFormat("0.00");
 			double totalServiceFee = 0.00;
 			double basicAmount = 0.00;
 			double gstAmount = 0.00;
@@ -271,8 +274,6 @@ public class AccountServiceImpl implements AccountService {
 				totalAmount = getTotalAmount.get(0).getTotalAmount();
 			}
 			
-		    final DecimalFormat df = new DecimalFormat("0.00");
-
 			Map<String, Object> response = new HashMap<>();
 			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
