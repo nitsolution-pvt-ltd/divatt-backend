@@ -35,7 +35,7 @@ logging:
         
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
-
+ 
 ---
 spring:
   profiles: dev
@@ -91,7 +91,11 @@ connection:
     
 spring.servlet.multipart:
   enabled: true
-  max-file-size: 100MB
+  max-file-size: -1
+  max-request-size: -1
+
+#spring.servlet.multipart.max-file-size:-1
+  
 #file.upload-path: C:\\Users\\shant\\Desktop\\uploadfile\\
 file.upload-path: /home/ubuntu/Attachment/
 
@@ -167,7 +171,8 @@ connection:
     
 spring.servlet.multipart:
   enabled: true
-  max-file-size: 100MB
+  max-file-size: -1
+  max-request-size: -1
 #file.upload-path: C:\\Users\\shant\\Desktop\\uploadfile\\
 file.upload-path: /home/ubuntu/Attachment/
 

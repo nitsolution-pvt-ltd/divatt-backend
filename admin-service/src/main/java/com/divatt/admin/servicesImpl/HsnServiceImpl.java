@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.hsnCode.HsnEntity;
 import com.divatt.admin.entity.hsnCode.UploadErrorEntity;
@@ -70,9 +71,9 @@ public class HsnServiceImpl implements HsnService {
 
 				HsnEntity entity = hsnRepo.findByHsn(hsnEntity.getHsnCode());
 				if (entity.getIsDelete().equals(true)) {
-					throw new CustomException("HsnCode already used");
+					throw new CustomException(MessageConstant.HSN_CODE_ALREADY_USED.getMessage());
 				} else {
-					throw new CustomException("HsnCode already exist");
+					throw new CustomException(MessageConstant.HSN_CODE_ALREADY_EXIST.getMessage());
 				}
 
 			} else {
@@ -92,7 +93,7 @@ public class HsnServiceImpl implements HsnService {
 
 				hsnRepo.save(hsn);
 
-				return new GlobalResponse("SUCCESS", "Hsn added succesfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.HSN_ADDED.getMessage(), 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -125,14 +126,14 @@ public class HsnServiceImpl implements HsnService {
 					entity.setRateRevision(hsnEntity.getRateRevision());
 
 					hsnRepo.save(entity);
-					return new GlobalResponse("SUCCESS", "Hsn update succesfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.HSN_UPDATED.getMessage(), 200);
 
 				} else {
-					return new GlobalResponse("Failed", "This hsnCode already delete", 404);
+					return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.HSN_ALREADY_DELETED.getMessage(), 404);
 				}
 
 			} else {
-				throw new CustomException("HsnCode not exist");
+				throw new CustomException(MessageConstant.HSN_CODE_NOT_EXIST.getMessage());
 			}
 
 		} catch (Exception e) {
@@ -181,7 +182,7 @@ public class HsnServiceImpl implements HsnService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Hsn Not Found!");
+				throw new CustomException(MessageConstant.HSN_CODE_NOT_EXIST.getMessage());
 			} else {
 				return response;
 			}
@@ -200,7 +201,7 @@ public class HsnServiceImpl implements HsnService {
 			if (hsnlist.isPresent()) {
 				return hsnlist;
 			} else {
-				throw new CustomException("HsnCode not found");
+				throw new CustomException(MessageConstant.HSN_CODE_NOT_EXIST.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -218,13 +219,13 @@ public class HsnServiceImpl implements HsnService {
 				if (entity.getIsDelete().equals(false)) {
 					entity.setIsDelete(true);
 					hsnRepo.save(entity);
-					return new GlobalResponse("SUCCESS", "Hsn delete succesfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.HSN_CODE_DELETED.getMessage(), 200);
 				} else {
-					return new GlobalResponse("Failed", "Hsn already deleted", 404);
+					return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.HSN_ALREADY_DELETED.getMessage(), 404);
 				}
 			} else {
 
-				return new GlobalResponse("Failed", "HsnCode not found", 404);
+				return new GlobalResponse(MessageConstant.FAILED.getMessage(), MessageConstant.HSN_CODE_NOT_EXIST.getMessage(), 404);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -240,7 +241,7 @@ public class HsnServiceImpl implements HsnService {
 				hsnRepo.save(entity);
 			}
 
-			return new GlobalResponse("SUCCESS", "hsnCode deleted successfully", 200);
+			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.HSN_CODE_DELETED.getMessage(), 200);
 		}
 
 		catch (Exception e) {
@@ -258,11 +259,11 @@ public class HsnServiceImpl implements HsnService {
 
 				entity.setIsActive(false);
 				hsnRepo.save(entity);
-				return new GlobalResponse("Success", "Hsn active successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.HSN_ACTIVE.getMessage(), 200);
 			} else {
 				entity.setIsActive(true);
 				hsnRepo.save(entity);
-				return new GlobalResponse("Success", "Hsn deactive successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.HSN_DEACTIVE.getMessage(), 200);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -286,7 +287,7 @@ public class HsnServiceImpl implements HsnService {
 						List<HsnEntity> taxValueFiltered = hsnList.stream()
 								.filter(e -> searchKeyword.equals(e.getTaxValue() + "")).collect(Collectors.toList());
 						if (taxValueFiltered.isEmpty()) {
-							throw new CustomException("No data found");
+							throw new CustomException(MessageConstant.NO_DATA.getMessage());
 						}
 						return taxValueFiltered;
 					}
@@ -336,7 +337,8 @@ public class HsnServiceImpl implements HsnService {
 				LOGGER.info("HSN code" + (int) (Float.parseFloat(rows.getCell(0).toString())));
 			} catch (Exception e) {
 				throw new CustomException(
-						"Please Fillup Excel HsnCode Fields on row no  " + i + " and cell no  " + 0 + " this Positon");
+						MessageConstant.FILLUP_EXCEL.getMessage() + " HsnCode" + MessageConstant.FIELDS_ON_ROW + i
+								+ MessageConstant.AND_CELL_NO.getMessage() + 0 + MessageConstant.POSITION.getMessage());
 			}
 			try {
 				if (!rows.getCell(1).toString().equals(null) || !rows.getCell(1).toString().equals("")) {
@@ -344,20 +346,21 @@ public class HsnServiceImpl implements HsnService {
 					LOGGER.info("description" + rows.getCell(1).toString());
 				}
 			} catch (Exception e) {
-				throw new CustomException("Please Fillup Excel Description Fields on row no  " + i + " and cell no  "
-						+ 1 + " this Positon");
+				throw new CustomException(MessageConstant.FILLUP_EXCEL.getMessage() + " Description" + MessageConstant.FIELDS_ON_ROW + i
+						+ MessageConstant.AND_CELL_NO.getMessage() + 1 + MessageConstant.POSITION.getMessage());
 			}
 			try {
-				hsnEntity.setTaxValue((double)Float.parseFloat(rows.getCell(2).toString()));
+				hsnEntity.setTaxValue((double) Float.parseFloat(rows.getCell(2).toString()));
 			} catch (Exception e) {
-				throw new CustomException(
-						"Please Fillup Excel TaxValue Fields on row no  " + i + " and cell no  " + 2 + " this Positon");
+				throw new CustomException(MessageConstant.FILLUP_EXCEL.getMessage() + " TaxValue" + MessageConstant.FIELDS_ON_ROW + i
+						+ MessageConstant.AND_CELL_NO.getMessage() + 2 + MessageConstant.POSITION.getMessage());
 			}
 			try {
 				hsnEntity.setCess(Float.parseFloat(rows.getCell(3).toString()));
 			} catch (Exception e) {
 				throw new CustomException(
-						"Please Fillup Excel Cess Fields on row no  " + i + " and cell no  " + 3 + " this Positon");
+						MessageConstant.FILLUP_EXCEL.getMessage() + " Cess" + MessageConstant.FIELDS_ON_ROW + i
+								+ MessageConstant.AND_CELL_NO.getMessage() + 3 + MessageConstant.POSITION.getMessage());
 			}
 			try {
 				Date dateCellValue = rows.getCell(4).getDateCellValue();
@@ -370,14 +373,14 @@ public class HsnServiceImpl implements HsnService {
 				String format = dateFormat.format(time);
 				hsnEntity.setEffectiveDate(format);
 			} catch (Exception e) {
-				throw new CustomException("Please Fillup Excel EffectiveDate Fields on row no  " + i + " and cell no  "
-						+ 4 + " this Positon");
+				throw new CustomException(MessageConstant.FILLUP_EXCEL.getMessage() + " EffectiveDate" + MessageConstant.FIELDS_ON_ROW + i
+						+ MessageConstant.AND_CELL_NO.getMessage() + 4 + MessageConstant.POSITION.getMessage());
 			}
 			try {
 				hsnEntity.setRateRevision(rows.getCell(5).toString());
 			} catch (Exception e) {
-				throw new CustomException("Please Fillup Excel RateVision Fields on row no  " + i + " and cell no  " + 5
-						+ " this Positon");
+				throw new CustomException(MessageConstant.FILLUP_EXCEL.getMessage() + " RateVision" + MessageConstant.FIELDS_ON_ROW + i
+						+ MessageConstant.AND_CELL_NO.getMessage() + 5 + MessageConstant.POSITION.getMessage());
 			}
 			hsnRepo.save(hsnEntity);
 

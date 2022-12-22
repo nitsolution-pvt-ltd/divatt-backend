@@ -12,6 +12,7 @@ import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.entity.product.ProductStageDetails;
+import com.divatt.designer.entity.profile.BoutiqueProfile;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
@@ -215,7 +216,14 @@ public class CustomFunction {
 			updateMasterEntity.setPriceCode(productMasterEntity2.getPriceCode());
 			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
 			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
+			if(masterEntity2.getAdminStatus().equals("Pending")) {
 			updateMasterEntity.setAdminStatus("Pending");
+			}else if(masterEntity2.getAdminStatus().equals("Approved")) {
+			updateMasterEntity.setAdminStatus("Approved");
+			}else {
+			updateMasterEntity.setAdminStatus("Pending");
+			}
+				
 			updateMasterEntity.setWeightUnit(productMasterEntity2.getWeightUnit());
 			updateMasterEntity.setImages(productMasterEntity2.getImages());
 			updateMasterEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
@@ -312,6 +320,7 @@ public class CustomFunction {
 			DesignerProfileEntity body = designerProfileRepo.findBydesignerId(getdId).get();
 			DesignerProfileEntity designerProfileEntity = new DesignerProfileEntity();
 			DesignerProfile designerProfile = new DesignerProfile();
+			BoutiqueProfile boutiqueProfile = new BoutiqueProfile();
 			designerProfileEntity.setId(body.getId());
 			designerProfileEntity.setAccountStatus(body.getAccountStatus());
 			designerProfileEntity.setBoutiqueProfile(body.getBoutiqueProfile());
@@ -334,20 +343,28 @@ public class CustomFunction {
 			designerProfile.setCity(body.getDesignerProfile().getCity());
 			designerProfile.setCountry(body.getDesignerProfile().getCountry());
 			designerProfile.setDob(body.getDesignerProfile().getDob());
-			if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-					|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
-					&& designerLoginEntity.getIsDeleted().equals(true)) {
-
-				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))
-						&& !designerLoginEntity.getIsDeleted().equals(true)) {
-					LOGGER.info("Status <><><><><> !!!!! = {}", designerLoginEntity.getProfileStatus());
+			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
+					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
+					|| designerLoginEntity.getProfileStatus().equals("SAVED"))){
+				boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
+				}
+			else{
+				boutiqueProfile.setGSTIN(body.getBoutiqueProfile().getGSTIN());
+			}
+			boutiqueProfile.setBoutiqueName(body.getBoutiqueProfile().getBoutiqueName());
+			boutiqueProfile.setExperience(body.getBoutiqueProfile().getExperience());
+			boutiqueProfile.setFirmName(body.getBoutiqueProfile().getFirmName());
+			boutiqueProfile.setOperatingCity(body.getBoutiqueProfile().getOperatingCity());
+			boutiqueProfile.setProfessionalCategory(body.getBoutiqueProfile().getProfessionalCategory());
+			boutiqueProfile.setYearOfOperation(body.getBoutiqueProfile().getYearOfOperation());
+			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
+					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
+					|| designerLoginEntity.getProfileStatus().equals("SAVED"))) {
+			LOGGER.info("Status <><><><><> !!!!! = {}", designerLoginEntity.getProfileStatus());
 					designerProfile.setDigitalSignature(
 							designerLoginEntity.getDesignerProfileEntity().getDesignerProfile().getDigitalSignature());
-				} else {
-					designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
-				}
-			} else {
+				}  
+			else{
 				designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
 			}
 			designerProfile.setEmail(body.getDesignerProfile().getEmail());
@@ -362,6 +379,7 @@ public class CustomFunction {
 			designerProfile.setPinCode(body.getDesignerProfile().getPinCode());
 			designerProfile.setState(body.getDesignerProfile().getState());
 			designerProfileEntity.setDesignerProfile(designerProfile);
+			designerProfileEntity.setBoutiqueProfile(boutiqueProfile);
 
 			return designerProfileEntity;
 		} catch (Exception e) {

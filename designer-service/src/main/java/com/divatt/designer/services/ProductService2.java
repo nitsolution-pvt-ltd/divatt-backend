@@ -1,5 +1,6 @@
 package com.divatt.designer.services;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,4 +45,5 @@ public interface ProductService2 {
 	List<ProductMasterEntity2> productSearching(String searchBy, String designerId, String categoryId,
 			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
 			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey);
+
 }

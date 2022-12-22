@@ -2,117 +2,169 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,400;0,700;0,900;1,100&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link
+	href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,400;0,700;0,900;1,100&display=swap"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+	integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+	crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body>
-    <div style="width: 600px;margin: auto;padding: 15px !important;">
-        <table style="width: 100%;">
-            <thead>
-                <tr style="font-size: 20px;">
-                  <td colspan="5" style="padding:20px 20px;text-align: center;">
-                   <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/89ed60f8-9220-1a42-6d9c-92b125b34860.png" alt="" style="width: 100px;"></td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr style="font-size: 20px;">
-                    <td colspan="5" style="padding:20px 20px;text-align: center;">
-                     <div style="font-family: 'Lato', sans-serif;font-size: 22px;text-transform: uppercase;margin-top: 12px;letter-spacing: 1.5px;font-weight: 600;">Order canceled.</div>
-                    <tr th:each="data1 : ${data2}" style="font-size: 20px;">
-                        <td colspan="5" style="padding:20px 20px;text-align: left;font-family: 'Lato', sans-serif;">
-                            &nbsp; Hi .<span th:text="${data2.userName}"></span><br>
-                          <!-- <div style="font-family: 'Lato', sans-serif;text-align: left;font-size: 15px;font-weight: 500;line-height: 30px;color: #000;
+	<div style="width: 600px; margin: auto; padding: 15px !important;">
+		<table style="width: 100%;">
+			<thead>
+				<tr style="font-size: 20px;">
+					<td colspan="5" style="padding: 20px 20px; text-align: center;">
+						<img
+						src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/89ed60f8-9220-1a42-6d9c-92b125b34860.png"
+						alt="" style="width: 100px;">
+					</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr style="font-size: 20px;">
+					<td colspan="5" style="padding: 20px 20px; text-align: center;">
+						<div
+							style="font-family: 'Lato', sans-serif; font-size: 22px; text-transform: uppercase; margin-top: 12px; letter-spacing: 1.5px; font-weight: 600;">Order
+							canceled.</div>
+				<tr th:each="data1 : ${data2}" style="font-size: 20px;">
+					<td colspan="5"
+						style="padding: 20px 20px; text-align: left; font-family: 'Lato', sans-serif;">
+						&nbsp; Hi .<span th:text="${data2.userName}"></span><br> <!-- <div style="font-family: 'Lato', sans-serif;text-align: left;font-size: 15px;font-weight: 500;line-height: 30px;color: #000;
                             ">
                              &nbsp; &mailto:nbsp;chakraborty123@gmail.com
                         </div> -->
-                         <div style="font-family: 'Lato', sans-serif;text-align: center;font-size: 15px;margin-top: 12px;font-weight: bold;line-height: 25px;color: #5b5b5b;
-                            ">
-                            Your order has been canceled by <span th:text="${data2.designerName}"></span>. Reason of cancel.
-                        </div>
-                        <div style="font-family: 'Lato', sans-serif;font-size: 15px;margin-top: 12px;line-height: 25px;color: #ffffff;background-color: #87c048;padding: 6px 12px;">
-                           We are writing to you about your order  <span th:text="${data2.OrderId}"></span>. We are sorry to let you know that
-the order has been cancelled due to unexpected constraints experienced by the
-seller. We understand that you were keen on getting this order. If you like, you
-can place a fresh order for this item within the next 7 days. If the price for the
-item increases, we will track your order and a Gift Card worth the difference
-amount will be added to your Flipkart account within 7 days of the product being
-delivered. We would like to thank you for your understanding. Stay home. Stay safe
-<br/><br/>
-Thanks,<br/>
-<span  style="font-family: 'Lato', sans-serif;text-align: center;font-size: 15px;font-weight: bold;
-                            " th:text="${data2.designerName}"></span>
-                        </div>
-                                                <div style="margin-top: 40px;">
-                          Your cancel reason
-                        </div>
-                        <div style="font-family: 'Lato', sans-serif
-                        ;font-size: 15px;margin-top: 12px;line-height: 25px;color: #ffffff;background-color: #87c048;padding: 6px 12px;">
-                           <span  th:text="${data2.comment}"></span>
-                        </div>
-                         <hr style="border-left: 0;border-width: 3px; border-bottom: 0;border-color: rgb(0 0 0);margin-top: 38px;">
-                        </td>
-                    </tr>
-                </td>
-                </tr>
-            </tbody>  
-        </table>
-        <h1 style="font-family: 'Lato', sans-serif;text-transform: uppercase;font-size: 17px;font-weight: 600;margin-bottom: 22px;color: #000;">Your Product details</h1>
-        <table style="width:100%; height:auto; background-color:#fff; margin-top:0px;  padding:20px;  border: 1.5px solid #656262; border-collapse: collapse;" border="">
-            <thead>
-              <tr style=" color: #494b4d;font-weight: bold; padding: 5px;font-family: 'Lato', sans-serif;font-size: 15px;text-transform: uppercase;font-weight: 900;">
-                <td colspan="1" style="width: 10%;text-align: center; border: 1.5px solid #656262;padding: 10px;border-left: 1.6px solid;">PRODUCT</td>
-                <td colspan="3" style="text-align: center; border-right: 1.5px solid #656262;border-bottom: 1.5px solid #656262;padding: 10px;border-left: 1.6px solid;">NAME</td>
-                <td style="padding: 5px;text-align:center; border-right: 1.5px solid #656262;border-bottom: 1.5px solid #656262;">SIZE</td>
-                <td colspan="1" style="text-align: center;padding: 10px; border-right: 1.5px solid #656262;border-right: 1.5px solid #656262;border-bottom: 1.5px solid #656262;">ORDER ID</td>
-                <td colspan="1" style="text-align: center;padding: 10px; border-right: 1.5px solid #656262;border-bottom: 1.5px solid #656262;border-left: 1.6px solid;">PRICE</td>
-              </tr>
-            </thead>
-            <tbody style="font-family: 'Lato', sans-serif;">
-            <tr th:each="data1 : ${data2}">
-                  <td style="width: 10%;text-align: center;padding: 10px;padding-top: 2px;border-left: 1.6px solid #656262;border-bottom: 1.6px solid #656262;">
-                      <a><img th:src="@{${data1.ProductImages}}"style="width:80%;margin: auto;"></a>
-                  </td>
-                  <td colspan="3" style="width:53%;margin-left:10px;text-align: left;padding: 10px;border-bottom: 1.6px solid #656262;border-left: 1.6px solid #656262;color: #000;">
-                    <a><th:block th:text="${data1.ProductName}"></th:block></a>
-                  </td>
-                  <td style="width:15%;padding: 5px;text-align: center;border: 1.6px solid #656262;">
-                      <table style="width:100%;">
-                          <tr><td style="width:100%;color: #000;">Size  :</td> <td style="color: #000;"><th:block th:text="${data1.ProductSize}"></th:block></td></tr>
-                        </table>
-                  </td>
-                  <td style="width:10%; ;font-weight: bold;font-size: 14px;border-bottom: 1.6px solid #656262;border-right: 1.5px solid #656262;text-align: center;">
-                    <th:block th:text="${data1.OrderId}"></th:block>
-                  </td>
-                  <td style="width:16%; ;font-weight: bold;font-size: 14px;border-bottom: 1.6px solid #656262;border-left: 1.6px solid #656262;">
-                    <table style="width:100%;">
-                      <tr><td style="text-align:center;font-weight: 600;color: #000;"><!--₹-->Rs. <th:block th:text="${data1.SalePrice}"></th:block></td></tr>
-                    </table>
-                  </td>
-                </tr>
-            </tbody>
-           
-          </table>
-          <h1 style="font-family: 'Lato', sans-serif;text-transform: uppercase;font-size: 23px;font-weight: 800;
-          margin-bottom: 22px;margin-top: 40px;letter-spacing: 1.5px;text-align: center;">Follow US</h1>
-          <div style="text-align: center;">
-            <a href="#" style="text-decoration: none;color: #000;text-align: center;margin-right: 10px;">
-                <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png" alt="" style="width: 40px;height:40px;">
-            </a>
-            <a href="#" style="text-decoration: none;color: #000;text-align: center;margin-right: 10px;">
-                <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg" alt="" style="width: 37px;height:37px;">
-            </a>
-            <a href="#" style="text-decoration: none;color: #000;text-align: center;margin-right: 10px;">
-                <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png" alt="" style="width: 40px;height:40px;">
-            </a>
-            <a href="#" style="text-decoration: none;color: #000;text-align: center;margin-right: 10px;">
-                <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png" alt="" style="width: 42px;height:42px;">
-            </a>
-            <a href="#" style="text-decoration: none;color: #000;text-align: center;">
-                <img src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png" alt="" style="width: 39px;height:37px;">
-            </a>
-          </div>
-    </div>    
-<script type="text/javascript"  src="/LBKlAJ/lDsEbq/5P/c4gA/oVBSEXBP4/7cErfJDL3S/NCUhTw/fHU5/ZXVTawM"></script></body>
+						<div
+							style="font-family: 'Lato', sans-serif; text-align: center; font-size: 15px; margin-top: 12px; font-weight: bold; line-height: 25px; color: #5b5b5b;">
+							Your order has been canceled by <span
+								th:text="${data2.designerName}"></span>. Reason of cancel.
+						</div>
+						<div
+							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #ffffff; background-color: #87c048; padding: 6px 12px;">
+							We are writing to you about your order <span
+								th:text="${data2.OrderId}"></span>. We are sorry to let you know
+							that the order has been cancelled due to unexpected constraints
+							experienced by the seller. We understand that you were keen on
+							getting this order. If you like, you can place a fresh order for
+							this item within the next 7 days. If the price for the item
+							increases, we will track your order and a Gift Card worth the
+							difference amount will be added to your Flipkart account within 7
+							days of the product being delivered. We would like to thank you
+							for your understanding. Stay home. Stay safe <br />
+							<br /> Thanks,<br /> <span
+								style="font-family: 'Lato', sans-serif; text-align: center; font-size: 15px; font-weight: bold;"
+								th:text="${data2.designerName}"></span>
+						</div>
+						<div style="margin-top: 40px;">Your cancel reason</div>
+						<div
+							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #ffffff; background-color: #87c048; padding: 6px 12px;">
+							<span th:text="${data2.comment}"></span>
+						</div>
+						<hr
+							style="border-left: 0; border-width: 3px; border-bottom: 0; border-color: rgb(0, 0, 0); margin-top: 38px;">
+					</td>
+				</tr>
+				</td>
+				</tr>
+			</tbody>
+		</table>
+		<h1
+			style="font-family: 'Lato', sans-serif; text-transform: uppercase; font-size: 17px; font-weight: 600; margin-bottom: 22px; color: #000;">Your
+			Product details</h1>
+		<table
+			style="width: 100%; height: auto; background-color: #fff; margin-top: 0px; padding: 20px; border: 1.5px solid #656262; border-collapse: collapse;"
+			border="">
+			<thead>
+				<tr
+					style="color: #494b4d; font-weight: bold; padding: 5px; font-family: 'Lato', sans-serif; font-size: 15px; text-transform: uppercase; font-weight: 900;">
+					<td colspan="1"
+						style="width: 10%; text-align: center; border: 1.5px solid #656262; padding: 10px; border-left: 1.6px solid;">PRODUCT</td>
+					<td colspan="3"
+						style="text-align: center; border-right: 1.5px solid #656262; border-bottom: 1.5px solid #656262; padding: 10px; border-left: 1.6px solid;">NAME</td>
+					<td
+						style="padding: 5px; text-align: center; border-right: 1.5px solid #656262; border-bottom: 1.5px solid #656262;">SIZE</td>
+					<td colspan="1"
+						style="text-align: center; padding: 10px; border-right: 1.5px solid #656262; border-right: 1.5px solid #656262; border-bottom: 1.5px solid #656262;">ORDER
+						ID</td>
+					<td colspan="1"
+						style="text-align: center; padding: 10px; border-right: 1.5px solid #656262; border-bottom: 1.5px solid #656262; border-left: 1.6px solid;">PRICE</td>
+				</tr>
+			</thead>
+			<tbody style="font-family: 'Lato', sans-serif;">
+				<tr th:each="data1 : ${data2}">
+					<td
+						style="width: 10%; text-align: center; padding: 10px; padding-top: 2px; border-left: 1.6px solid #656262; border-bottom: 1.6px solid #656262;">
+						<a><img th:src="@{${data1.ProductImages}}"
+							style="width: 80%; margin: auto;"></a>
+					</td>
+					<td colspan="3"
+						style="width: 53%; margin-left: 10px; text-align: left; padding: 10px; border-bottom: 1.6px solid #656262; border-left: 1.6px solid #656262; color: #000;">
+						<a><th:block th:text="${data1.ProductName}"></th:block></a>
+					</td>
+					<td
+						style="width: 15%; padding: 5px; text-align: center; border: 1.6px solid #656262;">
+						<table style="width: 100%;">
+							<tr>
+								<td style="width: 100%; color: #000;">Size :</td>
+								<td style="color: #000;"><th:block
+										th:text="${data1.ProductSize}"></th:block></td>
+							</tr>
+						</table>
+					</td>
+					<td
+						style="width: 10%;; font-weight: bold; font-size: 14px; border-bottom: 1.6px solid #656262; border-right: 1.5px solid #656262; text-align: center;">
+						<th:block th:text="${data1.OrderId}"></th:block>
+					</td>
+					<td
+						style="width: 16%;; font-weight: bold; font-size: 14px; border-bottom: 1.6px solid #656262; border-left: 1.6px solid #656262;">
+						<table style="width: 100%;">
+							<tr>
+								<td style="text-align: center; font-weight: 600; color: #000;">
+									<!--₹-->Rs. <th:block th:text="${data1.SalePrice}"></th:block>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+
+		</table>
+		<h1
+			style="font-family: 'Lato', sans-serif; text-transform: uppercase; font-size: 23px; font-weight: 800; margin-bottom: 22px; margin-top: 40px; letter-spacing: 1.5px; text-align: center;">Follow
+			US</h1>
+		<div style="text-align: center;">
+			<a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png"
+				alt="" style="width: 40px; height: 40px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg"
+				alt="" style="width: 37px; height: 37px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png"
+				alt="" style="width: 40px; height: 40px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png"
+				alt="" style="width: 42px; height: 42px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png"
+				alt="" style="width: 39px; height: 37px;">
+			</a>
+		</div>
+	</div>
+	<script type="text/javascript"
+		src="/LBKlAJ/lDsEbq/5P/c4gA/oVBSEXBP4/7cErfJDL3S/NCUhTw/fHU5/ZXVTawM"></script>
+</body>
 </html>

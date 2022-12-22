@@ -31,6 +31,8 @@ import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.divatt.designer.constant.MessageConstant;
+import com.divatt.designer.constant.RestTemplateConstant;
 import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.EmailEntity;
 import com.divatt.designer.entity.ListProduct;
@@ -94,6 +96,14 @@ public class ProductServiceImpl implements ProductService{
 			String keyword, Optional<String> sortBy) {
 		try {
 			LOGGER.info("Inside - ProductServiceImpl.allList()");
+//			LOGGER.info("MessageConstant.PRODUCT_ADDED_SUCCESSFULLY.getMessage()"
+//					+ MessageConstant.PRODUCT_ADDED_SUCCESSFULLY.getMessage());
+//			LOGGER.info("MessageConstant.PRODUCT_ALREADY_ADDED.getMessage()"
+//					+ MessageConstant.PRODUCT_ALREADY_ADDED.getMessage());
+//			LOGGER.info("MessageConstant.DESIGNER_DOCUMENT_IS_NOT_APPROVE.getMessage()"
+//					+ MessageConstant.DESIGNER_DOCUMENT_IS_NOT_APPROVE.getMessage());
+//			LOGGER.info("MessageConstant.DESIGNER_ID_DOES_NOT_EXIST.getMessage()"
+//					+ MessageConstant.DESIGNER_ID_DOES_NOT_EXIST.getMessage());
 			List<ProductMasterEntity> productdata = productRepo.findAll();
 
 			List<Integer> productId = productdata.stream().map(e -> e.getDesignerId()).collect(Collectors.toList());
@@ -111,7 +121,8 @@ public class ProductServiceImpl implements ProductService{
 			}
 
 			if (allData.isEmpty()) {
-				throw new CustomException("Product not found!");
+				LOGGER.info("MessageConstant.PRODUCT_NOT_FOUND.getMessage()"+MessageConstant.PRODUCT_NOT_FOUND.getMessage());
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 
 				int CountData = (int) allData.size();
@@ -126,7 +137,6 @@ public class ProductServiceImpl implements ProductService{
 				if (totalPage < 0) {
 					totalPage = 0;
 				}
-
 				Map<String, Object> response = new HashMap<>();
 				response.put("data", findAll.getContent());
 				response.put("currentPage", findAll.getNumber());
@@ -136,7 +146,8 @@ public class ProductServiceImpl implements ProductService{
 				response.put("perPageElement", findAll.getNumberOfElements());
 
 				if (findAll.getSize() <= 0) {
-					throw new CustomException("Product not found!");
+					LOGGER.info("MessageConstant.PRODUCT_NOT_FOUND.getMessage()"+MessageConstant.PRODUCT_NOT_FOUND.getMessage());
+					throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 				} else {
 					return response;
 				}
@@ -166,23 +177,23 @@ public class ProductServiceImpl implements ProductService{
 					if (productInfo.isEmpty()) {
 
 						ResponseEntity<String> categoryResponse = restTemplate.getForEntity(
-								"https://localhost:8084/dev/category/view/" + productData.getCategoryId(),
+								RestTemplateConstant.CATEGORY_VIEW.getMessage() + productData.getCategoryId(),
 								String.class);
 
 						ResponseEntity<String> subcategoryResponse = restTemplate.getForEntity(
-								"https://localhost:8084/dev/subcategory/view/" + productData.getSubCategoryId(),
+								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productData.getSubCategoryId(),
 								String.class);
 						productRepo.save(customFunction.filterDataEntity(productData));
 
-						return new GlobalResponce("Success!!", "Product added successfully", 200);
+						return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_ADDED_SUCCESSFULLY.getMessage(), 200);
 					} else {
-						return new GlobalResponce("Error!!", "Product already added", 400);
+						return new GlobalResponce(MessageConstant.ERROR.getMessage(), MessageConstant.PRODUCT_ALREADY_ADDED.getMessage(), 400);
 					}
 				} else {
-					return new GlobalResponce("Error!!", "Designer doucument is not appoved", 400);
+					return new GlobalResponce(MessageConstant.ERROR.getMessage(), MessageConstant.DESIGNER_DOCUMENT_IS_NOT_APPROVE.getMessage(), 400);
 				}
 			} else {
-				return new GlobalResponce("Error!!", "Designerid does not exist!!", 400);
+				return new GlobalResponce(MessageConstant.ERROR.getMessage(), MessageConstant.DESIGNER_ID_DOES_NOT_EXIST.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -197,16 +208,16 @@ public class ProductServiceImpl implements ProductService{
 				ProductMasterEntity masterEntity = productRepo.findById(productId).get();
 //				 RestTemplate restTemplate= new RestTemplate();
 				ResponseEntity<Object> categoryEntity = restTemplate.getForEntity(
-						"https://localhost:8084/dev/category/view/" + masterEntity.getCategoryId(), Object.class);
+						RestTemplateConstant.CATEGORY_VIEW.getMessage() + masterEntity.getCategoryId(), Object.class);
 				ResponseEntity<Object> subCategoryEntity = restTemplate.getForEntity(
-						"https://localhost:8084/dev/subcategory/view/" + masterEntity.getSubCategoryId(), Object.class);
+						RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + masterEntity.getSubCategoryId(), Object.class);
 				ProductEntity productData = customFunction.productFilter(masterEntity);
 				productData.setCategoryObject(categoryEntity.getBody());
 				productData.setSubCategoryObject(subCategoryEntity.getBody());
 				return productData;
 
 			} else {
-				throw new CustomException("Product not found");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -226,18 +237,18 @@ public class ProductServiceImpl implements ProductService{
 					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 					productEntity.setUpdatedOn(new Date());
 					productRepo.save(productEntity);
-					return new GlobalResponce("Success", "Status Inactive successfully", 200);
+					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STATUS_INACTIVATED.getMessage(), 200);
 				} else {
 					status = true;
 					productEntity.setIsActive(status);
 					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 					productEntity.setUpdatedOn(new Date());
 					productRepo.save(productEntity);
-					return new GlobalResponce("Success", "Status Active successfully", 200);
+					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STATUS_ACTIVATED.getMessage(), 200);
 				}
 
 			} else {
-				return new GlobalResponce("Bad request", "Product does not exist", 400);
+				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -252,12 +263,12 @@ public class ProductServiceImpl implements ProductService{
 				query.addCriteria(Criteria.where("designerId").is(productMasterEntity.getDesignerId()));
 				List<ProductMasterEntity> productInfo = mongoOperations.find(query, ProductMasterEntity.class);
 				if (productInfo.isEmpty()) {
-					throw new CustomException("Designer id can to be change");
+					throw new CustomException(MessageConstant.DESIGNER_ID_CHANGE.getMessage());
 				}
 				productRepo.save(customFunction.updateFunction(productMasterEntity, productId));
-				return new GlobalResponce("Success", "Product updated successfully", 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_UPDATED.getMessage(), 200);
 			} else {
-				throw new CustomException("Product not found");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -275,15 +286,15 @@ public class ProductServiceImpl implements ProductService{
 				if (productEntity.getIsDeleted().equals(false)) {
 					isDelete = true;
 				} else {
-					return new GlobalResponce("Bad request!!", "Product allReady deleted", 400);
+					return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.ALREADY_DELETED.getMessage(), 400);
 				}
 				productEntity.setIsDeleted(isDelete);
 				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 				productEntity.setUpdatedOn(new Date());
 				productRepo.save(productEntity);
-				return new GlobalResponce("Success", "Deleted successfully", 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.DELETED.getMessage(), 200);
 			} else {
-				return new GlobalResponce("Bad request", "Product does not exist", 400);
+				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -331,7 +342,7 @@ public class ProductServiceImpl implements ProductService{
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -381,7 +392,7 @@ public class ProductServiceImpl implements ProductService{
 				response.put("perPageElement", findAll.getNumberOfElements());
 
 				if (findAll.getSize() <= 0) {
-					throw new CustomException("Product not found!");
+					throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 				} else {
 					return response;
 				}
@@ -395,12 +406,12 @@ public class ProductServiceImpl implements ProductService{
 		try {
 			LOGGER.info("Inside-ProductServiceImpl.allWishlistProductData()");
 			if (productIdList.isEmpty()) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				List<ProductMasterEntity> list = productRepo.findByProductIdIn(productIdList);
 
 				if (list.size() <= 0) {
-					throw new CustomException("Product not found!");
+					throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 				} else {
 					return ResponseEntity.ok(list);
 				}
@@ -523,7 +534,7 @@ public class ProductServiceImpl implements ProductService{
 			response.put("oos", oos);
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -653,7 +664,7 @@ public class ProductServiceImpl implements ProductService{
 			response.put("rejected", rejected);
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -702,7 +713,7 @@ public class ProductServiceImpl implements ProductService{
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -751,7 +762,7 @@ public class ProductServiceImpl implements ProductService{
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -768,7 +779,7 @@ public class ProductServiceImpl implements ProductService{
 			List<ProductMasterEntity2> productList = mongoOperations.find(query, ProductMasterEntity2.class);
 
 			if (productList.isEmpty()) {
-				throw new CustomException("Product not found");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			}
 			long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
 			Random rd = new Random();
@@ -826,12 +837,12 @@ public class ProductServiceImpl implements ProductService{
 		try {
 			LOGGER.info("Inside-ProductServiceImpl.ProductListByIdService()");
 			if (productIdList.isEmpty()) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				List<ProductMasterEntity> list = productRepo.findByProductIdIn(productIdList);
 
 				if (list.size() <= 0) {
-					throw new CustomException("Product not found!");
+					throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 				} else {
 					return ResponseEntity.ok(list);
 				}
@@ -852,7 +863,7 @@ public class ProductServiceImpl implements ProductService{
 			List<Long> userId = new ArrayList<Long>();
 
 			ResponseEntity<String> forEntity = restTemplate.getForEntity(
-					"https://localhost:8082/dev/user/followedUserList/" + productData.getDesignerId(), String.class);
+					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + productData.getDesignerId(), String.class);
 			String data = forEntity.getBody();
 			JSONArray jsonArray = new JSONArray(data);
 			String designerImageData = designerProfileRepo.findBydesignerId(productData.getDesignerId().longValue())
@@ -861,12 +872,12 @@ public class ProductServiceImpl implements ProductService{
 				ObjectMapper objectMapper = new ObjectMapper();
 				UserProfile readValue = objectMapper.readValue(jsonArray.get(i).toString(), UserProfile.class);
 				ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(
-						"https://localhost:8082/dev/user/getUserId/" + readValue.getUserId(), UserProfileInfo.class);
+						RestTemplateConstant.USER_GET_USER_ID.getMessage() + readValue.getUserId(), UserProfileInfo.class);
 				userInfoList.add(userInfo.getBody());
 			}
 			for (int i = 0; i < userId.size(); i++) {
 				ResponseEntity<UserProfileInfo> userProfileList = restTemplate.getForEntity(
-						"https://localhost:8080/dev/auth/info/USER/" + userId.get(i), UserProfileInfo.class);
+						RestTemplateConstant.INFO_USER.getMessage() + userId.get(i), UserProfileInfo.class);
 
 			}
 			ProductMasterEntity productMasterEntity = productRepo.findById(productData.getProductId()).get();
@@ -904,7 +915,7 @@ public class ProductServiceImpl implements ProductService{
 						"New product Arrived", htmlContent, true, null, restTemplate);
 				emailSenderThread.start();
 			}
-			return new GlobalResponce("Successfull", "Product approved", 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_APPROVED.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -924,7 +935,7 @@ public class ProductServiceImpl implements ProductService{
 				collect.get(i).setIsActive(false);
 			}
 			productRepo.saveAll(collect);
-			return new GlobalResponce("Success", "The products are deleted successfully", 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.DELETED.getMessage(), 200);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -950,7 +961,7 @@ public class ProductServiceImpl implements ProductService{
 					}
 				}
 			}
-			return new GlobalResponce("Success", "Stock cleared successfully", 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STOCK_CLEARED.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -959,7 +970,7 @@ public class ProductServiceImpl implements ProductService{
 	public List<ProductMasterEntity> productListCategorySubcategory(String categoryName, String subcategoryName) {
 		try {
 			ResponseEntity<CategoryEntity> categoryEntity = restTemplate
-					.getForEntity("https://localhost:9095/dev/category/", CategoryEntity.class);
+					.getForEntity(RestTemplateConstant.DEV_CATEGORY.getMessage(), CategoryEntity.class);
 			return null;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -971,7 +982,7 @@ public class ProductServiceImpl implements ProductService{
 		try {
 
 			ResponseEntity<UserResponseEntity> userResponseEntity = restTemplate.getForEntity(
-					"https://localhost:9095/dev/category/viewByName/" + categoryName + "/" + subCategoryName,
+					RestTemplateConstant.CATEGORY_VIEWBY_NAME.getMessage() + categoryName + "/" + subCategoryName,
 					UserResponseEntity.class);
 			int categoryIdvalue = userResponseEntity.getBody().getCategoryEntity().getId();
 			if (userResponseEntity.getBody().getSubCategoryEntity().getParentId().equals("0")) {
@@ -1038,7 +1049,7 @@ public class ProductServiceImpl implements ProductService{
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -1110,7 +1121,7 @@ public class ProductServiceImpl implements ProductService{
 					emailSenderThread.start();
 				}
 			}
-			return new GlobalResponce("Success", "Designer informed successfully", 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.DESIGNER_INFORMED.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -1125,7 +1136,7 @@ public class ProductServiceImpl implements ProductService{
 			productMasterEntity2.setOos(productMasterEntity2.getOos());
 			productMasterEntity2.setSizes(productMasterEntity2.getSizes());
 			productRepo2.save(productMasterEntity2);
-			return new GlobalResponce("Successfull", "Stock recovered", 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STOCK_RECOVER.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.divatt.designer.constant.MessageConstant;
 import com.divatt.designer.entity.product.ProductCustomizationEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.repo.ProductCustomizationRepo;
@@ -47,9 +48,9 @@ public class ProductCustomizationServiceImpl implements ProductCustomizationServ
 				productCustomizationEntity
 						.setProductChartId(sequenceGenerator.getNextSequence(ProductCustomizationEntity.SEQUENCE_NAME));
 				productCustomizationRepo.save(productCustomizationEntity);
-				return new GlobalResponce("Success!!", "Product chat data Added susccessfully", 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_CHAT_DATA_ADD.getMessage(), 200);
 			}
-			return new GlobalResponce("Bad Request", "Product name already exist", 200);
+			return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.NAME_ALREADY_EXIST.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -73,11 +74,11 @@ public class ProductCustomizationServiceImpl implements ProductCustomizationServ
 			List<ProductCustomizationEntity> listProduct = mongoOperations.find(query,
 					ProductCustomizationEntity.class);
 			if (listProduct.isEmpty()) {
-				return new GlobalResponce("Error!!", "Product Does not exist", 400);
+				return new GlobalResponce(MessageConstant.ERROR.getMessage(), MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
 			}
 			productCustomizationEntity.setProductChartId(listProduct.get(0).getProductChartId());
 			productCustomizationRepo.save(productCustomizationEntity);
-			return new GlobalResponce("Success", "Product chart data successfully updated", 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_CHAT_DATA_UPDATE.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -121,7 +122,7 @@ public class ProductCustomizationServiceImpl implements ProductCustomizationServ
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Product not found!");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}

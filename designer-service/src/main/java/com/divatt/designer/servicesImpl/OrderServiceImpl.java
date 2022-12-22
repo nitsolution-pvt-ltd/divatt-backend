@@ -20,6 +20,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.designer.config.JWTConfig;
+import com.divatt.designer.constant.MessageConstant;
+import com.divatt.designer.constant.RestTemplateConstant;
 import com.divatt.designer.entity.DesignerInvoiceReq;
 import com.divatt.designer.entity.DesignerIvoiceData;
 import com.divatt.designer.entity.DesignerProductList;
@@ -57,13 +59,13 @@ public class OrderServiceImpl implements OrderService {
 		try {
 //				RestTemplate restTemplate= new RestTemplate();
 			ResponseEntity<OrderDetailsEntity> serviceResponse = restTemplate
-					.getForEntity("https://localhost:8082/dev/userOrder/getOrder/" + orderId, OrderDetailsEntity.class);
+					.getForEntity(RestTemplateConstant.USERORDER_GET_ORDER.getMessage() + orderId, OrderDetailsEntity.class);
 			// System.out.println(serviceResponse.getBody());
 			OrderDetailsEntity updatedOrder = serviceResponse.getBody();
 			updatedOrder.setOrderStatus(statusKeyword);
 			System.out.println(updatedOrder);
-			restTemplate.put("https://localhost:8082/dev/userOrder/updateOrder/" + orderId, updatedOrder, String.class);
-			return new GlobalResponce("Success", "Order status updated", 200);
+			restTemplate.put(RestTemplateConstant.USER_ORDER_UPDATE_ORDER.getMessage() + orderId, updatedOrder, String.class);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.ORDER_STATUS_UPDATED.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -73,10 +75,10 @@ public class OrderServiceImpl implements OrderService {
 		try {
 			Map<String, Object> invoiceData = new HashMap<String, Object>();
 			ResponseEntity<DesignerInvoiceReq> orderDetailsData = restTemplate
-					.getForEntity("https://localhost:8082/dev/userOrder/getOrder/" + orderId, DesignerInvoiceReq.class);
+					.getForEntity(RestTemplateConstant.USERORDER_GET_ORDER.getMessage() + orderId, DesignerInvoiceReq.class);
 			DesignerIvoiceData designerIvoiceData = new DesignerIvoiceData();
 			UserAddressEntity userAddressData = restTemplate.getForEntity(
-					"https://localhost:8082/dev/user/getUserAddress/" + orderDetailsData.getBody().getUserId(),
+					RestTemplateConstant.GET_USER_ADDRESS.getMessage() + orderDetailsData.getBody().getUserId(),
 					UserAddressEntity.class).getBody();
 			Optional<DesignerProfileEntity> designerData = designerProfileRepo.findBydesignerId(
 					Long.valueOf(orderDetailsData.getBody().getOrderSKUDetails().get(0).getDesignerId()));
@@ -124,7 +126,7 @@ public class OrderServiceImpl implements OrderService {
 			String htmlContent = templateEngine.process("invoiceUpdatedDesigner.html", context);
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			ConverterProperties converterProperties = new ConverterProperties();
-			converterProperties.setBaseUri("http://localhost:8082");
+			converterProperties.setBaseUri(RestTemplateConstant.USER.getMessage());
 			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);
 			byte[] bytes = target.toByteArray();
 			HttpHeaders headers = new HttpHeaders();
@@ -138,7 +140,7 @@ public class OrderServiceImpl implements OrderService {
 	public String getUserPDFService(String orderId) {
 		try {
 			DesignerInvoiceReq orderDetailsData = restTemplate
-					.getForEntity("https://localhost:9095/dev/userOrder/getOrder/" + orderId, DesignerInvoiceReq.class)
+					.getForEntity(RestTemplateConstant.USER_ORDER_GET_ORDER.getMessage() + orderId, DesignerInvoiceReq.class)
 					.getBody();
 			orderDetailsData.getBillingAddress();
 			Map<String, Object> userproductDetails = new HashMap<String, Object>();
@@ -222,7 +224,7 @@ public class OrderServiceImpl implements OrderService {
 					.map(e -> e.getDesignerId()).collect(Collectors.toList());
 			LOGGER.info(collect.get(0) + "");
 			return restTemplate
-					.getForEntity("https://localhost:8082/dev/userOrder/designerOrderCount/" + collect.get(0),
+					.getForEntity(RestTemplateConstant.USER_ORDER_DESIGNER_ORDER_COUNT.getMessage() + collect.get(0),
 							Object.class)
 					.getBody();
 		} catch (Exception e) {
@@ -236,7 +238,7 @@ public class OrderServiceImpl implements OrderService {
 			LOGGER.info(orderId);
 
 			OrderSKUDetailsEntity serviceResponse = restTemplate.getForObject(
-					"https://localhost:8082/dev/userOrder/orderDetails/" + orderId, OrderSKUDetailsEntity.class);
+					RestTemplateConstant.USER_ORDER_ORDER_DETAILS.getMessage() + orderId, OrderSKUDetailsEntity.class);
 			String itemStatus = serviceResponse.getOrderItemStatus();
 
 			if (!serviceResponse.getOrderItemStatus().equals(status)) {
@@ -245,15 +247,18 @@ public class OrderServiceImpl implements OrderService {
 
 				serviceResponse.setOrderItemStatus(status);
 			} else {
-				throw new CustomException("OrderItemStatus already in " + status);
+				throw new CustomException(MessageConstant.ORDER_ITEM_STATUS_ALREADY_IN.getMessage() + status);
 
 			}
 			LOGGER.info(serviceResponse.toString());
 
-			restTemplate.put("https://localhost:8082/dev/userOrder/updateOrder/" + orderId, serviceResponse,
+			restTemplate.put(RestTemplateConstant.USER_ORDER_UPDATE_ORDER.getMessage() + orderId, serviceResponse,
 					OrderSKUDetailsEntity.class);
 
-			return new GlobalResponce("Success", "OrderItemStatus updated Change " + itemStatus + " to " + status, 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.ORDER_ITEM_STATUS_UPDATED_CHANGE.getMessage() + itemStatus
+							+ MessageConstant.TO.getMessage() + status,
+					200);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

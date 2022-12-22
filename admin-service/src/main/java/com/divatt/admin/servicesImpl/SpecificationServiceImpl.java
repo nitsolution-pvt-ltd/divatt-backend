@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.specification.SpecificationEntity;
 import com.divatt.admin.exception.CustomException;
@@ -50,7 +51,7 @@ public class SpecificationServiceImpl implements SpecificationService {
 			specificationEntity.setIsDeleted(false);
 			specificationEntity.setAddonDate(new Date());
 			specRepo.save(specificationEntity);
-			return new GlobalResponse("Success!!", "Specification added sucessfully", 200);
+			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SPECIFICATION_ADDED.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -68,7 +69,7 @@ public class SpecificationServiceImpl implements SpecificationService {
 			} else if (categoryName.toLowerCase().contains("kid")) {
 				categoryName = "Kid";
 			} else {
-				throw new CustomException("Invalid Id");
+				throw new CustomException(MessageConstant.INVALID_ID.getMessage());
 			}
 			Query query = new Query();
 			query.addCriteria(Criteria.where("categoryName").is(categoryName).and("isActive").is(true));
@@ -93,9 +94,9 @@ public class SpecificationServiceImpl implements SpecificationService {
 				specificationData.setIsDeleted(specRepo.findById(specId).get().getIsDeleted());
 				specificationData.setAddonDate(new Date());
 				specRepo.save(specificationData);
-				return new GlobalResponse("Success!!", "Specification Updated", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SPECIFICATION_UPDATED.getMessage(), 200);
 			} else {
-				throw new CustomException("Product not found");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -109,9 +110,9 @@ public class SpecificationServiceImpl implements SpecificationService {
 				specificationEntity.setIsActive(false);
 				specificationEntity.setIsDeleted(true);
 				specRepo.save(specificationEntity);
-				return new GlobalResponse("Success", "Specification deleted successfully", 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SPECIFICATION_DELETED.getMessage(), 200);
 			} else {
-				throw new CustomException("Product Not Found");
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -156,7 +157,7 @@ public class SpecificationServiceImpl implements SpecificationService {
 			response.put("perPageElement", findAll.getNumberOfElements());
 
 			if (findAll.getSize() <= 1) {
-				throw new CustomException("Category specification not found");
+				throw new CustomException(MessageConstant.CATEGORY_SPECIFICATION_NOT_FOUND.getMessage());
 			} else {
 				return response;
 			}
@@ -172,14 +173,14 @@ public class SpecificationServiceImpl implements SpecificationService {
 				if (specificationEntity.getIsActive().equals(false)) {
 					specificationEntity.setIsActive(true);
 					specRepo.save(specificationEntity);
-					return new GlobalResponse("Success", "Specification actived successfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SPECIFICATION_ACTIVED.getMessage(), 200);
 				} else {
 					specificationEntity.setIsActive(false);
 					specRepo.save(specificationEntity);
-					return new GlobalResponse("Success", "Specification deactived successfully", 200);
+					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.SPECIFICATION_DEACTIVED.getMessage(), 200);
 				}
 			} else {
-				return new GlobalResponse("Error!!", "Specification Id does not exist", 400);
+				return new GlobalResponse(MessageConstant.ERROR.getMessage(), MessageConstant.ID_NOT_EXIST.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
