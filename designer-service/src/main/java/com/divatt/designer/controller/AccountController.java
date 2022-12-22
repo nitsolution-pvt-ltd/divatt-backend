@@ -35,6 +35,7 @@ import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.response.GlobalResponce;
+import com.divatt.designer.services.AccountService;
 
 @RestController
 @RequestMapping("/designerAccount")
@@ -50,6 +51,9 @@ public class AccountController {
 	@Autowired
 	private DesignerLoginRepo designerLoginRepo;
 
+	@Autowired
+	private AccountService accountService;
+
 	@Value("${spring.profiles.active}")
 	private String contextPath;
 
@@ -59,8 +63,8 @@ public class AccountController {
 	@Value("${interfaceId}")
 	private String interfaceId;
 
-	@PostMapping("/addAccount")
-	public GlobalResponce postAccountDetails(@Valid @RequestBody AccountEntity accountEntity,
+	@PostMapping("/add")
+	public ResponseEntity<?> postAccountDetails(@Valid @RequestBody AccountEntity accountEntity,
 			@RequestHeader("Authorization") String token) {
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.postAccountDetails()");
@@ -78,18 +82,7 @@ public class AccountController {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/account/add", "Success", HttpStatus.OK);
 			}
-			String extractUsername = config.extractUsername(token.substring(7));
-			LOGGER.info(extractUsername);
-			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
-			LOGGER.info(findByEmail + "Inside FindbyEmail");
-			if (!findByEmail.isEmpty()) {
-				restTemplate.postForObject(RestTemplateConstant.ACCOUNT_ADD.getMessage(), accountEntity,
-						GlobalResponce.class);
-				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
-						MessageConstant.ACCOUNT_ADDED_MESSAGE.getMessage(), 200);
-			} else
-				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
-
+			return accountService.postAccountDetails(accountEntity, token);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -135,7 +128,7 @@ public class AccountController {
 	}
 
 	@PutMapping("/update/{accountId}")
-	public GlobalResponce putAccountDetails(@Valid @RequestBody AccountEntity accountEntity,
+	public ResponseEntity<?> putAccountDetails(@Valid @RequestBody AccountEntity accountEntity,
 			@PathVariable() Integer accountId, @RequestHeader("Authorization") String token) {
 
 		if (LOGGER.isInfoEnabled()) {
@@ -154,16 +147,7 @@ public class AccountController {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/account/update/" + accountId, "Success", HttpStatus.OK);
 			}
-			String extractUsername = config.extractUsername(token.substring(7));
-			LOGGER.info(extractUsername);
-			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
-			LOGGER.info(findByEmail + "Inside FindbyEmail");
-			if (!findByEmail.isEmpty()) {
-				restTemplate.put(RestTemplateConstant.ACCOUNT_UPDATE_BY_ID.getMessage() + accountId, accountEntity);
-				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
-						MessageConstant.ACCOUNT_UPDATED_MESSAGE.getMessage(), 200);
-			} else
-				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
+			return this.accountService.putAccountDetails(accountId, accountEntity, token);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
@@ -176,7 +160,7 @@ public class AccountController {
 	}
 
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
-	public ResponseEntity<String> getAccountDetails(@RequestParam(defaultValue = "0") int page,
+	public ResponseEntity<?> getAccountDetails(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "_id") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
@@ -201,34 +185,11 @@ public class AccountController {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/account/list", "Success", HttpStatus.OK);
 			}
-			String extractUsername = config.extractUsername(token.substring(7));
-			LOGGER.info(extractUsername);
-			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
-			LOGGER.info(findByEmail + "Inside FindbyEmail");
-			if (!findByEmail.isEmpty()) {
-				String url = RestTemplateConstant.ACCOUNT_LIST.getMessage();
-				HttpHeaders headers = new HttpHeaders();
-				headers.set("Accept", "application/json");
+			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword, designerReturn,
+					serviceCharge, govtCharge, userOrder, ReturnStatus, sortBy, token);
+		} catch (
 
-				Map<String, Object> params = new HashMap<>();
-				params.put("page", page);
-				params.put("limit", limit);
-				params.put("sort", sort);
-				params.put("sortName", sortName);
-				params.put("isDeleted", isDeleted);
-				params.put("keyword", keyword);
-				params.put("designerReturn", designerReturn);
-				params.put("serviceCharge", serviceCharge);
-				params.put("govtCharge", govtCharge);
-				params.put("userOrder", userOrder);
-				params.put("ReturnStatus", ReturnStatus);
-				params.put("sortBy", sortBy);
-				HttpEntity entity = new HttpEntity(headers);
-
-				return restTemplate.exchange(url, HttpMethod.GET, entity, String.class, params);
-			} else
-				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
-		} catch (Exception e) {
+		Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);

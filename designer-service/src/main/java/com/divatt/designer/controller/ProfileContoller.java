@@ -332,22 +332,22 @@ public class ProfileContoller {
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
-			LOGGER.info(getDesigner(designerLoginEntityDB.getdId()).getBody().toString() + "Inside Did");
-			Object string = getDesigner(designerLoginEntityDB.getdId()).getBody();
-			LOGGER.info("Inside body " + string);
-			String designerId = null;
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				designerId = mapper.writeValueAsString(string);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
-			JsonNode jsonNode = new JsonNode(designerId);
-			String string2 = jsonNode.getObject().get("designerName").toString();
-			LOGGER.info(string2);
-			String email = designerLoginEntityDB.getEmail();
-			LOGGER.info(email + "Inside Email");
 			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
+				LOGGER.info(getDesigner(designerLoginEntityDB.getdId()).getBody().toString() + "Inside Did");
+				Object string = getDesigner(designerLoginEntityDB.getdId()).getBody();
+				LOGGER.info("Inside body " + string);
+				String designerId = null;
+				ObjectMapper mapper = new ObjectMapper();
+				try {
+					designerId = mapper.writeValueAsString(string);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				JsonNode jsonNode = new JsonNode(designerId);
+				String string2 = jsonNode.getObject().get("designerName").toString();
+				LOGGER.info(string2);
+				String email = designerLoginEntityDB.getEmail();
+				LOGGER.info(email + "Inside Email");
 				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
 				LOGGER.info(designerLoginEntity.getAdminComment() + "Inside Comment");
 				Context context = new Context();
@@ -357,13 +357,6 @@ public class ProfileContoller {
 				EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Designer rejected", htmlContent,
 						true, null, restTemplate);
 				emailSenderThread.start();
-			}else {
-				Context context = new Context();
-				context.setVariable("designerName", string2);
-				String htmlContent = templateEngine.process("designerUpdate.html", context);
-				EmailSenderThread emailSender = new EmailSenderThread(email, "Designer update", htmlContent,
-						true, null, restTemplate);
-				emailSender.start();
 			}
 			designerLoginRepo.save(designerLoginEntityDB);
 			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
