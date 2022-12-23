@@ -89,7 +89,7 @@ public class AccountTemplateRepo {
 
 		));
 
-		countQuery.with(pagingSort);
+//		countQuery.with(pagingSort);
 		long total = mongoTemplate.count(countQuery, AccountEntity.class);
 
 		final List<AccountEntity> find = mongoTemplate.find(query, AccountEntity.class);
@@ -570,12 +570,16 @@ public class AccountTemplateRepo {
 			filterByCondition = Aggregation.match(Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
 		}
 		SortOperation sortByIdDesc = Aggregation.sort(pagingSort.getSort());
-		SkipOperation skip = Aggregation.skip(pagingSort.getPageNumber() * pagingSort.getPageSize());
+		SkipOperation skip = Aggregation.skip((long)(pagingSort.getPageNumber() * pagingSort.getPageSize()));
 		LimitOperation limit = Aggregation.limit(pagingSort.getPageSize());
 
-		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, sortByIdDesc, skip, limit);
+		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, skip, limit, sortByIdDesc);
 		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations, mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
-	    return new PageImpl<AccountEntity>(results.getMappedResults(), pagingSort, results.getMappedResults().size());
+
+		Query countQuery = new Query();
+//		countQuery.with(pagingSort);
+		long total = mongoTemplate.count(countQuery, AccountEntity.class);
+		return new PageImpl<AccountEntity>(results.getMappedResults(), pagingSort, total);
 	}
 
 }
