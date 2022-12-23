@@ -309,23 +309,23 @@ public class ProfileContoller {
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
 			if (designerLoginEntity.getProfileStatus().equals("SUBMITTED")
 					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
-					|| designerLoginEntity.getProfileStatus().equals("SAVED")){
+					|| designerLoginEntity.getProfileStatus().equals("SAVED")) {
 //				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
 //						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
-					LOGGER.info("INSIDE IF <><><><><><@!!!");
-					// update designer personal information from admin update
-					DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
-							.findByDesignerId(designerLoginEntity.getdId()).get();
-					DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
-					designerPersonalInfoEntity.setId(infoEntity.getId());
-					designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
-					designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity()
-							.getDesignerPersonalInfoEntity().getBankDetails());
-					designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity()
-							.getDesignerPersonalInfoEntity().getDesignerDocuments());
-					designerPersonalInfoRepo.save(designerPersonalInfoEntity);
-					// end update designer personal information from admin update
-				//}
+				LOGGER.info("INSIDE IF <><><><><><@!!!");
+				// update designer personal information from admin update
+				DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
+						.findByDesignerId(designerLoginEntity.getdId()).get();
+				DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
+				designerPersonalInfoEntity.setId(infoEntity.getId());
+				designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
+				designerPersonalInfoEntity.setBankDetails(designerLoginEntity.getDesignerProfileEntity()
+						.getDesignerPersonalInfoEntity().getBankDetails());
+				designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity()
+						.getDesignerPersonalInfoEntity().getDesignerDocuments());
+				designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+				// end update designer personal information from admin update
+				// }
 			}
 			// Old
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
@@ -333,21 +333,23 @@ public class ProfileContoller {
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
+			LOGGER.info(getDesigner(designerLoginEntityDB.getdId()).getBody().toString() + "Inside Did");
+			Object string = getDesigner(designerLoginEntityDB.getdId()).getBody();
+			LOGGER.info("Inside body " + string);
+			String designerId = null;
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				designerId = mapper.writeValueAsString(string);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+			JsonNode jsonNode = new JsonNode(designerId);
+			String string2 = jsonNode.getObject().get("designerName").toString();
+			LOGGER.info(string2);
+			String email = designerLoginEntityDB.getEmail();
+			designerLoginRepo.save(designerLoginEntityDB);
+			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
 			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
-				LOGGER.info(getDesigner(designerLoginEntityDB.getdId()).getBody().toString() + "Inside Did");
-				Object string = getDesigner(designerLoginEntityDB.getdId()).getBody();
-				LOGGER.info("Inside body " + string);
-				String designerId = null;
-				ObjectMapper mapper = new ObjectMapper();
-				try {
-					designerId = mapper.writeValueAsString(string);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-				JsonNode jsonNode = new JsonNode(designerId);
-				String string2 = jsonNode.getObject().get("designerName").toString();
-				LOGGER.info(string2);
-				String email = designerLoginEntityDB.getEmail();
 				LOGGER.info(email + "Inside Email");
 				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
 				LOGGER.info(designerLoginEntity.getAdminComment() + "Inside Comment");
@@ -358,15 +360,17 @@ public class ProfileContoller {
 				EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Designer rejected", htmlContent,
 						true, null, restTemplate);
 				emailSenderThread.start();
+			} else {
+				Context context = new Context();
+				context.setVariable("designerName", string2);
+				String htmlContent = templateEngine.process("designerUpdate.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Designer updated", htmlContent,
+						true, null, restTemplate);
+				emailSenderThread.start();
 			}
-			designerLoginRepo.save(designerLoginEntityDB);
-			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
 
-			 
-				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
-						MessageConstant.UPDATED.getMessage(), 200));
-			
-
+			return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.UPDATED.getMessage(), 200));
 		}
 	}
 
