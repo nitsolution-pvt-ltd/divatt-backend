@@ -33,7 +33,7 @@ import com.divatt.designer.services.ProductServiceImp;
 
 @RestController
 @RequestMapping("/designerProduct")
-public class ProductController implements ProductServiceImp {
+public class ProductController{
 
 	@Autowired
 	private ProductService productService;
