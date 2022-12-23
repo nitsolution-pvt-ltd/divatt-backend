@@ -216,14 +216,14 @@ public class CustomFunction {
 			updateMasterEntity.setPriceCode(productMasterEntity2.getPriceCode());
 			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
 			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
-			if(masterEntity2.getAdminStatus().equals("Pending")) {
-			updateMasterEntity.setAdminStatus("Pending");
-			}else if(masterEntity2.getAdminStatus().equals("Approved")) {
-			updateMasterEntity.setAdminStatus("Approved");
-			}else {
-			updateMasterEntity.setAdminStatus("Pending");
+			if (masterEntity2.getAdminStatus().equals("Pending")) {
+				updateMasterEntity.setAdminStatus("Pending");
+			} else if (masterEntity2.getAdminStatus().equals("Approved")) {
+				updateMasterEntity.setAdminStatus("Approved");
+			} else {
+				updateMasterEntity.setAdminStatus("Pending");
 			}
-				
+
 			updateMasterEntity.setWeightUnit(productMasterEntity2.getWeightUnit());
 			updateMasterEntity.setImages(productMasterEntity2.getImages());
 			updateMasterEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
@@ -305,6 +305,7 @@ public class CustomFunction {
 
 			filterProductEntity.setProductStage("new");
 			filterProductEntity.setProductStageDetails(productStageDetails);
+
 			return filterProductEntity;
 
 		} catch (Exception e) {
@@ -345,10 +346,10 @@ public class CustomFunction {
 			designerProfile.setDob(body.getDesignerProfile().getDob());
 			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
 					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
-					|| designerLoginEntity.getProfileStatus().equals("SAVED"))){
-				boutiqueProfile.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
-				}
-			else{
+					|| designerLoginEntity.getProfileStatus().equals("SAVED"))) {
+				boutiqueProfile
+						.setGSTIN(designerLoginEntity.getDesignerProfileEntity().getBoutiqueProfile().getGSTIN());
+			} else {
 				boutiqueProfile.setGSTIN(body.getBoutiqueProfile().getGSTIN());
 			}
 			boutiqueProfile.setBoutiqueName(body.getBoutiqueProfile().getBoutiqueName());
@@ -360,11 +361,10 @@ public class CustomFunction {
 			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
 					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
 					|| designerLoginEntity.getProfileStatus().equals("SAVED"))) {
-			LOGGER.info("Status <><><><><> !!!!! = {}", designerLoginEntity.getProfileStatus());
-					designerProfile.setDigitalSignature(
-							designerLoginEntity.getDesignerProfileEntity().getDesignerProfile().getDigitalSignature());
-				}  
-			else{
+				LOGGER.info("Status <><><><><> !!!!! = {}", designerLoginEntity.getProfileStatus());
+				designerProfile.setDigitalSignature(
+						designerLoginEntity.getDesignerProfileEntity().getDesignerProfile().getDigitalSignature());
+			} else {
 				designerProfile.setDigitalSignature(body.getDesignerProfile().getDigitalSignature());
 			}
 			designerProfile.setEmail(body.getDesignerProfile().getEmail());

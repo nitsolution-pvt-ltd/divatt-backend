@@ -85,18 +85,18 @@ public class ProductServiceImp2 implements ProductService2 {
 	public GlobalResponce addProductData(ProductMasterEntity2 productMasterEntity2) {
 		try {
 			LOGGER.info("Inside-ProductServiceImp2.addProductMasterData()");
-			productRepo2.save(customFunction.addProductMasterData(productMasterEntity2));
+			ProductMasterEntity2 entity2 = productRepo2.save(customFunction.addProductMasterData(productMasterEntity2));
 			String newProductData = productMasterEntity2.getProductDetails().getProductName();
 			List<UserProfileInfo> userInfoList = new ArrayList<UserProfileInfo>();
 			List<Long> userId = new ArrayList<Long>();
 
 			ResponseEntity<String> forEntity = restTemplate.getForEntity(
-					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + productMasterEntity2.getDesignerId(),
+					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + entity2.getDesignerId(),
 					String.class);
 			String data = forEntity.getBody();
 			JSONArray jsonArray = new JSONArray(data);
 			String designerImageData = designerProfileRepo
-					.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get().getDesignerProfile()
+					.findBydesignerId(entity2.getDesignerId().longValue()).get().getDesignerProfile()
 					.getProfilePic();
 			jsonArray.forEach(array -> {
 				ObjectMapper objectMapper = new ObjectMapper();
@@ -121,7 +121,10 @@ public class ProductServiceImp2 implements ProductService2 {
 						.getForEntity(RestTemplateConstant.INFO_USER.getMessage() + user, UserProfileInfo.class);
 
 			});
-			ProductMasterEntity2 productMasterEntity = productRepo2.findById(productMasterEntity2.getProductId()).get();
+			Integer productId = entity2.getProductId();
+			ProductMasterEntity2 productMasterEntity = productRepo2.findById(productId).get();
+			LOGGER.info(productMasterEntity+"inside");
+			DesignerProfileEntity designerProfile = designerProfileRepo.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
 			ImageEntity[] images = productMasterEntity.getImages();
 			String image1 = images[0].getLarge();
 			System.out.println(images[0].getLarge());
@@ -129,7 +132,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			userInfoList.forEach(user -> {
 				EmailEntity emailEntity = new EmailEntity();
 				emailEntity.setProductDesc(productMasterEntity.getProductDetails().getProductDescription());
-				emailEntity.setProductDesignerName(productMasterEntity.getDesignerProfile().getDisplayName());
+				emailEntity.setProductDesignerName(designerProfile.getDesignerProfile().getDisplayName());
 				emailEntity.setProductImage(image1);
 				emailEntity.setProductName(productMasterEntity.getProductDetails().getProductName());
 				if (productMasterEntity.getDeal().getDealType().equals("None")) {

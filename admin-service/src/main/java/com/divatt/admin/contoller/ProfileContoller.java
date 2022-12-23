@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -399,11 +400,11 @@ public class ProfileContoller {
 
 	@PostMapping("/s3/upload")
 	public ResponseEntity<?> uploadFiles(@RequestPart(value = "file", required = false) MultipartFile file)
-			throws IOException{
-		if(file.getSize()>10681340)
+			throws IOException {
+		if (file.getSize() > 10681340)
 			throw new CustomException("File size not excepted....");
 		return ResponseEntity.ok(s3Service.uploadFile(file.getOriginalFilename(), file.getBytes()));
-		
+
 	}
 
 	@GetMapping("/testResize")
@@ -425,6 +426,18 @@ public class ProfileContoller {
 		g2d.drawImage(tmp, 0, 0, null);
 		g2d.dispose();
 		return resized;
+	}
+
+	@GetMapping("/getRoleName/{rolename}")
+	public LoginEntity getRoleName(@PathVariable String rolename) {
+		try {
+			LOGGER.info("Inside getRoleName");
+			LoginEntity findByRoleName = this.loginRepository.findByRoleName(rolename);
+			LOGGER.info(findByRoleName + "inside");
+			return findByRoleName;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 
 }
