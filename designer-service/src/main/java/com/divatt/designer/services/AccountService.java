@@ -15,7 +15,7 @@ import com.divatt.designer.response.GlobalResponce;
 public interface AccountService {
 
 	public ResponseEntity<?> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, Optional<String> sortBy,String token);
+			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, Optional<String> sortBy,String settlement, int year,int month,String token);
 
 	public ResponseEntity<?> postAccountDetails(@Valid AccountEntity accountEntity,String token);
 

@@ -20,38 +20,12 @@ public class ServiceCharge {
     public String date;
     public float total_amount;
     public int units;
+    public String updated_by;
+	public String updated_datetime;
     public String remarks;
     
 	public ServiceCharge() {
 		super();
-	}
-
-	public ServiceCharge(String designer_invoice_id, int rate, float fee, float cgst, float sgst, float igst,
-			int tcs_rate, float tcs, float total_tax, String status, String date, float total_amount, int units,
-			String remarks) {
-		super();
-		this.designer_invoice_id = designer_invoice_id;
-		this.rate = rate;
-		this.fee = fee;
-		this.cgst = cgst;
-		this.sgst = sgst;
-		this.igst = igst;
-		this.tcs_rate = tcs_rate;
-		this.tcs = tcs;
-		this.total_tax = total_tax;
-		this.status = status;
-		this.date = date;
-		this.total_amount = total_amount;
-		this.units = units;
-		this.remarks = remarks;
-	}
-
-	@Override
-	public String toString() {
-		return "ServiceCharge [designer_invoice_id=" + designer_invoice_id + ", rate=" + rate + ", fee=" + fee
-				+ ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst + ", tcs_rate=" + tcs_rate + ", tcs=" + tcs
-				+ ", total_tax=" + total_tax + ", status=" + status + ", date=" + date + ", total_amount="
-				+ total_amount + ", units=" + units + ", remarks=" + remarks + "]";
 	}
 
 	public String getDesigner_invoice_id() {
@@ -158,6 +132,22 @@ public class ServiceCharge {
 		this.units = units;
 	}
 
+	public String getUpdated_by() {
+		return updated_by;
+	}
+
+	public void setUpdated_by(String updated_by) {
+		this.updated_by = updated_by;
+	}
+
+	public String getUpdated_datetime() {
+		return updated_datetime;
+	}
+
+	public void setUpdated_datetime(String updated_datetime) {
+		this.updated_datetime = updated_datetime;
+	}
+
 	public String getRemarks() {
 		return remarks;
 	}
@@ -165,8 +155,8 @@ public class ServiceCharge {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
-    
-    
+
+	
     
 
 }

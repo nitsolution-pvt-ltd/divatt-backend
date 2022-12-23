@@ -76,9 +76,7 @@ public class AccountController {
 
 		try {
 			String extractUsername = config.extractUsername(token.substring(7));
-			LOGGER.info(extractUsername);
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
-			LOGGER.info(findByEmail + "Inside FindbyEmail");
 			if (!findByEmail.isEmpty()) {
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
@@ -95,10 +93,15 @@ public class AccountController {
 				map.put("message", "Unauthorized");
 				map.put("status", HttpStatus.UNAUTHORIZED.value());
 				map.put("timeStamp", new Date());
-				return new ResponseEntity<>(map,HttpStatus.UNAUTHORIZED);
+				return new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
 			}
 		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/designerAccount/add", e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			throw new CustomException(e.getLocalizedMessage());
 		}
 	}
 
@@ -113,31 +116,37 @@ public class AccountController {
 		}
 
 		try {
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/designerAccount/view/" + accountId, "Success", HttpStatus.OK);
-			}
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/designerAccount/view/" + accountId, "Success", HttpStatus.OK);
-			}
 			String extractUsername = config.extractUsername(token.substring(7));
-			LOGGER.info(extractUsername);
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
-			LOGGER.info(findByEmail + "Inside FindbyEmail");
 			if (!findByEmail.isEmpty()) {
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/designerAccount/view/" + accountId, "Success",
+							HttpStatus.OK);
+				}
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/designerAccount/view/" + accountId, "Success",
+							HttpStatus.OK);
+				}
 				return restTemplate.getForEntity(RestTemplateConstant.ACCOUNT_VIEW_BY_ID.getMessage() + accountId,
 						AccountEntity.class);
-			} else
-				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
+			} else {
+				Map<String, Object> map = new HashMap<>();
+				map.put("reason", "Error");
+				map.put("message", "Unauthorized");
+				map.put("status", HttpStatus.UNAUTHORIZED.value());
+				map.put("timeStamp", new Date());
+				return new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
+			}
+
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/designerAccount/view/" + accountId, e.getLocalizedMessage(),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			return ResponseEntity.badRequest().body(new GlobalResponce(MessageConstant.ERROR.getMessage(),
-					MessageConstant.UNAUTHORIZED.getMessage(), 400));
+			throw new CustomException(e.getLocalizedMessage());
 		}
 	}
 
@@ -153,22 +162,35 @@ public class AccountController {
 		}
 
 		try {
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/designerAccount/update/" + accountId, "Success", HttpStatus.OK);
+			String extractUsername = config.extractUsername(token.substring(7));
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
+			if (!findByEmail.isEmpty()) {
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/designerAccount/update/" + accountId, "Success",
+							HttpStatus.OK);
+				}
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/designerAccount/update/" + accountId, "Success",
+							HttpStatus.OK);
+				}
+				return this.accountService.putAccountDetails(accountId, accountEntity, token);
+			} else {
+				Map<String, Object> map = new HashMap<>();
+				map.put("reason", "Error");
+				map.put("message", "Unauthorized");
+				map.put("status", HttpStatus.UNAUTHORIZED.value());
+				map.put("timeStamp", new Date());
+				return new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
 			}
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/designerAccount/update/" + accountId, "Success", HttpStatus.OK);
-			}
-			return this.accountService.putAccountDetails(accountId, accountEntity, token);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/designerAccount/update/" + accountId, e.getLocalizedMessage(),
 						HttpStatus.BAD_REQUEST);
 			}
-			throw new CustomException(e.getMessage());
+			throw new CustomException(e.getLocalizedMessage());
 		}
 
 	}
@@ -181,7 +203,9 @@ public class AccountController {
 			@RequestParam(defaultValue = "") String designerReturn,
 			@RequestParam(defaultValue = "") String serviceCharge, @RequestParam(defaultValue = "") String govtCharge,
 			@RequestParam(defaultValue = "") String userOrder, @RequestParam(defaultValue = "") String ReturnStatus,
-			@RequestParam Optional<String> sortBy, @RequestHeader("Authorization") String token) {
+			@RequestParam Optional<String> sortBy, @RequestParam(defaultValue = "") String settlement,
+			@RequestParam(defaultValue = "0") int year, @RequestParam(defaultValue = "0") int month,
+			@RequestHeader("Authorization") String token) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.getAccountDetails()");
@@ -191,24 +215,34 @@ public class AccountController {
 		}
 
 		try {
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/designerAccount/list", "Success", HttpStatus.OK);
+			String extractUsername = config.extractUsername(token.substring(7));
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
+			if (!findByEmail.isEmpty()) {
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/designerAccount/list", "Success", HttpStatus.OK);
+				}
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/designerAccount/list", "Success", HttpStatus.OK);
+				}
+				return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword,
+						designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, sortBy, settlement, year,
+						month, token);
+			} else {
+				Map<String, Object> map = new HashMap<>();
+				map.put("reason", "Error");
+				map.put("message", "Unauthorized");
+				map.put("status", HttpStatus.UNAUTHORIZED.value());
+				map.put("timeStamp", new Date());
+				return new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
 			}
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/designerAccount/list", "Success", HttpStatus.OK);
-			}
-			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword,
-					designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, sortBy, token);
-		} catch (
-
-		Exception e) {
+		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/designerAccount/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 			}
-			throw new CustomException(e.getMessage());
+			throw new CustomException(e.getLocalizedMessage());
 		}
 
 	}
