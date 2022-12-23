@@ -118,7 +118,8 @@ public class AccountServiceImpl implements AccountService {
 
 		try {
             List<AccountEntity> findByRow = accountRepo.findById(accountId);
-			if (findByRow.size() < 0) {
+            LOGGER.info(findByRow.size()+"inside");
+			if (findByRow.size() <= 1) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
 							interfaceId, host + contextPath + "/account/view/"+accountId, MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
