@@ -449,7 +449,8 @@ public class AccountTemplateRepo {
 				.andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN")))
 				))));
 		}else {
-			match = Aggregation.match(new Criteria());
+			match =  Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
 		}
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
