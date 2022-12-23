@@ -1,5 +1,6 @@
 package com.divatt.admin.repo;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -18,6 +19,8 @@ public interface LoginRepository extends MongoRepository<LoginEntity, Object> {
 	public Optional<LoginEntity> findByEmail(String email);
 
 	public Optional<LoginEntity> findByRole(String role);
+
+	public LoginEntity findByRoleName(String roleName);
 
 	public Page<LoginEntity> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
 

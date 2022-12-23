@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -47,6 +48,7 @@ import org.thymeleaf.context.Context;
 import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.constant.MessageConstant;
 import com.divatt.designer.constant.RestTemplateConstant;
+import com.divatt.designer.entity.LoginEntity;
 import com.divatt.designer.entity.Measurement;
 import com.divatt.designer.entity.SendMail;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
@@ -349,26 +351,41 @@ public class ProfileContoller {
 			String email = designerLoginEntityDB.getEmail();
 			designerLoginRepo.save(designerLoginEntityDB);
 			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
-			if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
-				LOGGER.info(email + "Inside Email");
-				designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
-				LOGGER.info(designerLoginEntity.getAdminComment() + "Inside Comment");
-				Context context = new Context();
-				context.setVariable("designerName", string2);
-				context.setVariable("adminComment", designerLoginEntity.getAdminComment());
-				String htmlContent = templateEngine.process("designerRejected.html", context);
-				EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Designer rejected", htmlContent,
-						true, null, restTemplate);
-				emailSenderThread.start();
-			} else {
-				Context context = new Context();
-				context.setVariable("designerName", string2);
-				String htmlContent = templateEngine.process("designerUpdate.html", context);
-				EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Designer updated", htmlContent,
-						true, null, restTemplate);
-				emailSenderThread.start();
+			try {
+				LoginEntity forEntity = restTemplate.getForEntity(
+						RestTemplateConstant.ADMIN_ROLE_NAME.getMessage() + MessageConstant.ADMIN_ROLES.getMessage(),
+						LoginEntity.class).getBody();
+				String email2 = forEntity.getEmail();
+				if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
+					LOGGER.info(email + "Inside Email");
+					designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
+					LOGGER.info(designerLoginEntity.getAdminComment() + "Inside Comment");
+					Context context = new Context();
+					context.setVariable("designerName", string2);
+					context.setVariable("adminComment", designerLoginEntity.getAdminComment());
+					String htmlContent = templateEngine.process("designerRejected.html", context);
+					EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Designer rejected", htmlContent,
+							true, null, restTemplate);
+					emailSenderThread.start();
+					String htmlContent1 = templateEngine.process("designerRejectedAdmin.html", context);
+					EmailSenderThread emailSenderThread1 = new EmailSenderThread(email2, "Designer rejected",
+							htmlContent1, true, null, restTemplate);
+					emailSenderThread1.start();
+				} else {
+					Context context = new Context();
+					context.setVariable("designerName", string2);
+					String htmlContent = templateEngine.process("designerUpdate.html", context);
+					EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Designer updated", htmlContent,
+							true, null, restTemplate);
+					emailSenderThread.start();
+					String htmlContent1 = templateEngine.process("designerUpdateAdmin.html", context);
+					EmailSenderThread emailSenderThread1 = new EmailSenderThread(email2, "Designer updated",
+							htmlContent1, true, null, restTemplate);
+					emailSenderThread1.start();
+				}
+			} catch (Exception e) {
+				throw new CustomException(e.getMessage());
 			}
-
 			return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 					MessageConstant.UPDATED.getMessage(), 200));
 		}
@@ -446,10 +463,29 @@ public class ProfileContoller {
 			LOGGER.info("DATA FOR LOGIN ENTITY FOR DESIGNER = {}", designerLoginEntityDB);
 			DesignerLoginEntity save = designerLoginRepo.save(designerLoginEntityDB);
 			LOGGER.info("AFTER SAVE DATA IN DATABASE = {}", save);
-		}
+			try {
+				LoginEntity forEntity = restTemplate.getForEntity(
+						RestTemplateConstant.ADMIN_ROLE_NAME.getMessage() + MessageConstant.ADMIN_ROLES.getMessage(),
+						LoginEntity.class).getBody();
 
-		return ResponseEntity.ok(
-				new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.UPDATED.getMessage(), 200));
+				String email2 = forEntity.getEmail();
+				String email = designerProfileEntity.getDesignerProfile().getEmail();
+				Context context = new Context();
+				context.setVariable("designerName", designerProfileEntity.getDesignerName());
+				String htmlContent = templateEngine.process("designerUpdate.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Designer updated", htmlContent,
+						true, null, restTemplate);
+				emailSenderThread.start();
+				String htmlContent1 = templateEngine.process("designerUpdateAdmin.html", context);
+				EmailSenderThread emailSenderThread1 = new EmailSenderThread(email2, "Designer updated", htmlContent1,
+						true, null, restTemplate);
+				emailSenderThread1.start();
+			} catch (Exception e) {
+				throw new CustomException(e.getMessage());
+			}
+			return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.UPDATED.getMessage(), 200));
+		}
 	}
 
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)

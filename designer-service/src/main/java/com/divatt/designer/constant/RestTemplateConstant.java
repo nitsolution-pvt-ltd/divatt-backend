@@ -27,7 +27,8 @@ public enum RestTemplateConstant {
 	ACCOUNT_ADD("https://localhost:8084/dev/account/add"),
 	ACCOUNT_VIEW_BY_ID("https://localhost:8084/dev/account/view/"),
 	ACCOUNT_UPDATE_BY_ID("https://localhost:8084/dev/account/update/"),
-	ACCOUNT_LIST("https://localhost:8084/dev/account/list");
+	ACCOUNT_LIST("https://localhost:8084/dev/account/list"),
+	ADMIN_ROLE_NAME("https://localhost:8084/dev/admin/profile/getRoleName/");
 
 	// FOR PROD
 //	 USERORDER_GET_ORDER("https://localhost:9092/prod/userOrder/getOrder/"),
