@@ -25,6 +25,7 @@ import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
+import com.divatt.designer.services.ProductService2;
 import com.divatt.designer.services.ProductServiceImp2;
 
 @RestController
@@ -32,6 +33,9 @@ import com.divatt.designer.services.ProductServiceImp2;
 public class ProductController2 {
 	@Autowired
 	private ProductServiceImp2 productServiceImp2;
+	
+	@Autowired
+	private ProductService2 productService2;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController2.class);
 
@@ -40,7 +44,7 @@ public class ProductController2 {
 	public GlobalResponce addProductData(@RequestBody ProductMasterEntity2 productMasterEntity2) {
 		LOGGER.info("Inside - designer -> ProductController2.addProductData()");
 		try {
-			return this.productServiceImp2.addProductData(productMasterEntity2);
+			return this.productService2.addProductData(productMasterEntity2);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -52,7 +56,7 @@ public class ProductController2 {
 			@PathVariable Integer productId) {
 		try {
 			LOGGER.info("Inside - designer -> ProductController2.updateProduct()");
-			return productServiceImp2.updateProduct(productMasterEntity2, productId);
+			return productService2.updateProduct(productMasterEntity2, productId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -68,7 +72,7 @@ public class ProductController2 {
 			@RequestParam Optional<String> sortBy) {
 		try {
 			LOGGER.info("Inside - designer -> ProductController2.getAllProduct()");
-			return productServiceImp2.getAllProduct(page, limit, sort, sortName, isDeleted, keyword, sortBy);
+			return productService2.getAllProduct(page, limit, sort, sortName, isDeleted, keyword, sortBy);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -80,7 +84,7 @@ public class ProductController2 {
 	public ProductMasterEntity2 getProduct(@PathVariable Integer productId) {
 		try {
 			LOGGER.info("Inside- ProductController2.getProduct()");
-			return productServiceImp2.getProduct(productId);
+			return productService2.getProduct(productId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -95,7 +99,7 @@ public class ProductController2 {
 			@RequestParam Optional<String> sortBy) {
 		try {
 			LOGGER.info("Inside - designer -> ProductController2.getProductDetailsallStatus()");
-			return this.productServiceImp2.getProductDetailsallStatus(adminStatus, page, limit, sort, sortName,
+			return this.productService2.getProductDetailsallStatus(adminStatus, page, limit, sort, sortName,
 					isDeleted, keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -113,7 +117,7 @@ public class ProductController2 {
 			@RequestParam Optional<String> sortBy, @RequestParam(defaultValue = "") String sortDateType) {
 		try {
 			LOGGER.info("Inside - designer -> ProductController2.designerProductByDesignerId()");
-			return this.productServiceImp2.getDesignerProductByDesignerId(designerId, adminStatus, isActive, page,
+			return this.productService2.getDesignerProductByDesignerId(designerId, adminStatus, isActive, page,
 					limit, sort, sortName, isDeleted, keyword, sortBy, sortDateType);
 
 		} catch (Exception e) {
@@ -126,7 +130,7 @@ public class ProductController2 {
 	public GlobalResponce productDeleteByproductId(@PathVariable Integer productId) {
 		try {
 			LOGGER.info("Inside- ProductController2.productDeleteByproductId()");
-			return this.productServiceImp2.productDeleteByproductId(productId);
+			return this.productService2.productDeleteByproductId(productId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -137,7 +141,7 @@ public class ProductController2 {
 	public GlobalResponce adminApprovalUpdate(@PathVariable Integer productId,
 			@RequestBody ProductMasterEntity2 entity2) {
 		try {
-			return this.productServiceImp2.adminApprovalUpdate(productId, entity2);
+			return this.productService2.adminApprovalUpdate(productId, entity2);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -150,7 +154,7 @@ public class ProductController2 {
 	public GlobalResponce changeAdminStatus(@PathVariable Integer productId) {
 		try {
 			LOGGER.info("Inside- ProductController.changeStatus()");
-			return this.productServiceImp2.changeAdminStatus(productId);
+			return this.productService2.changeAdminStatus(productId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -160,7 +164,7 @@ public class ProductController2 {
 	@GetMapping("/productListUser")
 	public ResponseEntity<?> productListUser() {
 		try {
-			return this.productServiceImp2.productListUser();
+			return this.productService2.productListUser();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -196,7 +200,7 @@ public class ProductController2 {
 				page = getPage;
 			}
 
-			return productServiceImp2.allWishlistProductData(list, sortBy, page, sort, sortName, isDeleted, limit);
+			return productService2.allWishlistProductData(list, sortBy, page, sort, sortName, isDeleted, limit);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -217,7 +221,7 @@ public class ProductController2 {
 				int a = Integer.parseInt(object2.toString());
 				list.add(a);
 			}
-			return productServiceImp2.allCartProductData(list);
+			return productService2.allCartProductData(list);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -235,7 +239,7 @@ public class ProductController2 {
 		try {
 			LOGGER.info("Inside- ProductController.productSearching()");
 			LOGGER.info("COD data = {}", cod);
-			return this.productServiceImp2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour,
+			return this.productService2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour,
 					cod, customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

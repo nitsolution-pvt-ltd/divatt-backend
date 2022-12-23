@@ -730,9 +730,12 @@ public class ProductServiceImp2 implements ProductService2 {
 					List<ProductMasterEntity2> filter = data.stream()
 							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
 							.collect(Collectors.toList());
-					LOGGER.info(ls + "Inside ls count");
-					findAll = new PageImpl<>(filter, pagingSort, filter.size());
-					LOGGER.info(findAll.getContent() + "Inside Findalll in ls");
+					 int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+					 int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filter.size());
+					
+					 List<ProductMasterEntity2> subList = startOfPage>=endOfPage?new ArrayList<>():filter.subList(startOfPage,endOfPage);
+					 findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filter.size());
+					 //findAll = new PageImpl<>(filter, pagingSort, filter.size());
 				} else if (adminStatus.equals("oos")) {
 					findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
 							"Approved", false, pagingSort);
@@ -753,9 +756,11 @@ public class ProductServiceImp2 implements ProductService2 {
 					List<ProductMasterEntity2> filter = data.stream()
 							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
 							.collect(Collectors.toList());
-					LOGGER.info(ls + "Inside ls count");
-					findAll = new PageImpl<>(filter, pagingSort, filter.size());
-					LOGGER.info(findAll.getContent() + "Inside Findalll in ls");
+					int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+					 int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filter.size());
+					
+					 List<ProductMasterEntity2> subList = startOfPage>=endOfPage?new ArrayList<>():filter.subList(startOfPage,endOfPage);
+					 findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filter.size());
 				} else if (adminStatus.equals("oos")) {
 					findAll = productRepo2.listDesignerProductsearchByAdminStatusForOos(keyword, isDeleted, designerId,
 							"Approved", false, pagingSort);
