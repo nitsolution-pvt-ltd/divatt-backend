@@ -401,6 +401,7 @@ public class ProfileContoller {
 	@PostMapping("/s3/upload")
 	public ResponseEntity<?> uploadFiles(@RequestPart(value = "file", required = false) MultipartFile file)
 			throws IOException {
+		LOGGER.info(file.getSize()+"Inside");
 		if (file.getSize() > 10681340)
 			throw new CustomException("File size not excepted....");
 		return ResponseEntity.ok(s3Service.uploadFile(file.getOriginalFilename(), file.getBytes()));
