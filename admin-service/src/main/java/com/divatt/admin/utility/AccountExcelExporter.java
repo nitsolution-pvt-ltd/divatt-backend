@@ -18,6 +18,7 @@ public class AccountExcelExporter {
 	private XSSFSheet sheet;
 	private List<AccountEntity> listAccount;
 
+	
 	public AccountExcelExporter(List<AccountEntity> listAccount) {
 		this.listAccount = listAccount;
 		workbook = new XSSFWorkbook();
@@ -34,7 +35,6 @@ public class AccountExcelExporter {
 			cell.setCellValue((Float) value);
 		} else if (value instanceof Double) {
 			cell.setCellValue((Double) value);
-			cell.setCellValue((Float) value);
 		} else if (value instanceof Date) {
 			cell.setCellValue((Date) value);
 		}else {
@@ -44,7 +44,7 @@ public class AccountExcelExporter {
 	}
 
 	private void writeHeaderLine() {
-		sheet = workbook.createSheet("Users");
+		sheet = workbook.createSheet("Account");
 
 		Row row = sheet.createRow(0);
 
@@ -69,10 +69,30 @@ public class AccountExcelExporter {
 		createCell(row, 11, "Service Total Tax", style);
 		createCell(row, 12, "Service Total Aamount", style);
 		
-//		createCell(row, 2, "Designer Invoice ID", style);
-//		createCell(row, 3, "Serivce Status", style);
-//		createCell(row, 4, "Units", style);
+		createCell(row, 13, "Govt. Status", style);
+		createCell(row, 14, "Govt. Rate", style);
+		createCell(row, 15, "Govt. Fee", style);
+		createCell(row, 16, "Govt. IGST", style);
+		createCell(row, 17, "Govt. CGST", style);
+		createCell(row, 18, "Govt. SGST", style);
+		createCell(row, 19, "Govt. Total Tax", style);
+		createCell(row, 20, "Govt. Total Aamount", style);
 		
+		createCell(row, 21, "MRP", style);
+		createCell(row, 22, "Sale Price", style);
+		createCell(row, 23, "Discount", style);
+		createCell(row, 24, "HSN Rate", style);
+		createCell(row, 25, "HSN Amount", style);
+		createCell(row, 26, "HSN IGST", style);
+		createCell(row, 27, "HSN CGST", style);
+		createCell(row, 28, "HSN SGST", style);
+		createCell(row, 29, "Designer Total Tax", style);
+		createCell(row, 30, "Designer Total Received", style);
+		createCell(row, 31, "Designer Net Payable", style);
+		createCell(row, 32, "Designer Status", style);
+		createCell(row, 33, "Payment Datetime", style);
+		createCell(row, 34, "Order ID", style);
+	
 
 	}
 
@@ -92,24 +112,42 @@ public class AccountExcelExporter {
 			createCell(row, columnCount++, count, style);
 			createCell(row, columnCount++, rowsAccount.getDatetime(), style);
 			
-//			createCell(row, columnCount++, rowsAccount.getService_charge().getDate(), style);
 			createCell(row, columnCount++, rowsAccount.getService_charge().getDesigner_invoice_id(), style);
 			createCell(row, columnCount++, rowsAccount.getService_charge().getStatus(), style);
 			createCell(row, columnCount++, rowsAccount.getService_charge().getUnits(), style);
 			createCell(row, columnCount++, rowsAccount.getService_charge().getRate(), style);
-			createCell(row, columnCount++, rowsAccount.getService_charge().getFee(), style);
-			createCell(row, columnCount++, rowsAccount.getService_charge().getIgst(), style);
-			createCell(row, columnCount++, rowsAccount.getService_charge().getCgst(), style);
-			createCell(row, columnCount++, rowsAccount.getService_charge().getSgst(), style);
-			createCell(row, columnCount++, rowsAccount.getService_charge().getTcs(), style);
-//			createCell(row, columnCount++, rowsAccount.getService_charge().getTcs_rate(), style);
-			createCell(row, columnCount++, rowsAccount.getService_charge().getTotal_tax(), style);
-			createCell(row, columnCount++, rowsAccount.getService_charge().getTotal_amount(), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getService_charge().getFee()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getService_charge().getIgst()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getService_charge().getCgst()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getService_charge().getSgst()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getService_charge().getTcs()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getService_charge().getTotal_tax()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getService_charge().getTotal_amount()), style);
 			
+			createCell(row, columnCount++, rowsAccount.getGovt_charge().get(0).getStatus(), style);
+			createCell(row, columnCount++, rowsAccount.getGovt_charge().get(0).getRate(), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getGovt_charge().get(0).getFee()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getGovt_charge().get(0).getIgst()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getGovt_charge().get(0).getCgst()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getGovt_charge().get(0).getSgst()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getGovt_charge().get(0).getTotal_tax()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getGovt_charge().get(0).getTotal_amount()), style);
 			
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getDesigner_return_amount().get(0).getMrp()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getDesigner_return_amount().get(0).getSales_price()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getDesigner_return_amount().get(0).getDiscount()), style);
+			createCell(row, columnCount++, rowsAccount.getDesigner_return_amount().get(0).getHsn_rate(), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getDesigner_return_amount().get(0).getHsn_amount()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getDesigner_return_amount().get(0).getHsn_igst()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getDesigner_return_amount().get(0).getHsn_cgst()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getDesigner_return_amount().get(0).getHsn_sgst()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getDesigner_return_amount().get(0).getTotal_tax_amount()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getDesigner_return_amount().get(0).getTotal_amount_received()), style);
+			createCell(row, columnCount++, CommonUtility.duoble(rowsAccount.getDesigner_return_amount().get(0).getNet_payable_designer()), style);
+			createCell(row, columnCount++, rowsAccount.getDesigner_return_amount().get(0).getStatus(), style);
+			createCell(row, columnCount++, rowsAccount.getDesigner_return_amount().get(0).getPayment_datetime(), style);
+			createCell(row, columnCount++, rowsAccount.getDesigner_return_amount().get(0).getOrder_id(), style);
 			
-//			createCell(row, columnCount++, rowsAccount.getDesigner_return_amount().get(0).getNet_payable_designer(), style);
-//			createCell(row, columnCount++, rowsAccount.getDesigner_return_amount().get(0).getOrder_id(), style);
 			
 			count++;
 		}
