@@ -36,6 +36,7 @@ import com.divatt.designer.constant.MessageConstant;
 import com.divatt.designer.constant.RestTemplateConstant;
 import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.EmailEntity;
+import com.divatt.designer.entity.LoginEntity;
 import com.divatt.designer.entity.SubCategoryEntity;
 import com.divatt.designer.entity.UserProfile;
 import com.divatt.designer.entity.UserProfileInfo;
@@ -91,13 +92,11 @@ public class ProductServiceImp2 implements ProductService2 {
 			List<Long> userId = new ArrayList<Long>();
 
 			ResponseEntity<String> forEntity = restTemplate.getForEntity(
-					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + entity2.getDesignerId(),
-					String.class);
+					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + entity2.getDesignerId(), String.class);
 			String data = forEntity.getBody();
 			JSONArray jsonArray = new JSONArray(data);
-			String designerImageData = designerProfileRepo
-					.findBydesignerId(entity2.getDesignerId().longValue()).get().getDesignerProfile()
-					.getProfilePic();
+			String designerImageData = designerProfileRepo.findBydesignerId(entity2.getDesignerId().longValue()).get()
+					.getDesignerProfile().getProfilePic();
 			jsonArray.forEach(array -> {
 				ObjectMapper objectMapper = new ObjectMapper();
 				UserProfile readValue;
@@ -123,8 +122,9 @@ public class ProductServiceImp2 implements ProductService2 {
 			});
 			Integer productId = entity2.getProductId();
 			ProductMasterEntity2 productMasterEntity = productRepo2.findById(productId).get();
-			LOGGER.info(productMasterEntity+"inside");
-			DesignerProfileEntity designerProfile = designerProfileRepo.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
+			LOGGER.info(productMasterEntity + "inside");
+			DesignerProfileEntity designerProfile = designerProfileRepo
+					.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
 			ImageEntity[] images = productMasterEntity.getImages();
 			String image1 = images[0].getLarge();
 			System.out.println(images[0].getLarge());
@@ -173,6 +173,29 @@ public class ProductServiceImp2 implements ProductService2 {
 
 				LOGGER.info("inside if");
 				productRepo2.save(customFunction.updateProductData(productMasterEntity2, productId));
+				try {
+					LoginEntity forEntity = restTemplate.getForEntity(
+							RestTemplateConstant.ADMIN_ROLE_NAME.getMessage() + MessageConstant.ADMIN_ROLES.getMessage(),
+							LoginEntity.class).getBody();
+					String email2 = forEntity.getEmail();
+					Integer designerId = productMasterEntity2.getDesignerId();
+					DesignerProfileEntity findBydesignerId = designerProfileRepo.findBydesignerId(designerId.longValue()).get();
+					String email = findBydesignerId.getDesignerProfile().getEmail();
+					String designerName = findBydesignerId.getDesignerName();
+					Context context = new Context();
+					context.setVariable("designerName", designerName);
+					String htmlContent = templateEngine.process("productUpdate.html", context);
+					EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Product updated", htmlContent,
+							true, null, restTemplate);
+					emailSenderThread.start();
+					String htmlContent1 = templateEngine.process("productUpdateAdmin.html", context);
+					EmailSenderThread emailSenderThread1 = new EmailSenderThread(email2, "Product updated", htmlContent1,
+							true, null, restTemplate);
+					emailSenderThread1.start();
+					
+				} catch (Exception e) {
+					throw new CustomException(e.getMessage());
+				}
 
 				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.PRODUCT_UPDATED.getMessage(), 200);
@@ -730,12 +753,13 @@ public class ProductServiceImp2 implements ProductService2 {
 					List<ProductMasterEntity2> filter = data.stream()
 							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
 							.collect(Collectors.toList());
-					 int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
-					 int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filter.size());
-					
-					 List<ProductMasterEntity2> subList = startOfPage>=endOfPage?new ArrayList<>():filter.subList(startOfPage,endOfPage);
-					 findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filter.size());
-					 //findAll = new PageImpl<>(filter, pagingSort, filter.size());
+					int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+					int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filter.size());
+
+					List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
+							: filter.subList(startOfPage, endOfPage);
+					findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filter.size());
+					// findAll = new PageImpl<>(filter, pagingSort, filter.size());
 				} else if (adminStatus.equals("oos")) {
 					findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
 							"Approved", false, pagingSort);
@@ -757,10 +781,11 @@ public class ProductServiceImp2 implements ProductService2 {
 							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
 							.collect(Collectors.toList());
 					int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
-					 int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filter.size());
-					
-					 List<ProductMasterEntity2> subList = startOfPage>=endOfPage?new ArrayList<>():filter.subList(startOfPage,endOfPage);
-					 findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filter.size());
+					int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filter.size());
+
+					List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
+							: filter.subList(startOfPage, endOfPage);
+					findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filter.size());
 				} else if (adminStatus.equals("oos")) {
 					findAll = productRepo2.listDesignerProductsearchByAdminStatusForOos(keyword, isDeleted, designerId,
 							"Approved", false, pagingSort);
