@@ -10,18 +10,18 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 public class Deal {
 	private String dealName;
 	private String dealType;
-	private Integer dealValue;
+	private Double dealValue;
 	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
 	private Date dealStart;
 	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
 	private Date dealEnd;
-	private Integer salePrice;
+	private Double salePrice;
 	private JSONObject taxAmount;
 	public Deal() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Deal(String dealName, String dealType, Integer dealValue, Date dealStart, Date dealEnd, Integer salePrice,
+	public Deal(String dealName, String dealType, Double dealValue, Date dealStart, Date dealEnd, Double salePrice,
 			JSONObject taxAmount) {
 		super();
 		this.dealName = dealName;
@@ -31,13 +31,6 @@ public class Deal {
 		this.dealEnd = dealEnd;
 		this.salePrice = salePrice;
 		this.taxAmount = taxAmount;
-	}
-	@Override
-	public String toString() {
-		return "Deal [dealName=" + dealName + ", dealType=" + dealType + ", dealValue=" + dealValue + ", dealStart="
-				+ dealStart + ", dealEnd=" + dealEnd + ", salePrice=" + salePrice + ", taxAmount=" + taxAmount
-				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
-				+ "]";
 	}
 	public String getDealName() {
 		return dealName;
@@ -51,10 +44,10 @@ public class Deal {
 	public void setDealType(String dealType) {
 		this.dealType = dealType;
 	}
-	public Integer getDealValue() {
+	public Double getDealValue() {
 		return dealValue;
 	}
-	public void setDealValue(Integer dealValue) {
+	public void setDealValue(Double dealValue) {
 		this.dealValue = dealValue;
 	}
 	public Date getDealStart() {
@@ -69,10 +62,10 @@ public class Deal {
 	public void setDealEnd(Date dealEnd) {
 		this.dealEnd = dealEnd;
 	}
-	public Integer getSalePrice() {
+	public Double getSalePrice() {
 		return salePrice;
 	}
-	public void setSalePrice(Integer salePrice) {
+	public void setSalePrice(Double salePrice) {
 		this.salePrice = salePrice;
 	}
 	public JSONObject getTaxAmount() {
@@ -81,5 +74,11 @@ public class Deal {
 	public void setTaxAmount(JSONObject taxAmount) {
 		this.taxAmount = taxAmount;
 	}
+	@Override
+	public String toString() {
+		return "Deal [dealName=" + dealName + ", dealType=" + dealType + ", dealValue=" + dealValue + ", dealStart="
+				+ dealStart + ", dealEnd=" + dealEnd + ", salePrice=" + salePrice + ", taxAmount=" + taxAmount + "]";
+	}
+	
 	
 }
