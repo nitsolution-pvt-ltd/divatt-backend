@@ -113,6 +113,6 @@ public interface OrderAndPaymentService {
 	
 	public List<OrderInvoiceEntity> getInvoiceByOrder(String orderId);
 
-	public String getOrderSummary(String orderId);
+	public String  getOrderSummary(String orderId);
 
 }
