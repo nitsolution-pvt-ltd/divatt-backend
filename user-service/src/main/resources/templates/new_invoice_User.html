@@ -182,7 +182,7 @@
             </tr>
             <tr style="border-top: 1px solid #999;border-bottom: 1px solid #999;" th:each="data1 : ${data}">
            	
-                <td style="font-weight: 600;padding: 14px 0;">Total</td>
+              <!--   <td style="font-weight: 600;padding: 14px 0;">Total</td>
               	 <p th:with="totalQunatuty=${totalQunatuty + data1.qty}"> </p>
                 <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.totalQunatuty}"></th:block> </td>
                 <p th:with="total=${total + data1.grossAmount}"> </p>
@@ -193,10 +193,10 @@
                 <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.totalCgst}"></th:block> </td>
                 <p th:with="totalSgst=${totalSgst + data1.sgst}"> </p>
                 <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.totalSgst}"></th:block> </td>
-               <!--  <p th:with="totalPrice=${totalPrice + data1.igst}"> </p> -->
+                 <p th:with="totalPrice=${totalPrice + data1.igst}"> </p> 
                 <td style="font-weight: 600;padding: 14px 0;">0</td>
-                <p th:with="grandTotal=${grandTotal + data1.total}"> </p>
-                <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.grandTotal}"></th:block> </td>
+                <p th:with="grandTotal=${grandTotal + data1.total}"> </p> 
+                <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.grandTotal}"></th:block> </td> -->
             </tr>
             <tr>
                 <td> &nbsp;</td>
