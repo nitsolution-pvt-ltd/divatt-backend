@@ -858,7 +858,7 @@ public class OrderAndPaymentContoller {
 	@GetMapping("/getOrderSummary/{orderId}")
 	public String getOrderSummary(@PathVariable String orderId) {
 		try {
-			return this.orderAndPaymentService.getOrderSummary(orderId);
+			 return this.orderAndPaymentService.getOrderSummary(orderId);
 		}catch(Exception e) {
 			throw new CustomException(e.getMessage());
 		}
