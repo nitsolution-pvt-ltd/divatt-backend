@@ -7,7 +7,7 @@ public enum MessageConstant {
 	LOGIN_SUCESSFULL("Login successful"),
 	ACCOUNT_INACTIVE("You got a mail. please go to that mail and activate your account"),
 	PROFILE_REJECTED("Your profile is rejected."),
-	PROFILE_DELETED("Your profile has been deleted and no need to take into profile."),
+	PROFILE_DELETED("Your profile has been deleted"),
 	EMAIL_NOT_FOUND("Email not found"), NODATAFOUND("No data found"),
 	USERNAME_NOT_FOUND("Oops! No such user account found"), DATANOTSAVE("Data not save! try again"),
 	FORGET_PASSWORDBODY(
