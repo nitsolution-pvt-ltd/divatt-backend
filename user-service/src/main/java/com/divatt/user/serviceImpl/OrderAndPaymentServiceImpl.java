@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
+import org.etsi.uri.x01903.v13.impl.CRLIdentifierTypeImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -566,13 +568,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				LOGGER.info(e.getOrderId() + "Inside OrderId");
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 				LOGGER.info(OrderPaymentRow + " Inside PaymentRow");
-				LOGGER.info(" Inside OrderSku" + OrderSKUDetailsRow);			
-                 OrderSKUDetailsRow.forEach(D -> {
+				LOGGER.info(" Inside OrderSku" + OrderSKUDetailsRow);
+				OrderSKUDetailsRow.forEach(D -> {
 					LOGGER.info("Data in for each method" + D.getProductId());
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
 					LOGGER.info("Top of try catch");
-					
+
 					// "https://localhost:8083/dev/designerProducts/productList/"
 					try {
 						LOGGER.info(D.getProductId() + " inside productid");
@@ -601,13 +603,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						objectss.put("withGiftWrap", productById.getBody().get("giftWrap"));
 						String orderId2 = D.getOrderId();
 						LOGGER.info(orderId2 + "inside OrderID2");
-						//Optional<OrderInvoiceEntity> invoiceId = getInvoiceByOrderId(orderId2);
+						// Optional<OrderInvoiceEntity> invoiceId = getInvoiceByOrderId(orderId2);
 						List<OrderInvoiceEntity> invoiceId = getInvoiceByOrder(orderId2);
-						if (invoiceId.size() >0) {
-							invoiceId.forEach(invoice-> {
+						if (invoiceId.size() > 0) {
+							invoiceId.forEach(invoice -> {
 								objectss.put("invoiceId", invoice.getInvoiceId());
 							});
-							//objectss.put("invoiceId", invoiceId.getInvoiceId());
+							// objectss.put("invoiceId", invoiceId.getInvoiceId());
 							LOGGER.info(objectss + "Inside objectss");
 						} else {
 							objectss.put("invoiceId", JSONObject.NULL);
@@ -2103,16 +2105,28 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Date time = calendar.getTime();
 				LOGGER.info("time is" + time);
 				DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+				DecimalFormat decimalFormat = new DecimalFormat("0.00");
 				String format1 = dateFormat2.format(time);
-				Double discount = orderDetailsEntity.getDiscount();
+				Double disc = orderDetailsEntity.getDiscount();
+				String discount = decimalFormat.format(disc);
 				Double taxAmount = orderDetailsEntity.getTaxAmount();
+				String format2 = decimalFormat.format(taxAmount);
 				Context context = new Context();
 				context.setVariable("firstName", firstName);
 				context.setVariable("productId", productId);
 				context.setVariable("productName", productName);
-				context.setVariable("mrp", mrp);
+				if (mrp == 0) {
+					LOGGER.info(item.getMrp() + "inside mep");
+					context.setVariable("mrp", item.getMrp());
+					double format3 = (Double.parseDouble(format2) + item.getMrp()) - Double.parseDouble(discount);
+					context.setVariable("format3", format3);
+				} else {
+					context.setVariable("mrp", mrp);
+					double format3 = (Double.parseDouble(format2) + mrp) - Double.parseDouble(discount);
+					context.setVariable("format3", format3);
+				}
 				context.setVariable("discount", discount);
-				context.setVariable("taxAmount", taxAmount);
+				context.setVariable("taxAmount", format2);
 				context.setVariable("size", size);
 				context.setVariable("displayName", displayName);
 				context.setVariable("paymentMode", paymentMode);
@@ -2121,6 +2135,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				context.setVariable("orderId", orderId);
 				context.setVariable("quantity", units);
 				context.setVariable("colour", colour);
+
 				if (orderItemStatus.equals("Orders")) {
 					context.setVariable("orderItemStatus", "Verified");
 				} else {
@@ -2129,10 +2144,18 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				context.setVariable("orderId", orderId);
 				context.setVariable("productImage", images);
 				LOGGER.info(images + "inside");
-				String htmlContent = templateEngine.process("statusChange.html", context);
-				EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-						"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
-				emailSenderThread.start();
+				if (orderItemStatus.equals("Orders")) {
+					String htmlContent = templateEngine.process("statusChange.html", context);
+					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+							"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
+					emailSenderThread.start();
+				} else {
+					String htmlContent = templateEngine.process("statusChange.html", context);
+					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+							"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
+					emailSenderThread.start();
+				}
+
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage()
 								+ orderItemStatus + MessageConstant.SUCCESSFULLY.getMessage(),
@@ -2352,8 +2375,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String state = forEntity.getDesignerProfile().getState();
 				String paymentMode = userOrderPaymentRepo.findByOrderId(orderId).get().getPaymentMode();
 				OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
-				Double discount = orderDetailsEntity.getDiscount();
-				Double taxAmount = orderDetailsEntity.getTaxAmount();
+//				Double discount = orderDetailsEntity.getDiscount();
+//				Double taxAmount = orderDetailsEntity.getTaxAmount();
 //				String shippingAddress = orderDetailsEntity.getShippingAddress().toString();
 				Object shippingAddress = orderDetailsEntity.getShippingAddress();
 				String substring2 = shippingAddress.toString().substring(1, shippingAddress.toString().length() - 1)
@@ -2373,20 +2396,37 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Date time = calendar.getTime();
 				LOGGER.info("time is" + time);
 				DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+				DecimalFormat decimalFormat = new DecimalFormat("0.00");
 				String format1 = dateFormat2.format(time);
+				Double disc = orderDetailsEntity.getDiscount();
+				String discount = decimalFormat.format(disc);
+				Double taxAmount = orderDetailsEntity.getTaxAmount();
+				String format2 = decimalFormat.format(taxAmount);
 				LOGGER.info(format1 + "inside");
 				Context context = new Context();
 				context.setVariable("firstName", firstName);
 				context.setVariable("productId", productId);
 				context.setVariable("productName", productName);
+				if (mrp == 0) {
+					LOGGER.info(item.getMrp() + "inside mep");
+					context.setVariable("mrp", item.getMrp());
+					double format3 = (Double.parseDouble(format2) + item.getMrp()) - Double.parseDouble(discount);
+					context.setVariable("format3", format3);
+				} else {
+					context.setVariable("mrp", mrp);
+					double format3 = (Double.parseDouble(format2) + mrp) - Double.parseDouble(discount);
+					context.setVariable("format3", format3);
+				}
+				context.setVariable("discount", discount);
+				context.setVariable("taxAmount", format2);
 				context.setVariable("mrp", mrp);
 				context.setVariable("size", size);
 				context.setVariable("displayName", displayName);
 				context.setVariable("city", city);
 				context.setVariable("country", country);
 				context.setVariable("state", state);
-				context.setVariable("discount", discount);
-				context.setVariable("taxAmount", taxAmount);
+//				context.setVariable("discount", discount);
+//				context.setVariable("taxAmount", taxAmount);
 				context.setVariable("paymentMode", paymentMode);
 				context.setVariable("shippingAddress", replace);
 				context.setVariable("orderDate", format1);
@@ -2401,14 +2441,38 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				context.setVariable("orderId", orderId);
 				context.setVariable("productImage", images);
 				LOGGER.info(images + "inside");
-				String htmlContent = templateEngine.process("statusChangeDesigner.html", context);
-				EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-						"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
-				String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
-				EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-						"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null, restTemplate);
-				emailSenderThreadDesigner.start();
-				emailSenderThread.start();
+//				if (orderItemStatus.equals("Orders")) {
+//					context.setVariable("orderItemStatus", "Verified");
+//					String htmlContent = templateEngine.process("statusChange.html", context);
+//					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+//							"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
+//					emailSenderThread.start();
+//				} else {
+//					context.setVariable("orderItemStatus", orderItemStatus);
+//					String htmlContent = templateEngine.process("statusChange.html", context);
+//					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+//							"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
+//					emailSenderThread.start();
+//				}
+				if (orderItemStatus.equals("Orders")) {
+					String htmlContent = templateEngine.process("statusChangeDesigner.html", context);
+					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+							"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
+					String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
+					EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+							"Your Product Has been " + "Verified", htmlContentDesigner, true, null, restTemplate);
+					emailSenderThreadDesigner.start();
+					emailSenderThread.start();
+				} else {
+					String htmlContent = templateEngine.process("statusChangeDesigner.html", context);
+					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+							"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
+					String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
+					EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+							"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null, restTemplate);
+					emailSenderThreadDesigner.start();
+					emailSenderThread.start();
+				}
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage()
 								+ orderItemStatus + MessageConstant.SUCCESSFULLY.getMessage(),
@@ -2577,6 +2641,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@Override
 	public List<OrderInvoiceEntity> getInvoiceByOrder(String orderId) {
 		try {
@@ -2588,43 +2653,67 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String  getOrderSummary(String orderId) {
+	public String getOrderSummary(String orderId) {
 		try {
-			Query query= new Query();
+			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(orderId));
 			List<OrderInvoiceEntity> invoiceDataList=mongoOperations.find(query, OrderInvoiceEntity.class);
 			List<String> keyList= new ArrayList<>();
 			//LOGGER.info(invoiceDataList+"");
 			Map<String, List<InvoiceUpdatedModel>> responceData= new HashMap<>();
+			 List<String> invoiceIdList= new ArrayList<>(); 
 			for(OrderInvoiceEntity invoiceEntity:invoiceDataList) {
 				String gstNo=invoiceEntity.getDesignerDetails().getGSTIN();
-				try {
+						try {
 					 List<InvoiceUpdatedModel> productDetailsList=responceData.get(gstNo);
-					 productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity));
-					responceData.put(gstNo, productDetailsList);
-				}catch(Exception e) {
-					List<InvoiceUpdatedModel> productList= new ArrayList<>();
+					 Query query1= new Query();
+					 query1.addCriteria(Criteria.where("designerId").is(invoiceEntity.getProductDetails().getDesignerId())
+							 .and("orderId").is(invoiceEntity.getOrderId())
+							 .and("productId").is(invoiceEntity.getProductDetails().getProductId()));
+					 
+					 OrderSKUDetailsEntity detailsEntity=mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+					 invoiceIdList.add(invoiceEntity.getInvoiceId());
+					 productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity,detailsEntity));
+//			List<OrderInvoiceEntity> invoiceDataList = mongoOperations.find(query, OrderInvoiceEntity.class);
+//			List<String> keyList = new ArrayList<>();
+//			 LOGGER.info(invoiceDataList+"");
+//			Map<String, List<InvoiceUpdatedModel>> responceData = new HashMap<>();
+//			for (OrderInvoiceEntity invoiceEntity : invoiceDataList) {
+//				String gstNo = invoiceEntity.getDesignerDetails().getGSTIN();
+//				try {
+//					List<InvoiceUpdatedModel> productDetailsList = responceData.get(gstNo);
+//					productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity,detailsEntity));
+//					responceData.put(gstNo, productDetailsList);
+				} catch (Exception e) {
+					List<InvoiceUpdatedModel> productList = new ArrayList<>();
 					keyList.add(gstNo);
-					productList.add(UtillUserService.invoiceUpdatedModelMapper(invoiceEntity));
+					 Query query2= new Query();
+					 query2.addCriteria(Criteria.where("designerId").is(invoiceEntity.getProductDetails().getDesignerId())
+							 .and("orderId").is(invoiceEntity.getOrderId())
+							 .and("productId").is(invoiceEntity.getProductDetails().getProductId()));
+					 OrderSKUDetailsEntity detailsEntity=mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+					productList.add(UtillUserService.invoiceUpdatedModelMapper(invoiceEntity,detailsEntity));
 					responceData.put(gstNo,productList);
 				}
 			}
-			StringBuilder invoiceData= new StringBuilder();
-			for(String  key:keyList) {
-				
-				List<InvoiceUpdatedModel> invoiceUpdatedModels=responceData.get(key);
-				Map<String, Object> data= new HashMap<>();
+		//	mrpList.stream().collect(Collectors.summingInt(Integer::intValue));
+			StringBuilder invoiceData = new StringBuilder();
+			for (String key : keyList) {
+
+				List<InvoiceUpdatedModel> invoiceUpdatedModels = responceData.get(key);
+				Map<String, Object> data = new HashMap<>();
 				data.put("data", invoiceUpdatedModels);
 				Context context = new Context();
 				context.setVariables(data);
 				String htmlContent = templateEngine.process("new_invoice_User.html", context);
 				invoiceData.append(htmlContent);
 			}
-			
+
 			return invoiceData.toString();
-		}catch(Exception e) {
+			//return responceData;
+			
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 }

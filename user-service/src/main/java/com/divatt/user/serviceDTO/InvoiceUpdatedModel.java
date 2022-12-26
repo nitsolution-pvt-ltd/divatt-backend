@@ -1,5 +1,7 @@
 package com.divatt.user.serviceDTO;
 
+import java.util.List;
+
 public class InvoiceUpdatedModel {
 	
 	private String billedUserName;
@@ -33,6 +35,10 @@ public class InvoiceUpdatedModel {
 	private String igst;
 	private String total;
 	private String grandTotal;
+	private String totalCgst;
+	private String totalSgst;
+	private String totalDiscount;
+	private String totalQunatuty;
 	public InvoiceUpdatedModel() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -42,8 +48,8 @@ public class InvoiceUpdatedModel {
 			String shippingState, String shippingPincode, String shippingMobile, String orderId, String orderDate,
 			String invoiceId, String soldBy, String sellerName, String sellerAddress, String sellerCity,
 			String sellerState, String sellerPincode, String sellerMobile, String productName, String qty,
-			String grossAmount, String discount, String cgst, String sgst, String igst, String total,
-			String grandTotal) {
+			String grossAmount, String discount, String cgst, String sgst, String igst, String total, String grandTotal,
+			String totalCgst, String totalSgst, String totalDiscount, String totalQunatuty) {
 		super();
 		this.billedUserName = billedUserName;
 		this.bllingAddress = bllingAddress;
@@ -76,6 +82,10 @@ public class InvoiceUpdatedModel {
 		this.igst = igst;
 		this.total = total;
 		this.grandTotal = grandTotal;
+		this.totalCgst = totalCgst;
+		this.totalSgst = totalSgst;
+		this.totalDiscount = totalDiscount;
+		this.totalQunatuty = totalQunatuty;
 	}
 	@Override
 	public String toString() {
@@ -88,7 +98,9 @@ public class InvoiceUpdatedModel {
 				+ sellerName + ", sellerAddress=" + sellerAddress + ", sellerCity=" + sellerCity + ", sellerState="
 				+ sellerState + ", sellerPincode=" + sellerPincode + ", sellerMobile=" + sellerMobile + ", productName="
 				+ productName + ", qty=" + qty + ", grossAmount=" + grossAmount + ", discount=" + discount + ", cgst="
-				+ cgst + ", sgst=" + sgst + ", igst=" + igst + ", total=" + total + ", grandTotal=" + grandTotal + "]";
+				+ cgst + ", sgst=" + sgst + ", igst=" + igst + ", total=" + total + ", grandTotal=" + grandTotal
+				+ ", totalCgst=" + totalCgst + ", totalSgst=" + totalSgst + ", totalDiscount=" + totalDiscount
+				+ ", totalQunatuty=" + totalQunatuty + "]";
 	}
 	public String getBilledUserName() {
 		return billedUserName;
@@ -276,6 +288,29 @@ public class InvoiceUpdatedModel {
 	public void setGrandTotal(String grandTotal) {
 		this.grandTotal = grandTotal;
 	}
+	public String getTotalCgst() {
+		return totalCgst;
+	}
+	public void setTotalCgst(String totalCgst) {
+		this.totalCgst = totalCgst;
+	}
+	public String getTotalSgst() {
+		return totalSgst;
+	}
+	public void setTotalSgst(String totalSgst) {
+		this.totalSgst = totalSgst;
+	}
+	public String getTotalDiscount() {
+		return totalDiscount;
+	}
+	public void setTotalDiscount(String totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+	public String getTotalQunatuty() {
+		return totalQunatuty;
+	}
+	public void setTotalQunatuty(String totalQunatuty) {
+		this.totalQunatuty = totalQunatuty;
+	}
 	
-
 }
