@@ -1,5 +1,6 @@
 package com.divatt.admin.services;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,10 +17,12 @@ public interface AccountService {
 			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, 
 			String settlement, int year, int month, Optional<String> sortBy);
 
-	public GlobalResponse postAccountDetails(@Valid AccountEntity accountEntity);
+	public GlobalResponse postAccountDetails(AccountEntity accountEntity);
 
 	public ResponseEntity<?> viewAccountDetails(long accountId);
 
 	public GlobalResponse putAccountDetails(long accountId, @Valid AccountEntity accountEntity);
+	
+	public List<AccountEntity> excelReportService();
 
 }
