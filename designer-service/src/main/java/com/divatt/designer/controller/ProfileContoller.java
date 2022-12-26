@@ -904,12 +904,11 @@ public class ProfileContoller {
 	public GlobalResponce changeDesignerStatus(@RequestHeader("Authorization") String token,
 			@PathVariable String status) {
 		try {
-			LOGGER.info(jwtConfig.extractUsername(token.substring(7)));
-			LOGGER.info(token.substring(7));
+			LOGGER.info("Inside changeDesignerStatus");
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
 					.findByEmail(jwtConfig.extractUsername(token.substring(7)));
 			DesignerLoginEntity designerProfileEntity = new DesignerLoginEntity();
-			if (!findByEmail.isEmpty()) {
+			if (findByEmail.isPresent()) {
 				designerProfileEntity.setdId(findByEmail.get().getdId());
 				designerProfileEntity.setAdminComment(findByEmail.get().getAdminComment());
 				designerProfileEntity.setAuthToken(findByEmail.get().getAuthToken());
@@ -925,15 +924,16 @@ public class ProfileContoller {
 				designerProfileEntity.setEmail(findByEmail.get().getEmail());
 				designerProfileEntity.setDesignerCurrentStatus(status);
 				designerLoginRepo.save(designerProfileEntity);
-				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
-						MessageConstant.DESIGNER_STATUS_CHANGE.getMessage(), 200);
 			} else {
 				throw new CustomException(MessageConstant.USER_NOT_FOUND.getMessage());
 			}
-
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (RuntimeException e) {
+			throw new CustomException("Token Expired");
+		} catch (Exception ex) {
+			throw new CustomException(ex.getMessage());
 		}
+		return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+				MessageConstant.DESIGNER_STATUS_CHANGE.getMessage(), 200);
 	}
 
 	@SuppressWarnings("unused")
