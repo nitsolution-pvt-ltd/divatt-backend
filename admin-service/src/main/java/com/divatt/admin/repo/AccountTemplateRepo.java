@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -581,6 +582,67 @@ public class AccountTemplateRepo {
 //		countQuery.with(pagingSort);
 		long total = mongoTemplate.count(countQuery, AccountEntity.class);
 		return new PageImpl<AccountEntity>(results.getMappedResults(), pagingSort, total);
+	}
+	
+
+	public List<AccountEntity> getAccountReport(String designerReturn, String serviceCharge, String govtCharge, String userOrder, 
+			String ReturnStatus, String settlement, int year, int month) {
+
+		LocalDate today = LocalDate.now();
+		int dayDivide = 0;
+		int lengthOfMonth = 0;
+		YearMonth yearMonth = null;
+		
+		if(year != 0 && month !=0 && !settlement.equals(null)) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide= lengthOfMonth / 2;
+		}
+		
+		MatchOperation filterByCondition = null;
+
+		if(ReturnStatus.equals("NotPaid") && !ReturnStatus.isEmpty()) {
+			filterByCondition = Aggregation.match(new Criteria().orOperator(
+			        Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
+		}else if(ReturnStatus.equals("Paid") && !ReturnStatus.isEmpty()) {
+			filterByCondition = Aggregation.match(
+					Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("RETURN")));
+		}else {
+			if(settlement.equals("firstSettlement") && year != 0 && month !=0) {
+			filterByCondition = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+					.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
+					)));
+			}else if(settlement.equals("secondSettlement") && year != 0 && month !=0) {
+			filterByCondition = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+					.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))
+					)));
+			}else {
+				filterByCondition = Aggregation.match(new Criteria());
+			}
+		}
+		
+		if(designerReturn != "" && !designerReturn.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is(designerReturn.trim())));
+		}
+		if(serviceCharge != "" && !serviceCharge.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("service_charge.status").is(serviceCharge.trim()));
+		}
+		if(govtCharge != "" && !govtCharge.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("govt_charge").elemMatch(Criteria.where("status").is(govtCharge.trim())));
+		}
+		if(userOrder != "" && !userOrder.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
+		}
+		SortOperation sortByIdDesc = Aggregation.sort(Direction.DESC,"_id");
+
+		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, sortByIdDesc);
+		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations, mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
+
+		return results.getMappedResults();
 	}
 
 }

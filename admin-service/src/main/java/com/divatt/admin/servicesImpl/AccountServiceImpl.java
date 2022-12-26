@@ -321,7 +321,8 @@ public class AccountServiceImpl implements AccountService {
 
 	}
 
-	public List<AccountEntity> excelReportService() {
+	public List<AccountEntity> excelReportService(String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, 
+			String settlement, int year, int month) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.excelReportService()");
@@ -331,7 +332,10 @@ public class AccountServiceImpl implements AccountService {
 		}
 		List<AccountEntity> findAll = new ArrayList<>();
 		try {
-			findAll = accountRepo.findAll(Sort.by("_id").descending());
+			
+//			findAll = accountRepo.findAll(Sort.by("_id").descending());
+			findAll = accountTemplateRepo.getAccountReport(designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, 
+					settlement, year, month);
 				
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",

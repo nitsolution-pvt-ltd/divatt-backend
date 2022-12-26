@@ -180,7 +180,12 @@ public class AccountController {
 	}
 
 	@GetMapping("/excelReport")
-	public void excelReport(HttpServletResponse response) {
+	public void excelReport(HttpServletResponse response,
+			@RequestParam(defaultValue = "") String designerReturn,
+			@RequestParam(defaultValue = "") String serviceCharge, @RequestParam(defaultValue = "") String govtCharge,
+			@RequestParam(defaultValue = "") String userOrder, @RequestParam(defaultValue = "") String ReturnStatus,
+			@RequestParam(defaultValue = "") String settlement, @RequestParam(defaultValue = "0") int year,
+			@RequestParam(defaultValue = "0") int month) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.excelReport()");
@@ -206,7 +211,7 @@ public class AccountController {
 			String headerValue = "attachment; filename=Divatt_account_report_" + currentDateTime + ".xlsx";
 			response.setHeader(headerKey, headerValue);
 
-			List<AccountEntity> listUsers = accountService.excelReportService();
+			List<AccountEntity> listUsers = accountService.excelReportService(designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, settlement, year, month);
 			AccountExcelExporter excelExporter = new AccountExcelExporter(listUsers);
 			excelExporter.export(response);
 			

@@ -23,6 +23,7 @@ public interface AccountService {
 
 	public GlobalResponse putAccountDetails(long accountId, @Valid AccountEntity accountEntity);
 	
-	public List<AccountEntity> excelReportService();
+	public List<AccountEntity> excelReportService(String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, 
+			String settlement, int year, int month);
 
 }
