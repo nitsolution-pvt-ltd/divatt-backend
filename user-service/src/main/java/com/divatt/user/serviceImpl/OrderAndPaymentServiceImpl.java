@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
+import org.etsi.uri.x01903.v13.impl.CRLIdentifierTypeImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -2656,23 +2657,46 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(orderId));
-			List<OrderInvoiceEntity> invoiceDataList = mongoOperations.find(query, OrderInvoiceEntity.class);
-			List<String> keyList = new ArrayList<>();
-			// LOGGER.info(invoiceDataList+"");
-			Map<String, List<InvoiceUpdatedModel>> responceData = new HashMap<>();
-			for (OrderInvoiceEntity invoiceEntity : invoiceDataList) {
-				String gstNo = invoiceEntity.getDesignerDetails().getGSTIN();
-				try {
-					List<InvoiceUpdatedModel> productDetailsList = responceData.get(gstNo);
-					productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity));
-					responceData.put(gstNo, productDetailsList);
+			List<OrderInvoiceEntity> invoiceDataList=mongoOperations.find(query, OrderInvoiceEntity.class);
+			List<String> keyList= new ArrayList<>();
+			//LOGGER.info(invoiceDataList+"");
+			Map<String, List<InvoiceUpdatedModel>> responceData= new HashMap<>();
+			 List<String> invoiceIdList= new ArrayList<>(); 
+			for(OrderInvoiceEntity invoiceEntity:invoiceDataList) {
+				String gstNo=invoiceEntity.getDesignerDetails().getGSTIN();
+						try {
+					 List<InvoiceUpdatedModel> productDetailsList=responceData.get(gstNo);
+					 Query query1= new Query();
+					 query1.addCriteria(Criteria.where("designerId").is(invoiceEntity.getProductDetails().getDesignerId())
+							 .and("orderId").is(invoiceEntity.getOrderId())
+							 .and("productId").is(invoiceEntity.getProductDetails().getProductId()));
+					 
+					 OrderSKUDetailsEntity detailsEntity=mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+					 invoiceIdList.add(invoiceEntity.getInvoiceId());
+					 productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity,detailsEntity));
+//			List<OrderInvoiceEntity> invoiceDataList = mongoOperations.find(query, OrderInvoiceEntity.class);
+//			List<String> keyList = new ArrayList<>();
+//			 LOGGER.info(invoiceDataList+"");
+//			Map<String, List<InvoiceUpdatedModel>> responceData = new HashMap<>();
+//			for (OrderInvoiceEntity invoiceEntity : invoiceDataList) {
+//				String gstNo = invoiceEntity.getDesignerDetails().getGSTIN();
+//				try {
+//					List<InvoiceUpdatedModel> productDetailsList = responceData.get(gstNo);
+//					productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity,detailsEntity));
+//					responceData.put(gstNo, productDetailsList);
 				} catch (Exception e) {
 					List<InvoiceUpdatedModel> productList = new ArrayList<>();
 					keyList.add(gstNo);
-					productList.add(UtillUserService.invoiceUpdatedModelMapper(invoiceEntity));
-					responceData.put(gstNo, productList);
+					 Query query2= new Query();
+					 query2.addCriteria(Criteria.where("designerId").is(invoiceEntity.getProductDetails().getDesignerId())
+							 .and("orderId").is(invoiceEntity.getOrderId())
+							 .and("productId").is(invoiceEntity.getProductDetails().getProductId()));
+					 OrderSKUDetailsEntity detailsEntity=mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+					productList.add(UtillUserService.invoiceUpdatedModelMapper(invoiceEntity,detailsEntity));
+					responceData.put(gstNo,productList);
 				}
 			}
+		//	mrpList.stream().collect(Collectors.summingInt(Integer::intValue));
 			StringBuilder invoiceData = new StringBuilder();
 			for (String key : keyList) {
 
@@ -2686,9 +2710,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 
 			return invoiceData.toString();
+			//return responceData;
+			
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 }

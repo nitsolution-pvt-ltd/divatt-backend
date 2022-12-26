@@ -1,6 +1,7 @@
 package com.divatt.admin.servicesImpl;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -274,7 +275,7 @@ public class AccountServiceImpl implements AccountService {
 				totalAmount = getTotalAmount.get(0).getTotalAmount();
 			}
 			
-			Map<String, Object> response = new HashMap<>();
+			final Map<String, Object> response = new HashMap<>();
 			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
@@ -320,4 +321,34 @@ public class AccountServiceImpl implements AccountService {
 
 	}
 
+	public List<AccountEntity> excelReportService() {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountServiceImpl.excelReportService()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountServiceImpl.excelReportService()");
+		}
+		List<AccountEntity> findAll = new ArrayList<>();
+		try {
+			findAll = accountRepo.findAll(Sort.by("_id").descending());
+				
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/account/excelReport", "Success", HttpStatus.OK);
+				}
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/account/excelReport", gson.toJson(""), HttpStatus.OK);
+				}
+
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
+						interfaceId, host + contextPath + "/account/excelReport", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		return findAll;
+
+	}
 }

@@ -1,8 +1,13 @@
 package com.divatt.admin.contoller;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -25,6 +30,7 @@ import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.services.AccountService;
+import com.divatt.admin.utility.AccountExcelExporter;
 
 @RestController
 @RequestMapping("/account")
@@ -34,16 +40,16 @@ public class AccountController {
 
 	@Autowired
 	private AccountService accountService;
-	
+
 	@Value("${spring.profiles.active}")
 	private String contextPath;
 
 	@Value("${host}")
 	private String host;
-	
+
 	@Value("${interfaceId}")
 	private String interfaceId;
-	
+
 	@PostMapping("/add")
 	public GlobalResponse postAccountDetails(@Valid @RequestBody AccountEntity accountEntity) {
 
@@ -53,15 +59,15 @@ public class AccountController {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Inside - AccountController.postAccountDetails()");
 		}
-		
+
 		try {
 			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/add", "Success", HttpStatus.OK);
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/add", "Success", HttpStatus.OK);
 			}
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/add", "Success", HttpStatus.OK);
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/add", "Success", HttpStatus.OK);
 			}
 			return this.accountService.postAccountDetails(accountEntity);
 		} catch (Exception e) {
@@ -69,7 +75,7 @@ public class AccountController {
 		}
 
 	}
-	
+
 	@GetMapping("/view/{accountId}")
 	public ResponseEntity<?> viewAccountDetails(@PathVariable() long accountId) {
 
@@ -79,29 +85,31 @@ public class AccountController {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Inside - AccountController.viewAccountDetails()");
 		}
-		
+
 		try {
 			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/view/"+accountId, "Success", HttpStatus.OK);
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/view/" + accountId, "Success", HttpStatus.OK);
 			}
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/view/"+accountId, "Success", HttpStatus.OK);
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/view/" + accountId, "Success", HttpStatus.OK);
 			}
 			return this.accountService.viewAccountDetails(accountId);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/view/"+accountId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/view/" + accountId, e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
-	
+
 	@PutMapping("/update/{accountId}")
-	public GlobalResponse putAccountDetails(@Valid @RequestBody AccountEntity accountEntity, @PathVariable() Integer accountId) {
+	public GlobalResponse putAccountDetails(@Valid @RequestBody AccountEntity accountEntity,
+			@PathVariable() Integer accountId) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.putAccountDetails()");
@@ -109,21 +117,22 @@ public class AccountController {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Inside - AccountController.putAccountDetails()");
 		}
-		
+
 		try {
 			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/update/"+accountId, "Success", HttpStatus.OK);
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/update/" + accountId, "Success", HttpStatus.OK);
 			}
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/update/"+accountId, "Success", HttpStatus.OK);
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/update/" + accountId, "Success", HttpStatus.OK);
 			}
-			return this.accountService.putAccountDetails(accountId,accountEntity);
+			return this.accountService.putAccountDetails(accountId, accountEntity);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/update/"+accountId, e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/update/" + accountId, e.getLocalizedMessage(),
+						HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
 		}
@@ -135,11 +144,11 @@ public class AccountController {
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "_id") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
-			@RequestParam(defaultValue = "") String designerReturn, @RequestParam(defaultValue = "") String serviceCharge,
-			@RequestParam(defaultValue = "") String govtCharge, @RequestParam(defaultValue = "") String userOrder,
-			@RequestParam(defaultValue = "") String ReturnStatus,@RequestParam(defaultValue = "") String settlement,
-			@RequestParam(defaultValue = "0") int year,@RequestParam(defaultValue = "0") int month,
-			@RequestParam Optional<String> sortBy) {
+			@RequestParam(defaultValue = "") String designerReturn,
+			@RequestParam(defaultValue = "") String serviceCharge, @RequestParam(defaultValue = "") String govtCharge,
+			@RequestParam(defaultValue = "") String userOrder, @RequestParam(defaultValue = "") String ReturnStatus,
+			@RequestParam(defaultValue = "") String settlement, @RequestParam(defaultValue = "0") int year,
+			@RequestParam(defaultValue = "0") int month, @RequestParam Optional<String> sortBy) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.getAccountDetails()");
@@ -150,21 +159,63 @@ public class AccountController {
 
 		try {
 			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/list", "Success", HttpStatus.OK);
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/list", "Success", HttpStatus.OK);
 			}
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/list", "Success", HttpStatus.OK);
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/list", "Success", HttpStatus.OK);
 			}
-			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword, 
-					designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, settlement, year, month, sortBy);
+			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword,
+					designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, settlement, year, month,
+					sortBy);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-						interfaceId, host + contextPath + "/account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/list", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 			}
 			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+	@GetMapping("/excelReport")
+	public void excelReport(HttpServletResponse response) {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountController.excelReport()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountController.excelReport()");
+		}
+
+		try {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/excelReport", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/excelReport", "Success", HttpStatus.OK);
+			}
+			response.setContentType("application/octet-stream");
+			DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+			String currentDateTime = dateFormatter.format(new Date());
+
+			String headerKey = "Content-Disposition";
+			String headerValue = "attachment; filename=Divatt_account_report_" + currentDateTime + ".xlsx";
+			response.setHeader(headerKey, headerValue);
+
+			List<AccountEntity> listUsers = accountService.excelReportService();
+			AccountExcelExporter excelExporter = new AccountExcelExporter(listUsers);
+			excelExporter.export(response);
+			
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/excelReport", e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		}
 
 	}
