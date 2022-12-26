@@ -1,3 +1,4 @@
+
 package com.divatt.user.services;
 
 import java.util.List;
@@ -113,6 +114,6 @@ public interface OrderAndPaymentService {
 	
 	public List<OrderInvoiceEntity> getInvoiceByOrder(String orderId);
 
-	public String  getOrderSummary(String orderId);
+	public String getOrderSummary(String orderId);
 
 }
