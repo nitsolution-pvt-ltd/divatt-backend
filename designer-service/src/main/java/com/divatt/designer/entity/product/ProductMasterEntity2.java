@@ -77,13 +77,13 @@ public class ProductMasterEntity2 implements Cloneable {
 	@Field(name = "price_code")
 	private String priceCode;
 	@Field(name = "MRP")
-	private Integer mrp;
+	private Double mrp;
 	@Field(name = "adminStatus")
 	private String adminStatus;
 	@Field(name = "deal")
 	private Deal deal;
 	@Field(name = "gift_wrap_amount")
-	private Integer giftWrapAmount;
+	private Double giftWrapAmount;
 	@Field(name = "extraSpecifications")
 	private ExtraSpecifications extraSpecifications;
 	@Field(name = "product_weight")
@@ -129,7 +129,7 @@ public class ProductMasterEntity2 implements Cloneable {
 			Boolean withCustomization, Boolean withDesignCustomization, Boolean withGiftWrap, Boolean returnAcceptable,
 			Boolean cancelAcceptable, Boolean cod, @NotEmpty(message = "Price Type Required") String priceType,
 			@NotEmpty(message = "Color Required") String colour, List<String> sizes, Integer soh, Integer oos,
-			Integer notify, String priceCode, Integer mrp, String adminStatus, Deal deal, Integer giftWrapAmount,
+			Integer notify, String priceCode, Double mrp, String adminStatus, Deal deal, Double giftWrapAmount,
 			ExtraSpecifications extraSpecifications, String productWeight, String shipmentTime, ImageEntity[] images,
 			Boolean isActive, Boolean isDeleted, String productStage, ProductStageDetails productStageDetails,
 			Date createdOn, String createdBy, Date updatedOn, String updatedBy, String subCategoryName,
@@ -364,11 +364,11 @@ public class ProductMasterEntity2 implements Cloneable {
 		this.priceCode = priceCode;
 	}
 
-	public Integer getMrp() {
+	public Double getMrp() {
 		return mrp;
 	}
 
-	public void setMrp(Integer mrp) {
+	public void setMrp(Double mrp) {
 		this.mrp = mrp;
 	}
 
@@ -388,11 +388,11 @@ public class ProductMasterEntity2 implements Cloneable {
 		this.deal = deal;
 	}
 
-	public Integer getGiftWrapAmount() {
+	public Double getGiftWrapAmount() {
 		return giftWrapAmount;
 	}
 
-	public void setGiftWrapAmount(Integer giftWrapAmount) {
+	public void setGiftWrapAmount(Double giftWrapAmount) {
 		this.giftWrapAmount = giftWrapAmount;
 	}
 
@@ -546,5 +546,7 @@ public class ProductMasterEntity2 implements Cloneable {
 				+ updatedOn + ", updatedBy=" + updatedBy + ", subCategoryName=" + subCategoryName + ", categoryName="
 				+ categoryName + ", weightUnit=" + weightUnit + ", designerProfile=" + designerProfile + "]";
 	}
+
+	
 
 }
