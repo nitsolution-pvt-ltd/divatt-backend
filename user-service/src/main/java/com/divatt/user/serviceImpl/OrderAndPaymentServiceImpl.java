@@ -2581,7 +2581,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
-
+				List<OrderInvoiceEntity> invoiceData = this.orderInvoiceRepo.findByOrder(e.getOrderId());
+				ResponseEntity<DesignerProfileEntity> forEntity = restTemplate.getForEntity(
+						RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), DesignerProfileEntity.class);
+				String designerName = forEntity.getBody().getDesignerName();
+				LOGGER.info("designerName<><><><>???"+designerName);
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 
 				String writeValueAsString = null;
@@ -2598,9 +2602,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
+				if (invoiceData.size() > 0) {
+					invoiceData.forEach(invoice -> {
+						LOGGER.info("invoiceId<><>??????"+ invoice.getInvoiceId());
+						objects.put("invoiceId", invoice.getInvoiceId());
+					});
+				} else {
+					objects.put("invoiceId", JSONObject.NULL);
+				}
+				objects.put("designerName", designerName);
 				objects.put("paymentData", payRow);
 				productId.add(objects);
-
 			});
 			LOGGER.info("<><><><><><><><><><>!!!!!!!! = {}", productId.size());
 			int totalPage = findAll.getTotalPages() - 1;
@@ -2657,23 +2669,24 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(orderId));
-			List<OrderInvoiceEntity> invoiceDataList=mongoOperations.find(query, OrderInvoiceEntity.class);
-			List<String> keyList= new ArrayList<>();
-			//LOGGER.info(invoiceDataList+"");
-			Map<String, List<InvoiceUpdatedModel>> responceData= new HashMap<>();
-			 List<String> invoiceIdList= new ArrayList<>(); 
-			for(OrderInvoiceEntity invoiceEntity:invoiceDataList) {
-				String gstNo=invoiceEntity.getDesignerDetails().getGSTIN();
-						try {
-					 List<InvoiceUpdatedModel> productDetailsList=responceData.get(gstNo);
-					 Query query1= new Query();
-					 query1.addCriteria(Criteria.where("designerId").is(invoiceEntity.getProductDetails().getDesignerId())
-							 .and("orderId").is(invoiceEntity.getOrderId())
-							 .and("productId").is(invoiceEntity.getProductDetails().getProductId()));
-					 
-					 OrderSKUDetailsEntity detailsEntity=mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
-					 invoiceIdList.add(invoiceEntity.getInvoiceId());
-					 productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity,detailsEntity));
+			List<OrderInvoiceEntity> invoiceDataList = mongoOperations.find(query, OrderInvoiceEntity.class);
+			List<String> keyList = new ArrayList<>();
+			// LOGGER.info(invoiceDataList+"");
+			Map<String, List<InvoiceUpdatedModel>> responceData = new HashMap<>();
+			List<String> invoiceIdList = new ArrayList<>();
+			for (OrderInvoiceEntity invoiceEntity : invoiceDataList) {
+				String gstNo = invoiceEntity.getDesignerDetails().getGSTIN();
+				try {
+					List<InvoiceUpdatedModel> productDetailsList = responceData.get(gstNo);
+					Query query1 = new Query();
+					query1.addCriteria(
+							Criteria.where("designerId").is(invoiceEntity.getProductDetails().getDesignerId())
+									.and("orderId").is(invoiceEntity.getOrderId()).and("productId")
+									.is(invoiceEntity.getProductDetails().getProductId()));
+
+					OrderSKUDetailsEntity detailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+					invoiceIdList.add(invoiceEntity.getInvoiceId());
+					productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity, detailsEntity));
 //			List<OrderInvoiceEntity> invoiceDataList = mongoOperations.find(query, OrderInvoiceEntity.class);
 //			List<String> keyList = new ArrayList<>();
 //			 LOGGER.info(invoiceDataList+"");
@@ -2687,16 +2700,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				} catch (Exception e) {
 					List<InvoiceUpdatedModel> productList = new ArrayList<>();
 					keyList.add(gstNo);
-					 Query query2= new Query();
-					 query2.addCriteria(Criteria.where("designerId").is(invoiceEntity.getProductDetails().getDesignerId())
-							 .and("orderId").is(invoiceEntity.getOrderId())
-							 .and("productId").is(invoiceEntity.getProductDetails().getProductId()));
-					 OrderSKUDetailsEntity detailsEntity=mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
-					productList.add(UtillUserService.invoiceUpdatedModelMapper(invoiceEntity,detailsEntity));
-					responceData.put(gstNo,productList);
+					Query query2 = new Query();
+					query2.addCriteria(
+							Criteria.where("designerId").is(invoiceEntity.getProductDetails().getDesignerId())
+									.and("orderId").is(invoiceEntity.getOrderId()).and("productId")
+									.is(invoiceEntity.getProductDetails().getProductId()));
+					OrderSKUDetailsEntity detailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+					productList.add(UtillUserService.invoiceUpdatedModelMapper(invoiceEntity, detailsEntity));
+					responceData.put(gstNo, productList);
 				}
 			}
-		//	mrpList.stream().collect(Collectors.summingInt(Integer::intValue));
+			// mrpList.stream().collect(Collectors.summingInt(Integer::intValue));
 			StringBuilder invoiceData = new StringBuilder();
 			for (String key : keyList) {
 
@@ -2710,8 +2724,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 
 			return invoiceData.toString();
-			//return responceData;
-			
+			// return responceData;
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
