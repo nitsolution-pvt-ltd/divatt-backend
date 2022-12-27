@@ -1,6 +1,7 @@
 
 package com.divatt.user.services;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -114,6 +115,6 @@ public interface OrderAndPaymentService {
 	
 	public List<OrderInvoiceEntity> getInvoiceByOrder(String orderId);
 
-	public String getOrderSummary(String orderId);
+	public ResponseEntity<byte[]> getOrderSummary(String orderId);
 
 }

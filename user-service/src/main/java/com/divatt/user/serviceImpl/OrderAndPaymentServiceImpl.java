@@ -2586,7 +2586,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
-
+				List<OrderInvoiceEntity> invoiceData = this.orderInvoiceRepo.findByOrder(e.getOrderId());
+				ResponseEntity<DesignerProfileEntity> forEntity = restTemplate.getForEntity(
+						RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), DesignerProfileEntity.class);
+				String designerName = forEntity.getBody().getDesignerName();
+				LOGGER.info("designerName<><><><>???"+designerName);
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 
 				String writeValueAsString = null;
@@ -2603,9 +2607,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
+				if (invoiceData.size() > 0) {
+					invoiceData.forEach(invoice -> {
+						LOGGER.info("invoiceId<><>??????"+ invoice.getInvoiceId());
+						objects.put("invoiceId", invoice.getInvoiceId());
+					});
+				} else {
+					objects.put("invoiceId", JSONObject.NULL);
+				}
+				objects.put("designerName", designerName);
 				objects.put("paymentData", payRow);
 				productId.add(objects);
-
 			});
 			LOGGER.info("<><><><><><><><><><>!!!!!!!! = {}", productId.size());
 			int totalPage = findAll.getTotalPages() - 1;
@@ -2658,7 +2670,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String getOrderSummary(String orderId) {
+	public ResponseEntity<byte[]> getOrderSummary(String orderId) {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(orderId));
@@ -2769,14 +2781,23 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Context context = new Context();
 				context.setVariables(data);
 				LOGGER.info("!!!@@@@ = {}", data);
-				String htmlContent = templateEngine.process("new_invoice_User.html", context);
+				String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
 				invoiceData.append(htmlContent);
 			}
-//			LOGGER.info("DATA <><><><><> = {}",invoiceData.toString());
 
-			return invoiceData.toString();
-			// generatePdf(invoiceData.toString());
+			//return invoiceData.toString();
 			// return responceData;
+			//Context context = new Context();
+			//String htmlContent = templateEngine.process("new_invoice_User.html", context);
+			//String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
+			ByteArrayOutputStream target = new ByteArrayOutputStream();
+			ConverterProperties converterProperties = new ConverterProperties();
+			//converterProperties.setBaseUri("https://localhost:8082");
+			HtmlConverter.convertToPdf(invoiceData.toString(), target, converterProperties);
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Disposition", "attachment; filename=" + "orderInvoiceUpdated.pdf");
+			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(target.toByteArray());
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
