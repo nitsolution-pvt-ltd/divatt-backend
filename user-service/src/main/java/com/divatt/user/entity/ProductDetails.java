@@ -1,5 +1,6 @@
 package com.divatt.user.entity;
 
+import org.springframework.data.mongodb.core.mapping.Field;
 
 public class ProductDetails {
 
@@ -14,6 +15,7 @@ public class ProductDetails {
 	    public String orderItemStatus;
 	    public int productId;
 	    public String productName;
+	    @Field(name = "SKU")
 	    public Object productSku;
 	    public String reachedCentralHub;
 	    public int salesPrice;
