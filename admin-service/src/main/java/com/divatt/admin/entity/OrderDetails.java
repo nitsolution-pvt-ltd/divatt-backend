@@ -34,6 +34,7 @@ public class OrderDetails {
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd hh:mm:ss")
 	public String delivery_datetime;
 	public String remarks;
+	
 	public String getDatetime() {
 		return datetime;
 	}

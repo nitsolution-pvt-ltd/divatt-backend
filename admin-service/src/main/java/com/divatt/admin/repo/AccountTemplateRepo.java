@@ -52,18 +52,23 @@ public class AccountTemplateRepo {
 	public Page<AccountEntity> AccountSearchByKeywords(String keywords, Pageable pagingSort) {
 
 		Query query = new Query();
-		Query countQuery = new Query();
 		query.with(Sort.by(Sort.Direction.DESC, "datetime"));
 
 		query.addCriteria(new Criteria().orOperator(Criteria.where("service_charge.date").regex(keywords),
 				Criteria.where("service_charge.designer_invoice_id").regex(keywords),
 				Criteria.where("service_charge.status").regex(keywords),
 				Criteria.where("service_charge.remarks").regex(keywords),
-				Criteria.where("designer_details.designer_name").regex(keywords),
-				Criteria.where("designer_details.gst_in").regex(keywords),
-				Criteria.where("designer_details.pan").regex(keywords),
-				Criteria.where("designer_details.mobile").regex(keywords),
-				Criteria.where("designer_details.address").regex(keywords),
+				Criteria.where("service_charge.date").regex(keywords),
+				Criteria.where("service_charge.fee").regex(keywords),
+				Criteria.where("service_charge.cgst").regex(keywords),
+				Criteria.where("service_charge.sgst").regex(keywords),
+				Criteria.where("service_charge.igst").regex(keywords),
+				Criteria.where("service_charge.tcs").regex(keywords),
+				Criteria.where("service_charge.total_tax").regex(keywords),
+				Criteria.where("service_charge.total_amount").regex(keywords),
+				Criteria.where("service_charge.units").regex(keywords),
+				Criteria.where("service_charge.updated_datetime").regex(keywords),
+				Criteria.where("service_charge.rate").regex(keywords),
 
 				Criteria.where("order_details").elemMatch(Criteria.where("datetime").regex(keywords)),
 				Criteria.where("order_details").elemMatch(Criteria.where("product_sku").regex(keywords)),
@@ -73,11 +78,34 @@ public class AccountTemplateRepo {
 				Criteria.where("order_details").elemMatch(Criteria.where("delivery_datetime").regex(keywords)),
 				Criteria.where("order_details").elemMatch(Criteria.where("remarks").regex(keywords)),
 				Criteria.where("order_details").elemMatch(Criteria.where("order_id").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_code").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("payment_mode").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("discount").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("sales_price").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("invoice_id").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_amount").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_rate").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_cgst").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_sgst").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_igst").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("total_tax").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("order_status").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("mrp").regex(keywords)),
 
 				Criteria.where("govt_charge").elemMatch(Criteria.where("designer_invoice_id").regex(keywords)),
 				Criteria.where("govt_charge").elemMatch(Criteria.where("status").regex(keywords)),
 				Criteria.where("govt_charge").elemMatch(Criteria.where("datetime").regex(keywords)),
 				Criteria.where("govt_charge").elemMatch(Criteria.where("remarks").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("fee").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("cgst").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("sgst").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("igst").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("tcs").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("total_tax").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("total_amount").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("units").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("updated_datetime").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("rate").regex(keywords)),
 
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("datetime").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").regex(keywords)),
@@ -86,17 +114,28 @@ public class AccountTemplateRepo {
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("size").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("tax_type").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("updated_datetime").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("remarks").regex(keywords))
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("remarks").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("mrp").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("discount").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("sales_price").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_rate").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_code").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_amount").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_cgst").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_sgst").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_igst").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("tcs").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_tax_amount").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_amount_received").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("net_payable_designer").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("payment_datetime").regex(keywords))
 
 		));
-
-//		countQuery.with(pagingSort);
-		long total = mongoTemplate.count(countQuery, AccountEntity.class);
-
 		final List<AccountEntity> find = mongoTemplate.find(query, AccountEntity.class);
-		Page<AccountEntity> dataPageable = new PageImpl<AccountEntity>(find, pagingSort, total);
-
-		return dataPageable;
+		int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+		int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), find.size());
+		List<AccountEntity> subList = startOfPage>=endOfPage?new ArrayList<>():find.subList(startOfPage,endOfPage);
+		return new PageImpl<AccountEntity>(subList, pagingSort, find.size());
 	}
 
 	public AccountEntity update(long accountId, AccountEntity findByRows) {
