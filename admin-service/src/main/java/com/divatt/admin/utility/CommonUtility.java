@@ -42,8 +42,8 @@ public class CommonUtility {
 	public void mailSendAccount(AccountEntity accountEntity) {
 		try {
 			LoginEntity findByRoleName = loginRepository.findByRoleName(MessageConstant.ADMIN_ROLES.getMessage());
-//			String email = findByRoleName.getEmail();
-			String email="shantanukhamrui527@gmail.com";
+			String email = findByRoleName.getEmail();
+//			String email="shantanukhamrui527@gmail.com";
 			String firstName = findByRoleName.getFirstName();
 			String lastName = findByRoleName.getLastName();
 			String name=firstName +" " +lastName;
