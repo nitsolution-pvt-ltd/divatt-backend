@@ -2,6 +2,7 @@ package com.divatt.user.serviceImpl;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -97,6 +98,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.razorpay.Order;
@@ -2665,13 +2670,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String getOrderSummary(String orderId) {
+	public ResponseEntity<byte[]> getOrderSummary(String orderId) {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(orderId));
 			List<OrderInvoiceEntity> invoiceDataList = mongoOperations.find(query, OrderInvoiceEntity.class);
 			List<String> keyList = new ArrayList<>();
 			// LOGGER.info(invoiceDataList+"");
+			LOGGER.info("Invoice Details data <><><><><> = {}", invoiceDataList);
 			Map<String, List<InvoiceUpdatedModel>> responceData = new HashMap<>();
 			List<String> invoiceIdList = new ArrayList<>();
 			for (OrderInvoiceEntity invoiceEntity : invoiceDataList) {
@@ -2715,19 +2721,121 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			for (String key : keyList) {
 
 				List<InvoiceUpdatedModel> invoiceUpdatedModels = responceData.get(key);
+				Double tCgst = 0.0;
+				Double tSgst = 0.0;
+				Double tDis = 0.0;
+				Double tIgst = 0.0;
+				Double tGross = 0.0;
+				Double tTotal = 0.0;
+				int tQty = 0;
+
+				String totalCgst = null;
+				String totalSgst = null;
+				String totalDiscount = null;
+				String totalQunatuty = null;
+				String totalIgst = null;
+				String totalGross = null;
+				String total = null;
+				String displayName = null;
+
+				for (InvoiceUpdatedModel element : invoiceUpdatedModels) {
+					element.setIgst(element.getIgst() == null ? "0" : element.getIgst());
+					tCgst = tCgst + Double.parseDouble(element.getCgst() == null ? "0" : element.getCgst());
+					tSgst = tSgst + Double.parseDouble(element.getSgst() == null ? "0" : element.getSgst());
+					tDis = tDis + Double.parseDouble(
+							Optional.ofNullable(element.getDiscount()).isEmpty() ? "0" : element.getDiscount());
+					tQty = tQty + Integer.parseInt(element.getQty() == null ? "0" : element.getQty());
+					tIgst = tIgst + Double.parseDouble(element.getIgst() == null ? "0" : element.getIgst());
+					tGross = tGross
+							+ Double.parseDouble(element.getGrossAmount() == null ? "0" : element.getGrossAmount());
+					tTotal = tTotal + Double.parseDouble(element.getTotal() == null ? "0" : element.getTotal());
+					totalCgst = String.valueOf(tCgst);
+					totalSgst = String.valueOf(tSgst);
+					totalDiscount = String.valueOf(tDis);
+					totalQunatuty = String.valueOf(tQty);
+					totalIgst = String.valueOf(tIgst);
+					totalGross = String.valueOf(tGross);
+					total = String.valueOf(tTotal);
+//					orderInvoiceRepo.findByInvoiceId(element.getInvoiceId()).forEach(e -> {
+//						DesignerProfileEntity forEntity = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink()+e.getProductDetails().getDesignerId(), DesignerProfileEntity.class).getBody();
+//						displayName = forEntity.getDesignerProfile().getDisplayName();
+//					});
+					List<OrderInvoiceEntity> findByInvoiceId = orderInvoiceRepo.findByInvoiceId(element.getInvoiceId());
+					for (OrderInvoiceEntity e : findByInvoiceId) {
+						DesignerProfileEntity forEntity = restTemplate.getForEntity(
+								RestTemplateConstant.DESIGNER_BYID.getLink() + e.getProductDetails().getDesignerId(),
+								DesignerProfileEntity.class).getBody();
+						displayName = forEntity.getDesignerProfile().getDisplayName();
+					}
+				}
 				Map<String, Object> data = new HashMap<>();
 				data.put("data", invoiceUpdatedModels);
+				data.put("totalCgst", totalCgst);
+				data.put("totalSgst", totalSgst);
+				data.put("totalDiscount", totalDiscount);
+				data.put("totalQunatuty", totalQunatuty);
+				data.put("totalIgst", totalIgst);
+				data.put("totalGross", totalGross);
+				data.put("total", total);
+				data.put("displayName", displayName);
 				Context context = new Context();
 				context.setVariables(data);
-				String htmlContent = templateEngine.process("new_invoice_User.html", context);
+				LOGGER.info("!!!@@@@ = {}", data);
+				String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
 				invoiceData.append(htmlContent);
 			}
 
-			return invoiceData.toString();
+			//return invoiceData.toString();
 			// return responceData;
+			//Context context = new Context();
+			//String htmlContent = templateEngine.process("new_invoice_User.html", context);
+			//String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
+			ByteArrayOutputStream target = new ByteArrayOutputStream();
+			ConverterProperties converterProperties = new ConverterProperties();
+			//converterProperties.setBaseUri("https://localhost:8082");
+			HtmlConverter.convertToPdf(invoiceData.toString(), target, converterProperties);
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Disposition", "attachment; filename=" + "orderInvoiceUpdated.pdf");
+			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(target.toByteArray());
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	public static ByteArrayOutputStream generatePdf(String html) {
+
+		PdfWriter pdfWriter = null;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		// create a new document
+		Document document = new Document();
+		try {
+
+			document = new Document();
+			document.addAuthor("Divatt");
+			document.addCreationDate();
+			document.addProducer();
+			document.addCreator("Divatt");
+			document.addTitle("Divatt");
+			document.setPageSize(PageSize.LETTER);
+
+			PdfWriter.getInstance(document, baos);
+
+			// open document
+			document.open();
+
+			XMLWorkerHelper xmlWorkerHelper = XMLWorkerHelper.getInstance();
+			xmlWorkerHelper.getDefaultCssResolver(true);
+			StringReader stringReader = new StringReader(html);
+			xmlWorkerHelper.parseXHtml(pdfWriter, document, stringReader);
+			// close the document
+			document.close();
+			System.out.println(MessageConstant.PDF_GENERATED.getMessage());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return baos;
 	}
 }

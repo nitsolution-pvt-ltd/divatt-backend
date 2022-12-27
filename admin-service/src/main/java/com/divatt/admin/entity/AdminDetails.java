@@ -4,6 +4,7 @@ public class AdminDetails {
 
 	public long admin_id;
 	public String name;
+	public String email;
 	public String gst_in;
 	public String pan;
 	public String mobile;
@@ -11,16 +12,6 @@ public class AdminDetails {
 
 	public AdminDetails() {
 		super();
-	}
-
-	public AdminDetails(long admin_id, String name, String gst_in, String pan, String mobile, String address) {
-		super();
-		this.admin_id = admin_id;
-		this.name = name;
-		this.gst_in = gst_in;
-		this.pan = pan;
-		this.mobile = mobile;
-		this.address = address;
 	}
 
 	public long getAdmin_id() {
@@ -37,6 +28,14 @@ public class AdminDetails {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getGst_in() {
@@ -70,6 +69,7 @@ public class AdminDetails {
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
 	
 	
 	
