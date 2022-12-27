@@ -24,6 +24,7 @@ public class OrderDetails {
 	public String tax_type;
 	public int units;
 	public int hsn_rate;
+	public String hsn_code;
 	public float hsn_amount;
 	public float hsn_cgst;
 	public float hsn_sgst;
@@ -33,7 +34,6 @@ public class OrderDetails {
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd hh:mm:ss")
 	public String delivery_datetime;
 	public String remarks;
-	
 	public String getDatetime() {
 		return datetime;
 	}
@@ -130,6 +130,12 @@ public class OrderDetails {
 	public void setHsn_rate(int hsn_rate) {
 		this.hsn_rate = hsn_rate;
 	}
+	public String getHsn_code() {
+		return hsn_code;
+	}
+	public void setHsn_code(String hsn_code) {
+		this.hsn_code = hsn_code;
+	}
 	public float getHsn_amount() {
 		return hsn_amount;
 	}
@@ -178,7 +184,6 @@ public class OrderDetails {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
-	
 	
 	
 	
