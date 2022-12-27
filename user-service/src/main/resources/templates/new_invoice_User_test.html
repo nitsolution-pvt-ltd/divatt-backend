@@ -20,7 +20,7 @@
                    <div style="font-size:22px;font-weight: 600;margin-top: 8px;">
                    &
                    <br>
-                   <span th:text="${displayName}"></span>
+                  <span th:text="${displayName}"></span>
                    </div>
                 </td>
                 </tr>
@@ -28,7 +28,7 @@
             <tbody>
                 <tr>
                     <td>
-                <hr style="border-left: 0;border-width: 3px; border-bottom: 0;margin-top: 38px;"/>
+                <hr style="border-left: 0;border-width: 3px; border-bottom: 0;border-color: rgb(0 0 0);margin-top: 38px;"/>
 
                     </td>
                 </tr>
@@ -66,7 +66,7 @@
                                 border-bottom: 1.6px solid;padding-bottom: 17px;color: #000;text-align: left;width: 95%;">Ship To</h1>
                             </th>
                         </tr>
-                        <tr th:each="data1 : ${data}">
+                       <tr th:each="data1 : ${data}">
                             <td style="font-size: 16px;line-height: 22px;color: #000; width: 100%">
                                 <table style="width: 100%;">
                                     <tr><td th:text="${data1.shippingUserName}"><span >,</span></td></tr>
@@ -82,8 +82,9 @@
                     </table>
                 </td>
                 <td style="width: 19%;">
-                    <table   style="border-collapse: collapse;font-size: 16px; width: 100%;">
-                        <tr>
+                    <table style="border-collapse: collapse;font-size: 16px; width: 100%;">
+                        <tbody>
+                            <tr>
                             <th style="width: 100%;">
                                 <h1 style="text-transform: uppercase;font-size: 17px;font-weight: 800;margin-bottom: 22px;
                                 border-bottom: 1.6px solid;padding-bottom: 17px;color: #000;text-align: left;width: 95%;">Order Info</h1>
@@ -101,18 +102,21 @@
                                 </table>
                             </td>
                         </tr>
+                        </tbody>
                     </table>
                 </td>
                 
                 <td>
-                    <table   style="border-collapse: collapse;font-size: 16px; width: 100%;">
+                    <table style="width: 100%;">
                         <tr>
-                            <th style="width: 100%;">
-                                <h1 style="text-transform: uppercase;font-size: 17px;font-weight: 800;margin-bottom: 22px;
-                                border-bottom: 1.6px solid;padding-bottom: 17px;color: #000;text-align: left;width: 95%;">Seller Info</h1>
-                            </th>
-                        </tr>
-                        <tr th:each="data1 : ${data}">
+                            <td>
+                                <tr>
+                                    <th  style="width: 100%;">
+                                        <h1 style="text-transform: uppercase;font-size: 17px;font-weight: 800;margin-bottom: 22px;margin-top: 40px;
+                                        border-bottom: 1.6px solid;padding-bottom: 17px;color: #000;text-align: left;width: 95%;">saler Info</h1>
+                                    </th> 
+                                </tr>
+                               <tr th:each="data1 : ${data}">
                             <td style="font-size: 16px;line-height: 22px;color: #000; width: 100%">
                                 <table style="width: 100%;">
                                     <tr><td th:text="${data1.sellerAddress}"><span >,</span></td></tr>
@@ -139,20 +143,20 @@
                 Qty
             </th>
             <th style="text-align: left;">
-                Gross Amount (RS) <!-- ₹  -->
+                Gross Amount ₹
             </th>
             <th style="text-align: left;">
-                Discounts (RS) <!-- ₹  -->
+                Discounts ₹
             </th>
-            <th style="text-align: left;">CGST (RS) <!-- ₹  --></th>
-            <th style="text-align: left;">SGST (RS) <!-- ₹  --></th>
-            <th style="text-align: left;">IGST (RS) <!-- ₹  --></th>
+            <th style="text-align: left;">CGST ₹</th>
+            <th style="text-align: left;">SGST ₹</th>
+            <th style="text-align: left;">IGST ₹</th>
             <th style="text-align: left;">
-                Total (RS) <!-- ₹  -->
+                Total ₹
             </th>
         </thead>
         <tbody>
-            <tr th:each="data1 : ${data}">
+			<tr th:each="data1 : ${data}">
                 <td style="padding: 10px 0;">
                     <div>
                        <th:block th:text="${data1.productName}"></th:block>
@@ -207,24 +211,6 @@
                    <th:block th:text="${total}"></th:block> 
                 </td>
             </tr>
-            <tr style="border-top: 1px solid #999;border-bottom: 1px solid #999;" th:each="data1 : ${data}">
-           	
-              <!--   <td style="font-weight: 600;padding: 14px 0;">Total</td>
-              	 <p th:with="totalQunatuty=${totalQunatuty + data1.qty}"> </p>
-                <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.totalQunatuty}"></th:block> </td>
-                <p th:with="total=${total + data1.grossAmount}"> </p>
-                <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.total}"></th:block> </td>
-                <p th:with="totalDiscount=${totalDiscount +data1.discount}"> </p>
-                <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.totalDiscount}"></th:block> </td>
-                <p th:with="totalCgst=${totalCgst + data1.cgst}"> </p>
-                <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.totalCgst}"></th:block> </td>
-                <p th:with="totalSgst=${totalSgst + data1.sgst}"> </p>
-                <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.totalSgst}"></th:block> </td>
-                 <p th:with="totalPrice=${totalPrice + data1.igst}"> </p> 
-                <td style="font-weight: 600;padding: 14px 0;">0</td>
-                <p th:with="grandTotal=${grandTotal + data1.total}"> </p> 
-                <td style="font-weight: 600;padding: 14px 0;"> <th:block th:text="${data1.grandTotal}"></th:block> </td> -->
-            </tr>
             <tr>
                 <td> &nbsp;</td>
                 <td> &nbsp;</td>
@@ -240,7 +226,7 @@
         </tbody>
         </table>
         <div style="text-align: right;padding-right: 20px;">
-           
+            Name of saler
         </div>
         <!-- <table>
             <tbody>

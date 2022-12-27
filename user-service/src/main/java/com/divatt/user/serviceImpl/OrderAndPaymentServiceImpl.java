@@ -2658,7 +2658,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String getOrderSummary(String orderId) {
+	public ResponseEntity<byte[]> getOrderSummary(String orderId) {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(orderId));
@@ -2769,14 +2769,20 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Context context = new Context();
 				context.setVariables(data);
 				LOGGER.info("!!!@@@@ = {}", data);
-				String htmlContent = templateEngine.process("new_invoice_User.html", context);
+				String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
 				invoiceData.append(htmlContent);
 			}
-//			LOGGER.info("DATA <><><><><> = {}",invoiceData.toString());
-
-			return invoiceData.toString();
-			// generatePdf(invoiceData.toString());
-			// return responceData;
+			//Context context = new Context();
+			//String htmlContent = templateEngine.process("new_invoice_User.html", context);
+			//String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
+			ByteArrayOutputStream target = new ByteArrayOutputStream();
+			ConverterProperties converterProperties = new ConverterProperties();
+			//converterProperties.setBaseUri("https://localhost:8082");
+			HtmlConverter.convertToPdf(invoiceData.toString(), target, converterProperties);
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Disposition", "attachment; filename=" + "orderInvoiceUpdated.pdf");
+			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(target.toByteArray());
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
