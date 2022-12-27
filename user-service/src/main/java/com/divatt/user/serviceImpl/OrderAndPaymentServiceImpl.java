@@ -2716,6 +2716,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					responceData.put(gstNo, productList);
 				}
 			}
+			LOGGER.info(invoiceIdList+"");
 			// mrpList.stream().collect(Collectors.summingInt(Integer::intValue));
 			StringBuilder invoiceData = new StringBuilder();
 			for (String key : keyList) {
@@ -2781,7 +2782,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Context context = new Context();
 				context.setVariables(data);
 				LOGGER.info("!!!@@@@ = {}", data);
-				String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
+				String htmlContent = templateEngine.process("new_invoice_User_test1.html", context);
 				invoiceData.append(htmlContent);
 			}
 

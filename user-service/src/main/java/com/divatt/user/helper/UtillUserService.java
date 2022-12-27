@@ -11,7 +11,10 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.divatt.user.constant.RestTemplateConstant;
+import com.divatt.user.designerProductEntity.DesignerProfileEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
@@ -23,6 +26,8 @@ public class UtillUserService {
 	@Autowired private MongoOperations mongoOperations;
 	
 	@Autowired private static OrderSKUDetailsRepo dat1;
+	
+	@Autowired private static RestTemplate restTemplate;
 	
 	private static Logger LOGGER=LoggerFactory.getLogger(UtillUserService.class);
 	private static List<Integer> mrpList= new ArrayList<>();
@@ -40,6 +45,11 @@ public class UtillUserService {
 		invoiceUpdatedModel.setBillingMobile(invoiceEntity.getUserDetails().getBilling_address().getMobile());
 		invoiceUpdatedModel.setBillingState(invoiceEntity.getUserDetails().getBilling_address().getState());
 		invoiceUpdatedModel.setBllingAddress(invoiceEntity.getUserDetails().getBilling_address().getAddress2());
+		invoiceUpdatedModel.setBillingCountry(invoiceEntity.getUserDetails().getBilling_address().getCountry());
+		invoiceUpdatedModel.setBillingPinCode(invoiceEntity.getUserDetails().getBilling_address().getPostalCode());
+		invoiceUpdatedModel.setShippingCountry(invoiceEntity.getUserDetails().getShipping_address().getCountry());
+		invoiceUpdatedModel.setShippingPincode(invoiceEntity.getUserDetails().getShipping_address().getPostalCode()+"");
+		invoiceUpdatedModel.setSellerGSTNO(invoiceEntity.getDesignerDetails().getGSTIN());
 		invoiceUpdatedModel.setDiscount(invoiceEntity.getProductDetails().getDiscount()+"");
 		invoiceUpdatedModel.setGrossAmount(invoiceEntity.getProductDetails().getMrp()+"");
 		invoiceUpdatedModel.setInvoiceId(invoiceEntity.getInvoiceId());
@@ -51,7 +61,9 @@ public class UtillUserService {
 		invoiceUpdatedModel.setSellerAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2());
 		invoiceUpdatedModel.setSellerCity(invoiceEntity.getUserDetails().getShipping_address().getCity());
 		invoiceUpdatedModel.setSellerMobile(invoiceEntity.getDesignerDetails().getMobile());
-		invoiceUpdatedModel.setSellerName(invoiceEntity.getProductDetails().getDesignerId()+"");
+//		invoiceUpdatedModel.setSellerName(restTemplate.getForEntity(
+//				RestTemplateConstant.DESIGNER_BYID.getLink() + invoiceEntity.getProductDetails().getDesignerId(),
+//				DesignerProfileEntity.class).getBody().getDesignerName());
 		invoiceUpdatedModel.setSellerAddress(invoiceEntity.getDesignerDetails().getAddress());
 		invoiceUpdatedModel.setShippingAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2());
 		invoiceUpdatedModel.setShippingUserName(invoiceEntity.getUserDetails().getShipping_address().getFullName());
@@ -82,6 +94,9 @@ public class UtillUserService {
 //		List<Integer> totalList= new ArrayList<>();
 //		List<Integer> discountedAmount= new ArrayList<>();
 		InvoiceUpdatedModel invoiceUpdatedModel= new InvoiceUpdatedModel();
+//		invoiceUpdatedModel.setSellerName(restTemplate.getForEntity(
+//				RestTemplateConstant.DESIGNER_BYID.getLink() + invoiceEntity.getProductDetails().getDesignerId(),
+//				DesignerProfileEntity.class).getBody().getDesignerName());
 		invoiceUpdatedModel.setProductName(invoiceEntity.getProductDetails().getProductName());
 		invoiceUpdatedModel.setQty(invoiceEntity.getProductDetails().getUnits()+"");
 		invoiceUpdatedModel.setGrossAmount(invoiceEntity.getProductDetails().getMrp()+"");

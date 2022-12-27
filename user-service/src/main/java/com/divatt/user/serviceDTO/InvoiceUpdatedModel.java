@@ -10,6 +10,10 @@ public class InvoiceUpdatedModel {
 	private String billingState;
 	private String pincode;
 	private String billingMobile;
+	private String billingPinCode;
+	private String billingCountry;
+	private String shippingCountry;
+	private String sellerCountry;
 	private String shippingUserName;
 	private String shippingAddress;
 	private String shippingCity;
@@ -34,6 +38,7 @@ public class InvoiceUpdatedModel {
 	private String sgst;
 	private String igst;
 	private String total;
+	private String sellerGSTNO;
 	private String grandTotal;
 	private String totalCgst;
 	private String totalSgst;
@@ -44,12 +49,14 @@ public class InvoiceUpdatedModel {
 		// TODO Auto-generated constructor stub
 	}
 	public InvoiceUpdatedModel(String billedUserName, String bllingAddress, String billingCity, String billingState,
-			String pincode, String billingMobile, String shippingUserName, String shippingAddress, String shippingCity,
+			String pincode, String billingMobile, String billingPinCode, String billingCountry, String shippingCountry,
+			String sellerCountry, String shippingUserName, String shippingAddress, String shippingCity,
 			String shippingState, String shippingPincode, String shippingMobile, String orderId, String orderDate,
 			String invoiceId, String soldBy, String sellerName, String sellerAddress, String sellerCity,
 			String sellerState, String sellerPincode, String sellerMobile, String productName, String qty,
-			String grossAmount, String discount, String cgst, String sgst, String igst, String total, String grandTotal,
-			String totalCgst, String totalSgst, String totalDiscount, String totalQunatuty) {
+			String grossAmount, String discount, String cgst, String sgst, String igst, String total,
+			String sellerGSTNO, String grandTotal, String totalCgst, String totalSgst, String totalDiscount,
+			String totalQunatuty) {
 		super();
 		this.billedUserName = billedUserName;
 		this.bllingAddress = bllingAddress;
@@ -57,6 +64,10 @@ public class InvoiceUpdatedModel {
 		this.billingState = billingState;
 		this.pincode = pincode;
 		this.billingMobile = billingMobile;
+		this.billingPinCode = billingPinCode;
+		this.billingCountry = billingCountry;
+		this.shippingCountry = shippingCountry;
+		this.sellerCountry = sellerCountry;
 		this.shippingUserName = shippingUserName;
 		this.shippingAddress = shippingAddress;
 		this.shippingCity = shippingCity;
@@ -81,6 +92,7 @@ public class InvoiceUpdatedModel {
 		this.sgst = sgst;
 		this.igst = igst;
 		this.total = total;
+		this.sellerGSTNO = sellerGSTNO;
 		this.grandTotal = grandTotal;
 		this.totalCgst = totalCgst;
 		this.totalSgst = totalSgst;
@@ -91,14 +103,16 @@ public class InvoiceUpdatedModel {
 	public String toString() {
 		return "InvoiceUpdatedModel [billedUserName=" + billedUserName + ", bllingAddress=" + bllingAddress
 				+ ", billingCity=" + billingCity + ", billingState=" + billingState + ", pincode=" + pincode
-				+ ", billingMobile=" + billingMobile + ", shippingUserName=" + shippingUserName + ", shippingAddress="
-				+ shippingAddress + ", shippingCity=" + shippingCity + ", shippingState=" + shippingState
-				+ ", shippingPincode=" + shippingPincode + ", shippingMobile=" + shippingMobile + ", orderId=" + orderId
-				+ ", orderDate=" + orderDate + ", invoiceId=" + invoiceId + ", soldBy=" + soldBy + ", sellerName="
-				+ sellerName + ", sellerAddress=" + sellerAddress + ", sellerCity=" + sellerCity + ", sellerState="
-				+ sellerState + ", sellerPincode=" + sellerPincode + ", sellerMobile=" + sellerMobile + ", productName="
-				+ productName + ", qty=" + qty + ", grossAmount=" + grossAmount + ", discount=" + discount + ", cgst="
-				+ cgst + ", sgst=" + sgst + ", igst=" + igst + ", total=" + total + ", grandTotal=" + grandTotal
+				+ ", billingMobile=" + billingMobile + ", billingPinCode=" + billingPinCode + ", billingCountry="
+				+ billingCountry + ", shippingCountry=" + shippingCountry + ", sellerCountry=" + sellerCountry
+				+ ", shippingUserName=" + shippingUserName + ", shippingAddress=" + shippingAddress + ", shippingCity="
+				+ shippingCity + ", shippingState=" + shippingState + ", shippingPincode=" + shippingPincode
+				+ ", shippingMobile=" + shippingMobile + ", orderId=" + orderId + ", orderDate=" + orderDate
+				+ ", invoiceId=" + invoiceId + ", soldBy=" + soldBy + ", sellerName=" + sellerName + ", sellerAddress="
+				+ sellerAddress + ", sellerCity=" + sellerCity + ", sellerState=" + sellerState + ", sellerPincode="
+				+ sellerPincode + ", sellerMobile=" + sellerMobile + ", productName=" + productName + ", qty=" + qty
+				+ ", grossAmount=" + grossAmount + ", discount=" + discount + ", cgst=" + cgst + ", sgst=" + sgst
+				+ ", igst=" + igst + ", total=" + total + ", sellerGSTNO=" + sellerGSTNO + ", grandTotal=" + grandTotal
 				+ ", totalCgst=" + totalCgst + ", totalSgst=" + totalSgst + ", totalDiscount=" + totalDiscount
 				+ ", totalQunatuty=" + totalQunatuty + "]";
 	}
@@ -137,6 +151,30 @@ public class InvoiceUpdatedModel {
 	}
 	public void setBillingMobile(String billingMobile) {
 		this.billingMobile = billingMobile;
+	}
+	public String getBillingPinCode() {
+		return billingPinCode;
+	}
+	public void setBillingPinCode(String billingPinCode) {
+		this.billingPinCode = billingPinCode;
+	}
+	public String getBillingCountry() {
+		return billingCountry;
+	}
+	public void setBillingCountry(String billingCountry) {
+		this.billingCountry = billingCountry;
+	}
+	public String getShippingCountry() {
+		return shippingCountry;
+	}
+	public void setShippingCountry(String shippingCountry) {
+		this.shippingCountry = shippingCountry;
+	}
+	public String getSellerCountry() {
+		return sellerCountry;
+	}
+	public void setSellerCountry(String sellerCountry) {
+		this.sellerCountry = sellerCountry;
 	}
 	public String getShippingUserName() {
 		return shippingUserName;
@@ -282,6 +320,12 @@ public class InvoiceUpdatedModel {
 	public void setTotal(String total) {
 		this.total = total;
 	}
+	public String getSellerGSTNO() {
+		return sellerGSTNO;
+	}
+	public void setSellerGSTNO(String sellerGSTNO) {
+		this.sellerGSTNO = sellerGSTNO;
+	}
 	public String getGrandTotal() {
 		return grandTotal;
 	}
@@ -312,5 +356,6 @@ public class InvoiceUpdatedModel {
 	public void setTotalQunatuty(String totalQunatuty) {
 		this.totalQunatuty = totalQunatuty;
 	}
+	
 	
 }
