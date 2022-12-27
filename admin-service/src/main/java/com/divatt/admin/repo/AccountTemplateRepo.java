@@ -130,6 +130,7 @@ public class AccountTemplateRepo {
 		findOne.getAdmin_details().setName(findByRows.getAdmin_details().getName());
 		findOne.getAdmin_details().setPan(findByRows.getAdmin_details().getPan());
 		findOne.getAdmin_details().setAdmin_id(findByRows.getAdmin_details().getAdmin_id());
+		findOne.getAdmin_details().setEmail(findByRows.getAdmin_details().getEmail());
 
 		findOne.getDesigner_details().setAddress(findByRows.getDesigner_details().getAddress());
 		findOne.getDesigner_details().setGst_in(findByRows.getDesigner_details().getGst_in());
@@ -137,6 +138,9 @@ public class AccountTemplateRepo {
 		findOne.getDesigner_details().setDesigner_name(findByRows.getDesigner_details().getDesigner_name());
 		findOne.getDesigner_details().setPan(findByRows.getDesigner_details().getPan());
 		findOne.getDesigner_details().setDesigner_id(findByRows.getDesigner_details().getDesigner_id());
+		findOne.getDesigner_details().setEmail(findByRows.getDesigner_details().getEmail());
+		findOne.getDesigner_details().setDesigner_name(findByRows.getDesigner_details().getDesigner_name());
+		findOne.getDesigner_details().setDisplay_name(findByRows.getDesigner_details().getDisplay_name());
 
 		GovtCharge govtCharge = new GovtCharge();
 		ArrayList<GovtCharge> govtChargeList = new ArrayList<>();
@@ -180,6 +184,7 @@ public class AccountTemplateRepo {
 			orderDetails.setTax_type(value.getTax_type());
 			orderDetails.setDesigner_id(value.getDesigner_id());
 			orderDetails.setDiscount(value.getDiscount());
+			orderDetails.setHsn_code(value.getHsn_code());
 			orderDetails.setHsn_amount(value.getHsn_amount());
 			orderDetails.setHsn_cgst(value.getHsn_cgst());
 			orderDetails.setHsn_igst(value.getHsn_igst());
@@ -213,6 +218,7 @@ public class AccountTemplateRepo {
 			designerReturnAmount.setUpdated_datetime(value.getUpdated_datetime());
 			designerReturnAmount.setDesigner_id(value.getDesigner_id());
 			designerReturnAmount.setDiscount(value.getDiscount());
+			designerReturnAmount.setHsn_code(value.getHsn_code());
 			designerReturnAmount.setHsn_amount(value.getHsn_amount());
 			designerReturnAmount.setHsn_cgst(value.getHsn_cgst());
 			designerReturnAmount.setHsn_igst(value.getHsn_igst());
@@ -431,13 +437,12 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 	public List<AccountMapEntity> getPendingAmount(String settlement, int year, int month) {
-		
+		/***
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
-		MatchOperation match = null;
-		
+
 		if(year != 0 && month !=0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
@@ -449,10 +454,10 @@ public class AccountTemplateRepo {
 				.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
 				.andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN")))
 				))));
-		}else {
-			match =  Aggregation.match(new Criteria()
+		}else {***/
+		MatchOperation match =  Aggregation.match(new Criteria()
 					.andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
-		}
+//		}
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
 		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.net_payable_designer").as("pendingAmount");

@@ -4,6 +4,8 @@ public class DesignerDetails {
 
 	public long designer_id;
 	public String designer_name;
+	public String display_name;
+	public String email;
 	public String gst_in;
 	public String pan;
 	public String mobile;
@@ -11,17 +13,6 @@ public class DesignerDetails {
 	
 	public DesignerDetails() {
 		super();
-	}
-
-	public DesignerDetails(long designer_id, String designer_name, String gst_in, String pan, String mobile,
-			String address) {
-		super();
-		this.designer_id = designer_id;
-		this.designer_name = designer_name;
-		this.gst_in = gst_in;
-		this.pan = pan;
-		this.mobile = mobile;
-		this.address = address;
 	}
 
 	public long getDesigner_id() {
@@ -38,6 +29,22 @@ public class DesignerDetails {
 
 	public void setDesigner_name(String designer_name) {
 		this.designer_name = designer_name;
+	}
+
+	public String getDisplay_name() {
+		return display_name;
+	}
+
+	public void setDisplay_name(String display_name) {
+		this.display_name = display_name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getGst_in() {
@@ -71,6 +78,9 @@ public class DesignerDetails {
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
+	
+	
 	
 	
 
