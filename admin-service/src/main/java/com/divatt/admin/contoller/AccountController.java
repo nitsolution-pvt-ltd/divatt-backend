@@ -148,7 +148,8 @@ public class AccountController {
 			@RequestParam(defaultValue = "") String serviceCharge, @RequestParam(defaultValue = "") String govtCharge,
 			@RequestParam(defaultValue = "") String userOrder, @RequestParam(defaultValue = "") String ReturnStatus,
 			@RequestParam(defaultValue = "") String settlement, @RequestParam(defaultValue = "0") int year,
-			@RequestParam(defaultValue = "0") int month, @RequestParam Optional<String> sortBy) {
+			@RequestParam(defaultValue = "0") int month, @RequestParam Optional<String> sortBy,
+			@RequestParam(defaultValue = "") String designerId) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.getAccountDetails()");
@@ -167,7 +168,7 @@ public class AccountController {
 						host + contextPath + "/account/list", "Success", HttpStatus.OK);
 			}
 			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword,
-					designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, settlement, year, month,
+					designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, settlement, year, month, designerId,
 					sortBy);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
@@ -185,7 +186,7 @@ public class AccountController {
 			@RequestParam(defaultValue = "") String serviceCharge, @RequestParam(defaultValue = "") String govtCharge,
 			@RequestParam(defaultValue = "") String userOrder, @RequestParam(defaultValue = "") String ReturnStatus,
 			@RequestParam(defaultValue = "") String settlement, @RequestParam(defaultValue = "0") int year,
-			@RequestParam(defaultValue = "0") int month) {
+			@RequestParam(defaultValue = "0") int month, @RequestParam(defaultValue = "") String designerId) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.excelReport()");
@@ -211,7 +212,8 @@ public class AccountController {
 			String headerValue = "attachment; filename=Divatt_account_report_" + currentDateTime + ".xlsx";
 			response.setHeader(headerKey, headerValue);
 
-			List<AccountEntity> listUsers = accountService.excelReportService(designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, settlement, year, month);
+			List<AccountEntity> listUsers = accountService.excelReportService(designerReturn, serviceCharge, govtCharge, 
+					userOrder, ReturnStatus, settlement, year, month, designerId);
 			AccountExcelExporter excelExporter = new AccountExcelExporter(listUsers);
 			excelExporter.export(response);
 			
