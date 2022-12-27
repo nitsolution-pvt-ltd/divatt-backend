@@ -126,15 +126,18 @@ public class AccountTemplateRepo {
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_igst").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("tcs").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_tax_amount").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_amount_received").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("net_payable_designer").regex(keywords)),
+				Criteria.where("designer_return_amount")
+						.elemMatch(Criteria.where("total_amount_received").regex(keywords)),
+				Criteria.where("designer_return_amount")
+						.elemMatch(Criteria.where("net_payable_designer").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("payment_datetime").regex(keywords))
 
 		));
 		final List<AccountEntity> find = mongoTemplate.find(query, AccountEntity.class);
 		int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 		int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), find.size());
-		List<AccountEntity> subList = startOfPage>=endOfPage?new ArrayList<>():find.subList(startOfPage,endOfPage);
+		List<AccountEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
+				: find.subList(startOfPage, endOfPage);
 		return new PageImpl<AccountEntity>(subList, pagingSort, find.size());
 	}
 
@@ -546,7 +549,7 @@ public class AccountTemplateRepo {
 	
 	@SuppressWarnings("all")
 	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, 
-			String ReturnStatus, String settlement, int year, int month, Pageable pagingSort) {
+			String ReturnStatus, String settlement, int year, int month, String designerId, Pageable pagingSort) {
 
 		LocalDate today = LocalDate.now();
 //		LocalDate plusDays = today.plusDays(7);
@@ -615,6 +618,9 @@ public class AccountTemplateRepo {
 		if(userOrder != "" && !userOrder.isEmpty()) {
 			filterByCondition = Aggregation.match(Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
 		}
+		if(designerId != "" && !designerId.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())));
+		}
 		SortOperation sortByIdDesc = Aggregation.sort(pagingSort.getSort());
 		SkipOperation skip = Aggregation.skip((long)(pagingSort.getPageNumber() * pagingSort.getPageSize()));
 		LimitOperation limit = Aggregation.limit(pagingSort.getPageSize());
@@ -622,15 +628,18 @@ public class AccountTemplateRepo {
 		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, skip, limit, sortByIdDesc);
 		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations, mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
 
-		Query countQuery = new Query();
-//		countQuery.with(pagingSort);
-		long total = mongoTemplate.count(countQuery, AccountEntity.class);
-		return new PageImpl<AccountEntity>(results.getMappedResults(), pagingSort, total);
+		System.out.println(designerId+" results "+ results.getMappedResults().toString());
+		int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+		int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), results.getMappedResults().size());
+		List<AccountEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
+				: results.getMappedResults().subList(startOfPage, endOfPage);
+		return new PageImpl<AccountEntity>(subList, pagingSort, results.getMappedResults().size());
+		
 	}
 	
 
 	public List<AccountEntity> getAccountReport(String designerReturn, String serviceCharge, String govtCharge, String userOrder, 
-			String ReturnStatus, String settlement, int year, int month) {
+			String ReturnStatus, String settlement, int year, int month, String designerId) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -680,6 +689,9 @@ public class AccountTemplateRepo {
 		}
 		if(userOrder != "" && !userOrder.isEmpty()) {
 			filterByCondition = Aggregation.match(Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
+		}
+		if(designerId != "" && !designerId.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())));
 		}
 		SortOperation sortByIdDesc = Aggregation.sort(Direction.DESC,"_id");
 
