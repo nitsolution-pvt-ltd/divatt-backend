@@ -2586,7 +2586,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
-
+				List<OrderInvoiceEntity> invoiceData = this.orderInvoiceRepo.findByOrder(e.getOrderId());
+				ResponseEntity<DesignerProfileEntity> forEntity = restTemplate.getForEntity(
+						RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), DesignerProfileEntity.class);
+				String designerName = forEntity.getBody().getDesignerName();
+				LOGGER.info("designerName<><><><>???"+designerName);
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 
 				String writeValueAsString = null;
@@ -2603,9 +2607,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
+				if (invoiceData.size() > 0) {
+					invoiceData.forEach(invoice -> {
+						LOGGER.info("invoiceId<><>??????"+ invoice.getInvoiceId());
+						objects.put("invoiceId", invoice.getInvoiceId());
+					});
+				} else {
+					objects.put("invoiceId", JSONObject.NULL);
+				}
+				objects.put("designerName", designerName);
 				objects.put("paymentData", payRow);
 				productId.add(objects);
-
 			});
 			LOGGER.info("<><><><><><><><><><>!!!!!!!! = {}", productId.size());
 			int totalPage = findAll.getTotalPages() - 1;
@@ -2772,6 +2784,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
 				invoiceData.append(htmlContent);
 			}
+
+			//return invoiceData.toString();
+			// return responceData;
 			//Context context = new Context();
 			//String htmlContent = templateEngine.process("new_invoice_User.html", context);
 			//String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
