@@ -68,6 +68,7 @@ import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.ProductDetails;
 import com.divatt.user.entity.ProductInvoice;
 import com.divatt.user.entity.UserLoginEntity;
+import com.divatt.user.entity.measurement.MeasurementEntity;
 import com.divatt.user.entity.order.HsnData;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
@@ -77,6 +78,7 @@ import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.helper.PDFRunner;
 import com.divatt.user.helper.UtillUserService;
+import com.divatt.user.repo.MeasurementRepo;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.OrderInvoiceRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
@@ -138,6 +140,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Autowired
 	private MongoOperations mongoOperations;
+	
+	@Autowired
+	private MeasurementRepo measurementRepo;
 
 	@Autowired
 	private Environment env;
@@ -589,7 +594,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						LOGGER.info("Dta after rest call = {} ", productById);
 //						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));
 						D.setHsn(productById.getBody().get("hsnData"));
-
 						LOGGER.info(productById.getBody().get("withGiftWrap") + "Inside gift wrap");
 						productIdFilters = objs.writeValueAsString(D);
 						Integer i = (int) (long) D.getUserId();
@@ -607,18 +611,24 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						objectss.put("customization", productById.getBody().get("customization"));
 						objectss.put("withGiftWrap", productById.getBody().get("giftWrap"));
 						String orderId2 = D.getOrderId();
-						LOGGER.info(orderId2 + "inside OrderID2");
-						// Optional<OrderInvoiceEntity> invoiceId = getInvoiceByOrderId(orderId2);
 						List<OrderInvoiceEntity> invoiceId = getInvoiceByOrder(orderId2);
 						if (invoiceId.size() > 0) {
 							invoiceId.forEach(invoice -> {
 								objectss.put("invoiceId", invoice.getInvoiceId());
 							});
-							// objectss.put("invoiceId", invoiceId.getInvoiceId());
 							LOGGER.info(objectss + "Inside objectss");
 						} else {
 							objectss.put("invoiceId", JSONObject.NULL);
 						}
+						List<MeasurementEntity> measurementData = this.measurementRepo.findByUserId(D.getUserId());
+						if(measurementData.size() > 0) {
+							measurementData.forEach(measurement -> {
+								objectss.put("measurementObject", measurementData);
+							});
+						}else {
+							objectss.put("measurementObject", JSONObject.NULL);
+						}
+						LOGGER.info("measurementData<><><>????:::::"+measurementData);
 						if (findByIdTracking.size() > 0) {
 							String writeValueAsStringd = null;
 							try {
@@ -2590,7 +2600,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				ResponseEntity<DesignerProfileEntity> forEntity = restTemplate.getForEntity(
 						RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), DesignerProfileEntity.class);
 				String designerName = forEntity.getBody().getDesignerName();
-				LOGGER.info("designerName<><><><>???"+designerName);
+				LOGGER.info("designerName<><><><>???" + designerName);
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 
 				String writeValueAsString = null;
@@ -2609,13 +2619,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				JSONObject objects = cartJN.getObject();
 				if (invoiceData.size() > 0) {
 					invoiceData.forEach(invoice -> {
-						LOGGER.info("invoiceId<><>??????"+ invoice.getInvoiceId());
+						LOGGER.info("invoiceId<><>??????" + invoice.getInvoiceId());
 						objects.put("invoiceId", invoice.getInvoiceId());
 					});
 				} else {
 					objects.put("invoiceId", JSONObject.NULL);
 				}
-				objects.put("designerName", designerName);
+				// objects.put("designerName", designerName);
 				objects.put("paymentData", payRow);
 				productId.add(objects);
 			});
@@ -2716,7 +2726,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					responceData.put(gstNo, productList);
 				}
 			}
-			LOGGER.info(invoiceIdList+"");
+			LOGGER.info(responceData + "");
+			// LOGGER.info(invoiceIdList+"");
 			// mrpList.stream().collect(Collectors.summingInt(Integer::intValue));
 			StringBuilder invoiceData = new StringBuilder();
 			for (String key : keyList) {
@@ -2786,19 +2797,22 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				invoiceData.append(htmlContent);
 			}
 
-			//return invoiceData.toString();
+			// return invoiceData.toString();
 			// return responceData;
-			//Context context = new Context();
-			//String htmlContent = templateEngine.process("new_invoice_User.html", context);
-			//String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
+			// Context context = new Context();
+			// String htmlContent = templateEngine.process("new_invoice_User.html",
+			// context);
+			// String htmlContent = templateEngine.process("new_invoice_User_test.html",
+			// context);
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			ConverterProperties converterProperties = new ConverterProperties();
-			//converterProperties.setBaseUri("https://localhost:8082");
+			// converterProperties.setBaseUri("https://localhost:8082");
 			HtmlConverter.convertToPdf(invoiceData.toString(), target, converterProperties);
-			
+
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Disposition", "attachment; filename=" + "orderInvoiceUpdated.pdf");
-			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(target.toByteArray());
+			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
+					.body(target.toByteArray());
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

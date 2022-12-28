@@ -52,9 +52,9 @@ public class UtillUserService {
 		invoiceUpdatedModel.setSellerGSTNO(invoiceEntity.getDesignerDetails().getGSTIN());
 		invoiceUpdatedModel.setDiscount(invoiceEntity.getProductDetails().getDiscount()+"");
 		invoiceUpdatedModel.setGrossAmount(invoiceEntity.getProductDetails().getMrp()+"");
-		invoiceUpdatedModel.setInvoiceId(invoiceEntity.getInvoiceId());
-		invoiceUpdatedModel.setOrderDate(invoiceEntity.getOrderDatetime());
-		invoiceUpdatedModel.setOrderId(invoiceEntity.getOrderId());
+		invoiceUpdatedModel.setInvoiceId("InvoiceId-"+invoiceEntity.getInvoiceId());
+		invoiceUpdatedModel.setOrderDate("Order DATE-"+invoiceEntity.getOrderDatetime());
+		invoiceUpdatedModel.setOrderId("OrderId-"+invoiceEntity.getOrderId());
 		invoiceUpdatedModel.setPincode(invoiceEntity.getUserDetails().getBilling_address().getPostalCode());
 		invoiceUpdatedModel.setProductName(invoiceEntity.getProductDetails().getProductName());
 		invoiceUpdatedModel.setQty(invoiceEntity.getProductDetails().getUnits()+"");
