@@ -2735,12 +2735,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					responceData.put(gstNo, productList);
 				}
 			}
-<<<<<<< HEAD
-			LOGGER.info(invoiceIdList + "");
-=======
-			LOGGER.info(responceData + "");
-			// LOGGER.info(invoiceIdList+"");
->>>>>>> 80f6c43067d771706bd99f8ab22d3eae46b50c94
+
 			// mrpList.stream().collect(Collectors.summingInt(Integer::intValue));
 			StringBuilder invoiceData = new StringBuilder();
 			for (String key : keyList) {
