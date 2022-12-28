@@ -121,7 +121,6 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 	public ResponseEntity<?> superAdminLogin(@RequestBody AdminLoginEntity loginEntity) {
 
 		LOGGER.info("Inside - EcomAuthController.superAdminLogin()");
-
 		if (loginEntity.getType().equals("USER")) {
 			UserLoginEntity entity = new UserLoginEntity();
 			if (userLoginRepo.findByEmail(loginEntity.getEmail()).isEmpty()) {
