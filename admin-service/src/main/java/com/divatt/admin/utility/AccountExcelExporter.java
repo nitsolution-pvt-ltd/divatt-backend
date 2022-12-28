@@ -51,7 +51,7 @@ public class AccountExcelExporter {
 		CellStyle style = workbook.createCellStyle();
 		XSSFFont font = workbook.createFont();
 		font.setBold(true);
-		font.setFontHeight(16);
+		font.setFontHeight(12);
 		style.setFont(font);
 
 		createCell(row, 0, "Sl No.", style);
@@ -101,7 +101,7 @@ public class AccountExcelExporter {
 
 		CellStyle style = workbook.createCellStyle();
 		XSSFFont font = workbook.createFont();
-		font.setFontHeight(12);
+		font.setFontHeight(10);
 		style.setFont(font);
 
 		int count = 1;
