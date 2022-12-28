@@ -242,6 +242,12 @@ public class ProfileContoller {
 			loginEntity.setCreatedOn(findById.getCreatedOn());
 			loginEntity.setModifiedOn(date.toString());
 			loginEntity.setRole(loginEntity.getRole());
+			loginEntity.setCity(loginEntity.getCity());
+			loginEntity.setCountry(loginEntity.getCountry());
+			loginEntity.setPan(loginEntity.getPan());
+			loginEntity.setGstIn(loginEntity.getGstIn());
+			loginEntity.setState(loginEntity.getState());
+			loginEntity.setPin(loginEntity.getPin());
 			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName().toUpperCase());
 			loginRepository.save(loginEntity);
 			return new ResponseEntity<>(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
@@ -401,7 +407,7 @@ public class ProfileContoller {
 	@PostMapping("/s3/upload")
 	public ResponseEntity<?> uploadFiles(@RequestPart(value = "file", required = false) MultipartFile file)
 			throws IOException {
-		if (file.getSize() > 10681340) // 20971520 ----> 20 MB,  10681340 ----> 10 MB
+		if (file.getSize() > 10681340) // 20971520 ----> 20 MB, 10681340 ----> 10 MB
 			throw new CustomException("File size not excepted....");
 		return ResponseEntity.ok(s3Service.uploadFile(file.getOriginalFilename(), file.getBytes()));
 

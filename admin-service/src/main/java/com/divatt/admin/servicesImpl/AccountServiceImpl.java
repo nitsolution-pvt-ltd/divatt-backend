@@ -1,12 +1,15 @@
 package com.divatt.admin.servicesImpl;
 
+import java.io.ByteArrayOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,10 +32,12 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.admin.constant.MessageConstant;
+import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.AccountMapEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
+import com.divatt.admin.entity.PaymentCharges;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.helper.EmailSenderThread;
 import com.divatt.admin.repo.AccountRepo;
@@ -37,6 +47,8 @@ import com.divatt.admin.services.AccountService;
 import com.divatt.admin.services.SequenceGenerator;
 import com.divatt.admin.utility.CommonUtility;
 import com.google.gson.Gson;
+import com.itextpdf.html2pdf.ConverterProperties;
+import com.itextpdf.html2pdf.HtmlConverter;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -54,6 +66,15 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private CommonUtility commonUtility;
+
+	@Autowired
+	private MongoOperations mongoOperations;
+
+	@Autowired
+	private TemplateEngine templateEngine;
+
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Value("${spring.profiles.active}")
 	private String contextPath;
@@ -207,8 +228,8 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	public Map<String, Object> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
-			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, 
-			String settlement, int year, int month, String designerId, Optional<String> sortBy) {
+			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder,
+			String ReturnStatus, String settlement, int year, int month, String designerId, Optional<String> sortBy) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.getAccountDetails()");
@@ -239,8 +260,8 @@ public class AccountServiceImpl implements AccountService {
 
 			if (keyword.isEmpty()) {
 //				findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);
-				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, 
-						settlement, year, month, designerId, pagingSort);
+				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder,
+						ReturnStatus, settlement, year, month, designerId, pagingSort);
 			} else {
 				findAll = accountTemplateRepo.AccountSearchByKeywords(keyword, pagingSort);
 //				findAll = accountRepo.AccountSearchByKeywords(keyword, pagingSort);
@@ -335,8 +356,8 @@ public class AccountServiceImpl implements AccountService {
 
 	}
 
-	public List<AccountEntity> excelReportService(String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, 
-			String settlement, int year, int month, String designerId) {
+	public List<AccountEntity> excelReportService(String designerReturn, String serviceCharge, String govtCharge,
+			String userOrder, String ReturnStatus, String settlement, int year, int month, String designerId) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.excelReportService()");
@@ -348,17 +369,17 @@ public class AccountServiceImpl implements AccountService {
 		try {
 
 //			findAll = accountRepo.findAll(Sort.by("_id").descending());
-			findAll = accountTemplateRepo.getAccountReport(designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, 
-					settlement, year, month, designerId);
-				
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "/account/excelReport", "Success", HttpStatus.OK);
-				}
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
-							interfaceId, host + contextPath + "/account/excelReport", gson.toJson(""), HttpStatus.OK);
-				}
+			findAll = accountTemplateRepo.getAccountReport(designerReturn, serviceCharge, govtCharge, userOrder,
+					ReturnStatus, settlement, year, month, designerId);
+
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/excelReport", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/excelReport", gson.toJson(""), HttpStatus.OK);
+			}
 
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
@@ -368,6 +389,109 @@ public class AccountServiceImpl implements AccountService {
 			}
 		}
 		return findAll;
+
+	}
+
+	@SuppressWarnings("static-access")
+	@Override
+	public ResponseEntity<byte[]> getPaymentCharges(String orderId) {
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountServiceImpl.getPaymentCharges()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountServiceImpl.getPaymentCharges()");
+		}
+		try {
+			List<AccountEntity> order = accountTemplateRepo.getOrder(orderId);
+			LOGGER.info(order + "inside accounts");
+			Map<String, List<PaymentCharges>> responceData = new HashMap<>();
+			List<String> invoiceIdList = new ArrayList<>();
+			List<String> keyList = new ArrayList<>();
+			for (AccountEntity data : order) {
+				String designerGst = data.getDesigner_details().getGst_in();
+				try {
+					List<PaymentCharges> productDetailsList = responceData.get(designerGst);
+					invoiceIdList.add(designerGst);
+					productDetailsList.add(commonUtility.invoiceUpdateMap(data));
+				} catch (Exception e) {
+					List<PaymentCharges> productList = new ArrayList<>();
+					keyList.add(designerGst);
+					productList.add(commonUtility.invoiceUpdateMapper(data));
+					responceData.put(designerGst, productList);
+				}
+			}
+			StringBuilder builder = new StringBuilder();
+			for (String key : keyList) {
+				List<PaymentCharges> paymentCharges = responceData.get(key);
+				Double tCgst = 0.0;
+				Double tSgst = 0.0;
+				Double tDis = 0.0;
+				Double tIgst = 0.0;
+				Double tGross = 0.0;
+				Double tTotal = 0.0;
+
+				String totalCgst = null;
+				String totalSgst = null;
+				String totalDiscount = null;
+				String totalIgst = null;
+				String totalGross = null;
+				String total = null;
+				String displayName = null;
+
+				for (PaymentCharges element : paymentCharges) {
+					element.setIgst(element.getIgst() == null ? "0" : element.getIgst());
+					tCgst = tCgst + Double.parseDouble(element.getCgst() == null ? "0" : element.getCgst());
+					tSgst = tSgst + Double.parseDouble(element.getSgst() == null ? "0" : element.getSgst());
+					tDis = tDis + Double.parseDouble(
+							Optional.ofNullable(element.getDiscount()).isEmpty() ? "0" : element.getDiscount());
+					tIgst = tIgst + Double.parseDouble(element.getIgst() == null ? "0" : element.getIgst());
+					tGross = tGross
+							+ Double.parseDouble(element.getGrossAmount() == null ? "0" : element.getGrossAmount());
+					tTotal = tTotal + Double.parseDouble(element.getTotal() == null ? "0" : element.getTotal());
+					totalCgst = String.valueOf(tCgst);
+					totalSgst = String.valueOf(tSgst);
+					totalDiscount = String.valueOf(tDis);
+					totalIgst = String.valueOf(tIgst);
+					totalGross = String.valueOf(tGross);
+					total = String.valueOf(tTotal);
+
+					for (AccountEntity designerId : order) {
+
+						displayName = designerId.getDesigner_details().getDisplay_name();
+					}
+				}
+				Map<String, Object> data = new HashMap<>();
+				data.put("data", paymentCharges);
+				data.put("totalCgst", totalCgst);
+				data.put("totalSgst", totalSgst);
+				data.put("totalDiscount", totalDiscount);
+				data.put("totalIgst", totalIgst);
+				data.put("totalGross", totalGross);
+				data.put("total", total);
+				data.put("displayName", displayName);
+				Context context = new Context();
+				context.setVariables(data);
+				String htmlContent = templateEngine.process("paymentInvoice.html", context);
+				builder.append(htmlContent);
+			}
+			ByteArrayOutputStream target = new ByteArrayOutputStream();
+			ConverterProperties converterProperties = new ConverterProperties();
+			// converterProperties.setBaseUri("https://localhost:8082");
+			HtmlConverter.convertToPdf(builder.toString(), target, converterProperties);
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Disposition", "attachment; filename=" + "orderPaymentInvoice.pdf");
+			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
+					.body(target.toByteArray());
+
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/getPaymentCharges", e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			throw new CustomException(e.getMessage());
+		}
 
 	}
 }

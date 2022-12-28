@@ -1,6 +1,5 @@
 package com.divatt.admin.repo;
 
-
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -291,81 +290,81 @@ public class AccountTemplateRepo {
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
 		MatchOperation match = null;
-		
-		if(year != 0 && month !=0 && !settlement.isEmpty()) {
+
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
-		
-			match = Aggregation.match(new Criteria()
-				.andOperator(Criteria.where("filter_date").lte(today.toString())
-				.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-				.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
-				)));
-		}else {
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else {
 			match = Aggregation.match(new Criteria());
 		}
-		
+
 		GroupOperation mapCondition = Aggregation.group().sum("service_charge.total_amount").as("serviceFee");
 		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
-		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
 		return results.getMappedResults();
 	}
+
 	public List<AccountMapEntity> getGstAmount(String settlement, int year, int month) {
-		
+
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
 		MatchOperation match = null;
-		
-		if(year != 0 && month !=0 && !settlement.isEmpty()) {
+
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
-		
-			match = Aggregation.match(new Criteria()
-				.andOperator(Criteria.where("filter_date").lte(today.toString())
-				.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-				.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
-				)));
-		}else {
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else {
 			match = Aggregation.match(new Criteria());
 		}
 
 		GroupOperation mapCondition = Aggregation.group().sum("service_charge.total_amount").as("gstAmount");
 		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
-		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
 		return results.getMappedResults();
 	}
+
 	public List<AccountMapEntity> getGovtChargeAmount(String settlement, int year, int month) {
-		
+
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
 		MatchOperation match = null;
-		
-		if(year != 0 && month !=0 && !settlement.isEmpty()) {
+
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
-		
-			match = Aggregation.match(new Criteria()
-				.andOperator(Criteria.where("filter_date").lte(today.toString())
-				.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-				.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
-				)));
-		}else {
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else {
 			match = Aggregation.match(new Criteria());
 		}
 
 		AggregationOperation unwind = Aggregation.unwind("govt_charge");
 		GroupOperation mapCondition = Aggregation.group().sum("govt_charge.total_amount").as("govtGstAmount");
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
-		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
 		return results.getMappedResults();
 	}
+
 	public List<AccountMapEntity> getDesignerGstAmount(String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
@@ -373,55 +372,56 @@ public class AccountTemplateRepo {
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
 		MatchOperation match = null;
-		
-		if(year != 0 && month !=0 && !settlement.isEmpty()) {
+
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
-		
-			match = Aggregation.match(new Criteria()
-				.andOperator(Criteria.where("filter_date").lte(today.toString())
-				.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-				.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
-				)));
-		}else {
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else {
 			match = Aggregation.match(new Criteria());
 		}
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
-		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.total_tax_amount").as("designerGstAmount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.total_tax_amount")
+				.as("designerGstAmount");
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
-		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
 		return results.getMappedResults();
 	}
+
 	public List<AccountMapEntity> getTcsAmount(String settlement, int year, int month) {
-		
+
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
 		MatchOperation match = null;
-		
-		if(year != 0 && month !=0 && !settlement.isEmpty()) {
+
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
-		
-			match = Aggregation.match(new Criteria()
-				.andOperator(Criteria.where("filter_date").lte(today.toString())
-				.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-				.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
-				)));
-		}else {
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else {
 			match = Aggregation.match(new Criteria());
 		}
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
 		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.tcs").as("tcs");
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
-		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
 		return results.getMappedResults();
 	}
+
 	public List<AccountMapEntity> getTotalAmount(String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
@@ -429,27 +429,28 @@ public class AccountTemplateRepo {
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
 		MatchOperation match = null;
-		
-		if(year != 0 && month !=0 && !settlement.isEmpty()) {
+
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
-		
-			match = Aggregation.match(new Criteria()
-				.andOperator(Criteria.where("filter_date").lte(today.toString())
-				.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-				.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
-				)));
-		}else {
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else {
 			match = Aggregation.match(new Criteria());
 		}
-		
+
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
-		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.total_amount_received").as("totalAmount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.total_amount_received")
+				.as("totalAmount");
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
-		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
 		return results.getMappedResults();
 	}
+
 	public List<AccountMapEntity> getPayableAmount(String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
@@ -457,57 +458,57 @@ public class AccountTemplateRepo {
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
 		MatchOperation match = null;
-		
-		if(year != 0 && month !=0 && !settlement.isEmpty()) {
+
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
-		
-			match = Aggregation.match(new Criteria()
-				.andOperator(Criteria.where("filter_date").lte(today.toString())
-				.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-				.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
-				)));
-		}else {
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else {
 			match = Aggregation.match(new Criteria());
 		}
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
-		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.net_payable_designer").as("payableAmount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.net_payable_designer")
+				.as("payableAmount");
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
-		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
 		return results.getMappedResults();
 	}
+
 	public List<AccountMapEntity> getPendingAmount(String settlement, int year, int month) {
 		/***
-		LocalDate today = LocalDate.now();
-		int dayDivide = 0;
-		int lengthOfMonth = 0;
-		YearMonth yearMonth = null;
-
-		if(year != 0 && month !=0 && !settlement.isEmpty()) {
-			yearMonth = YearMonth.of(year, month);
-			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
-		
-			match = Aggregation.match(new Criteria()
-				.andOperator(Criteria.where("filter_date").lte(today.toString())
-				.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-				.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-				.andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN")))
-				))));
-		}else {***/
-		MatchOperation match =  Aggregation.match(new Criteria()
-					.andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
+		 * LocalDate today = LocalDate.now(); int dayDivide = 0; int lengthOfMonth = 0;
+		 * YearMonth yearMonth = null;
+		 * 
+		 * if(year != 0 && month !=0 && !settlement.isEmpty()) { yearMonth =
+		 * YearMonth.of(year, month); lengthOfMonth = yearMonth.lengthOfMonth();
+		 * dayDivide= lengthOfMonth / 2;
+		 * 
+		 * match = Aggregation.match(new Criteria()
+		 * .andOperator(Criteria.where("filter_date").lte(today.toString())
+		 * .andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+		 * .andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+		 * .andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT
+		 * RETURN"))) )))); }else {
+		 ***/
+		MatchOperation match = Aggregation.match(new Criteria().andOperator(
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
 //		}
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
-		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.net_payable_designer").as("pendingAmount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.net_payable_designer")
+				.as("pendingAmount");
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
-		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
 		return results.getMappedResults();
 	}
-	
+
 	public List<AccountMapEntity> getBasicAmount(String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
@@ -515,190 +516,210 @@ public class AccountTemplateRepo {
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
 		MatchOperation match = null;
-		
-		if(year != 0 && month !=0 && !settlement.isEmpty()) {
+
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
-		
-			match = Aggregation.match(new Criteria()
-				.andOperator(Criteria.where("filter_date").lte(today.toString())
-				.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-				.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
-				)));
-		}else {
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else {
 			match = Aggregation.match(new Criteria());
 		}
-		
+
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
 		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.sales_price").as("basicAmount");
 
 		/**
-		AggregationExpression homeworkExpression = AccumulatorOperators.Sum.sumOf("designer_return_amount.sales_price");
-		AggregationExpression quizExpression = AccumulatorOperators.Sum.sumOf("service_charge.total_amount");
-		ProjectionOperation projectionOperation = Aggregation.project("_id").and(homeworkExpression).as("basicAmount")
-		        .and(quizExpression).as("qSum");
-		Aggregation aggregations = Aggregation.newAggregation(projectionOperation);
-		**/
-		
+		 * AggregationExpression homeworkExpression =
+		 * AccumulatorOperators.Sum.sumOf("designer_return_amount.sales_price");
+		 * AggregationExpression quizExpression =
+		 * AccumulatorOperators.Sum.sumOf("service_charge.total_amount");
+		 * ProjectionOperation projectionOperation =
+		 * Aggregation.project("_id").and(homeworkExpression).as("basicAmount")
+		 * .and(quizExpression).as("qSum"); Aggregation aggregations =
+		 * Aggregation.newAggregation(projectionOperation);
+		 **/
+
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
-		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class, AccountMapEntity.class);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
 		return results.getMappedResults();
 	}
-	
-	
+
 	@SuppressWarnings("all")
-	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, 
-			String ReturnStatus, String settlement, int year, int month, String designerId, Pageable pagingSort) {
+	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge,
+			String userOrder, String ReturnStatus, String settlement, int year, int month, String designerId,
+			Pageable pagingSort) {
 
 		LocalDate today = LocalDate.now();
 //		LocalDate plusDays = today.plusDays(7);
-		
+
 		int dayDivide = 0;
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
-		
-		if(year != 0 && month !=0 && !settlement.equals(null)) {
+
+		if (year != 0 && month != 0 && !settlement.equals(null)) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
+			dayDivide = lengthOfMonth / 2;
 		}
 		/***
-		String pattern = "yyyy-MM-dd";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		Instant instant = Instant.from(plusDays.atStartOfDay(ZoneId.of("GMT")));
-		Date date = Date.from(instant);
-//		String format = simpleDateFormat.format(date);
-		String currentDate = simpleDateFormat.format(new Date());
-		System.out.println(today+" simpleDateFormat " + currentDate);
-		***/
+		 * String pattern = "yyyy-MM-dd"; SimpleDateFormat simpleDateFormat = new
+		 * SimpleDateFormat(pattern); Instant instant =
+		 * Instant.from(plusDays.atStartOfDay(ZoneId.of("GMT"))); Date date =
+		 * Date.from(instant); // String format = simpleDateFormat.format(date); String
+		 * currentDate = simpleDateFormat.format(new Date()); System.out.println(today+"
+		 * simpleDateFormat " + currentDate);
+		 ***/
 
 //		AggregationOperation groupByIdAndSumFee = Aggregation.group("_id").sum("service_charge.fee").as("feeAmount");
-		
+
 //		MatchOperation filterByCondition = Aggregation.match(Criteria.where("datetime").gte(plusDays.toString())
 //				.orOperator(Criteria.where("datetime").lte(plusDays.toString())
 //				.andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN")))
 //						));
-		
+
 		MatchOperation filterByCondition = null;
 
-		if(ReturnStatus.equals("NotPaid") && !ReturnStatus.isEmpty()) {
+		if (ReturnStatus.equals("NotPaid") && !ReturnStatus.isEmpty()) {
 			filterByCondition = Aggregation.match(new Criteria().orOperator(
-			        Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
-		}else if(ReturnStatus.equals("Paid") && !ReturnStatus.isEmpty()) {
-			filterByCondition = Aggregation.match(
-					Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("RETURN")));
-		}else {
-			if(settlement.equals("firstSettlement") && year != 0 && month !=0) {
-			filterByCondition = Aggregation.match(new Criteria()
-					.andOperator(Criteria.where("filter_date").lte(today.toString())
-					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-					.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
-					)));
-			}else if(settlement.equals("secondSettlement") && year != 0 && month !=0) {
-			filterByCondition = Aggregation.match(new Criteria()
-					.andOperator(Criteria.where("filter_date").lte(today.toString())
-					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-					.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))
-					)));
-			}else {
+					Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
+		} else if (ReturnStatus.equals("Paid") && !ReturnStatus.isEmpty()) {
+			filterByCondition = Aggregation
+					.match(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("RETURN")));
+		} else {
+			if (settlement.equals("firstSettlement") && year != 0 && month != 0) {
+				filterByCondition = Aggregation.match(
+						new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString()).andOperator(
+								Criteria.where("filter_date").gte(yearMonth.atDay(1).toString()).andOperator(
+										Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement") && year != 0 && month != 0) {
+				filterByCondition = Aggregation
+						.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+								.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+										.andOperator(Criteria.where("filter_date")
+												.lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			} else {
 				filterByCondition = Aggregation.match(new Criteria());
 			}
 		}
-		
-		if(designerReturn != "" && !designerReturn.isEmpty()) {
-			filterByCondition = Aggregation.match(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is(designerReturn.trim())));
+
+		if (designerReturn != "" && !designerReturn.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("designer_return_amount")
+					.elemMatch(Criteria.where("status").is(designerReturn.trim())));
 		}
-		if(serviceCharge != "" && !serviceCharge.isEmpty()) {
+		if (serviceCharge != "" && !serviceCharge.isEmpty()) {
 			filterByCondition = Aggregation.match(Criteria.where("service_charge.status").is(serviceCharge.trim()));
 		}
-		if(govtCharge != "" && !govtCharge.isEmpty()) {
-			filterByCondition = Aggregation.match(Criteria.where("govt_charge").elemMatch(Criteria.where("status").is(govtCharge.trim())));
+		if (govtCharge != "" && !govtCharge.isEmpty()) {
+			filterByCondition = Aggregation
+					.match(Criteria.where("govt_charge").elemMatch(Criteria.where("status").is(govtCharge.trim())));
 		}
-		if(userOrder != "" && !userOrder.isEmpty()) {
-			filterByCondition = Aggregation.match(Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
+		if (userOrder != "" && !userOrder.isEmpty()) {
+			filterByCondition = Aggregation.match(
+					Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
 		}
-		if(designerId != "" && !designerId.isEmpty()) {
-			filterByCondition = Aggregation.match(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())));
+		if (designerId != "" && !designerId.isEmpty()) {
+			filterByCondition = Aggregation
+					.match(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())));
 		}
 		SortOperation sortByIdDesc = Aggregation.sort(pagingSort.getSort());
-		SkipOperation skip = Aggregation.skip((long)(pagingSort.getPageNumber() * pagingSort.getPageSize()));
+		SkipOperation skip = Aggregation.skip((long) (pagingSort.getPageNumber() * pagingSort.getPageSize()));
 		LimitOperation limit = Aggregation.limit(pagingSort.getPageSize());
 
 		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, skip, limit, sortByIdDesc);
-		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations, mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
+		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations,
+				mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
 
-		System.out.println(designerId+" results "+ results.getMappedResults().toString());
+		System.out.println(designerId + " results " + results.getMappedResults().toString());
 		int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 		int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), results.getMappedResults().size());
 		List<AccountEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
 				: results.getMappedResults().subList(startOfPage, endOfPage);
 		return new PageImpl<AccountEntity>(subList, pagingSort, results.getMappedResults().size());
-		
-	}
-	
 
-	public List<AccountEntity> getAccountReport(String designerReturn, String serviceCharge, String govtCharge, String userOrder, 
-			String ReturnStatus, String settlement, int year, int month, String designerId) {
+	}
+
+	public List<AccountEntity> getAccountReport(String designerReturn, String serviceCharge, String govtCharge,
+			String userOrder, String ReturnStatus, String settlement, int year, int month, String designerId) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
 		int lengthOfMonth = 0;
 		YearMonth yearMonth = null;
-		
-		if(year != 0 && month !=0 && !settlement.equals(null)) {
+
+		if (year != 0 && month != 0 && !settlement.equals(null)) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
-			dayDivide= lengthOfMonth / 2;
+			dayDivide = lengthOfMonth / 2;
 		}
-		
+
 		MatchOperation filterByCondition = null;
 
-		if(ReturnStatus.equals("NotPaid") && !ReturnStatus.isEmpty()) {
+		if (ReturnStatus.equals("NotPaid") && !ReturnStatus.isEmpty()) {
 			filterByCondition = Aggregation.match(new Criteria().orOperator(
-			        Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
-		}else if(ReturnStatus.equals("Paid") && !ReturnStatus.isEmpty()) {
-			filterByCondition = Aggregation.match(
-					Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("RETURN")));
-		}else {
-			if(settlement.equals("firstSettlement") && year != 0 && month !=0) {
-			filterByCondition = Aggregation.match(new Criteria()
-					.andOperator(Criteria.where("filter_date").lte(today.toString())
-					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-					.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))
-					)));
-			}else if(settlement.equals("secondSettlement") && year != 0 && month !=0) {
-			filterByCondition = Aggregation.match(new Criteria()
-					.andOperator(Criteria.where("filter_date").lte(today.toString())
-					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-					.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))
-					)));
-			}else {
+					Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
+		} else if (ReturnStatus.equals("Paid") && !ReturnStatus.isEmpty()) {
+			filterByCondition = Aggregation
+					.match(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("RETURN")));
+		} else {
+			if (settlement.equals("firstSettlement") && year != 0 && month != 0) {
+				filterByCondition = Aggregation.match(
+						new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString()).andOperator(
+								Criteria.where("filter_date").gte(yearMonth.atDay(1).toString()).andOperator(
+										Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement") && year != 0 && month != 0) {
+				filterByCondition = Aggregation
+						.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+								.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+										.andOperator(Criteria.where("filter_date")
+												.lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			} else {
 				filterByCondition = Aggregation.match(new Criteria());
 			}
 		}
-		
-		if(designerReturn != "" && !designerReturn.isEmpty()) {
-			filterByCondition = Aggregation.match(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is(designerReturn.trim())));
+
+		if (designerReturn != "" && !designerReturn.isEmpty()) {
+			filterByCondition = Aggregation.match(Criteria.where("designer_return_amount")
+					.elemMatch(Criteria.where("status").is(designerReturn.trim())));
 		}
-		if(serviceCharge != "" && !serviceCharge.isEmpty()) {
+		if (serviceCharge != "" && !serviceCharge.isEmpty()) {
 			filterByCondition = Aggregation.match(Criteria.where("service_charge.status").is(serviceCharge.trim()));
 		}
-		if(govtCharge != "" && !govtCharge.isEmpty()) {
-			filterByCondition = Aggregation.match(Criteria.where("govt_charge").elemMatch(Criteria.where("status").is(govtCharge.trim())));
+		if (govtCharge != "" && !govtCharge.isEmpty()) {
+			filterByCondition = Aggregation
+					.match(Criteria.where("govt_charge").elemMatch(Criteria.where("status").is(govtCharge.trim())));
 		}
-		if(userOrder != "" && !userOrder.isEmpty()) {
-			filterByCondition = Aggregation.match(Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
+		if (userOrder != "" && !userOrder.isEmpty()) {
+			filterByCondition = Aggregation.match(
+					Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
 		}
-		if(designerId != "" && !designerId.isEmpty()) {
-			filterByCondition = Aggregation.match(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())));
+		if (designerId != "" && !designerId.isEmpty()) {
+			filterByCondition = Aggregation
+					.match(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())));
 		}
-		SortOperation sortByIdDesc = Aggregation.sort(Direction.DESC,"_id");
+		SortOperation sortByIdDesc = Aggregation.sort(Direction.DESC, "_id");
 
 		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, sortByIdDesc);
-		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations, mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
+		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations,
+				mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
 
 		return results.getMappedResults();
+	}
+
+	public List<AccountEntity> getOrder(String orderId) {
+
+		MatchOperation filterByCondition = Aggregation
+				.match(Criteria.where("order_details").elemMatch(Criteria.where("order_id").is(orderId)));
+
+		Aggregation aggregations = Aggregation.newAggregation(filterByCondition);
+		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations,
+				mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
+		return results.getMappedResults();
+
 	}
 
 }

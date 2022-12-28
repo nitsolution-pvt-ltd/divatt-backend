@@ -7,7 +7,8 @@ public enum RestTemplateConstant {
 	DESIGNER_PRODUCTS_PRODUCT_LIST("https://localhost:8083/dev/designerProducts/productList/"),
 	DESIGNER_PRODUCTS_APPROVAL_UPDATE("https://localhost:8083/dev/designerProducts/approvalUpdate/"),
 	AUTH_PRESENT("https://localhost:8080/dev/auth/Present/"),
-	AUTH_SEND_MAIL("https://65.1.190.195:8080/dev/auth/sendMail")
+	AUTH_SEND_MAIL("https://localhost:8080/dev/auth/sendMail"),
+	DESIGNER_BYID("https://localhost:8083/dev/designer/"),
 	;
 	
 	  // FOR PROD

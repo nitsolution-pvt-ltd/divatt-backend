@@ -168,8 +168,8 @@ public class AccountController {
 						host + contextPath + "/account/list", "Success", HttpStatus.OK);
 			}
 			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword,
-					designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, settlement, year, month, designerId,
-					sortBy);
+					designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, settlement, year, month,
+					designerId, sortBy);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
@@ -181,8 +181,7 @@ public class AccountController {
 	}
 
 	@GetMapping("/excelReport")
-	public void excelReport(HttpServletResponse response,
-			@RequestParam(defaultValue = "") String designerReturn,
+	public void excelReport(HttpServletResponse response, @RequestParam(defaultValue = "") String designerReturn,
 			@RequestParam(defaultValue = "") String serviceCharge, @RequestParam(defaultValue = "") String govtCharge,
 			@RequestParam(defaultValue = "") String userOrder, @RequestParam(defaultValue = "") String ReturnStatus,
 			@RequestParam(defaultValue = "") String settlement, @RequestParam(defaultValue = "0") int year,
@@ -212,17 +211,47 @@ public class AccountController {
 			String headerValue = "attachment; filename=Divatt_account_report_" + currentDateTime + ".xlsx";
 			response.setHeader(headerKey, headerValue);
 
-			List<AccountEntity> listUsers = accountService.excelReportService(designerReturn, serviceCharge, govtCharge, 
+			List<AccountEntity> listUsers = accountService.excelReportService(designerReturn, serviceCharge, govtCharge,
 					userOrder, ReturnStatus, settlement, year, month, designerId);
 			AccountExcelExporter excelExporter = new AccountExcelExporter(listUsers);
 			excelExporter.export(response);
-			
+
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/account/excelReport", e.getLocalizedMessage(),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
+		}
+
+	}
+
+	@GetMapping("/getPaymentCharges/{orderId}")
+	public ResponseEntity<byte[]> getPaymentCharges(@PathVariable String orderId) {
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountController.getPaymentCharges()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountController.getPaymentCharges()");
+		}
+		try {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/getPaymentCharges", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/getPaymentCharges", "Success", HttpStatus.OK);
+			}
+			return this.accountService.getPaymentCharges(orderId);
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/getPaymentCharges", e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			throw new CustomException(e.getLocalizedMessage());
+
 		}
 
 	}

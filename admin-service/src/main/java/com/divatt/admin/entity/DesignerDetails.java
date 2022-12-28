@@ -10,9 +10,31 @@ public class DesignerDetails {
 	public String pan;
 	public String mobile;
 	public String address;
-	
+	public String city;
+	public String state;
+	public String pin;
+	public String country;
+
 	public DesignerDetails() {
 		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public DesignerDetails(long designer_id, String designer_name, String display_name, String email, String gst_in,
+			String pan, String mobile, String address, String city, String state, String pin, String country) {
+		super();
+		this.designer_id = designer_id;
+		this.designer_name = designer_name;
+		this.display_name = display_name;
+		this.email = email;
+		this.gst_in = gst_in;
+		this.pan = pan;
+		this.mobile = mobile;
+		this.address = address;
+		this.city = city;
+		this.state = state;
+		this.pin = pin;
+		this.country = country;
 	}
 
 	public long getDesigner_id() {
@@ -79,10 +101,44 @@ public class DesignerDetails {
 		this.address = address;
 	}
 
-	
-	
-	
-	
+	public String getCity() {
+		return city;
+	}
 
-	
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getPin() {
+		return pin;
+	}
+
+	public void setPin(String pin) {
+		this.pin = pin;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	@Override
+	public String toString() {
+		return "DesignerDetails [designer_id=" + designer_id + ", designer_name=" + designer_name + ", display_name="
+				+ display_name + ", email=" + email + ", gst_in=" + gst_in + ", pan=" + pan + ", mobile=" + mobile
+				+ ", address=" + address + ", city=" + city + ", state=" + state + ", pin=" + pin + ", country="
+				+ country + "]";
+	}
+
 }

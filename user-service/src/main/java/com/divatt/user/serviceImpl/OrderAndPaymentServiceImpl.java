@@ -331,27 +331,36 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			orderSKUDetailsEntityRow.setDesignerId(orderSKUDetailsEntityRow.getDesignerId());
 			orderSKUDetailsEntityRow.setOrderItemStatus("New");
-			int shipmentTime = Integer
-					.parseInt(restTemplate
-							.getForEntity(RestTemplateConstant.DESIGNER_PRODUCT.getLink()
-									+ orderSKUDetailsEntityRow.getProductId(), org.json.simple.JSONObject.class)
-							.getBody().get("shipmentTime").toString());
-			// SimpleDateFormat sdf = new
-			// SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
-			Calendar c = Calendar.getInstance();
-			c.setTime(new Date());
-			c.add(Calendar.DATE, shipmentTime);
-			String output = formatter.format(c.getTime());
-			LOGGER.info(output);
-			HsnData hsndata = new HsnData();
-			hsndata.setCgst(orderSKUDetailsEntityRow.getHsnData().getCgst());
-			hsndata.setIgst(orderSKUDetailsEntityRow.getHsnData().getIgst());
-			hsndata.setSgst(orderSKUDetailsEntityRow.getHsnData().getSgst());
-			orderSKUDetailsEntityRow.setHsnData(hsndata);
-			orderSKUDetailsEntityRow.setShippingDate(output);
-			orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
-			LOGGER.info(orderSKUDetailsEntityRow + "");
-			LOGGER.info("Ok<><><><>");
+//			int shipmentTime = Integer
+//					.parseInt(restTemplate
+//							.getForEntity(RestTemplateConstant.DESIGNER_PRODUCT.getLink()
+//									+ orderSKUDetailsEntityRow.getProductId(), org.json.simple.JSONObject.class)
+//							.getBody().get("shipmentTime").toString());
+			try {
+				ResponseEntity<org.json.simple.JSONObject> forEntity = restTemplate.getForEntity(
+						RestTemplateConstant.DESIGNER_PRODUCT.getLink() + orderSKUDetailsEntityRow.getProductId(),
+						org.json.simple.JSONObject.class);
+				int shipmentTime = Integer.parseInt(forEntity.getBody().get("shipmentTime").toString());
+				String productSku = forEntity.getBody().get("sku").toString();
+
+				Calendar c = Calendar.getInstance();
+				c.setTime(new Date());
+				c.add(Calendar.DATE, shipmentTime);
+				String output = formatter.format(c.getTime());
+				LOGGER.info(output);
+				HsnData hsndata = new HsnData();
+				hsndata.setCgst(orderSKUDetailsEntityRow.getHsnData().getCgst());
+				hsndata.setIgst(orderSKUDetailsEntityRow.getHsnData().getIgst());
+				hsndata.setSgst(orderSKUDetailsEntityRow.getHsnData().getSgst());
+				orderSKUDetailsEntityRow.setHsnData(hsndata);
+				orderSKUDetailsEntityRow.setShippingDate(output);
+				orderSKUDetailsEntityRow.setProductSku(productSku);
+				orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
+				LOGGER.info(orderSKUDetailsEntityRow + "");
+				LOGGER.info("Ok<><><><>");
+			} catch (Exception e) {
+				throw new CustomException(e.getMessage());
+			}
 			return ResponseEntity.ok(null);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -2590,7 +2599,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				ResponseEntity<DesignerProfileEntity> forEntity = restTemplate.getForEntity(
 						RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), DesignerProfileEntity.class);
 				String designerName = forEntity.getBody().getDesignerName();
-				LOGGER.info("designerName<><><><>???"+designerName);
+				LOGGER.info("designerName<><><><>???" + designerName);
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 
 				String writeValueAsString = null;
@@ -2609,7 +2618,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				JSONObject objects = cartJN.getObject();
 				if (invoiceData.size() > 0) {
 					invoiceData.forEach(invoice -> {
-						LOGGER.info("invoiceId<><>??????"+ invoice.getInvoiceId());
+						LOGGER.info("invoiceId<><>??????" + invoice.getInvoiceId());
 						objects.put("invoiceId", invoice.getInvoiceId());
 					});
 				} else {
@@ -2716,7 +2725,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					responceData.put(gstNo, productList);
 				}
 			}
-			LOGGER.info(invoiceIdList+"");
+			LOGGER.info(invoiceIdList + "");
 			// mrpList.stream().collect(Collectors.summingInt(Integer::intValue));
 			StringBuilder invoiceData = new StringBuilder();
 			for (String key : keyList) {
@@ -2786,19 +2795,22 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				invoiceData.append(htmlContent);
 			}
 
-			//return invoiceData.toString();
+			// return invoiceData.toString();
 			// return responceData;
-			//Context context = new Context();
-			//String htmlContent = templateEngine.process("new_invoice_User.html", context);
-			//String htmlContent = templateEngine.process("new_invoice_User_test.html", context);
+			// Context context = new Context();
+			// String htmlContent = templateEngine.process("new_invoice_User.html",
+			// context);
+			// String htmlContent = templateEngine.process("new_invoice_User_test.html",
+			// context);
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			ConverterProperties converterProperties = new ConverterProperties();
-			//converterProperties.setBaseUri("https://localhost:8082");
+			// converterProperties.setBaseUri("https://localhost:8082");
 			HtmlConverter.convertToPdf(invoiceData.toString(), target, converterProperties);
-			
+
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Disposition", "attachment; filename=" + "orderInvoiceUpdated.pdf");
-			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(target.toByteArray());
+			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
+					.body(target.toByteArray());
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -2839,4 +2851,5 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 		return baos;
 	}
+
 }
