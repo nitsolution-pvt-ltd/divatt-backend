@@ -136,8 +136,7 @@ public class AccountTemplateRepo {
 		final List<AccountEntity> find = mongoTemplate.find(query, AccountEntity.class);
 		int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 		int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), find.size());
-		List<AccountEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
-				: find.subList(startOfPage, endOfPage);
+		List<AccountEntity> subList = startOfPage >= endOfPage ? new ArrayList<>() : find.subList(startOfPage, endOfPage);
 		return new PageImpl<AccountEntity>(subList, pagingSort, find.size());
 	}
 
@@ -547,7 +546,6 @@ public class AccountTemplateRepo {
 	}
 	
 	
-	@SuppressWarnings("all")
 	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, 
 			String ReturnStatus, String settlement, int year, int month, String designerId, Pageable pagingSort) {
 
@@ -622,13 +620,11 @@ public class AccountTemplateRepo {
 			filterByCondition = Aggregation.match(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())));
 		}
 		SortOperation sortByIdDesc = Aggregation.sort(pagingSort.getSort());
-		SkipOperation skip = Aggregation.skip((long)(pagingSort.getPageNumber() * pagingSort.getPageSize()));
-		LimitOperation limit = Aggregation.limit(pagingSort.getPageSize());
 
-		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, skip, limit, sortByIdDesc);
+		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, sortByIdDesc);
 		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations, mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
 
-		System.out.println(designerId+" results "+ results.getMappedResults().toString());
+		
 		int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 		int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), results.getMappedResults().size());
 		List<AccountEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
