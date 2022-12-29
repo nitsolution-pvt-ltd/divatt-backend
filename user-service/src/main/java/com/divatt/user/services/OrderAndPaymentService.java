@@ -42,7 +42,8 @@ public interface OrderAndPaymentService {
 
 	public ResponseEntity<?> getOrderDetailsService(String orderId);
 
-	public ResponseEntity<?> getUserOrderDetailsService(Integer userId);
+	public Map<String, Object> getUserOrderDetailsService(Integer userId, int page, int limit, String sort, String sortName,
+			String keyword, Optional<String> sortBy, String token);
 
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
 			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType, String startDate,

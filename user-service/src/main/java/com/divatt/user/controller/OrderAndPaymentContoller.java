@@ -311,8 +311,11 @@ public class OrderAndPaymentContoller {
 	}
 
 	@GetMapping("/getUserOrder/{userId}")
-	public ResponseEntity<?> getOrderDetailsByuserId(@RequestHeader("Authorization") String token,
-			@PathVariable() Integer userId) {
+	public Map<String, Object> getOrderDetailsByuserId(@RequestHeader("Authorization") String token,
+			@PathVariable() Integer userId, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
 
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetailsByuserId()");
 
@@ -320,7 +323,7 @@ public class OrderAndPaymentContoller {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
 				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
-			return orderAndPaymentService.getUserOrderDetailsService(userId);
+			return orderAndPaymentService.getUserOrderDetailsService(userId, page, limit, sort, sortName, keyword, sortBy, token);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
