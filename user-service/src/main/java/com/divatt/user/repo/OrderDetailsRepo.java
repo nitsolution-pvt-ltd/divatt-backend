@@ -62,4 +62,15 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
 	Page<OrderDetailsEntity> findOrderStatus(String orderStatus, Pageable pagingSort);
 	
 //	Page<OrderDetailsEntity> findByDesignerId(int designerId,Pageable pageable);
+  
+    //@Query(value = "{ $or: [  { 'user_id' : {$regex:?0,$options:'i'} }]}")
+    @Query("{ 'userId' : ?0}")
+	Page<OrderDetailsEntity> findByUserId(Integer userId, Pageable pageable);
+   
+    //@Query(value = "{ $or: [ { 'orderId' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} },{ 'deliveryStatus' : {$regex:?0,$options:'i'} },{ 'orderStatus' : {$regex:?0,$options:'i'} },{ 'deliveryMode' : {$regex:?0,$options:'i'} } ],$and: [ {  'discount' : ?1}]}")
+    @Query("{ 'userId' : ?0,}")
+    Page<OrderDetailsEntity> findByUserIdAndKeyword(Integer userId,String keyword, Pageable pageable);
+    
+    
+    
 }
