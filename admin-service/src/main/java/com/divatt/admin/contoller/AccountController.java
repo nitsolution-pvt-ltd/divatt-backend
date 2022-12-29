@@ -226,28 +226,28 @@ public class AccountController {
 
 	}
 
-	@GetMapping("/getPaymentCharges/{orderId}")
-	public ResponseEntity<byte[]> getPaymentCharges(@PathVariable String orderId) {
+	@GetMapping("/getDesignerInvoice/{orderId}/{designerId}")
+	public ResponseEntity<byte[]> getDesignerInvoice(@PathVariable String orderId,@PathVariable Long designerId) {
 		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info("Inside - AccountController.getPaymentCharges()");
+			LOGGER.info("Inside - AccountController.getDesignerInvoice()");
 		}
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Inside - AccountController.getPaymentCharges()");
+			LOGGER.debug("Inside - AccountController.getDesignerInvoice()");
 		}
 		try {
 			if (LOGGER.isInfoEnabled()) {
 				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/getPaymentCharges", "Success", HttpStatus.OK);
+						host + contextPath + "/account/getDesignerInvoice", "Success", HttpStatus.OK);
 			}
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/getPaymentCharges", "Success", HttpStatus.OK);
+						host + contextPath + "/account/getDesignerInvoice", "Success", HttpStatus.OK);
 			}
-			return this.accountService.getPaymentCharges(orderId);
+			return this.accountService.getDesignerInvoice(orderId,designerId);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/getPaymentCharges", e.getLocalizedMessage(),
+						host + contextPath + "/account/getDesignerInvoice", e.getLocalizedMessage(),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			throw new CustomException(e.getLocalizedMessage());

@@ -38,7 +38,7 @@ public class PaymentCharges {
 	private String invoiceId;
 	private String productName;
 	private String qty;
-	private String grossAmount;
+	private String fee;
 	private String discount;
 	private String cgst;
 	private String sgst;
@@ -48,8 +48,13 @@ public class PaymentCharges {
 	private String totalCgst;
 	private String totalSgst;
 	private String totalDiscount;
-	private String totalQunatuty;
 	private String hsnCode;
+	private String tcs;
+	private String tcsRate;
+	private String rate;
+	private String totalTcs;
+	private String totalRate;
+	private String totalTcsRate;
 
 	public PaymentCharges() {
 		super();
@@ -60,8 +65,9 @@ public class PaymentCharges {
 			String adminCountry, String adminPhone, String displayName, String designerName, String designerPan,
 			String designerGst, String designerCity, String designerState, String designerPin, String designerPhone,
 			String designerCountry, String orderId, String orderDate, String invoiceId, String productName, String qty,
-			String grossAmount, String discount, String cgst, String sgst, String igst, String total, String grandTotal,
-			String totalCgst, String totalSgst, String totalDiscount, String totalQunatuty, String hsnCode) {
+			String fee, String discount, String cgst, String sgst, String igst, String total, String grandTotal,
+			String totalCgst, String totalSgst, String totalDiscount, String hsnCode, String tcs, String tcsRate,
+			String rate, String totalTcs, String totalRate, String totalTcsRate) {
 		super();
 		this.adminPan = adminPan;
 		this.adminGst = adminGst;
@@ -84,7 +90,7 @@ public class PaymentCharges {
 		this.invoiceId = invoiceId;
 		this.productName = productName;
 		this.qty = qty;
-		this.grossAmount = grossAmount;
+		this.fee = fee;
 		this.discount = discount;
 		this.cgst = cgst;
 		this.sgst = sgst;
@@ -94,8 +100,13 @@ public class PaymentCharges {
 		this.totalCgst = totalCgst;
 		this.totalSgst = totalSgst;
 		this.totalDiscount = totalDiscount;
-		this.totalQunatuty = totalQunatuty;
 		this.hsnCode = hsnCode;
+		this.tcs = tcs;
+		this.tcsRate = tcsRate;
+		this.rate = rate;
+		this.totalTcs = totalTcs;
+		this.totalRate = totalRate;
+		this.totalTcsRate = totalTcsRate;
 	}
 
 	public String getAdminPan() {
@@ -266,12 +277,12 @@ public class PaymentCharges {
 		this.qty = qty;
 	}
 
-	public String getGrossAmount() {
-		return grossAmount;
+	public String getFee() {
+		return fee;
 	}
 
-	public void setGrossAmount(String grossAmount) {
-		this.grossAmount = grossAmount;
+	public void setFee(String fee) {
+		this.fee = fee;
 	}
 
 	public String getDiscount() {
@@ -346,20 +357,60 @@ public class PaymentCharges {
 		this.totalDiscount = totalDiscount;
 	}
 
-	public String getTotalQunatuty() {
-		return totalQunatuty;
-	}
-
-	public void setTotalQunatuty(String totalQunatuty) {
-		this.totalQunatuty = totalQunatuty;
-	}
-
 	public String getHsnCode() {
 		return hsnCode;
 	}
 
 	public void setHsnCode(String hsnCode) {
 		this.hsnCode = hsnCode;
+	}
+
+	public String getTcs() {
+		return tcs;
+	}
+
+	public void setTcs(String tcs) {
+		this.tcs = tcs;
+	}
+
+	public String getTcsRate() {
+		return tcsRate;
+	}
+
+	public void setTcsRate(String tcsRate) {
+		this.tcsRate = tcsRate;
+	}
+
+	public String getRate() {
+		return rate;
+	}
+
+	public void setRate(String rate) {
+		this.rate = rate;
+	}
+
+	public String getTotalTcs() {
+		return totalTcs;
+	}
+
+	public void setTotalTcs(String totalTcs) {
+		this.totalTcs = totalTcs;
+	}
+
+	public String getTotalRate() {
+		return totalRate;
+	}
+
+	public void setTotalRate(String totalRate) {
+		this.totalRate = totalRate;
+	}
+
+	public String getTotalTcsRate() {
+		return totalTcsRate;
+	}
+
+	public void setTotalTcsRate(String totalTcsRate) {
+		this.totalTcsRate = totalTcsRate;
 	}
 
 	@Override
@@ -370,10 +421,12 @@ public class PaymentCharges {
 				+ ", designerPan=" + designerPan + ", designerGst=" + designerGst + ", designerCity=" + designerCity
 				+ ", designerState=" + designerState + ", designerPin=" + designerPin + ", designerPhone="
 				+ designerPhone + ", designerCountry=" + designerCountry + ", orderId=" + orderId + ", orderDate="
-				+ orderDate + ", invoiceId=" + invoiceId + ", productName=" + productName + ", qty=" + qty
-				+ ", grossAmount=" + grossAmount + ", discount=" + discount + ", cgst=" + cgst + ", sgst=" + sgst
-				+ ", igst=" + igst + ", total=" + total + ", grandTotal=" + grandTotal + ", totalCgst=" + totalCgst
-				+ ", totalSgst=" + totalSgst + ", totalDiscount=" + totalDiscount + ", totalQunatuty=" + totalQunatuty
-				+ ", hsnCode=" + hsnCode + "]";
+				+ orderDate + ", invoiceId=" + invoiceId + ", productName=" + productName + ", qty=" + qty + ", fee="
+				+ fee + ", discount=" + discount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst + ", total="
+				+ total + ", grandTotal=" + grandTotal + ", totalCgst=" + totalCgst + ", totalSgst=" + totalSgst
+				+ ", totalDiscount=" + totalDiscount + ", hsnCode=" + hsnCode + ", tcs=" + tcs + ", tcsRate=" + tcsRate
+				+ ", rate=" + rate + ", totalTcs=" + totalTcs + ", totalRate=" + totalRate + ", totalTcsRate="
+				+ totalTcsRate + "]";
 	}
+
 }

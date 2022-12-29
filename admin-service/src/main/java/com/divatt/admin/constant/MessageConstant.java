@@ -65,7 +65,7 @@ public enum MessageConstant {
 
 	ACCOUNT_ADDED("Account data added successfully"), ACCOUNT_UPDATED("Account data updated successfully"),
 	ACCOUNT_NOT_FOUND("Account data not found"), ORDER_ALREADY_EXIST("Account data already exist!"),
-	ADMIN_ROLES("SADMIN")
+	ADMIN_ROLES("SADMIN"),DIVATT_CHARGES("Divatt Charges")
 
 	;
 
