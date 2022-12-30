@@ -346,8 +346,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						RestTemplateConstant.DESIGNER_PRODUCT.getLink() + orderSKUDetailsEntityRow.getProductId(),
 						org.json.simple.JSONObject.class);
 				int shipmentTime = Integer.parseInt(forEntity.getBody().get("shipmentTime").toString());
-				String productSku = forEntity.getBody().get("sku").toString();
-
+				LOGGER.info(shipmentTime+"inside");
+				Object productSku = forEntity.getBody().get("sku");
+				LOGGER.info(productSku+"inside");
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
 				c.add(Calendar.DATE, shipmentTime);
@@ -359,7 +360,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				hsndata.setSgst(orderSKUDetailsEntityRow.getHsnData().getSgst());
 				orderSKUDetailsEntityRow.setHsnData(hsndata);
 				orderSKUDetailsEntityRow.setShippingDate(output);
-				orderSKUDetailsEntityRow.setProductSku(productSku);
+				orderSKUDetailsEntityRow.setProductSku(productSku.toString());
 				orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
 				LOGGER.info(orderSKUDetailsEntityRow + "");
 				LOGGER.info("Ok<><><><>");

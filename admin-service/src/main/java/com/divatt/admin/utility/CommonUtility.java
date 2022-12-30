@@ -1,6 +1,7 @@
 package com.divatt.admin.utility;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,44 +61,41 @@ public class CommonUtility {
 		}
 	}
 
-	public static PaymentCharges invoiceUpdateMapper(AccountEntity accountEntity) {
+	public static PaymentCharges invoiceUpdateMapper(List< AccountEntity> accountEntity) {
 		PaymentCharges charges = new PaymentCharges();
-		charges.setAdminCity(accountEntity.getAdmin_details().getCity());
-		charges.setAdminCountry(accountEntity.getAdmin_details().getCountry());
-		charges.setAdminGst(accountEntity.getAdmin_details().getGst_in());
-		charges.setAdminPan(accountEntity.getAdmin_details().getPan());
-		charges.setAdminPhone(accountEntity.getAdmin_details().getMobile());
-		charges.setAdminPin(accountEntity.getAdmin_details().getPin());
-		charges.setAdminState(accountEntity.getAdmin_details().getState());
+		charges.setAdminCity(accountEntity.get(0).getAdmin_details().getCity());
+		charges.setAdminCountry(accountEntity.get(0).getAdmin_details().getCountry());
+		charges.setAdminGst(accountEntity.get(0).getAdmin_details().getGst_in());
+		charges.setAdminPan(accountEntity.get(0).getAdmin_details().getPan());
+		charges.setAdminPhone(accountEntity.get(0).getAdmin_details().getMobile());
+		charges.setAdminPin(accountEntity.get(0).getAdmin_details().getPin());
+		charges.setAdminState(accountEntity.get(0).getAdmin_details().getState());
 
-		charges.setDesignerCity(accountEntity.getDesigner_details().getCity());
-		charges.setDesignerCountry(accountEntity.getDesigner_details().getCountry());
-		charges.setDesignerPan(accountEntity.getDesigner_details().getPan());
-		charges.setDesignerState(accountEntity.getDesigner_details().getState());
-		charges.setDesignerPin(accountEntity.getDesigner_details().getPin());
-		charges.setDesignerPhone(accountEntity.getDesigner_details().getMobile());
-		charges.setDesignerGst(accountEntity.getDesigner_details().getGst_in());
-		charges.setDesignerName(accountEntity.getDesigner_details().getDesigner_name());
-		charges.setCgst(accountEntity.getService_charge().getCgst() + "");
-		charges.setIgst(accountEntity.getService_charge().getIgst() + "");
-		charges.setSgst(accountEntity.getService_charge().getSgst() + "");
-		charges.setDiscount(0 + "");
-		charges.setProductName(accountEntity.getOrder_details().get(0).getProductName());
-		charges.setGrossAmount(accountEntity.getOrder_details().get(0).getMrp() + "");
-		charges.setHsnCode(accountEntity.getOrder_details().get(0).getHsn_code());
-		charges.setTotal(accountEntity.getOrder_details().get(0).getSales_price()+"");
+		charges.setDesignerCity(accountEntity.get(0).getDesigner_details().getCity());
+		charges.setDesignerCountry(accountEntity.get(0).getDesigner_details().getCountry());
+		charges.setDesignerPan(accountEntity.get(0).getDesigner_details().getPan());
+		charges.setDesignerState(accountEntity.get(0).getDesigner_details().getState());
+		charges.setDesignerPin(accountEntity.get(0).getDesigner_details().getPin());
+		charges.setDesignerPhone(accountEntity.get(0).getDesigner_details().getMobile());
+		charges.setDesignerGst(accountEntity.get(0).getDesigner_details().getGst_in());
+		charges.setDesignerName(accountEntity.get(0).getDesigner_details().getDesigner_name());
+		charges.setDisplayName(accountEntity.get(0).getDesigner_details().getDisplay_name());
 		return charges;
 	}
-	
+
 	public static PaymentCharges invoiceUpdateMap(AccountEntity accountEntity) {
-		PaymentCharges charges=new PaymentCharges();
-		charges.setProductName(accountEntity.getOrder_details().get(0).getProductName());
-		charges.setGrossAmount(accountEntity.getOrder_details().get(0).getMrp()+"");
-		charges.setTotal(accountEntity.getOrder_details().get(0).getSales_price()+"");
-		charges.setSgst(accountEntity.getService_charge().getSgst()+"");
-		charges.setIgst(accountEntity.getService_charge().getIgst()+"");
-		charges.setCgst(accountEntity.getService_charge().getCgst()+"");
-		charges.setDiscount(0+"");
+		PaymentCharges charges = new PaymentCharges();
+		charges.setProductName(MessageConstant.DIVATT_CHARGES.getMessage());
+		charges.setFee(accountEntity.getService_charge().getFee() + "");
+		charges.setTotal(accountEntity.getService_charge().getTotal_amount() + "");
+		charges.setSgst(accountEntity.getService_charge().getSgst() + "");
+		charges.setIgst(accountEntity.getService_charge().getIgst() + "");
+		charges.setCgst(accountEntity.getService_charge().getCgst() + "");
+		charges.setRate(accountEntity.getService_charge().getRate()+"");
+		charges.setTcs(accountEntity.getService_charge().getTcs()+"");
+		charges.setTcsRate(accountEntity.getService_charge().getTcs_rate()+"");
+		charges.setGrandTotal(accountEntity.getService_charge().getTotal_amount()+"");
+		charges.setHsnCode(accountEntity.getOrder_details().get(0).getHsn_code());
 		return charges;
 	}
 

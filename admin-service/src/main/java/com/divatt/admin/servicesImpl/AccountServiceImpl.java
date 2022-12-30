@@ -38,6 +38,7 @@ import com.divatt.admin.entity.AccountMapEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.entity.PaymentCharges;
+import com.divatt.admin.entity.ServiceCharge;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.helper.EmailSenderThread;
 import com.divatt.admin.repo.AccountRepo;
@@ -394,100 +395,90 @@ public class AccountServiceImpl implements AccountService {
 
 	@SuppressWarnings("static-access")
 	@Override
-	public ResponseEntity<byte[]> getPaymentCharges(String orderId) {
+	public ResponseEntity<byte[]> getDesignerInvoice(String orderId, Long designerId) {
 		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info("Inside - AccountServiceImpl.getPaymentCharges()");
+			LOGGER.info("Inside - AccountServiceImpl.getDesignerInvoice()");
 		}
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Inside - AccountServiceImpl.getPaymentCharges()");
+			LOGGER.debug("Inside - AccountServiceImpl.getDesignerInvoice()");
 		}
 		try {
-			List<AccountEntity> order = accountTemplateRepo.getOrder(orderId);
-			LOGGER.info(order + "inside accounts");
-			Map<String, List<PaymentCharges>> responceData = new HashMap<>();
-			List<String> invoiceIdList = new ArrayList<>();
-			List<String> keyList = new ArrayList<>();
-			for (AccountEntity data : order) {
-				String designerGst = data.getDesigner_details().getGst_in();
-				try {
-					List<PaymentCharges> productDetailsList = responceData.get(designerGst);
-					invoiceIdList.add(designerGst);
-					productDetailsList.add(commonUtility.invoiceUpdateMap(data));
-				} catch (Exception e) {
-					List<PaymentCharges> productList = new ArrayList<>();
-					keyList.add(designerGst);
-					productList.add(commonUtility.invoiceUpdateMapper(data));
-					responceData.put(designerGst, productList);
-				}
+			List<AccountEntity> order = accountTemplateRepo.getOrder(orderId, designerId);
+			List<PaymentCharges> productDetailsList = new ArrayList<>();
+			List<PaymentCharges> details = new ArrayList<>();
+			Map<String, Object> map = new HashMap<>();
+
+			final DecimalFormat df = new DecimalFormat("0.00");
+			Double tCgst = 0.0;
+			Double tSgst = 0.0;
+			Double tcs = 0.0;
+			Double tIgst = 0.0;
+			Double tGross = 0.0;
+			Double tTotal = 0.0;
+			Double tcspercentage = 0.00;
+
+			String totalCgst = null;
+			String totalSgst = null;
+			String totalTcs = null;
+			String totalIgst = null;
+			String totalGross = null;
+			String total = null;
+			String totalTcspercentage = null;
+
+			details.add(commonUtility.invoiceUpdateMapper(order));
+			String displayName = order.get(0).getDesigner_details().getDisplay_name();
+			for (AccountEntity data1 : order) {
+				productDetailsList.add(commonUtility.invoiceUpdateMap(data1));
+				ServiceCharge service = data1.getService_charge();
+
+				tCgst = tCgst + Double.parseDouble(service.getCgst() + "" == null ? "0" : service.getCgst() + "");
+				tSgst = tSgst + Double.parseDouble(service.getSgst() + "" == null ? "0" : service.getSgst() + "");
+				tIgst = tIgst + Double.parseDouble(service.getIgst() + "" == null ? "0" : service.getIgst() + "");
+				tGross = tGross + Double.parseDouble(service.getFee() + "" == null ? "0" : service.getFee() + "");
+				tTotal = tTotal + Double
+						.parseDouble(service.getTotal_amount() + "" == null ? "0" : service.getTotal_amount() + "");
+				tcs = tcs + Double.parseDouble(service.getTcs() + "" == null ? "0" : service.getTcs() + "");
+				tcspercentage = tcspercentage
+						+ Double.parseDouble(service.getTcs_rate() + "" == null ? "0" : service.getTcs_rate() + "");
+
+				totalCgst = String.valueOf(df.format(tCgst));
+				totalSgst = String.valueOf(df.format(tSgst));
+				totalIgst = String.valueOf(df.format(tIgst));
+				totalGross = String.valueOf(df.format(tGross));
+				totalTcs = String.valueOf(tcs);
+				totalTcspercentage = String.valueOf(tcspercentage);
+				total = String.valueOf(df.format(tTotal));
 			}
-			StringBuilder builder = new StringBuilder();
-			for (String key : keyList) {
-				List<PaymentCharges> paymentCharges = responceData.get(key);
-				Double tCgst = 0.0;
-				Double tSgst = 0.0;
-				Double tDis = 0.0;
-				Double tIgst = 0.0;
-				Double tGross = 0.0;
-				Double tTotal = 0.0;
+			map.put("data", productDetailsList);
+			map.put("datas", details);
+			map.put("totalCgst", totalCgst);
+			map.put("totalSgst", totalSgst);
+			map.put("totalIgst", totalIgst);
+			map.put("totalGross", totalGross);
+			map.put("total", total);
+			map.put("totalTcs", totalTcs);
+			map.put("totalTcspercentage", totalTcspercentage);
+			map.put("displayName", displayName);
 
-				String totalCgst = null;
-				String totalSgst = null;
-				String totalDiscount = null;
-				String totalIgst = null;
-				String totalGross = null;
-				String total = null;
-				String displayName = null;
+			Context context = new Context();
+			context.setVariables(map);
+			String htmlContent = templateEngine.process("paymentInvoice.html", context);
+//				builder.append(htmlContent);
 
-				for (PaymentCharges element : paymentCharges) {
-					element.setIgst(element.getIgst() == null ? "0" : element.getIgst());
-					tCgst = tCgst + Double.parseDouble(element.getCgst() == null ? "0" : element.getCgst());
-					tSgst = tSgst + Double.parseDouble(element.getSgst() == null ? "0" : element.getSgst());
-					tDis = tDis + Double.parseDouble(
-							Optional.ofNullable(element.getDiscount()).isEmpty() ? "0" : element.getDiscount());
-					tIgst = tIgst + Double.parseDouble(element.getIgst() == null ? "0" : element.getIgst());
-					tGross = tGross
-							+ Double.parseDouble(element.getGrossAmount() == null ? "0" : element.getGrossAmount());
-					tTotal = tTotal + Double.parseDouble(element.getTotal() == null ? "0" : element.getTotal());
-					totalCgst = String.valueOf(tCgst);
-					totalSgst = String.valueOf(tSgst);
-					totalDiscount = String.valueOf(tDis);
-					totalIgst = String.valueOf(tIgst);
-					totalGross = String.valueOf(tGross);
-					total = String.valueOf(tTotal);
-
-					for (AccountEntity designerId : order) {
-
-						displayName = designerId.getDesigner_details().getDisplay_name();
-					}
-				}
-				Map<String, Object> data = new HashMap<>();
-				data.put("data", paymentCharges);
-				data.put("totalCgst", totalCgst);
-				data.put("totalSgst", totalSgst);
-				data.put("totalDiscount", totalDiscount);
-				data.put("totalIgst", totalIgst);
-				data.put("totalGross", totalGross);
-				data.put("total", total);
-				data.put("displayName", displayName);
-				Context context = new Context();
-				context.setVariables(data);
-				String htmlContent = templateEngine.process("paymentInvoice.html", context);
-				builder.append(htmlContent);
-			}
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			ConverterProperties converterProperties = new ConverterProperties();
 			// converterProperties.setBaseUri("https://localhost:8082");
-			HtmlConverter.convertToPdf(builder.toString(), target, converterProperties);
+			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);
 
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Disposition", "attachment; filename=" + "orderPaymentInvoice.pdf");
+			headers.add("Content-Disposition", "attachment; filename=" + "designerInvoice.pdf");
 			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
 					.body(target.toByteArray());
 
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/getPaymentCharges", e.getLocalizedMessage(),
+						host + contextPath + "/account/getDesignerInvoice", e.getLocalizedMessage(),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			throw new CustomException(e.getMessage());
