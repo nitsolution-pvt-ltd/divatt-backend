@@ -1,7 +1,5 @@
 package com.divatt.user.constant;
 
-import org.springframework.web.client.HttpClientErrorException.Unauthorized;
-
 public enum MessageConstant {
 
 	// MEASUREMENT & USER CONTROLLER OR SERVICES
@@ -11,7 +9,7 @@ public enum MessageConstant {
 	MEASUREMENT_DELETED_SUCESSFULLY("Measurement deleted successfully"), SUCCESS("Success"),
 	MEASUREMENT_NOT_FOUND("Measurement not found"), REMINDER_MAIL("Reminder Mail"),
 	CHECK_FIELDS("Please check input fields"), EMAIL_ALREADY_PRESENT("Email already present"),
-	SUCCESSFUL_REGISTRATION("Successfully Registration"), WELLCOME("Welcome"),
+	SUCCESSFUL_REGISTRATION("Successfully Registration"), WELLCOME(" Welcome "),
 	REGISTERED_SUCESSFULLY(" you have been register successfully."),
 	ACTIVATE_LINK("Please active your account by clicking the bellow link "),
 	VERIFY_DETAILS_SOON(" . We will verify your details and come back to you soon."), USER_NOT_FOUND("User not found"),
