@@ -778,10 +778,15 @@ public class ProductServiceImpl implements ProductService{
 					Criteria.where("designerId").is(Id).and("isActive").is(true).and("adminStatus").is("Approved"));
 			List<ProductMasterEntity2> productList = mongoOperations.find(query, ProductMasterEntity2.class);
 
+			productList.stream()
+			.forEach(e->{
+				e.setDesignerProfile(designerProfileRepo.findBydesignerId(Long.parseLong(e.getDesignerId().toString())).get().getDesignerProfile());
+			});
+			
 			if (productList.isEmpty()) {
 				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			}
-			long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity.SEQUENCE_NAME);
+			long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity2.SEQUENCE_NAME);
 			Random rd = new Random();
 			if (productList.size() < 15) {
 				return productList;
