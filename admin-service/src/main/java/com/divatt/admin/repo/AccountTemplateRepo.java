@@ -20,9 +20,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
-import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -40,9 +38,6 @@ public class AccountTemplateRepo {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-
-	@Autowired
-	private MongoOperations mongoOperations;
 
 	@Autowired
 	private Gson gson;
@@ -629,28 +624,12 @@ public class AccountTemplateRepo {
 	}
 
 	public List<AccountMapEntity> getPendingAmount(String settlement, int year, int month) {
-		/***
-		 * LocalDate today = LocalDate.now(); int dayDivide = 0; int lengthOfMonth = 0;
-		 * YearMonth yearMonth = null;
-		 * 
-		 * if(year != 0 && month !=0 && !settlement.isEmpty()) { yearMonth =
-		 * YearMonth.of(year, month); lengthOfMonth = yearMonth.lengthOfMonth();
-		 * dayDivide= lengthOfMonth / 2;
-		 * 
-		 * match = Aggregation.match(new Criteria()
-		 * .andOperator(Criteria.where("filter_date").lte(today.toString())
-		 * .andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-		 * .andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-		 * .andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT
-		 * RETURN"))) )))); }else {
-		 ***/
+		
 		MatchOperation match = Aggregation.match(new Criteria().andOperator(
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
-//		}
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
-		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.net_payable_designer")
-				.as("pendingAmount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.net_payable_designer").as("pendingAmount");
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
 				AccountMapEntity.class);
