@@ -2659,7 +2659,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				} else {
 					objects.put("invoiceId", JSONObject.NULL);
 				}
-				// objects.put("designerName", designerName);
+				objects.put("designerName", designerName);
 				objects.put("paymentData", payRow);
 				productId.add(objects);
 			});

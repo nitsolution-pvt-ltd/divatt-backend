@@ -30,7 +30,7 @@ public class UserDesignerEntity {
 	private Long raiting = 0l;
 	@NotNull(message = "Following is required!")
 	@Field(name = "is_following") 
-	private Boolean isFollowing = false;
+	private Boolean isFollowing;
 	@Field(name = "created_on") 
 	private String createdOn;
 	
