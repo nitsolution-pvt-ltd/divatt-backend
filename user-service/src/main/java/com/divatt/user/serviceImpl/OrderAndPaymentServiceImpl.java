@@ -346,8 +346,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						RestTemplateConstant.DESIGNER_PRODUCT.getLink() + orderSKUDetailsEntityRow.getProductId(),
 						org.json.simple.JSONObject.class);
 				int shipmentTime = Integer.parseInt(forEntity.getBody().get("shipmentTime").toString());
-				String productSku = forEntity.getBody().get("sku").toString();
-
+				LOGGER.info(shipmentTime+"inside");
+				Object productSku = forEntity.getBody().get("sku");
+				LOGGER.info(productSku+"inside");
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
 				c.add(Calendar.DATE, shipmentTime);
@@ -359,7 +360,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				hsndata.setSgst(orderSKUDetailsEntityRow.getHsnData().getSgst());
 				orderSKUDetailsEntityRow.setHsnData(hsndata);
 				orderSKUDetailsEntityRow.setShippingDate(output);
-				orderSKUDetailsEntityRow.setProductSku(productSku);
+				orderSKUDetailsEntityRow.setProductSku(productSku.toString());
 				orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
 				LOGGER.info(orderSKUDetailsEntityRow + "");
 				LOGGER.info("Ok<><><><>");
@@ -629,15 +630,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						} else {
 							objectss.put("invoiceId", JSONObject.NULL);
 						}
-						List<MeasurementEntity> measurementData = this.measurementRepo.findByUserId(D.getUserId());
-						if(measurementData.size() > 0) {
-							measurementData.forEach(measurement -> {
-								objectss.put("measurementObject", measurementData);
-							});
-						}else {
-							objectss.put("measurementObject", JSONObject.NULL);
-						}
-						LOGGER.info("measurementData<><><>????:::::"+measurementData);
 						if (findByIdTracking.size() > 0) {
 							String writeValueAsStringd = null;
 							try {
@@ -700,10 +692,33 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-	public ResponseEntity<?> getUserOrderDetailsService(Integer userId) {
+	public Map<String, Object> getUserOrderDetailsService(Integer userId, int page, int limit, String sort, String sortName,
+			String keyword, Optional<String> sortBy, String token) {
 
 		try {
-			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByUserIdOrderByIdDesc(userId);
+			int CountData = (int) orderDetailsRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<OrderDetailsEntity> findAll = null;
+			if (keyword.isEmpty()) {
+				findAll = orderDetailsRepo.findByUserId(userId, pagingSort);
+				
+			} else {
+				//findAll = orderDetailsRepo.findByUserId(Long.parseLong(userId.toString()), sort, pagingSort);
+				findAll = orderDetailsRepo.findByUserIdAndKeyword(userId, keyword, pagingSort);
+            }
+			LOGGER.info("findAll<><><><>"+findAll.getContent());
+			//List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByUserIdOrderByIdDesc(userId);
+			List<OrderDetailsEntity> findById = findAll.getContent();
 			if (findById.size() <= 0) {
 				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
@@ -766,8 +781,19 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				productId.add(object);
 
 			});
-			return ResponseEntity.ok(new Json(productId.toString()));
-
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+			//return ResponseEntity.ok(new Json(productId.toString()));
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", new Json(productId.toString()));
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

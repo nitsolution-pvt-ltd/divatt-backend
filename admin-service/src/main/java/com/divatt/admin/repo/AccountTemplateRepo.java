@@ -136,7 +136,8 @@ public class AccountTemplateRepo {
 		final List<AccountEntity> find = mongoTemplate.find(query, AccountEntity.class);
 		int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 		int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), find.size());
-		List<AccountEntity> subList = startOfPage >= endOfPage ? new ArrayList<>() : find.subList(startOfPage, endOfPage);
+		List<AccountEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
+				: find.subList(startOfPage, endOfPage);
 		return new PageImpl<AccountEntity>(subList, pagingSort, find.size());
 	}
 
@@ -706,11 +707,9 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 
-	
-	
-	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge, String userOrder, 
-			String ReturnStatus, String settlement, int year, int month, String designerId, Pageable pagingSort) {
-
+	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge,
+			String userOrder, String ReturnStatus, String settlement, int year, int month, String designerId,
+			Pageable pagingSort) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -789,11 +788,11 @@ public class AccountTemplateRepo {
 					.match(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())));
 		}
 		SortOperation sortByIdDesc = Aggregation.sort(pagingSort.getSort());
-		
-		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, sortByIdDesc);
-		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations, mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
 
-	
+		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, sortByIdDesc);
+		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations,
+				mongoTemplate.getCollectionName(AccountEntity.class), AccountEntity.class);
+
 		int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 		int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), results.getMappedResults().size());
 		List<AccountEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
@@ -886,10 +885,11 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 
-	public List<AccountEntity> getOrder(String orderId) {
+	public List<AccountEntity> getOrder(String orderId, Long designerId) {
 
 		MatchOperation filterByCondition = Aggregation
-				.match(Criteria.where("order_details").elemMatch(Criteria.where("order_id").is(orderId)));
+				.match(Criteria.where("order_details").elemMatch(Criteria.where("order_id").is(orderId)).andOperator(
+						Criteria.where("order_details").elemMatch(Criteria.where("designer_id").is(designerId))));
 
 		Aggregation aggregations = Aggregation.newAggregation(filterByCondition);
 		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations,
