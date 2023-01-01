@@ -1853,7 +1853,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unlikely-arg-type" })
 	@Override
 	public GlobalResponse itemStatusChange(String token, String orderId, String productId,
 			org.json.simple.JSONObject statusChange, String orderItemStatus) {
@@ -1868,8 +1868,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			String designerId = entity.getDesignerId().toString();
 			String displayName = entity.getDesignerProfile().getDisplayName();
-			LOGGER.info(displayName);
-			LOGGER.info(designerId);
+			OrderSKUDetailsEntity item1 = orderSKUDetailsRepo.findByProductIdAndOrderId(
+					Integer.parseInt(productId), orderId).get(0);
+			if(designerId.equals(item1.getDesignerId())) {
 			try {
 				OrderSKUDetailsEntity item = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderId(
 						Integer.parseInt(productId), Integer.parseInt(designerId), orderId).get(0);
@@ -2213,6 +2214,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
+			}
+			}else {
+				throw new CustomException("Invalid Token");
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

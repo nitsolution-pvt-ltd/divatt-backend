@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
+
 @Repository
 public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEntity, Integer> {
 
@@ -58,14 +59,14 @@ public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEnti
 	List<OrderSKUDetailsEntity> findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatus(Integer productId,
 			Integer designerId, String orderId, String orderItemStatus);
 
-	List<OrderSKUDetailsEntity> findByProductIdAndDesignerIdAndOrderId(Integer parseInt, Integer parseInt2, String orderId);
+	List<OrderSKUDetailsEntity> findByProductIdAndDesignerIdAndOrderId(Integer productId, Integer designerId, String orderId);
 
 //	Page<OrderSKUDetailsEntity> findByDesignerId(int designerId, Pageable pagingSort);
-	List<OrderSKUDetailsEntity> findByProductIdAndOrderId(Integer parseInt,String orderId);
+	List<OrderSKUDetailsEntity> findByProductIdAndOrderId(Integer parseInt, String orderId);
 
 	@Query("{ 'orderItemStatus' : ?0}")
 	Page<OrderSKUDetailsEntity> findOrderStatus(String orderItemStatus, Pageable pagingSort);
-	
+
 	@Query(value = "{ $or: [ { 'order_id' : {$regex:?0,$options:'i'}}, { 'user_id' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} }]}")
 	Page<OrderSKUDetailsEntity> Searching(String sortKey, Pageable pageable);
 
