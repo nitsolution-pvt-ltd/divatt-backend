@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
@@ -49,7 +48,20 @@ public class AccountTemplateRepo {
 		Query query = new Query();
 		query.with(Sort.by(Sort.Direction.DESC, "datetime"));
 
-		query.addCriteria(new Criteria().orOperator(Criteria.where("service_charge.date").regex(keywords),
+		query.addCriteria(new Criteria().orOperator(
+				Criteria.where("designer_details.designer_name").regex(keywords),
+				Criteria.where("designer_details.display_name").regex(keywords),
+				Criteria.where("designer_details.email").regex(keywords),
+				Criteria.where("designer_details.gst_in").regex(keywords),
+				Criteria.where("designer_details.pan").regex(keywords),
+				Criteria.where("designer_details.mobile").regex(keywords),
+				Criteria.where("designer_details.address").regex(keywords),
+				Criteria.where("designer_details.city").regex(keywords),
+				Criteria.where("designer_details.state").regex(keywords),
+				Criteria.where("designer_details.pin").regex(keywords),
+				Criteria.where("designer_details.country").regex(keywords),
+				
+				Criteria.where("service_charge.date").regex(keywords),
 				Criteria.where("service_charge.designer_invoice_id").regex(keywords),
 				Criteria.where("service_charge.status").regex(keywords),
 				Criteria.where("service_charge.remarks").regex(keywords),
@@ -121,10 +133,8 @@ public class AccountTemplateRepo {
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_igst").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("tcs").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_tax_amount").regex(keywords)),
-				Criteria.where("designer_return_amount")
-						.elemMatch(Criteria.where("total_amount_received").regex(keywords)),
-				Criteria.where("designer_return_amount")
-						.elemMatch(Criteria.where("net_payable_designer").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_amount_received").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("net_payable_designer").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("payment_datetime").regex(keywords))
 
 		));
@@ -168,6 +178,10 @@ public class AccountTemplateRepo {
 		findOne.getAdmin_details().setPan(findByRows.getAdmin_details().getPan());
 		findOne.getAdmin_details().setAdmin_id(findByRows.getAdmin_details().getAdmin_id());
 		findOne.getAdmin_details().setEmail(findByRows.getAdmin_details().getEmail());
+		findOne.getAdmin_details().setCity(findByRows.getAdmin_details().getCity());
+		findOne.getAdmin_details().setCountry(findByRows.getAdmin_details().getCountry());
+		findOne.getAdmin_details().setPin(findByRows.getAdmin_details().getPin());
+		findOne.getAdmin_details().setState(findByRows.getAdmin_details().getState());
 
 		findOne.getDesigner_details().setAddress(findByRows.getDesigner_details().getAddress());
 		findOne.getDesigner_details().setGst_in(findByRows.getDesigner_details().getGst_in());
@@ -178,6 +192,10 @@ public class AccountTemplateRepo {
 		findOne.getDesigner_details().setEmail(findByRows.getDesigner_details().getEmail());
 		findOne.getDesigner_details().setDesigner_name(findByRows.getDesigner_details().getDesigner_name());
 		findOne.getDesigner_details().setDisplay_name(findByRows.getDesigner_details().getDisplay_name());
+		findOne.getDesigner_details().setCity(findByRows.getDesigner_details().getCity());
+		findOne.getDesigner_details().setCountry(findByRows.getDesigner_details().getCountry());
+		findOne.getDesigner_details().setPin(findByRows.getDesigner_details().getPin());
+		findOne.getDesigner_details().setState(findByRows.getDesigner_details().getState());
 
 		GovtCharge govtCharge = new GovtCharge();
 		ArrayList<GovtCharge> govtChargeList = new ArrayList<>();
@@ -867,8 +885,8 @@ public class AccountTemplateRepo {
 	public List<AccountEntity> getOrder(String orderId, Long designerId) {
 
 		MatchOperation filterByCondition = Aggregation
-				.match(Criteria.where("order_details").elemMatch(Criteria.where("order_id").is(orderId)).andOperator(
-						Criteria.where("order_details").elemMatch(Criteria.where("designer_id").is(designerId))));
+						.match(Criteria.where("order_details").elemMatch(Criteria.where("order_id").is(orderId))
+						.andOperator(Criteria.where("order_details").elemMatch(Criteria.where("designer_id").is(designerId))));
 
 		Aggregation aggregations = Aggregation.newAggregation(filterByCondition);
 		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations,

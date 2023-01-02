@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,9 +65,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
+import com.divatt.user.designerProductEntity.DesignerProfileEntity;
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
@@ -103,6 +106,9 @@ public class OrderAndPaymentContoller {
 
 	@Autowired
 	private JwtUtil JwtUtil;
+
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Autowired
 	private OrderDetailsRepo orderDetailsRepo;
@@ -242,6 +248,8 @@ public class OrderAndPaymentContoller {
 
 				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
 						.getOrderSKUDetailsEntity();
+				String designerEmail = null;
+				String designerName = null;
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
 
 					orderSKUDetailsEntityRow
@@ -251,8 +259,19 @@ public class OrderAndPaymentContoller {
 					LOGGER.info(orderSKUDetailsEntityRow + "Inside Sku before Save");
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
 					LOGGER.info(orderSKUDetailsEntityRow.toString() + "inside skurow");
+					int designerId = orderSKUDetailsEntityRow.getDesignerId();
+					try {
+						DesignerProfileEntity forEntity = restTemplate
+								.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
+										DesignerProfileEntity.class)
+								.getBody();
+						designerEmail = forEntity.getDesignerProfile().getEmail();
+						designerName = forEntity.getDesignerName();
+						LOGGER.info(designerName);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
-
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", MessageConstant.ORDER_PLACED.getMessage());
@@ -262,10 +281,16 @@ public class OrderAndPaymentContoller {
 				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
 
 				LOGGER.info(orderSKUDetailsEntity.toString());
+
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(),
 						"Hi " + userLoginEntity.getFirstName() + "" + ",\n                           "
 								+ MessageConstant.ORDER_CREATED.getMessage(),
+						false, createPdfSupplier);
+				sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
+						"Hi " + designerName + "" + ",\n+                           "
+								+ MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
+								+ userLoginEntity.getLastName(),
 						false, createPdfSupplier);
 
 				createPdfSupplier.delete();
@@ -323,7 +348,8 @@ public class OrderAndPaymentContoller {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
 				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
-			return orderAndPaymentService.getUserOrderDetailsService(userId, page, limit, sort, sortName, keyword, sortBy, token);
+			return orderAndPaymentService.getUserOrderDetailsService(userId, page, limit, sort, sortName, keyword,
+					sortBy, token);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -857,12 +883,12 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/getOrderSummary/{orderId}")
 	public ResponseEntity<byte[]> getOrderSummary(@PathVariable String orderId) {
 		try {
-			 return this.orderAndPaymentService.getOrderSummary(orderId);
-		}catch(Exception e) {
+			return this.orderAndPaymentService.getOrderSummary(orderId);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

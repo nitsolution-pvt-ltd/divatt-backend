@@ -1,18 +1,22 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
+<!-- <meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Document</title> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link
-	href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,400;0,700;0,900;1,100&display=swap"
+	href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap"
 	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
-	integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
-	crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
+
 <body>
-	<div style="width: 600px; margin: auto; padding: 15px !important;">
+	<div
+		style="width: 100%; margin: auto; font-family: 'Lato', sans-serif;">
 		<table style="width: 100%;">
 			<thead>
 				<tr style="font-size: 20px;">
@@ -27,29 +31,89 @@
 				<tr style="font-size: 20px;">
 					<td colspan="5" style="padding: 20px 20px; text-align: center;">
 						<div
-							style="font-family: 'Lato', sans-serif; font-size: 22px; text-transform: uppercase; margin-top: 12px; letter-spacing: 1.5px; font-weight: 600;"></div>
+							style="font-family: 'Lato', sans-serif; font-size: 22px; text-transform: uppercase; margin-top: 12px; letter-spacing: 1.5px; font-weight: 600;">
+							Account Status</div>
 				<tr style="font-size: 20px;">
 					<td colspan="5"
-						style="padding: 20px 20px; text-align: left; font-family: 'Lato', sans-serif;">
-						&nbsp; Hi, &nbsp;
-						<div th:text="${name}"></div> <!-- <div style="font-family: 'Lato', sans-serif;text-align: left;font-size: 15px;font-weight: 500;line-height: 30px;color: #000;">
-									&nbsp; &mailto:nbsp;chakraborty123@gmail.com
-									</div> -->
-						<div
-							style="font-family: 'Lato', sans-serif; text-align: center; font-size: 15px; margin-top: 12px; font-weight: bold; line-height: 25px; color: #5b5b5b; text-transform: uppercase; color: rgb(255, 0, 0); font-weight: 800;">
+						style="padding: 20px 20px; text-align: left; font-family: 'Lato', sans-serif; padding-bottom: 0;">
+						Hi, &nbsp;
+						<div th:text="${name}" style="margin-top: 12px;">
+							</div>
 
-							Your Account has been updated Sucessfully.</div>
-
-						<hr
-							style="border-left: 0; border-width: 3px; border-bottom: 0; border-color: rgb(0, 0, 0); margin-top: 38px;">
 					</td>
 				</tr>
 				</td>
 				</tr>
+				<tr>
+					<td colspan="5" style="width: 100%;">
+						<hr
+							style="border-left: 0; border-width: 3px; border-bottom: 0; border-color: #000; margin-top: 38px; width: 100%;" />
+
+					</td>
+				</tr>
 			</tbody>
 		</table>
+		<table
+			style="border-collapse: collapse; font-size: 16px; width: 100%; margin-bottom: 40px;">
+			<tr style="vertical-align: text-top;">
+				<td style="width: 50%;"></td>
+				<td style="width: 50%;">
+					<table
+						style="border-collapse: collapse; font-size: 16px; width: 100%;">
+						<tr>
+							<th style="width: 100%">
+								<h1
+									style="text-transform: uppercase; font-size: 17px; font-weight: 800; margin-bottom: 10px; border-bottom: 1.6px solid; padding-bottom: 7px; color: #000; text-align: left; width: 95%;">
+									Updated By</h1>
+							</th>
+						</tr>
+						<tr>
+							<td
+								style="font-size: 16px; line-height: 22px; color: #000; width: 100%">
+								<table style="width: 100%;">
+									<tr>
+										<td style="color: #000; font-weight: 600;">
+											<div>
+												<span>Name&nbsp;:&nbsp;</span> <span
+													th:text="${name}"></span>
+											</div>
+											<div>
+												<span>Email &nbsp;:&nbsp;</span> <span
+													th:text="${email}"></span>
+											</div>
+											<div>
+												<span>GSTIN&nbsp;:&nbsp;</span> <span
+													th:text="${gstIn}"></span>
+											</div>
+											<div>
+												<span>PAN&nbsp;:&nbsp;</span> <span
+													th:text="${pan}"></span>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		<div
+			style="font-family: 'Lato', sans-serif; text-align: center; font-size: 15px; margin-top: 12px; font-weight: bold; line-height: 25px; color: #5b5b5b; text-transform: uppercase; color: rgb(34, 139, 34); font-weight: 800;">
+			Your Account has been Updated Sucessfully.</div>
+		<!-- <table>
+				<tbody>
+					<tr>
+						<td
+							<td  style="font-weight: 600;font-size:20px;">Grand Total&nbsp;:&nbsp;402.00</td>
+						</td>
+					</tr>
+				</tbody>
+			</table> -->
+
+
 		<h1
-			style="font-family: 'Lato', sans-serif; text-transform: uppercase; font-size: 23px; font-weight: 800; margin-bottom: 22px; margin-top: 40px; letter-spacing: 1.5px; text-align: center;">Follow
+			style="text-transform: uppercase; font-size: 23px; font-weight: 800; margin-bottom: 22px; margin-top: 40px; letter-spacing: 1.5px; text-align: center;">Follow
 			US</h1>
 		<div style="text-align: center;">
 			<a href="#"
@@ -80,7 +144,6 @@
 			</a>
 		</div>
 	</div>
-	<script type="text/javascript"
-		src="/LBKlAJ/lDsEbq/5P/c4gA/oVBSEXBP4/7cErfJDL3S/NCUhTw/fHU5/ZXVTawM"></script>
 </body>
+
 </html>
