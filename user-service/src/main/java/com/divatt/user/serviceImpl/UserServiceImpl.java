@@ -879,13 +879,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<Object> getListDesignerData(String userEmail) {
+		LOGGER.info("inside service");
 		try {
 			List<Object> designerList = new ArrayList<Object>();
 			Long userId = userLoginRepo.findByEmail(userEmail).get().getId();
-			LOGGER.info(userId + "");
+			LOGGER.info("userId<><><>!!!!" + userId);
 			Query query = new Query();
 			query.addCriteria(Criteria.where("userId").is(userId));
 			List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
+			LOGGER.info("userDesignerList<><><><!!!!"+userDesignerList);
 			userDesignerList.stream().forEach(e -> {
 				designerList.add(restTemplate
 						.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), Object.class)

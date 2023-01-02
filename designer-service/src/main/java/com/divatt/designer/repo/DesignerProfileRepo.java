@@ -19,6 +19,4 @@ public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEnti
 	List<DesignerProfileEntity> findByDesignerCategory(String designerCategory);
 	
 	List<DesignerProfileEntity> findByDesignerIdIn(List<Long> designerId);
-	
-
 }
