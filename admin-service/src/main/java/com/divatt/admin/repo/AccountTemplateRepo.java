@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
@@ -886,8 +885,8 @@ public class AccountTemplateRepo {
 	public List<AccountEntity> getOrder(String orderId, Long designerId) {
 
 		MatchOperation filterByCondition = Aggregation
-				.match(Criteria.where("order_details").elemMatch(Criteria.where("order_id").is(orderId)).andOperator(
-						Criteria.where("order_details").elemMatch(Criteria.where("designer_id").is(designerId))));
+						.match(Criteria.where("order_details").elemMatch(Criteria.where("order_id").is(orderId))
+						.andOperator(Criteria.where("order_details").elemMatch(Criteria.where("designer_id").is(designerId))));
 
 		Aggregation aggregations = Aggregation.newAggregation(filterByCondition);
 		final AggregationResults<AccountEntity> results = mongoTemplate.aggregate(aggregations,
