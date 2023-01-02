@@ -814,6 +814,7 @@ public class UserController {
 	@GetMapping("/followedDesigner/{userEmail}")
 	public List<Object> followedDesigner(@PathVariable String userEmail) {
 		try {
+			LOGGER.info("inside controller");
 			return this.userService.getListDesignerData(userEmail);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
