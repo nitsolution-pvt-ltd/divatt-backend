@@ -26,7 +26,7 @@ public enum MessageConstant {
 	REVIEWED_EXIST("Reviewed already exist!"), REVIEWED_ADDED("Reviewed added succesfully"),
 	REVIEW_NOT_EXIST("Reviewed not exist!"), REVIEW_UPDATE("Reviewed updated succesfully"),
 	REVIEW_STATUS("Reviewed status "), SUCCESSFULLY(" successfully"), REVIEW_REMOVED("Reviewed removed succesfully"),
-	DESIGNER_FOLLOWING("Designer following successfully"), DESIGNER_UNFOLLOWING("Designer unfollowing successfully"),
+	DESIGNER_FOLLOWING("Following designer"), DESIGNER_UNFOLLOWING("Unfollowing designer"),
 	ERROR("Error!!"), CART_DATA_DELETED("Cart data deleted successfully"), INVOICE_NOT_FOUND("Invoice not found!"),
 
 	// ORDER & PAYMENT CONTROLLER
