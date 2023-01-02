@@ -36,8 +36,7 @@ public class CommonUtility {
 	public static double duoble(float f) {
 
 		DecimalFormat df = new DecimalFormat("0.00");
-		Double valueOf = Double.valueOf(df.format(f));
-		return valueOf;
+		return Double.valueOf(df.format(f));
 
 	}
 
@@ -51,21 +50,20 @@ public class CommonUtility {
 			String gstIn = findByRoleName.getGstIn();
 			String pan = findByRoleName.getPan();
 			Context context = new Context();
-			
+
 			context.setVariable("name", name);
 			context.setVariable("gstIn", gstIn);
 			context.setVariable("pan", pan);
 			context.setVariable("email", email);
 			String htmlContent = templateEngine.process("adminAccountUpdate.html", context);
-			EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Account updated", htmlContent, true,
-					null, restTemplate);
+			EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Account updated", htmlContent, true, null, restTemplate);
 			emailSenderThread.start();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
-	public static PaymentCharges invoiceUpdateMapper(List< AccountEntity> accountEntity) {
+	public static PaymentCharges invoiceUpdateMapper(List<AccountEntity> accountEntity) {
 		PaymentCharges charges = new PaymentCharges();
 		charges.setAdminCity(accountEntity.get(0).getAdmin_details().getCity());
 		charges.setAdminCountry(accountEntity.get(0).getAdmin_details().getCountry());
@@ -95,10 +93,10 @@ public class CommonUtility {
 		charges.setSgst(accountEntity.getService_charge().getSgst() + "");
 		charges.setIgst(accountEntity.getService_charge().getIgst() + "");
 		charges.setCgst(accountEntity.getService_charge().getCgst() + "");
-		charges.setRate(accountEntity.getService_charge().getRate()+"");
-		charges.setTcs(accountEntity.getService_charge().getTcs()+"");
-		charges.setTcsRate(accountEntity.getService_charge().getTcs_rate()+"");
-		charges.setGrandTotal(accountEntity.getService_charge().getTotal_amount()+"");
+		charges.setRate(accountEntity.getService_charge().getRate() + "");
+		charges.setTcs(accountEntity.getService_charge().getTcs() + "");
+		charges.setTcsRate(accountEntity.getService_charge().getTcs_rate() + "");
+		charges.setGrandTotal(accountEntity.getService_charge().getTotal_amount() + "");
 		charges.setHsnCode(accountEntity.getOrder_details().get(0).getHsn_code());
 		return charges;
 	}

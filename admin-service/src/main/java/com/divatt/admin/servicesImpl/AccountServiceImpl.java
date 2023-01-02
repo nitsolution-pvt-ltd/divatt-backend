@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
-
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,32 +15,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.admin.constant.MessageConstant;
-import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.AccountMapEntity;
 import com.divatt.admin.entity.GlobalResponse;
-import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.entity.PaymentCharges;
 import com.divatt.admin.entity.ServiceCharge;
 import com.divatt.admin.exception.CustomException;
-import com.divatt.admin.helper.EmailSenderThread;
 import com.divatt.admin.repo.AccountRepo;
 import com.divatt.admin.repo.AccountTemplateRepo;
-import com.divatt.admin.repo.LoginRepository;
 import com.divatt.admin.services.AccountService;
 import com.divatt.admin.services.SequenceGenerator;
 import com.divatt.admin.utility.CommonUtility;
@@ -69,13 +58,7 @@ public class AccountServiceImpl implements AccountService {
 	private CommonUtility commonUtility;
 
 	@Autowired
-	private MongoOperations mongoOperations;
-
-	@Autowired
 	private TemplateEngine templateEngine;
-
-	@Autowired
-	private RestTemplate restTemplate;
 
 	@Value("${spring.profiles.active}")
 	private String contextPath;
@@ -260,12 +243,12 @@ public class AccountServiceImpl implements AccountService {
 			List<AccountMapEntity> getTotalAmount = accountTemplateRepo.getTotalAmount(settlement, year, month);
 
 			if (keyword.isEmpty()) {
-//				findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);
+				/***findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);***/
 				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder,
 						ReturnStatus, settlement, year, month, designerId, pagingSort);
 			} else {
 				findAll = accountTemplateRepo.AccountSearchByKeywords(keyword, pagingSort);
-//				findAll = accountRepo.AccountSearchByKeywords(keyword, pagingSort);
+				/***findAll = accountRepo.AccountSearchByKeywords(keyword, pagingSort);***/
 			}
 
 			int totalPage = findAll.getTotalPages() - 1;
@@ -369,7 +352,6 @@ public class AccountServiceImpl implements AccountService {
 		List<AccountEntity> findAll = new ArrayList<>();
 		try {
 
-//			findAll = accountRepo.findAll(Sort.by("_id").descending());
 			findAll = accountTemplateRepo.getAccountReport(designerReturn, serviceCharge, govtCharge, userOrder,
 					ReturnStatus, settlement, year, month, designerId);
 
@@ -393,7 +375,6 @@ public class AccountServiceImpl implements AccountService {
 
 	}
 
-	@SuppressWarnings("static-access")
 	@Override
 	public ResponseEntity<byte[]> getDesignerInvoice(String orderId, Long designerId) {
 		if (LOGGER.isInfoEnabled()) {
@@ -463,11 +444,9 @@ public class AccountServiceImpl implements AccountService {
 			Context context = new Context();
 			context.setVariables(map);
 			String htmlContent = templateEngine.process("paymentInvoice.html", context);
-//				builder.append(htmlContent);
 
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			ConverterProperties converterProperties = new ConverterProperties();
-			// converterProperties.setBaseUri("https://localhost:8082");
 			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);
 
 			HttpHeaders headers = new HttpHeaders();
