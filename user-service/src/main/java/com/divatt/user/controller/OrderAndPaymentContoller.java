@@ -255,6 +255,14 @@ public class OrderAndPaymentContoller {
 						.getOrderSKUDetailsEntity();
 				String designerEmail = null;
 				String designerName = null;
+				String displayName=null;
+				String address1 = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getAddress1();
+				String address2 = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getAddress2();
+				String billPostalCode = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getPostalCode();
+				String billCity = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getCity();
+				String billState = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getState();
+				
+				
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
 
 					orderSKUDetailsEntityRow
@@ -272,6 +280,7 @@ public class OrderAndPaymentContoller {
 								.getBody();
 						designerEmail = forEntity.getDesignerProfile().getEmail();
 						designerName = forEntity.getDesignerName();
+						displayName = forEntity.getDesignerProfile().getDisplayName();
 						LOGGER.info(designerName);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -287,23 +296,42 @@ public class OrderAndPaymentContoller {
 
 				LOGGER.info(orderSKUDetailsEntity.toString());
 
+				String userName = userLoginEntity.getFirstName()+" "+userLoginEntity.getLastName();
+				
 				Map<String, Object> data = new HashMap<>();
 
 				String orderId = orderDetailsEntity.getOrderId();
-				data.put("displayName", designerName);
-				data.put("orderId", orderId);
-				data.put(token, extractUsername);
-				data.put(token, extractUsername);
-				Context context = new Context();
-				context.setVariables(data);
-				String htmlContent = templateEngine.process("orderPlaced.html", context);
+//				data.put("displayName", displayName);
+//				data.put("orderId", orderId);
+//				data.put("userName", userName);
+//				data.put("billAddress1", address1);
+//				data.put("billAddress2", address2);
+//				data.put("billCity", billCity);
+//				data.put("billState", billState);
+//				data.put("billPostalCode", billPostalCode);
+//				Context context = new Context();
+//				context.setVariables(data);
+//				String htmlContent = templateEngine.process("orderPlaced.html", context);
+//				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
+//				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(),
+//						htmlContent, true, createPdfSupplier);
+//				sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
+//						htmlContent + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
+//								+ userLoginEntity.getLastName(),
+//						true, createPdfSupplier);
+//
+//				createPdfSupplier.delete();
+				
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(),
-						htmlContent, true, createPdfSupplier);
+						"Hi " + userLoginEntity.getFirstName() + "" + ",\n                           "
+								+ MessageConstant.ORDER_CREATED.getMessage(),
+						false, createPdfSupplier);
 				sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
-						htmlContent + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
+						"Hi " + designerName + "" + ",\n+                           "
+								+ MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
 								+ userLoginEntity.getLastName(),
-						true, createPdfSupplier);
+						false, createPdfSupplier);
 
 				createPdfSupplier.delete();
 			}
