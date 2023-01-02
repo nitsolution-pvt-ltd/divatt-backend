@@ -45,13 +45,17 @@ public class CommonUtility {
 		try {
 			LoginEntity findByRoleName = loginRepository.findByRoleName(MessageConstant.ADMIN_ROLES.getMessage());
 			String email = findByRoleName.getEmail();
-//			String email="shantanukhamrui527@gmail.com";
 			String firstName = findByRoleName.getFirstName();
 			String lastName = findByRoleName.getLastName();
 			String name = firstName + " " + lastName;
+			String gstIn = findByRoleName.getGstIn();
+			String pan = findByRoleName.getPan();
 			Context context = new Context();
-			context.setVariable("firstName", firstName);
+			
 			context.setVariable("name", name);
+			context.setVariable("gstIn", gstIn);
+			context.setVariable("pan", pan);
+			context.setVariable("email", email);
 			String htmlContent = templateEngine.process("adminAccountUpdate.html", context);
 			EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Account updated", htmlContent, true,
 					null, restTemplate);

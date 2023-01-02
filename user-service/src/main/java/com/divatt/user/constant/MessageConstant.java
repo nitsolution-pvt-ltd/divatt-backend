@@ -47,7 +47,8 @@ public enum MessageConstant {
 	ADMIN_CANNOT_CHANGE_STATUS_NOW("Admin Can't Change this Status Now"), ITEM_STATUS_CHANGE("Item Status Changed "),
 	TO(" to "), ORDER_CANCELATION_REJECTED("Order cancelation rejected"), RANDOM_STRING("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 	RANDOM_STRING_INT("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"), RANDOM_INT("1234567890"),
-	DATE_FORMAT_TYPE("dd/MM/yyyy HH:mm:ss"), DATA_TYPE_FORMAT("dd/MM/yyyy");
+	DATE_FORMAT_TYPE("dd/MM/yyyy HH:mm:ss"), DATA_TYPE_FORMAT("dd/MM/yyyy"),
+	PRODUCT_PLACED("Your product has been ordered by ");
 
 	private String message;
 
