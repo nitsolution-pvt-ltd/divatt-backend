@@ -309,6 +309,7 @@ public ColourEntity getColour(String name) {
 				BannerEntity banEntity = new BannerEntity();
 				banEntity.setId((long) sequenceGenerator.getNextSequence(BannerEntity.SEQUENCE_NAME));
 				banEntity.setTitle(bannerEntity.getTitle());
+				banEntity.setUrl(bannerEntity.getUrl());
 				banEntity.setDescription(bannerEntity.getDescription());
 				banEntity.setImage(bannerEntity.getImage());
 				banEntity.setIsActive(true);
@@ -345,6 +346,7 @@ public ColourEntity getColour(String name) {
 					banEntity.setTitle(bannerEntity.getTitle());
 					banEntity.setCreatedOn(new Date());
 					banEntity.setIsActive(true);
+					banEntity.setUrl(bannerEntity.getUrl());
 					banEntity.setIsDeleted(false);
 					banEntity.setEndDate(bannerEntity.getEndDate());
 					banEntity.setDescription(bannerEntity.getDescription());
