@@ -66,6 +66,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
@@ -127,6 +129,9 @@ public class OrderAndPaymentContoller {
 
 	@Autowired
 	private OrderSKUDetailsRepo orderSKUDetailsRepo;
+
+	@Autowired
+	private TemplateEngine templateEngine;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 
@@ -282,16 +287,23 @@ public class OrderAndPaymentContoller {
 
 				LOGGER.info(orderSKUDetailsEntity.toString());
 
+				Map<String, Object> data = new HashMap<>();
+
+				String orderId = orderDetailsEntity.getOrderId();
+				data.put("displayName", designerName);
+				data.put("orderId", orderId);
+				data.put(token, extractUsername);
+				data.put(token, extractUsername);
+				Context context = new Context();
+				context.setVariables(data);
+				String htmlContent = templateEngine.process("orderPlaced.html", context);
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(),
-						"Hi " + userLoginEntity.getFirstName() + "" + ",\n                           "
-								+ MessageConstant.ORDER_CREATED.getMessage(),
-						false, createPdfSupplier);
+						htmlContent, true, createPdfSupplier);
 				sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
-						"Hi " + designerName + "" + ",\n+                           "
-								+ MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
+						htmlContent + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
 								+ userLoginEntity.getLastName(),
-						false, createPdfSupplier);
+						true, createPdfSupplier);
 
 				createPdfSupplier.delete();
 			}
