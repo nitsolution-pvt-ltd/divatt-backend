@@ -297,9 +297,7 @@ public class OrderAndPaymentContoller {
 				LOGGER.info(orderSKUDetailsEntity.toString());
 
 				String userName = userLoginEntity.getFirstName()+" "+userLoginEntity.getLastName();
-				
 				Map<String, Object> data = new HashMap<>();
-
 				String orderId = orderDetailsEntity.getOrderId();
 //				data.put("displayName", displayName);
 //				data.put("orderId", orderId);
@@ -321,14 +319,13 @@ public class OrderAndPaymentContoller {
 //						true, createPdfSupplier);
 //
 //				createPdfSupplier.delete();
-				
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
 				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(),
 						"Hi " + userLoginEntity.getFirstName() + "" + ",\n                           "
 								+ MessageConstant.ORDER_CREATED.getMessage(),
 						false, createPdfSupplier);
 				sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
-						"Hi " + designerName + "" + ",\n+                           "
+						"Hi " + designerName + "" + ",\n                           "
 								+ MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
 								+ userLoginEntity.getLastName(),
 						false, createPdfSupplier);

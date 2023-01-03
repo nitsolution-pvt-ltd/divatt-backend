@@ -105,18 +105,18 @@
 								<td th:text=" ${userName}"><span></span></td>
 							</tr>
 							<tr>
-								<td th:text=" ${data1.address1}"><span>Joypur, Amta
+								<td th:text=" ${billAddress1}"><span>Joypur, Amta
 										2,</span></td>
 							</tr>
 							<tr>
-								<td th:text=" ${data1.country}"><span>Howrah,</span><span>&nbsp;&nbsp;</span><span>West
+								<td th:text=" ${billAddress2}"><span>Howrah,</span><span>&nbsp;&nbsp;</span><span>West
 										Bengal</span></td>
 							</tr>
 							<tr>
-								<td th:text=" ${data1.state}"><span>India - 711403</span></td>
+								<td th:text=" ${billCity}"><span>India - 711403</span></td>
 							</tr>
 							<tr>
-								<td th:text=" ${data1.country}"><span>Mobile -</span><span>&nbsp;</span><span>7478958632</span></td>
+								<td th:text=" ${billState}"><span>Mobile -</span><span>&nbsp;</span><span>7478958632</span></td>
 							</tr>
 						</table>
 					</td>
@@ -138,15 +138,15 @@
 									<table style="width: 100%;">
 										<tr style="font-weight: 600;">
 											<td>Order Id :</td>
-											<td th:text=" ${data1.address1}">ORD366336366</td>
+											<td th:text=" ${billState}">ORD366336366</td>
 										</tr>
 										<tr>
 											<td>Order Date :</td>
-											<td th:text=" ${data1.address1}">11/09/2022</td>
+											<td th:text=" ${billState}">11/09/2022</td>
 										</tr>
 										<tr>
 											<td>Invoice Id :</td>
-											<td th:text=" ${data1.address1}">INV366336366</td>
+											<td th:text=" ${billState}">INV366336366</td>
 										</tr>
 										<tr>
 											<td>&nbsp;</td>
@@ -166,30 +166,30 @@
 									style="font-size: 16px; line-height: 22px; color: #000; width: 50%">
 									<table style="width: 100%;">
 										<tr style="font-weight: 600;">
-											<td th:text=" ${data1.address1}"><span>Sold By :
+											<td th:text=" ${billState}"><span>Sold By :
 											</span> <span>shop name</span></td>
 										</tr>
 										<tr style="font-weight: 600;">
-											<td th:text=" ${data1.address1}"><span>Seller : </span><span>designerName</span></td>
+											<td th:text=" ${billState}"><span>Seller : </span><span>designerName</span></td>
 										</tr>
 										<tr>
-											<td th:text=" ${data1.address1}" style="font-weight: 600;">Ship
+											<td th:text=" ${billState}" style="font-weight: 600;">Ship
 												From</td>
 										</tr>
 										<tr>
-											<td th:text=" ${data1.address1}"><span>Joypur,
+											<td th:text=" ${billState}"><span>Joypur,
 													Amta 2,</span></td>
 										</tr>
 										<tr>
-											<td th:text=" ${data1.country}"><span>Howrah,</span><span>&nbsp;&nbsp;</span><span>West
+											<td th:text=" ${billState}"><span>Howrah,</span><span>&nbsp;&nbsp;</span><span>West
 													Bengal</span></td>
 										</tr>
 										<tr>
-											<td th:text=" ${data1.state}"><span>India -
+											<td th:text=" ${billState}"><span>India -
 													711403</span></td>
 										</tr>
 										<tr>
-											<td th:text=" ${data1.country}"><span>Mobile -</span><span>&nbsp;</span><span>7478958632</span></td>
+											<td th:text=" ${billState}"><span>Mobile -</span><span>&nbsp;</span><span>7478958632</span></td>
 										</tr>
 									</table>
 								</td>
@@ -231,51 +231,51 @@
 							<tr th:each="data1 : ${data}">
 								<td colspan="3"
 									style="width: 23%; margin-left: 10px; text-align: left; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;"><th:block
-										th:text="${data1.productSKUId}"></th:block></td>
+										th:text="${billState}"></th:block></td>
 								<td colspan="3"
 									style="width: 30%; margin-left: 10px; text-align: left; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;"><th:block
-										th:text="${data1.productDescription}"></th:block></td>
+										th:text="${billState}"></th:block></td>
 								<td
 									style="width: 12%; padding: 5px; text-align: center; border-bottom: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
 									<table style="width: 100%;">
 										<tr>
 											<td style="width: 60%; color: #000;">Size :</td>
 											<td style="color: #000;"><th:block
-													th:text="${data1.productSize}"></th:block></td>
+													th:text="${billState}"></th:block></td>
 										</tr>
 										<tr>
 											<td style="width: 60%; color: #000;">Qty :</td>
 											<td style="color: #000;"><th:block
-													th:text="${data1.quantity}"></th:block></td>
+													th:text="${billState}"></th:block></td>
 										</tr>
 									</table>
 								</td>
 								<td colspan="3"
 									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;"><th:block
-										th:text="${data1.grossAmount}"></th:block></td>
+										th:text="${billState}"></th:block></td>
 								<td colspan="3"
 									style="width: 10%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;"><th:block
-										th:text="${data1.igst}"></th:block></td>
+										th:text="${billState}"></th:block></td>
 								<td colspan="3"
 									style="width: 20%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;"><th:block
-										th:text="${data1.withTaxAmount}"></th:block></td>
+										th:text="${billState}"></th:block></td>
 							</tr>
-							<tr th:each="data1 : ${totalData}">
+							<tr th:each="data1 : ${billState}">
 								<td colspan="7"
 									style="width: 58%; border-left: 1.6px solid; border-bottom: 1.6px solid; padding: 16px;">
 
 								</td>
 								<td colspan="3"
 									style="width: 12%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
-									<th:block th:text="${data1.grossAmount}"></th:block>
+									<th:block th:text="${billState}"></th:block>
 								</td>
 								<td colspan="3"
 									style="width: 10%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
-									<th:block th:text="${data1.igst}"></th:block>
+									<th:block th:text="${billState}"></th:block>
 								</td>
 								<td colspan="3"
 									style="width: 20%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
-									<th:block th:text="${data1.withTaxAmount}"></th:block>
+									<th:block th:text="${billState}"></th:block>
 								</td>
 							</tr>
 						</tbody>
