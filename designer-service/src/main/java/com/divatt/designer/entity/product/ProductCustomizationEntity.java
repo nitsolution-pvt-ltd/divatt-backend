@@ -1,11 +1,8 @@
 package com.divatt.designer.entity.product;
 
-import java.util.Arrays;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 
 @Document(collection = "tbl_designer_chart_list")
@@ -24,7 +21,6 @@ public class ProductCustomizationEntity {
 	private String image;
 	public ProductCustomizationEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public ProductCustomizationEntity(Integer productChartId, Integer designerId, String productName,
 			String categoryName, String subCategoryName, Object chart, String image) {

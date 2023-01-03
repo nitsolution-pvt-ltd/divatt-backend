@@ -1,9 +1,7 @@
 package com.divatt.designer.entity;
 
 import java.sql.Date;
-import java.util.List;
 
-import org.json.simple.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -34,7 +32,6 @@ public class MenMeasurement {
 
 	public MenMeasurement() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public MenMeasurement(Integer id, Integer designerId, String chartName, MenandKidsMeasurements measurements,

@@ -31,8 +31,8 @@ public class CustomFunction {
 	@Autowired
 	private ProductRepository productRepo;
 
-	@Autowired
-	private CustomRandomString randomString;
+//	@Autowired
+//	private CustomRandomString randomString;
 
 	@Autowired
 	private ProductRepo2 productRepo2;
@@ -50,7 +50,7 @@ public class CustomFunction {
 		try {
 			ProductMasterEntity filterProductEntity = new ProductMasterEntity();
 			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity.SEQUENCE_NAME));
-			filterProductEntity.setSKQCode(randomString.getAlphaNumericString(10));
+			filterProductEntity.setSKQCode(CustomRandomString.getAlphaNumericString(10));
 			filterProductEntity.setAge(productData.getAge());
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
@@ -258,7 +258,7 @@ public class CustomFunction {
 			ProductMasterEntity2 filterProductEntity = new ProductMasterEntity2();
 			ProductStageDetails productStageDetails = new ProductStageDetails();
 			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity2.SEQUENCE_NAME));
-			filterProductEntity.setSku(randomString.getAlphaNumericString(10));
+			filterProductEntity.setSku(CustomRandomString.getAlphaNumericString(10));
 			filterProductEntity.setDesignerId(productMasterEntity2.getDesignerId());
 			filterProductEntity.setCategoryId(productMasterEntity2.getCategoryId());
 			filterProductEntity.setSubCategoryId(productMasterEntity2.getSubCategoryId());

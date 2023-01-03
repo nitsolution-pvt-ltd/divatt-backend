@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +35,7 @@ public class ProductCustomizationServiceImpl implements ProductCustomizationServ
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProductCustomizationServiceImpl.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(ProductCustomizationServiceImpl.class);
 
 	public GlobalResponce addCahrtService(ProductCustomizationEntity productCustomizationEntity) {
 		try {

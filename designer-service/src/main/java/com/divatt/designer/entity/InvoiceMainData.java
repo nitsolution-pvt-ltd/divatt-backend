@@ -2,8 +2,6 @@ package com.divatt.designer.entity;
 
 import java.util.List;
 
-import com.divatt.designer.entity.profile.DesignerProfileEntity;
-
 public class InvoiceMainData {
 	private String orderId;
 	private String orderDate;
@@ -21,7 +19,6 @@ public class InvoiceMainData {
 	private int totalMRP;
 	public InvoiceMainData() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public InvoiceMainData(String orderId, String orderDate, String pANNo, String gSTINno, String address,
 			String mobile, String postalCode, String designerName, String invoiceId, String soldBy,

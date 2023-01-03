@@ -51,7 +51,6 @@ import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
 import com.divatt.designer.helper.EmailSenderThread;
-import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.repo.DesignerProfileRepo;
 import com.divatt.designer.repo.ProductRepo2;
 import com.divatt.designer.repo.ProductRepository;
@@ -75,8 +74,8 @@ public class ProductServiceImpl implements ProductService{
 	@Autowired
 	private CustomFunction customFunction;
 
-	@Autowired
-	private DesignerLoginRepo designerLoginRepo;
+//	@Autowired
+//	private DesignerLoginRepo designerLoginRepo;
 
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
@@ -172,15 +171,15 @@ public class ProductServiceImpl implements ProductService{
 					Query query1 = new Query();
 					query1.addCriteria(Criteria.where("designerId").is(productData.getDesignerId()).and("productName")
 							.is(productData.getProductName()));
-					List<UserProfile> userProfiles = new ArrayList<UserProfile>();
+//					List<UserProfile> userProfiles = new ArrayList<UserProfile>();
 					List<ProductMasterEntity> productInfo = mongoOperations.find(query1, ProductMasterEntity.class);
 					if (productInfo.isEmpty()) {
 
-						ResponseEntity<String> categoryResponse = restTemplate.getForEntity(
+						restTemplate.getForEntity(
 								RestTemplateConstant.CATEGORY_VIEW.getMessage() + productData.getCategoryId(),
 								String.class);
 
-						ResponseEntity<String> subcategoryResponse = restTemplate.getForEntity(
+						restTemplate.getForEntity(
 								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productData.getSubCategoryId(),
 								String.class);
 						productRepo.save(customFunction.filterDataEntity(productData));
@@ -351,7 +350,6 @@ public class ProductServiceImpl implements ProductService{
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> allWishlistProductData(List<Integer> productIdList, Optional<String> sortBy, int page,
 			String sort, String sortName, Boolean isDeleted, int limit) {
 		try {
@@ -863,7 +861,7 @@ public class ProductServiceImpl implements ProductService{
 			productRepo.save(productData);
 			Query query3 = new Query();
 			query3.addCriteria(Criteria.where("productName").is(productData.getProductName()));
-			ProductMasterEntity newProductData = mongoOperations.findOne(query3, ProductMasterEntity.class);
+			mongoOperations.findOne(query3, ProductMasterEntity.class);
 			List<UserProfileInfo> userInfoList = new ArrayList<UserProfileInfo>();
 			List<Long> userId = new ArrayList<Long>();
 
@@ -881,7 +879,7 @@ public class ProductServiceImpl implements ProductService{
 				userInfoList.add(userInfo.getBody());
 			}
 			for (int i = 0; i < userId.size(); i++) {
-				ResponseEntity<UserProfileInfo> userProfileList = restTemplate.getForEntity(
+				restTemplate.getForEntity(
 						RestTemplateConstant.INFO_USER.getMessage() + userId.get(i), UserProfileInfo.class);
 
 			}
@@ -974,7 +972,7 @@ public class ProductServiceImpl implements ProductService{
 
 	public List<ProductMasterEntity> productListCategorySubcategory(String categoryName, String subcategoryName) {
 		try {
-			ResponseEntity<CategoryEntity> categoryEntity = restTemplate
+			restTemplate
 					.getForEntity(RestTemplateConstant.DEV_CATEGORY.getMessage(), CategoryEntity.class);
 			return null;
 		} catch (Exception e) {
@@ -1026,7 +1024,7 @@ public class ProductServiceImpl implements ProductService{
 			}
 
 			Page<ProductMasterEntity> findAll = null;
-			List<ProductMasterEntity> findAlls = null;
+//			List<ProductMasterEntity> findAlls = null;
 
 			if (keyword.isEmpty()) {
 

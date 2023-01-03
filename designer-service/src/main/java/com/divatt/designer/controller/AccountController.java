@@ -11,9 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,13 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.config.JWTConfig;
-import com.divatt.designer.constant.MessageConstant;
 import com.divatt.designer.constant.RestTemplateConstant;
 import com.divatt.designer.entity.account.AccountEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.repo.DesignerLoginRepo;
-import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.AccountService;
 
 @RestController

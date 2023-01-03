@@ -1,9 +1,5 @@
 package com.divatt.designer.entity;
 
-import java.util.List;
-
-import org.json.simple.JSONObject;
-
 public class MenandKidsMeasurements {
 
 	private Size xs;
@@ -19,7 +15,6 @@ public class MenandKidsMeasurements {
 
 	public MenandKidsMeasurements() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public MenandKidsMeasurements(Size xs, Size s, Size m, Size l, Size xl, Size xxl, Size xl3, Size xl4, Size xl5, Size xl6) {
