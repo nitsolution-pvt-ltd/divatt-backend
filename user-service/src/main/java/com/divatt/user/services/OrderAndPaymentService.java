@@ -66,7 +66,7 @@ public interface OrderAndPaymentService {
 
 	public ResponseEntity<?> getOrderTrackingDetailsService(String orderId, int userId, int designerId);
 
-	public GlobalResponse cancelOrderService(String refOrderId, Integer refProductId);
+	public GlobalResponse cancelOrderService(OrderSKUDetailsEntity orderSKUDetailsEntity, String refOrderId, Integer refProductId);
 
 	public ResponseEntity<?> getOrderServiceByInvoiceId(String invoiceId);
 
