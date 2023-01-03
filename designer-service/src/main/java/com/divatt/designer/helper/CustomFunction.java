@@ -192,7 +192,7 @@ public class CustomFunction {
 			ProductMasterEntity2 updateMasterEntity = new ProductMasterEntity2();
 			ProductStageDetails productStageDetails = new ProductStageDetails();
 			updateMasterEntity.setProductId(productId);
-			updateMasterEntity.setSku(productMasterEntity2.getSku());
+			updateMasterEntity.setSku(masterEntity2.getSku());
 			updateMasterEntity.setDesignerId(productMasterEntity2.getDesignerId());
 			updateMasterEntity.setCategoryId(productMasterEntity2.getCategoryId());
 			updateMasterEntity.setSubCategoryId(productMasterEntity2.getSubCategoryId());

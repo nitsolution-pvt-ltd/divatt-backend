@@ -261,14 +261,30 @@ public class OrderAndPaymentContoller {
 						.getOrderSKUDetailsEntity();
 				String designerEmail = null;
 				String designerName = null;
-				String displayName=null;
+				String displayName = null;
 				String address1 = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getAddress1();
 				String address2 = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getAddress2();
-				String billPostalCode = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getPostalCode();
+				String billPostalCode = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress()
+						.getPostalCode();
 				String billCity = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getCity();
 				String billState = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getState();
-				
-				
+				String shippingAddresss = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getShippingAddress()
+						.toString();
+				String shippingAddress = shippingAddresss.toString()
+						.substring(1, shippingAddresss.toString().length() - 1).replaceAll("=", " : ");
+				String orderDate = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getOrderDate();
+				String images = null;
+				String productName = null;
+				String units = null;
+				String size = null;
+				String mrp = null;
+				Long salesPrice = null;
+				String taxAmount = null;
+				String total=null;
+				String Total=null;
+				String tmrp=null;
+				String tTax=null;
+
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
 
 					orderSKUDetailsEntityRow
@@ -279,6 +295,25 @@ public class OrderAndPaymentContoller {
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
 					LOGGER.info(orderSKUDetailsEntityRow.toString() + "inside skurow");
 					int designerId = orderSKUDetailsEntityRow.getDesignerId();
+					images = orderSKUDetailsEntityRow.getImages();
+					productName = orderSKUDetailsEntityRow.getProductName();
+					units = orderSKUDetailsEntityRow.getUnits().toString();
+					salesPrice = orderSKUDetailsEntityRow.getSalesPrice();
+					size = orderSKUDetailsEntityRow.getSize();
+					taxAmount = orderSKUDetailsEntityRow.getTaxAmount().toString();
+					tTax=taxAmount+taxAmount==null ? "0" :taxAmount;
+					if(salesPrice.equals(0)) {
+						mrp = orderSKUDetailsEntityRow.getMrp().toString();
+						total=mrp+taxAmount;
+						Total = total +total == null ? "0" : total;
+						tmrp=mrp+mrp==null ? "0" :mrp;
+					}else {
+						mrp = orderSKUDetailsEntityRow.getSalesPrice().toString();
+						total=salesPrice+taxAmount;
+						Total = total +total == null ? "0" : total;
+						tmrp=mrp+mrp==null ? "0" :mrp;
+					}
+					
 					try {
 						DesignerProfileEntity forEntity = restTemplate
 								.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
@@ -302,39 +337,40 @@ public class OrderAndPaymentContoller {
 
 				LOGGER.info(orderSKUDetailsEntity.toString());
 
-				String userName = userLoginEntity.getFirstName()+" "+userLoginEntity.getLastName();
+				String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
+
 				Map<String, Object> data = new HashMap<>();
+
 				String orderId = orderDetailsEntity.getOrderId();
-//				data.put("displayName", displayName);
-//				data.put("orderId", orderId);
-//				data.put("userName", userName);
-//				data.put("billAddress1", address1);
-//				data.put("billAddress2", address2);
-//				data.put("billCity", billCity);
-//				data.put("billState", billState);
-//				data.put("billPostalCode", billPostalCode);
-//				Context context = new Context();
-//				context.setVariables(data);
-//				String htmlContent = templateEngine.process("orderPlaced.html", context);
-//				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-//				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(),
-//						htmlContent, true, createPdfSupplier);
-//				sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
-//						htmlContent + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
-//								+ userLoginEntity.getLastName(),
-//						true, createPdfSupplier);
-//
-//				createPdfSupplier.delete();
+				data.put("displayName", displayName);
+				data.put("orderId", orderId);
+				data.put("userName", userName);
+				data.put("billAddress1", address1);
+				data.put("billAddress2", address2);
+				data.put("billCity", billCity);
+				data.put("billState", billState);
+				data.put("billPostalCode", billPostalCode);
+				data.put("shippingAddress", shippingAddress);
+				data.put("orderDate", orderDate);
+				data.put("images", images);
+				data.put("productName", productName);
+				data.put("units", units);
+				data.put("size", size);
+				data.put("taxAmount", taxAmount);
+				data.put("total", total);
+				data.put("Total", Total);
+				data.put("tmrp", tmrp);
+				data.put("tTax", tTax);
+				Context context = new Context();
+				context.setVariables(data);
+				String htmlContent = templateEngine.process("orderPlaced.html", context);
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(),
-						"Hi " + userLoginEntity.getFirstName() + "" + ",\n                           "
-								+ MessageConstant.ORDER_CREATED.getMessage(),
-						false, createPdfSupplier);
+				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true,
+						createPdfSupplier);
 				sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
-						"Hi " + designerName + "" + ",\n                           "
-								+ MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
+						htmlContent + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
 								+ userLoginEntity.getLastName(),
-						false, createPdfSupplier);
+						true, createPdfSupplier);
 
 				createPdfSupplier.delete();
 			}
