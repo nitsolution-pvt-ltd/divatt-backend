@@ -2,19 +2,13 @@ package com.divatt.designer.utill;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.apache.commons.codec.binary.StringUtils;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.divatt.designer.entity.product.ImagesEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.requestDTO.SearchingFilterDTO;
@@ -65,7 +59,7 @@ public class UtillClass {
 //						.anyMatch(product -> Arrays.asList(product.getImages()).stream().anyMatch(image -> Optional
 //								.ofNullable(image.getColour()).filter(image1 -> image1.equals("#"+color)).isPresent()))).forEach(System.out::println);
 		
-		List<ProductMasterEntity> collect = filteredProducts.stream().filter(product -> colore.stream()
+		filteredProducts.stream().filter(product -> colore.stream()
 				.anyMatch(color -> Arrays.asList(product.getImages()).stream().anyMatch(image -> Optional
 						.ofNullable(image.getColour()).filter(image1 -> image1.equals("#" + color)).isPresent())))
 		.collect(Collectors.toList());

@@ -2,10 +2,6 @@ package com.divatt.designer.entity;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotEmpty;
-
-import org.springframework.data.annotation.Transient;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
@@ -25,7 +21,6 @@ public class CategoryEntity {
 	private String createdBy;
 	public CategoryEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public CategoryEntity(Integer id, String categoryName, String categoryDescription, String categoryImage,
 			Integer level, Boolean isActive, Boolean isDeleted, String parentId, Date createdOn, String createdBy) {
