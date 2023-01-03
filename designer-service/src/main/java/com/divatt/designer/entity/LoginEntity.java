@@ -4,22 +4,13 @@ package com.divatt.designer.entity;
 
 
 
-import javax.annotation.Generated;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.NumberFormat;
-
-import com.mongodb.lang.Nullable;
 
 
 
@@ -88,7 +79,6 @@ public class LoginEntity {
 
 	public LoginEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	

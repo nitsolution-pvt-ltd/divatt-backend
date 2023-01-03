@@ -33,6 +33,7 @@ public class JWTConfig {
 		return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 	}
 
+	@SuppressWarnings("unused")
 	private Boolean isTokenExpired(String token) {
 		return extractExpiration(token).before(new Date());
 	}

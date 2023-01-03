@@ -5,9 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.divatt.designer.entity.product.AgeEntity;
-
 import com.divatt.designer.entity.product.GiftEntity;
-import com.divatt.designer.entity.product.ImagesEntity;
 import com.divatt.designer.entity.product.PriceEntity;
 import com.divatt.designer.entity.product.PurchaseEntity;
 import com.divatt.designer.entity.product.Specification;
@@ -61,7 +59,6 @@ public class ProductEntity {
 	private Object hsnData;
 	public ProductEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public ProductEntity(Integer productId, String designerName, Integer designerId, Integer categoryId,
 			Integer subCategoryId, String gender, String productName, String productDescription, AgeEntity age,
