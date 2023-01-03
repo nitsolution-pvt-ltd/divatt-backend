@@ -135,7 +135,8 @@ public class AccountTemplateRepo {
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_tax_amount").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_amount_received").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("net_payable_designer").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("payment_datetime").regex(keywords))
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("payment_datetime").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("basic_amount").regex(keywords))
 
 		));
 		final List<AccountEntity> find = mongoTemplate.find(query, AccountEntity.class);
@@ -288,6 +289,7 @@ public class AccountTemplateRepo {
 			designerReturnAmount.setTotal_tax_amount(value.getTotal_tax_amount());
 			designerReturnAmount.setUnits(value.getUnits());
 			designerReturnAmount.setPayment_datetime(value.getPayment_datetime());
+			designerReturnAmount.setBasic_amount(value.getBasic_amount());
 
 			DesignerReturnAmountList.add(designerReturnAmount);
 		});
@@ -696,7 +698,7 @@ public class AccountTemplateRepo {
 		}
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
-		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.sales_price").as("basicAmount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.basic_amount").as("basicAmount");
 
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,

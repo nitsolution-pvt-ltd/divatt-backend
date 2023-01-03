@@ -1315,7 +1315,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-	public GlobalResponse cancelOrderService(String refOrderId, Integer refProductId) {
+	public GlobalResponse cancelOrderService(OrderSKUDetailsEntity orderSKUDetailsEntity, String refOrderId, Integer refProductId) {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(refOrderId).and("productId").is(refProductId));
@@ -1323,6 +1323,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			if (!skuDetailsEntity.getOrderItemStatus().equals("cancelled")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus("cancelled");
+				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
 				Query query2 = new Query();
 				query.addCriteria(Criteria.where("orderId").is(refOrderId));
