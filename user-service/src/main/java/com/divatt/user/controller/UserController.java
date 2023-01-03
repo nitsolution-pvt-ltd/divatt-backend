@@ -322,7 +322,7 @@ public class UserController {
 			try {
 				ResponseEntity<String> mailStatus = restTemplate.postForEntity(RestTemplateConstant.MAIL_SEND.getLink(),
 						mail, String.class);
-				System.out.println(mailStatus.getBody());
+				
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
 			}
