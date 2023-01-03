@@ -12,6 +12,7 @@ public class DesignerReturnAmount {
 	public int units;
 	public float mrp;
 	public float discount;
+	public float basic_amount;
 	public float sales_price;
 	public int hsn_rate;
 	public String hsn_code;
@@ -35,7 +36,6 @@ public class DesignerReturnAmount {
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd hh:mm:ss")
 	public String updated_datetime;
 	public String remarks;
-	
 	public String getDatetime() {
 		return datetime;
 	}
@@ -65,6 +65,12 @@ public class DesignerReturnAmount {
 	}
 	public void setDiscount(float discount) {
 		this.discount = discount;
+	}
+	public float getBasic_amount() {
+		return basic_amount;
+	}
+	public void setBasic_amount(float basic_amount) {
+		this.basic_amount = basic_amount;
 	}
 	public float getSales_price() {
 		return sales_price;
@@ -194,7 +200,5 @@ public class DesignerReturnAmount {
 	}
 	
 	
-	
-
 
 }
