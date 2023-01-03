@@ -8,13 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.json.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +19,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -41,8 +34,6 @@ import com.divatt.designer.entity.SubCategoryEntity;
 import com.divatt.designer.entity.UserProfile;
 import com.divatt.designer.entity.UserProfileInfo;
 import com.divatt.designer.entity.product.ImageEntity;
-import com.divatt.designer.entity.product.ImagesEntity;
-import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.entity.profile.DesignerProfile;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
@@ -55,7 +46,6 @@ import com.divatt.designer.response.GlobalResponce;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mashape.unirest.http.JsonNode;
 
 @Service
 public class ProductServiceImp2 implements ProductService2 {
@@ -68,8 +58,8 @@ public class ProductServiceImp2 implements ProductService2 {
 	@Autowired
 	private SequenceGenerator sequenceGenarator;
 
-	@Autowired
-	private MongoOperations mongoOperations;
+//	@Autowired
+//	private MongoOperations mongoOperations;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -87,7 +77,7 @@ public class ProductServiceImp2 implements ProductService2 {
 		try {
 			LOGGER.info("Inside-ProductServiceImp2.addProductMasterData()");
 			ProductMasterEntity2 entity2 = productRepo2.save(customFunction.addProductMasterData(productMasterEntity2));
-			String newProductData = productMasterEntity2.getProductDetails().getProductName();
+			productMasterEntity2.getProductDetails().getProductName();
 			List<UserProfileInfo> userInfoList = new ArrayList<UserProfileInfo>();
 			List<Long> userId = new ArrayList<Long>();
 
@@ -107,16 +97,14 @@ public class ProductServiceImp2 implements ProductService2 {
 							UserProfileInfo.class);
 					userInfoList.add(userInfo.getBody());
 				} catch (JsonMappingException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (JsonProcessingException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			});
 			userId.forEach(user -> {
-				ResponseEntity<UserProfileInfo> userProfileList = restTemplate
+				restTemplate
 						.getForEntity(RestTemplateConstant.INFO_USER.getMessage() + user, UserProfileInfo.class);
 
 			});
@@ -899,7 +887,6 @@ public class ProductServiceImp2 implements ProductService2 {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<?> productListUser() {
 		try {
@@ -1025,7 +1012,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			LOGGER.info("priceType = {}", priceType);
 			LOGGER.info("subCategoryId = {}", subCategoryId);
 
-			List<ProductMasterEntity2> data = !searchKey.equals("") ? productRepo2.findbySearchKey(searchKey)
+			List<ProductMasterEntity2> productMaster = !searchKey.equals("") ? productRepo2.findbySearchKey(searchKey)
 					: productRepo2.findAll().stream().filter(product -> cod != null ? product.getCod() == cod : true)
 							.filter(product -> customization != null ? product.getWithCustomization() == customization
 									: true)
@@ -1059,12 +1046,16 @@ public class ProductServiceImp2 implements ProductService2 {
 							.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
 									.anyMatch(dId -> dId.equals(product.getDesignerId().toString())) : true)
 							.collect(Collectors.toList());
-			data.forEach(element -> {
-				element.setDesignerProfile(
-						designerProfileRepo.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get()
-								.getDesignerProfile());
+			productMaster.forEach(element -> {
+				DesignerProfile designerProfile = designerProfileRepo
+						.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get()
+						.getDesignerProfile();
+				if(designerProfile.getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
+					element.setDesignerProfile(designerProfile);
+				}
 			});
-			return data;
+			productMaster.removeIf(element -> element.getDesignerProfile() == null);
+			return productMaster;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

@@ -2031,56 +2031,40 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								org.json.simple.JSONObject jsonObject1 = new org.json.simple.JSONObject();
 								String string = statusChange.get("ShippedDTO").toString();
 								LOGGER.info(string + "InsideObject");
-								Gson gson = new Gson();
-								org.json.simple.JSONObject fromJson = gson.fromJson(string,
-										org.json.simple.JSONObject.class);
-								if (fromJson.containsKey("courierName") || fromJson.containsKey("awbNumber")) {
-									try {
-										OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-										orderStatusDetails.setShippedDetails(jsonObject1);
-										jsonObject1.put("courierName", fromJson.get("courierName"));
-										jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
-										jsonObject1.put("orderShippedTime", format);
-										orderStatusDetails.setShippedDetails(jsonObject1);
-										orderDetails.setOrderItemStatus(orderItemStatus);
-										orderSKUDetailsRepo.save(orderDetails);
+								Object string1 = statusChange.get("ShippedDTO");
+								String writeValueAsString = null;
+								ObjectMapper objectMapper = new ObjectMapper();
+								try {
+									writeValueAsString = objectMapper.writeValueAsString(string1);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								JsonNode fromJson1 = new JsonNode(writeValueAsString);
+								String courierName = fromJson1.getObject().get("courierName").toString();
+								String awbNumber = fromJson1.getObject().get("awbNumber").toString();
+								LOGGER.info(courierName);
+								LOGGER.info(awbNumber);
+								try {
+									OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+									orderStatusDetails.setShippedDetails(jsonObject1);
+									jsonObject1.put("courierName", courierName);
+									jsonObject1.put("awbNumber", awbNumber);
+									jsonObject1.put("orderShippedTime", format);
+									orderStatusDetails.setShippedDetails(jsonObject1);
+									orderDetails.setOrderItemStatus(orderItemStatus);
+									orderSKUDetailsRepo.save(orderDetails);
 
-									} catch (Exception e) {
-										OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-										LOGGER.info(orderDetails + "Inside OrderDetails");
-										LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
-										jsonObject1.put("courierName", fromJson.get("courierName"));
-										jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
-										jsonObject1.put("orderShippedTime", format);
-										orderStatusDetails.setShippedDetails(jsonObject1);
-										orderDetails.setOrderStatusDetails(orderStatusDetails);
-										orderDetails.setOrderItemStatus(orderItemStatus);
-										orderSKUDetailsRepo.save(orderDetails);
-									}
-								} else {
-									try {
-										OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-										orderStatusDetails.setShippedDetails(jsonObject1);
-										jsonObject1.put("courierName", false);
-										jsonObject1.put("awbNumber", false);
-										jsonObject1.put("orderShippedTime", format);
-										orderStatusDetails.setShippedDetails(jsonObject1);
-										orderDetails.setOrderItemStatus(orderItemStatus);
-										orderSKUDetailsRepo.save(orderDetails);
-
-									} catch (Exception e) {
-										OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-										LOGGER.info(orderDetails + "Inside OrderDetails");
-										LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
-										jsonObject1.put("courierName", false);
-										jsonObject1.put("awbNumber", false);
-										jsonObject1.put("orderShippedTime", format);
-										orderStatusDetails.setShippedDetails(jsonObject1);
-										orderDetails.setOrderStatusDetails(orderStatusDetails);
-										orderDetails.setOrderItemStatus(orderItemStatus);
-										orderSKUDetailsRepo.save(orderDetails);
-									}
-
+								} catch (Exception e) {
+									OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+									LOGGER.info(orderDetails + "Inside OrderDetails");
+									LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
+									jsonObject1.put("courierName", courierName);
+									jsonObject1.put("awbNumber", awbNumber);
+									jsonObject1.put("orderShippedTime", format);
+									orderStatusDetails.setShippedDetails(jsonObject1);
+									orderDetails.setOrderStatusDetails(orderStatusDetails);
+									orderDetails.setOrderItemStatus(orderItemStatus);
+									orderSKUDetailsRepo.save(orderDetails);
 								}
 							} else
 								throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
@@ -2335,54 +2319,42 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							org.json.simple.JSONObject jsonObject1 = new org.json.simple.JSONObject();
 							String string = statusChange.get("ShippedDTO").toString();
 							LOGGER.info(string + "InsideObject");
-							Gson gson = new Gson();
-							org.json.simple.JSONObject fromJson = gson.fromJson(string,
-									org.json.simple.JSONObject.class);
-							if (fromJson.containsKey("courierName") || fromJson.containsKey("awbNumber")) {
-								try {
-									OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-									orderStatusDetails.setShippedDetails(jsonObject1);
-									jsonObject1.put("courierName", fromJson.get("courierName"));
-									jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
-									jsonObject1.put("orderShippedTime", format);
-									orderStatusDetails.setShippedDetails(jsonObject1);
-									orderDetails.setOrderItemStatus(orderItemStatus);
-									orderSKUDetailsRepo.save(orderDetails);
-								} catch (Exception e) {
-									OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-									LOGGER.info(orderDetails + "Inside OrderDetails");
-									LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
-									jsonObject1.put("courierName", fromJson.get("courierName"));
-									jsonObject1.put("awbNumber", fromJson.get("awbNumber"));
-									jsonObject1.put("orderShippedTime", format);
-									orderStatusDetails.setShippedDetails(jsonObject1);
-									orderDetails.setOrderStatusDetails(orderStatusDetails);
-									orderDetails.setOrderItemStatus(orderItemStatus);
-									orderSKUDetailsRepo.save(orderDetails);
-								}
-							} else {
-								try {
-									OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-									orderStatusDetails.setShippedDetails(jsonObject1);
-									jsonObject1.put("courierName", false);
-									jsonObject1.put("awbNumber", false);
-									jsonObject1.put("orderShippedTime", format);
-									orderStatusDetails.setShippedDetails(jsonObject1);
-									orderDetails.setOrderItemStatus(orderItemStatus);
-									orderSKUDetailsRepo.save(orderDetails);
-								} catch (Exception e) {
-									OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-									LOGGER.info(orderDetails + "Inside OrderDetails");
-									LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
-									jsonObject1.put("courierName", false);
-									jsonObject1.put("awbNumber", false);
-									jsonObject1.put("orderShippedTime", format);
-									orderStatusDetails.setShippedDetails(jsonObject1);
-									orderDetails.setOrderStatusDetails(orderStatusDetails);
-									orderDetails.setOrderItemStatus(orderItemStatus);
-									orderSKUDetailsRepo.save(orderDetails);
-								}
+							Object string1 = statusChange.get("ShippedDTO");
+							String writeValueAsString = null;
+							ObjectMapper objectMapper = new ObjectMapper();
+							try {
+								writeValueAsString = objectMapper.writeValueAsString(string1);
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
+							JsonNode fromJson1 = new JsonNode(writeValueAsString);
+							String courierName = fromJson1.getObject().get("courierName").toString();
+							String awbNumber = fromJson1.getObject().get("awbNumber").toString();
+							LOGGER.info(courierName);
+							LOGGER.info(awbNumber);
+							try {
+								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+								orderStatusDetails.setShippedDetails(jsonObject1);
+								jsonObject1.put("courierName", courierName);
+								jsonObject1.put("awbNumber", awbNumber);
+								jsonObject1.put("orderShippedTime", format);
+								orderStatusDetails.setShippedDetails(jsonObject1);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+
+							} catch (Exception e) {
+								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+								LOGGER.info(orderDetails + "Inside OrderDetails");
+								LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
+								jsonObject1.put("courierName", courierName);
+								jsonObject1.put("awbNumber", awbNumber);
+								jsonObject1.put("orderShippedTime", format);
+								orderStatusDetails.setShippedDetails(jsonObject1);
+								orderDetails.setOrderStatusDetails(orderStatusDetails);
+								orderDetails.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(orderDetails);
+							}
+
 						} else
 							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 					} else
