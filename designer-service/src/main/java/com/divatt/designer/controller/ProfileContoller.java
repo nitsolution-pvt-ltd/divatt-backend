@@ -714,7 +714,7 @@ public class ProfileContoller {
 	public List<Object> getDesignerCategory() {
 		try {
 			List<DesignerLoginEntity> designerProfileList = designerLoginRepo
-					.findByIsDeletedAndProfileStatusAndAccountStatus(false, "COMPLETED", "ACTIVE");
+					.findByIsDeletedAndisProfileCompletedAndAccountStatus(false, true, "ACTIVE");
 			LOGGER.info("designerProfileList" + designerProfileList);
 			List<Long> list = new ArrayList<>();
 			List<DesignerProfileEntity> designerProfileData = new ArrayList<>();
@@ -755,8 +755,6 @@ public class ProfileContoller {
 	public List<DesignerLoginEntity> getDesignerDetails(@RequestParam(defaultValue = "") String usermail,
 			@PathVariable String designerCategories) {
 		try {
-
-			// LOGGER.info(asList+"");
 			if (!designerCategories.equals("all")) {
 				List<DesignerProfileEntity> designerProfileDetailsByCategory = this.designerProfileRepo
 						.findByDesignerCategory(designerCategories);
@@ -769,10 +767,6 @@ public class ProfileContoller {
 					designerLoginDetails.get(i).setDesignerCategory(designerCategory);
 					LOGGER.info("findBydId" + designerLoginDetails.get(i));
 				}
-//              designerProfileDetailsByCategory.get(0).getDesignerId();
-//				Query query = new Query();
-//				query.addCriteria(Criteria.where("designerCategory").is(designerCategories));
-//				List<DesignerLoginEntity> designerData = mongoOperations.find(query, DesignerLoginEntity.class);
 				List<DesignerLoginEntity> designerData = this.designerLoginRepo.findBydIdIn(list);
 				for (int i = 0; i < designerData.size(); i++) {
 					Query query2 = new Query();
@@ -782,6 +776,7 @@ public class ProfileContoller {
 					// designerData.get(i).setDesignerCategory(designerProfileData.getDesignerProfile().getDesignerCategory());
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
 					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
+					LOGGER.info("countData<><><><><"+countData);
 					String productCount = countData.get("Products").toString();
 					String followerCount = countData.get("FollowersData").toString();
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
@@ -795,6 +790,7 @@ public class ProfileContoller {
 									DesignerProfileEntity[].class)
 							.getBody();
 					List<DesignerProfileEntity> designerList = Arrays.asList(body);
+					LOGGER.info("designerList"+designerList);
 					for (int a = 0; a < designerData.size(); a++) {
 						for (int i = 0; i < designerList.size(); i++) {
 							if (designerList.get(i).getDesignerId()
@@ -814,7 +810,6 @@ public class ProfileContoller {
 					DesignerProfileEntity designerProfileData = mongoOperations.findOne(query2,
 							DesignerProfileEntity.class);
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
-					// designerData.get(i).setDesignerCategory(designerProfileData.getDesignerProfile().getDesignerCategory());
 					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
 
 					if (designerData.get(i).getdId() == 264) {
