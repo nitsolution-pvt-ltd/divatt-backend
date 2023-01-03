@@ -1,10 +1,5 @@
 package com.divatt.designer.entity;
 
-import javax.validation.constraints.NotNull;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import springfox.documentation.spring.web.json.Json;
 
 public class UserProfileInfo {
@@ -24,7 +19,6 @@ public class UserProfileInfo {
 	private Json logins;
 	public UserProfileInfo() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public UserProfileInfo(Long uId, String firstName, String lastName, String email, String password, String mobileNo,
 			String dob, Boolean isActive, Boolean isDeleted, String createdOn, String profilePic, String registerType,

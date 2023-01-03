@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
-import javax.ws.rs.DefaultValue;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -13,7 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.divatt.designer.entity.profile.DesignerProfile;
-import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
@@ -119,7 +117,6 @@ public class ProductMasterEntity2 implements Cloneable {
 
 	public ProductMasterEntity2() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public ProductMasterEntity2(Integer productId, @NotEmpty(message = "Product SKU Required") String sku,

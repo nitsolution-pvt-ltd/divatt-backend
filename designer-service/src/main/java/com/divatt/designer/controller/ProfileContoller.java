@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -218,7 +217,7 @@ public class ProfileContoller {
 			LOGGER.info("	TEST" + findByBoutiqueName);
 			if (!findByBoutiqueName.isPresent()) {
 
-				Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
+				designerLoginRepo
 						.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
 
 				ResponseEntity<String> forEntity = restTemplate
@@ -276,7 +275,7 @@ public class ProfileContoller {
 				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
 						"Successfully Registration", sb.toString(), false);
 				try {
-					ResponseEntity<String> response = restTemplate
+					restTemplate
 							.postForEntity(RestTemplateConstant.AUTH_SEND_MAIL.getMessage(), mail, String.class);
 				} catch (Exception e) {
 					System.out.println(e.getMessage());

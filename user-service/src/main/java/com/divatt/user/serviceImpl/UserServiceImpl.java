@@ -1,7 +1,5 @@
 package com.divatt.user.serviceImpl;
 
-import static org.junit.Assert.assertEquals;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,8 +14,6 @@ import javax.validation.Valid;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.modelmapper.ModelMapper;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.STBorderId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,21 +30,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
-import com.divatt.user.designerProductEntity.DesignerProfile;
 import com.divatt.user.designerProductEntity.DesignerProfileEntity;
 import com.divatt.user.designerProductEntity.ProductMasterEntity;
-import com.divatt.user.designerProductEntity.PurchaseEntity;
-import com.divatt.user.entity.DesignerLoginEntity;
-import com.divatt.user.entity.ProductEntity;
-
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserDesignerEntity;
@@ -74,8 +63,8 @@ import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.mashape.unirest.http.JsonNode;
+
 import springfox.documentation.spring.web.json.Json;
 
 @Service
@@ -383,7 +372,7 @@ public class UserServiceImpl implements UserService {
 						String.class);
 
 				String body = response1.getBody();
-				List<Object> cp = Arrays.asList(body);
+				Arrays.asList(body);
 
 				JsonNode jn1 = new JsonNode(body);
 				JSONArray object1 = jn1.getArray();
@@ -754,7 +743,7 @@ public class UserServiceImpl implements UserService {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(orderId));
-			OrderDetailsEntity orderDetailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
+			mongoOperations.findOne(query, OrderDetailsEntity.class);
 			return null;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
