@@ -1,8 +1,6 @@
 package com.divatt.auth.entity;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,7 +13,6 @@ public class LoginAdminData implements UserDetails{
 	
 		public LoginAdminData() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 		private String token;
@@ -135,38 +132,31 @@ public class LoginAdminData implements UserDetails{
 
 		@Override
 		public String getPassword() {
-			// TODO Auto-generated method stub
 			return password;
 		}
 
 		@Override
 		public String getUsername() {
-			// TODO Auto-generated method stub
 			return email;
 		}
 
 		@Override
 		public boolean isAccountNonExpired() {
-			// TODO Auto-generated method stub
 			return true;
 		}
 
 		@Override
 		public boolean isAccountNonLocked() {
-			// TODO Auto-generated method stub
 			return true;
 		}
 
 		@Override
 		public boolean isCredentialsNonExpired() {
-			// TODO Auto-generated method stub
 			return true;
 		}
 
 		@Override
 		public boolean isEnabled() {
-			// TODO Auto-generated method stub
 			return true;
 		}
-
 }
