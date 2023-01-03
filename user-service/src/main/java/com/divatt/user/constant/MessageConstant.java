@@ -10,7 +10,7 @@ public enum MessageConstant {
 	MEASUREMENT_NOT_FOUND("Measurement not found"), REMINDER_MAIL("Reminder Mail"),
 	CHECK_FIELDS("Please check input fields"), EMAIL_ALREADY_PRESENT("Email already present"),
 	SUCCESSFUL_REGISTRATION("Successfully Registration"), WELLCOME(" Welcome "),
-	REGISTERED_SUCESSFULLY(" you have been register successfully."),
+	REGISTERED_SUCESSFULLY(" You have been register successfully. "),
 	ACTIVATE_LINK("Please active your account by clicking the bellow link "),
 	VERIFY_DETAILS_SOON(" . We will verify your details and come back to you soon."), USER_NOT_FOUND("User not found"),
 	UPDATED_SUCCESSFULLY("Updated successfully"), NO_ADDRESS_FOUND("No address found"),
