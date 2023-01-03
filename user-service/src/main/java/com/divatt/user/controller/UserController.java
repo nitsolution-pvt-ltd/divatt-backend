@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.ws.rs.GET;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,8 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -43,15 +40,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
-import com.divatt.user.designerProductEntity.ProductMasterEntity;
-import com.divatt.user.entity.ProductEntity;
-import com.divatt.user.entity.DesignerLoginEntity;
 import com.divatt.user.entity.SendMail;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
@@ -59,12 +51,10 @@ import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
 import com.divatt.user.entity.cart.UserCartEntity;
-import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
-import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.repo.wishlist.WishlistRepo;
@@ -78,6 +68,8 @@ import io.jsonwebtoken.ExpiredJwtException;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+	private static final String UNCHECKED = "unchecked";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
@@ -111,8 +103,8 @@ public class UserController {
 	@Autowired
 	private JwtUtil jwtUtil;
 
-	@Autowired
-	private OrderSKUDetailsRepo detailsRepo;
+//	@Autowired
+//	private OrderSKUDetailsRepo detailsRepo;
 	
 	@Value("${mail.from}")
 	private String mail;
@@ -581,6 +573,7 @@ public class UserController {
 
 	}
 
+	@SuppressWarnings(UNCHECKED)
 	@GetMapping("/address")
 	public ResponseEntity<?> getAllAddress(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - UserController.getAllAddress()");
@@ -594,7 +587,7 @@ public class UserController {
 		} catch (ExpiredJwtException e) {
 //			throw new CustomException(e.getMessage());
 			LOGGER.error("HttpStatusCodeException <><<>");
-			return new ResponseEntity(e.getMessage(), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.UNAUTHORIZED);
 		} catch (Exception e) {
 			LOGGER.error("Exception");
 			throw new CustomException(e.getMessage());

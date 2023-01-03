@@ -41,7 +41,9 @@ public enum MessageConstant {
     UNAUTHORIZED("Unauthorized"),
     ACCOUNT_UPDATED_MESSAGE("Account Updated Successfully"),
     ACCOUNT_NOT_FOUND("Account data not found"),
-    ADMIN_ROLES("SADMIN")
+    ADMIN_ROLES("SADMIN"),
+    POP("pop"),
+    UNCHECKED("unchecked")
     ;
 	private String message;
 

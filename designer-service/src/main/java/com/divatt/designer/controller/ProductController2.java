@@ -21,19 +21,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.ProductService2;
-import com.divatt.designer.services.ProductServiceImp2;
 
 @RestController
 @RequestMapping("/designerProducts")
 public class ProductController2 {
-	@Autowired
-	private ProductServiceImp2 productServiceImp2;
-	
+//	@Autowired
+//	private ProductServiceImp2 productServiceImp2;
+//	
 	@Autowired
 	private ProductService2 productService2;
 
