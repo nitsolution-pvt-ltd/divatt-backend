@@ -135,7 +135,8 @@ public class AccountTemplateRepo {
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_tax_amount").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_amount_received").regex(keywords)),
 				Criteria.where("designer_return_amount").elemMatch(Criteria.where("net_payable_designer").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("payment_datetime").regex(keywords))
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("payment_datetime").regex(keywords)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("basic_amount").regex(keywords))
 
 		));
 		final List<AccountEntity> find = mongoTemplate.find(query, AccountEntity.class);
@@ -288,6 +289,7 @@ public class AccountTemplateRepo {
 			designerReturnAmount.setTotal_tax_amount(value.getTotal_tax_amount());
 			designerReturnAmount.setUnits(value.getUnits());
 			designerReturnAmount.setPayment_datetime(value.getPayment_datetime());
+			designerReturnAmount.setBasic_amount(value.getBasic_amount());
 
 			DesignerReturnAmountList.add(designerReturnAmount);
 		});
@@ -338,7 +340,55 @@ public class AccountTemplateRepo {
 			match = Aggregation.match(new Criteria());
 		}
 
-		GroupOperation mapCondition = Aggregation.group().sum("service_charge.total_amount").as("serviceFee");
+		GroupOperation mapCondition = Aggregation.group().sum("service_charge.fee").as("serviceFee");
+		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
+		return results.getMappedResults();
+	}
+	
+	public List<AccountMapEntity> getServicGst(String settlement, int year, int month) {
+
+		LocalDate today = LocalDate.now();
+		int dayDivide = 0;
+		int lengthOfMonth = 0;
+		YearMonth yearMonth = null;
+		MatchOperation match = null;
+		LocalDate startDate = null;
+		LocalDate endDate =null;
+		
+		if(year !=0) {
+			startDate = LocalDate.of(year, Month.JANUARY, 1);
+			endDate = LocalDate.of(year, Month.DECEMBER, 31);
+		}
+		if (year != 0 && month != 0) {
+			yearMonth = YearMonth.of(year, month);
+			startDate = yearMonth.atDay(1);
+			endDate = yearMonth.atEndOfMonth();
+		}
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else if (year != 0 && month != 0) {
+			match = Aggregation
+					.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
+		} else if (year != 0) {
+			match = Aggregation
+					.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
+		} else {
+			match = Aggregation.match(new Criteria());
+		}
+
+		GroupOperation mapCondition = Aggregation.group().sum("service_charge.igst").as("serviceGst");
 		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
 				AccountMapEntity.class);
@@ -385,9 +435,10 @@ public class AccountTemplateRepo {
 		} else {
 			match = Aggregation.match(new Criteria());
 		}
-
-		GroupOperation mapCondition = Aggregation.group().sum("service_charge.total_amount").as("gstAmount");
-		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
+		
+		AggregationOperation unwind = Aggregation.unwind("order_details");
+		GroupOperation mapCondition = Aggregation.group().sum("order_details.hsn_amount").as("gstAmount");
+		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
 				AccountMapEntity.class);
 		return results.getMappedResults();
@@ -696,7 +747,7 @@ public class AccountTemplateRepo {
 		}
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
-		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.sales_price").as("basicAmount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.basic_amount").as("basicAmount");
 
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
@@ -809,9 +860,8 @@ public class AccountTemplateRepo {
 		LocalDate endDate =null;
 		
 		if(year !=0) {
-			yearMonth = YearMonth.of(year, month);
-			startDate = yearMonth.atDay(1);
-			endDate = yearMonth.atEndOfMonth();
+			startDate = LocalDate.of(year, Month.JANUARY, 1);
+			endDate = LocalDate.of(year, Month.DECEMBER, 31);
 		}
 		if (year != 0 && month != 0 && !settlement.equals(null)) {
 			yearMonth = YearMonth.of(year, month);

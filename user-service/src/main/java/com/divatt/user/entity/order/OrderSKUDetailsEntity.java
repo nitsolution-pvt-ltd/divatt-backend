@@ -126,6 +126,8 @@ public class OrderSKUDetailsEntity {
 
 	@Field(name = "giftwrap_status")
 	private Boolean giftwrapStatus;
+	
+	private Boolean cancelAcceptable;
 
 	private JSONObject giftWrapObject;
 
@@ -159,8 +161,8 @@ public class OrderSKUDetailsEntity {
 			Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST, String taxType,
 			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn,
 			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
-			Boolean giftwrapStatus, JSONObject giftWrapObject, String userComment, String shippingDate, String status,
-			HsnData hsnData, JSONObject measurementObject) {
+			Boolean giftwrapStatus, Boolean cancelAcceptable, JSONObject giftWrapObject, String userComment,
+			String shippingDate, String status, HsnData hsnData, JSONObject measurementObject) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -194,12 +196,30 @@ public class OrderSKUDetailsEntity {
 		this.customObject = customObject;
 		this.customizationStatus = customizationStatus;
 		this.giftwrapStatus = giftwrapStatus;
+		this.cancelAcceptable = cancelAcceptable;
 		this.giftWrapObject = giftWrapObject;
 		this.userComment = userComment;
 		this.shippingDate = shippingDate;
 		this.status = status;
 		this.hsnData = hsnData;
 		this.measurementObject = measurementObject;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", hsn=" + hsn
+				+ ", designerId=" + designerId + ", productId=" + productId + ", productName=" + productName
+				+ ", productSku=" + productSku + ", size=" + size + ", images=" + images + ", colour=" + colour
+				+ ", units=" + units + ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount
+				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
+				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
+				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", taxType=" + taxType + ", orderItemStatus="
+				+ orderItemStatus + ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn
+				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + ", customObject="
+				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
+				+ ", cancelAcceptable=" + cancelAcceptable + ", giftWrapObject=" + giftWrapObject + ", userComment="
+				+ userComment + ", shippingDate=" + shippingDate + ", status=" + status + ", hsnData=" + hsnData
+				+ ", measurementObject=" + measurementObject + "]";
 	}
 
 	public Integer getId() {
@@ -458,6 +478,14 @@ public class OrderSKUDetailsEntity {
 		this.giftwrapStatus = giftwrapStatus;
 	}
 
+	public Boolean getCancelAcceptable() {
+		return cancelAcceptable;
+	}
+
+	public void setCancelAcceptable(Boolean cancelAcceptable) {
+		this.cancelAcceptable = cancelAcceptable;
+	}
+
 	public JSONObject getGiftWrapObject() {
 		return giftWrapObject;
 	}
@@ -510,22 +538,7 @@ public class OrderSKUDetailsEntity {
 		return SEQUENCE_NAME;
 	}
 
-	@Override
-	public String toString() {
-		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", hsn=" + hsn
-				+ ", designerId=" + designerId + ", productId=" + productId + ", productName=" + productName
-				+ ", productSku=" + productSku + ", size=" + size + ", images=" + images + ", colour=" + colour
-				+ ", units=" + units + ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount
-				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
-				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
-				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", taxType=" + taxType + ", orderItemStatus="
-				+ orderItemStatus + ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn
-				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + ", customObject="
-				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
-				+ ", giftWrapObject=" + giftWrapObject + ", userComment=" + userComment + ", shippingDate="
-				+ shippingDate + ", status=" + status + ", hsnData=" + hsnData + ", measurementObject="
-				+ measurementObject + "]";
-	}
+
 
 	
 
