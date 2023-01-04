@@ -44,7 +44,7 @@ public class DesignerLoginEntity {
 	
 	private Integer follwerCount = 0;
 
-	private Boolean isFollowing=false;
+	private Boolean isFollowing;
 	
 	private String categories;
 	

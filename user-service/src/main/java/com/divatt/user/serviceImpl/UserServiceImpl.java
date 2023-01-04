@@ -1086,5 +1086,18 @@ public class UserServiceImpl implements UserService {
 		}
 
 	}
+	@Override
+	public List<UserDesignerEntity> getUserDesignerDetails(String userEmail){
+		try {
+			Long userId = userLoginRepo.findByEmail(userEmail).get().getId();
+			LOGGER.info("userId<><><>!!!!" + userId);
+			Query query = new Query();
+			query.addCriteria(Criteria.where("userId").is(userId));
+			List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
+			return userDesignerList;
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
 }

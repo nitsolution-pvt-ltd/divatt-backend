@@ -97,6 +97,6 @@ public interface UserService {
             Optional<String> sortBy);
 
     public List<OrderSKUDetailsEntity> findByorderID(String orderId);
-
+    public List<UserDesignerEntity> getUserDesignerDetails(String userEmail);
     
 }
