@@ -25,7 +25,7 @@
 
 						<div
 							style="font-size: 20px; font-weight: 800; color: #4f4e4e; line-height: 28px; margin-top: 6px;">
-							& <br> <span th:text="${displayName}"></span>
+							 <br> 
 						</div>
 					</td>
 				</tr>
@@ -74,27 +74,27 @@
 				<!--<tr>
                         <td th:text="'Profile: ' + ${profile}"></td>
                     </tr>-->
-				<tr >
+				<tr th:each="data1 : ${datas}" >
 					<td
 						style="font-size: 16px; line-height: 22px; color: #000; width: 50%">
 						<table style="width: 100%;">
 							<tr>
-								<td th:text=" ${userName}"><span></span></td>
+								<td th:text=" ${data1.userName}"><span></span></td>
 							</tr>
 							<tr>
-								<td th:text=" ${billAddress1}"><span>,</span></td>
+								<td th:text=" ${data1.billAddress1}"><span>,</span></td>
 							</tr>
 							<tr>
-								<td th:text=" ${billAddress2}"><span>,</span></td>
+								<td th:text=" ${data1.billAddress2}"><span>,</span></td>
 							</tr>
 							<tr>
-								<td th:text=" ${billCity}"><span></span></td>
+								<td th:text=" ${data1.billCity}"><span></span></td>
 							</tr>
 							<tr>
-								<td th:text=" ${billState}"><span></span></td>
+								<td th:text=" ${data1.billState}"><span></span></td>
 							</tr>
 							<tr>
-								<td th:text=" ${billPostalCode}"><span></span></td>
+								<td th:text=" ${data1.billPostalCode}"><span></span></td>
 							</tr>
 						</table>
 					</td>
@@ -102,10 +102,10 @@
 						style="font-size: 16px; line-height: 22px; color: #000; width: 50%">
 						<table style="width: 100%;">
 							<tr>
-								<td th:text=" ${userName}"><span></span></td>
+								<td th:text=" ${data1.userName}"><span></span></td>
 							</tr>
 							<tr>
-								<td th:text=" ${shippingAddress}"><span></span></td>
+								<td th:text=" ${data1.shippingAddress}"><span></span></td>
 							</tr>
 						</table>
 					</td>
@@ -121,17 +121,17 @@
 						style="border-collapse: collapse; font-size: 16px; width: 100%;">
 						<tbody>
 
-							<tr >
+							<tr th:each="data1 : ${datas}">
 								<td
 									style="font-size: 16px; line-height: 22px; color: #000; width: 50%">
 									<table style="width: 100%;">
 										<tr style="font-weight: 600;">
 											<td>Order Id :</td>
-											<td th:text=" ${orderId}"></td>
+											<td th:text=" ${data1.orderId}"></td>
 										</tr>
 										<tr>
 											<td>Order Date :</td>
-											<td th:text=" ${orderDate}"></td>
+											<td th:text=" ${data1.orderDate}"></td>
 										</tr>
 										<tr>
 											<td>&nbsp;</td>
@@ -184,8 +184,9 @@
 						<tbody style="">
 							<tr th:each="data1 : ${data}">
 								<td colspan="3"
-									style="width: 23%; margin-left: 10px; text-align: left; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;"><th:block
-										th:text="@{${data1.images}}"></th:block></td>
+									style="width: 23%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
+										<img th:src="@{${data1.images}}" style="width: auto;margin: auto;height: 80px;">
+									</td>
 								<td colspan="3"
 									style="width: 30%; margin-left: 10px; text-align: left; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;"><th:block
 										th:text="${data1.productName}"></th:block></td>
@@ -206,30 +207,30 @@
 								</td>
 								<td colspan="3"
 									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;"><th:block
-										th:text="${data1.mrp}"></th:block></td>
+										th:text="${data1.total}"></th:block></td>
 								<td colspan="3"
 									style="width: 10%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;"><th:block
 										th:text="${data1.taxAmount}"></th:block></td>
 								<td colspan="3"
 									style="width: 20%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;"><th:block
-										th:text="${data1.total}"></th:block></td>
+										th:text="${data1.mrp}"></th:block></td>
 							</tr>
-							<tr th:each="data1 : ${data}">
+							<tr >
 								<td colspan="7"
 									style="width: 58%; border-left: 1.6px solid; border-bottom: 1.6px solid; padding: 16px;">
 
 								</td>
 								<td colspan="3"
 									style="width: 12%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
-									<th:block th:text="${data1.tmrp}"></th:block>
+									<th:block th:text="${ttotalMrp}"></th:block>
 								</td>
 								<td colspan="3"
 									style="width: 10%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
-									<th:block th:text="${data1.tTax}"></th:block>
+									<th:block th:text="${ttotalTax}"></th:block>
 								</td>
 								<td colspan="3"
 									style="width: 20%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
-									<th:block th:text="${data1.Total}"></th:block>
+									<th:block th:text="${tgrandTotal}"></th:block>
 								</td>
 							</tr>
 						</tbody>

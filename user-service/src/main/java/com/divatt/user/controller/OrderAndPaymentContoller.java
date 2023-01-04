@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -91,8 +92,10 @@ import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.serviceDTO.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.serviceDTO.CancelationRequestDTO;
 import com.divatt.user.serviceDTO.InvoiceUpdatedModel;
+import com.divatt.user.serviceDTO.OrderPlacedDTO;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
+import com.divatt.user.utill.CommonUtility;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -130,6 +133,8 @@ public class OrderAndPaymentContoller {
 	@Autowired
 	private OrderSKUDetailsRepo orderSKUDetailsRepo;
 
+	@Autowired
+	private CommonUtility commonUtility;
 	@Autowired
 	private TemplateEngine templateEngine;
 
@@ -228,6 +233,9 @@ public class OrderAndPaymentContoller {
 		try {
 			LOGGER.info("Data for add order = {}", orderAndPaymentGlobalEntity);
 			Map<String, Object> map = new HashMap<>();
+			List<OrderPlacedDTO> orders = new ArrayList<>();
+			List<OrderPlacedDTO> ordersdata = new ArrayList<>();
+			Map<String, Object> data = new HashMap<>();
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 
 			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
@@ -235,7 +243,7 @@ public class OrderAndPaymentContoller {
 				OrderDetailsEntity orderDetailsEntity = orderAndPaymentGlobalEntity.getOrderDetailsEntity();
 
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-				// SimpleDateFormat formatters = new SimpleDateFormat("dd/MM/yyyy");
+
 				Date date = new Date();
 				String format = formatter.format(date);
 				String formatDate = formatter.format(date);
@@ -253,32 +261,27 @@ public class OrderAndPaymentContoller {
 
 				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
 						.getOrderSKUDetailsEntity();
-				String designerEmail = null;
-				String designerName = null;
-				String displayName = null;
-				String address1 = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getAddress1();
-				String address2 = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getAddress2();
-				String billPostalCode = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress()
-						.getPostalCode();
-				String billCity = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getCity();
-				String billState = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getState();
-				String shippingAddresss = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getShippingAddress()
-						.toString();
-				String shippingAddress = shippingAddresss.toString()
-						.substring(1, shippingAddresss.toString().length() - 1).replaceAll("=", " : ");
-				String orderDate = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getOrderDate();
-				String images = null;
-				String productName = null;
-				String units = null;
-				String size = null;
-				String mrp = null;
-				Long salesPrice = null;
-				String taxAmount = null;
-				String total=null;
-				String Total=null;
-				String tmrp=null;
-				String tTax=null;
 
+				final DecimalFormat df = new DecimalFormat("0.00");
+				Double mrp = 0.00;
+				Double taxAmount = 0.00;
+				Double total = 0.00;
+				Double grandTotal = 0.00;
+				Double totalMrp = 0.00;
+				Double totalTax = 0.00;
+
+				String tmrp = null;
+				String ttaxAmount = null;
+				String ttotal = null;
+				String ttotalMrp = null;
+				String tgrandTotal = null;
+				String ttotalTax = null;
+
+				String designerEmail = null;
+				String displayName = null;
+				String designerName = null;
+
+				ordersdata.add(commonUtility.placedOrder(orderAndPaymentGlobalEntity));
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
 
 					orderSKUDetailsEntityRow
@@ -289,25 +292,37 @@ public class OrderAndPaymentContoller {
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
 					LOGGER.info(orderSKUDetailsEntityRow.toString() + "inside skurow");
 					int designerId = orderSKUDetailsEntityRow.getDesignerId();
-					images = orderSKUDetailsEntityRow.getImages();
-					productName = orderSKUDetailsEntityRow.getProductName();
-					units = orderSKUDetailsEntityRow.getUnits().toString();
-					salesPrice = orderSKUDetailsEntityRow.getSalesPrice();
-					size = orderSKUDetailsEntityRow.getSize();
-					taxAmount = orderSKUDetailsEntityRow.getTaxAmount().toString();
-					tTax=taxAmount+taxAmount==null ? "0" :taxAmount;
-					if(salesPrice.equals(0)) {
-						mrp = orderSKUDetailsEntityRow.getMrp().toString();
-						total=mrp+taxAmount;
-						Total = total +total == null ? "0" : total;
-						tmrp=mrp+mrp==null ? "0" :mrp;
-					}else {
-						mrp = orderSKUDetailsEntityRow.getSalesPrice().toString();
-						total=salesPrice+taxAmount;
-						Total = total +total == null ? "0" : total;
-						tmrp=mrp+mrp==null ? "0" :mrp;
+
+					orders.add(commonUtility.skuOrders(orderSKUDetailsEntityRow));
+					taxAmount = taxAmount
+							+ Double.parseDouble(orderSKUDetailsEntityRow.getTaxAmount() + "" == null ? "0"
+									: orderSKUDetailsEntityRow.getTaxAmount() + "");
+					if (orderSKUDetailsEntityRow.getSalesPrice() == 0) {
+						String mrp2 = orderSKUDetailsEntityRow.getMrp() + "";
+						mrp = mrp + Double.parseDouble(mrp2 == null ? "0" : mrp2);
+						LOGGER.info(mrp+"Inside mrp");
+						Double totals = mrp - taxAmount;
+						LOGGER.info("DATA <><><><><><><> ###" + totals.toString());
+//						total = total - Double.parseDouble(totals == null ? "0" : totals.toString());
+						total = totals - total;
+						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
+						grandTotal = grandTotal + Double.parseDouble(total + "" == null ? "0" : total + "");
+					} else {
+						String salesPrice = orderSKUDetailsEntityRow.getSalesPrice() + "";
+						mrp = mrp + Double.parseDouble(salesPrice == null ? "0" : salesPrice);
+						Double totals = mrp - taxAmount;
+//						total = total - Double.parseDouble(totals == null ? "0" : totals.toString());
+						total = totals - total;
+						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
+						grandTotal = grandTotal + Double.parseDouble(total + "" == null ? "0" : total + "");
 					}
-					
+					totalTax = totalTax + Double.parseDouble(totalTax + "" == null ? "0" : totalTax + "");
+					tmrp = String.valueOf(df.format(mrp));
+					ttaxAmount = String.valueOf(taxAmount);
+					ttotal = String.valueOf(total);
+					ttotalMrp = String.valueOf(totalMrp);
+					ttotalTax = String.valueOf(totalTax);
+					tgrandTotal = String.valueOf(grandTotal);
 					try {
 						DesignerProfileEntity forEntity = restTemplate
 								.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
@@ -333,28 +348,18 @@ public class OrderAndPaymentContoller {
 
 				String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
 
-				Map<String, Object> data = new HashMap<>();
-
 				String orderId = orderDetailsEntity.getOrderId();
 				data.put("displayName", displayName);
 				data.put("orderId", orderId);
 				data.put("userName", userName);
-				data.put("billAddress1", address1);
-				data.put("billAddress2", address2);
-				data.put("billCity", billCity);
-				data.put("billState", billState);
-				data.put("billPostalCode", billPostalCode);
-				data.put("shippingAddress", shippingAddress);
-				data.put("orderDate", orderDate);
-				data.put("images", images);
-				data.put("productName", productName);
-				data.put("units", units);
-				data.put("size", size);
-				data.put("taxAmount", taxAmount);
-				data.put("total", total);
-				data.put("Total", Total);
+				data.put("data", orders);
+				data.put("datas", ordersdata);
 				data.put("tmrp", tmrp);
-				data.put("tTax", tTax);
+				data.put("ttotal", ttotal);
+				data.put("ttaxAmount", ttaxAmount);
+				data.put("ttotalMrp", ttotalMrp);
+				data.put("ttotalTax", ttotalTax);
+				data.put("tgrandTotal", tgrandTotal);
 				Context context = new Context();
 				context.setVariables(data);
 				String htmlContent = templateEngine.process("orderPlaced.html", context);
@@ -661,7 +666,8 @@ public class OrderAndPaymentContoller {
 	}
 
 	@PutMapping("/cancelOrder/{orderId}/{productId}")
-	public GlobalResponse cancelOrder(@RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity, @PathVariable String orderId, @PathVariable Integer productId) {
+	public GlobalResponse cancelOrder(@RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity,
+			@PathVariable String orderId, @PathVariable Integer productId) {
 		try {
 			return orderAndPaymentService.cancelOrderService(orderSKUDetailsEntity, orderId, productId);
 		} catch (Exception e) {
