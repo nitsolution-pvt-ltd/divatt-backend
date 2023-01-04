@@ -860,9 +860,8 @@ public class AccountTemplateRepo {
 		LocalDate endDate =null;
 		
 		if(year !=0) {
-			yearMonth = YearMonth.of(year, month);
-			startDate = yearMonth.atDay(1);
-			endDate = yearMonth.atEndOfMonth();
+			startDate = LocalDate.of(year, Month.JANUARY, 1);
+			endDate = LocalDate.of(year, Month.DECEMBER, 31);
 		}
 		if (year != 0 && month != 0 && !settlement.equals(null)) {
 			yearMonth = YearMonth.of(year, month);
