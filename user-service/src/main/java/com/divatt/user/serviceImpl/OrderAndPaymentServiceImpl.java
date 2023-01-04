@@ -1302,9 +1302,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(refOrderId).and("productId").is(refProductId));
 			OrderSKUDetailsEntity skuDetailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
-			if (!skuDetailsEntity.getOrderItemStatus().equals("cancelled")) {
+			
+			if (skuDetailsEntity.getOrderItemStatus() == "cancelled") {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
-				skuDetailsEntity.setOrderItemStatus("cancelled");
+				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
 				Query query2 = new Query();
@@ -1315,11 +1316,30 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
-				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
-						MessageConstant.ORDER_CANCEL.getMessage(), 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
+			}else if (skuDetailsEntity.getOrderItemStatus() ==  "refundRequest") {
+				skuDetailsEntity.setId(skuDetailsEntity.getId());
+				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
+				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
+				orderSKUDetailsRepo.save(skuDetailsEntity);
+				
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
+			}else if (skuDetailsEntity.getOrderItemStatus() == "refund") {
+				skuDetailsEntity.setId(skuDetailsEntity.getId());
+				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
+				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
+				orderSKUDetailsRepo.save(skuDetailsEntity);
+				Query query2 = new Query();
+				query.addCriteria(Criteria.where("orderId").is(refOrderId));
+				OrderDetailsEntity detailsEntity = mongoOperations.findOne(query2, OrderDetailsEntity.class);
+				detailsEntity.setId(detailsEntity.getId());
+				detailsEntity.setTotalAmount(detailsEntity.getTotalAmount() - skuDetailsEntity.getSalesPrice());
+				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
+				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
+				orderDetailsRepo.save(detailsEntity);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
 			} else {
-				return new GlobalResponse(MessageConstant.ERROR.getMessage(),
-						MessageConstant.PRODUCT_ALREADY_CANCEL.getMessage(), 400);
+				return new GlobalResponse(MessageConstant.ERROR.getMessage(),MessageConstant.PRODUCT_ALREADY_CANCEL.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
