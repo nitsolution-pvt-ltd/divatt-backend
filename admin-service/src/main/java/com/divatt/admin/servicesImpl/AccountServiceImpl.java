@@ -233,15 +233,15 @@ public class AccountServiceImpl implements AccountService {
 			Page<AccountEntity> findAll = null;
 			List<AccountMapEntity> getServiceFee = accountTemplateRepo.getServiceFee(settlement, year, month);
 			List<AccountMapEntity> getBasicAmount = accountTemplateRepo.getBasicAmount(settlement, year, month);
-			List<AccountMapEntity> getDesignerGstAmount = accountTemplateRepo.getDesignerGstAmount(settlement, year,
-					month);
-			List<AccountMapEntity> getGovtGstAmount = accountTemplateRepo.getGovtChargeAmount(settlement, year, month);
+			List<AccountMapEntity> getDesignerGstAmount = accountTemplateRepo.getDesignerGstAmount(settlement, year,month);
+//			List<AccountMapEntity> getGovtGstAmount = accountTemplateRepo.getGovtChargeAmount(settlement, year, month);
 			List<AccountMapEntity> getGstAmount = accountTemplateRepo.getGstAmount(settlement, year, month);
 			List<AccountMapEntity> getPayableAmount = accountTemplateRepo.getPayableAmount(settlement, year, month);
 			List<AccountMapEntity> getPendingAmount = accountTemplateRepo.getPendingAmount(settlement, year, month);
 			List<AccountMapEntity> getTotalTcs = accountTemplateRepo.getTcsAmount(settlement, year, month);
 			List<AccountMapEntity> getTotalAmount = accountTemplateRepo.getTotalAmount(settlement, year, month);
-
+			List<AccountMapEntity> getTotalServicGst = accountTemplateRepo.getServicGst(settlement, year, month);
+			
 			if (keyword.isEmpty()) {
 				/***findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);***/
 				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder,
@@ -262,9 +262,10 @@ public class AccountServiceImpl implements AccountService {
 			double totalAmount = 0.00;
 			double totalTcs = 0.00;
 			double pendingAmount = 0.00;
-			double govtGstAmount = 0.00;
+//			double govtGstAmount = 0.00;
 			double payableAmount = 0.00;
 			double designerGstAmount = 0.00;
+			double totalServicGst = 0.00;
 
 			if (getServiceFee.size() > 0) {
 				totalServiceFee = getServiceFee.get(0).getServiceFee();
@@ -275,9 +276,9 @@ public class AccountServiceImpl implements AccountService {
 			if (getDesignerGstAmount.size() > 0) {
 				designerGstAmount = getDesignerGstAmount.get(0).getDesignerGstAmount();
 			}
-			if (getGovtGstAmount.size() > 0) {
-				govtGstAmount = getGovtGstAmount.get(0).getGovtGstAmount();
-			}
+//			if (getGovtGstAmount.size() > 0) {
+//				govtGstAmount = getGovtGstAmount.get(0).getGovtGstAmount();
+//			}
 			if (getGstAmount.size() > 0) {
 				gstAmount = getGstAmount.get(0).getGstAmount();
 			}
@@ -293,6 +294,10 @@ public class AccountServiceImpl implements AccountService {
 			if (getTotalAmount.size() > 0) {
 				totalAmount = getTotalAmount.get(0).getTotalAmount();
 			}
+			if (getTotalServicGst.size() > 0) {
+				totalServicGst = getTotalServicGst.get(0).getServiceGst();
+			}
+			
 
 			final Map<String, Object> response = new HashMap<>();
 			response.put("data", findAll.getContent());
@@ -304,12 +309,13 @@ public class AccountServiceImpl implements AccountService {
 			response.put("totalServiceFee", Double.valueOf(df.format(totalServiceFee)));
 			response.put("basicAmount", Double.valueOf(df.format(basicAmount)));
 			response.put("designerGstAmount", Double.valueOf(df.format(designerGstAmount)));
-			response.put("govtGstAmount", Double.valueOf(df.format(govtGstAmount)));
+//			response.put("govtGstAmount", Double.valueOf(df.format(govtGstAmount)));
 			response.put("gstAmount", Double.valueOf(df.format(gstAmount)));
 			response.put("payableAmount", Double.valueOf(df.format(payableAmount)));
 			response.put("totalAmount", Double.valueOf(df.format(totalAmount)));
 			response.put("totalTcs", Double.valueOf(df.format(totalTcs)));
 			response.put("pendingAmount", Double.valueOf(df.format(pendingAmount)));
+			response.put("servicGst", Double.valueOf(df.format(totalServicGst)));
 
 			if (findAll.getSize() < 1) {
 				if (LOGGER.isErrorEnabled()) {
