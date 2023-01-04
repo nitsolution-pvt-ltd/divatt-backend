@@ -2075,8 +2075,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 									jsonObject4.put("deliveredDate", format1);
 									orderStatusDetails.setDeliveryDetails(jsonObject4);
 									orderDetails.setOrderItemStatus(orderItemStatus);
-//									orderSKUDetailsRepo.save(orderDetails);
-									System.out.println("AHADUL ISLAM");
+									orderSKUDetailsRepo.save(orderDetails);
 								} catch (Exception e) {
 //									OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 //									LOGGER.info(fromJson + "Inside Delivery");
