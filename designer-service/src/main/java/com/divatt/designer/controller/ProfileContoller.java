@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -789,21 +788,17 @@ public class ProfileContoller {
 //									DesignerProfileEntity[].class)
 //							.getBody();
 					UserDesignerEntity[] userDesignerEntity = restTemplate
-							.getForEntity("https://localhost:8082/dev/user/getUserDesignerDetails/" + usermail,
+							.getForEntity(RestTemplateConstant.USER_DESIGNER_DETAILS.getMessage() + usermail,
 									UserDesignerEntity[].class)
 							.getBody();
-					//List<DesignerProfileEntity> designerList = Arrays.asList(body);
 					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
 					LOGGER.info("designerList" + designerList);
-					for (int a = 0; a < designerData.size(); a++) {
-						for (int i = 0; i < designerList.size(); i++) {
-							if (designerList.get(i).getDesignerId()
-									.equals(designerData.get(a).getdId())) {
-								designerData.get(a).setIsFollowing(true);
-							}
-							
-						}
-					}
+					designerData.stream().forEach(designer -> {
+						 if (designerList.stream().filter(dl -> dl.getDesignerId().equals(designer.getdId())).count()>0)
+							 designer.setIsFollowing(true);
+						 else 
+							 designer.setIsFollowing(false);
+					});
 					return designerData;
 				}
 
@@ -834,45 +829,17 @@ public class ProfileContoller {
 //									DesignerProfileEntity[].class)
 //							.getBody();
 					UserDesignerEntity[] userDesignerEntity = restTemplate
-							.getForEntity("https://localhost:8082/dev/user/getUserDesignerDetails/" + usermail,
+							.getForEntity(RestTemplateConstant.USER_DESIGNER_DETAILS.getMessage() + usermail,
 									UserDesignerEntity[].class)
 							.getBody();
-					LOGGER.info("userDesignerEntity #### ####"+designerData);
-					//List<DesignerProfileEntity> designerList = Arrays.asList(body);
 					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
-					LOGGER.info("Data is = {}",designerList.toString());
-					List<DesignerLoginEntity> finalData = new ArrayList<>();
-					for (int a = 0; a < designerData.size(); a++) {
-						for (int i = 0; i < designerList.size(); i++) {
-							LOGGER.info("Conditation ##########><><><><><><> = {}",
-									designerList.get(i).getDesignerId().equals(designerData.get(a).getdId()));
-							if (designerList.get(i).getDesignerId().equals(designerData.get(a).getdId())) {
-								designerData.get(a).setIsFollowing(designerList.get(i).getIsFollowing());
-								LOGGER.info("follow designer = {} --- {}, user id = {} isFollow = {}",
-										designerData.get(a).getdId(), designerList.get(i).getDesignerId(),
-										designerList.get(i).getUserId(),
-										designerList.get(i).getDesignerId().equals(designerData.get(a).getdId()));
-								LOGGER.info("$$$$$$$$$$$$$ = {}",designerData.get(a).getIsFollowing());
-								finalData.add(setProperty(designerData.get(a)));
-							} 
-//							else {
-//								designerData.get(a).setIsFollowing(false);
-//								LOGGER.info("follow designer = {} --- {}, user id = {}", designerData.get(a).getdId(),
-//										designerList.get(i).getDesignerId(), designerList.get(i).getUserId());
-//								if(!finalData.contains(designerData.get(a))) {
-//									finalData.add(setProperty(designerData.get(a)));
-//								}
-//							}
-//							LOGGER.info("designerID of designerList "+designerList.get(i));
-//							LOGGER.info("designerID of designerData "+ designerData.get(a));
-						}
-//						finalData.add(setProperty(designerData.get(a)));
-					}
-					HashSet<DesignerLoginEntity> designerLoginEntities = new HashSet<>(finalData);
-					LOGGER.info(designerLoginEntities.toString());
-//					ArrayList<DesignerLoginEntity> finalData1 = new ArrayList<>(designerLoginEntities);
-					LOGGER.info(finalData.get(0).toString());
-					return finalData;
+					designerData.stream().forEach(designer -> {
+						 if (designerList.stream().filter(dl -> dl.getDesignerId().equals(designer.getdId())).count()>0)
+							 designer.setIsFollowing(true);
+						 else 
+							 designer.setIsFollowing(false);
+					});
+					return designerData;
 				}
 			}
 		} catch (Exception e) {
@@ -1060,29 +1027,5 @@ public class ProfileContoller {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-	}
-	
-	private static DesignerLoginEntity setProperty(DesignerLoginEntity designerLoginEntity) {
-		DesignerLoginEntity entity = new DesignerLoginEntity();
-		entity.setdId(designerLoginEntity.getdId());
-		entity.setEmail(designerLoginEntity.getEmail());
-		entity.setUserExist(designerLoginEntity.getUserExist());
-		entity.setPassword(designerLoginEntity.getPassword());
-		entity.setAuthToken(designerLoginEntity.getAuthToken());
-		entity.setIsDeleted(designerLoginEntity.getIsDeleted());
-		entity.setProfileStatus(designerLoginEntity.getProfileStatus());
-		entity.setAccountStatus(designerLoginEntity.getAccountStatus());
-		entity.setAdminComment(designerLoginEntity.getAdminComment());
-		entity.setLogins(designerLoginEntity.getLogins());
-		entity.setDesignerProfileEntity(designerLoginEntity.getDesignerProfileEntity());
-		entity.setProductCount(designerLoginEntity.getProductCount());
-		entity.setFollwerCount(designerLoginEntity.getFollwerCount());
-		entity.setIsFollowing(designerLoginEntity.getIsFollowing());
-		entity.setCategories(designerLoginEntity.getCategories());
-		entity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
-		entity.setDisplayName(designerLoginEntity.getDisplayName());
-		entity.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
-		entity.setDesignerCategory(designerLoginEntity.getDesignerCategory());
-		return entity;
 	}
 }
