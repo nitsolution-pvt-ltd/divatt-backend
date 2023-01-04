@@ -1303,7 +1303,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			query.addCriteria(Criteria.where("orderId").is(refOrderId).and("productId").is(refProductId));
 			OrderSKUDetailsEntity skuDetailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
 			
-			if (skuDetailsEntity.getOrderItemStatus() == "cancelled") {
+			if (orderSKUDetailsEntity.getOrderItemStatus() == "cancelled") {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
@@ -1317,14 +1317,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
-			}else if (skuDetailsEntity.getOrderItemStatus() ==  "refundRequest") {
+			}else if (orderSKUDetailsEntity.getOrderItemStatus() ==  "refundRequest") {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
 				
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
-			}else if (skuDetailsEntity.getOrderItemStatus() == "refund") {
+			}else if (orderSKUDetailsEntity.getOrderItemStatus() == "refund") {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
