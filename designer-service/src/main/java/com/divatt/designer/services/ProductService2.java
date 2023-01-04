@@ -41,6 +41,6 @@ public interface ProductService2 {
 
 	List<ProductMasterEntity2> productSearching(String searchBy, String designerId, String categoryId,
 			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
-			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey);
+			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey, String sortDateType);
 
 }

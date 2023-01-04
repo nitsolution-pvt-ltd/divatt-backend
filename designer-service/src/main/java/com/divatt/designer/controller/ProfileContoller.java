@@ -855,14 +855,14 @@ public class ProfileContoller {
 								LOGGER.info("$$$$$$$$$$$$$ = {}",designerData.get(a).getIsFollowing());
 								finalData.add(setProperty(designerData.get(a)));
 							} 
-//							else {
-//								designerData.get(a).setIsFollowing(false);
-//								LOGGER.info("follow designer = {} --- {}, user id = {}", designerData.get(a).getdId(),
-//										designerList.get(i).getDesignerId(), designerList.get(i).getUserId());
-//								if(!finalData.contains(designerData.get(a))) {
-//									finalData.add(setProperty(designerData.get(a)));
-//								}
-//							}
+							else {
+								designerData.get(a).setIsFollowing(false);
+								LOGGER.info("follow designer = {} --- {}, user id = {}", designerData.get(a).getdId(),
+										designerList.get(i).getDesignerId(), designerList.get(i).getUserId());
+								if(!finalData.contains(designerData.get(a))) {
+									finalData.add(setProperty(designerData.get(a)));
+								}
+							}
 //							LOGGER.info("designerID of designerList "+designerList.get(i));
 //							LOGGER.info("designerID of designerData "+ designerData.get(a));
 						}
