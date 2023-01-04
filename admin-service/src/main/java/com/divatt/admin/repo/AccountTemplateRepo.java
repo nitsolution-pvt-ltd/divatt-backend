@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Constants;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +41,8 @@ public class AccountTemplateRepo {
 
 	@Autowired
 	private Gson gson;
+	
+	private static final String constants = "i";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AccountTemplateRepo.class);
 
@@ -49,93 +52,94 @@ public class AccountTemplateRepo {
 		query.with(Sort.by(Sort.Direction.DESC, "datetime"));
 
 		query.addCriteria(new Criteria().orOperator(
-				Criteria.where("designer_details.designer_name").regex(keywords),
-				Criteria.where("designer_details.display_name").regex(keywords),
-				Criteria.where("designer_details.email").regex(keywords),
-				Criteria.where("designer_details.gst_in").regex(keywords),
-				Criteria.where("designer_details.pan").regex(keywords),
-				Criteria.where("designer_details.mobile").regex(keywords),
-				Criteria.where("designer_details.address").regex(keywords),
-				Criteria.where("designer_details.city").regex(keywords),
-				Criteria.where("designer_details.state").regex(keywords),
-				Criteria.where("designer_details.pin").regex(keywords),
-				Criteria.where("designer_details.country").regex(keywords),
+				Criteria.where("designer_details.designer_name").regex(keywords,constants),
+				Criteria.where("designer_details.display_name").regex(keywords,constants),
+				Criteria.where("designer_details.email").regex(keywords,constants),
+				Criteria.where("designer_details.gst_in").regex(keywords,constants),
+				Criteria.where("designer_details.pan").regex(keywords,constants),
+				Criteria.where("designer_details.mobile").regex(keywords,constants),
+				Criteria.where("designer_details.address").regex(keywords,constants),
+				Criteria.where("designer_details.city").regex(keywords,constants),
+				Criteria.where("designer_details.state").regex(keywords,constants),
+				Criteria.where("designer_details.pin").regex(keywords,constants),
+				Criteria.where("designer_details.country").regex(keywords,constants),
 				
-				Criteria.where("service_charge.date").regex(keywords),
-				Criteria.where("service_charge.designer_invoice_id").regex(keywords),
-				Criteria.where("service_charge.status").regex(keywords),
-				Criteria.where("service_charge.remarks").regex(keywords),
-				Criteria.where("service_charge.date").regex(keywords),
-				Criteria.where("service_charge.fee").regex(keywords),
-				Criteria.where("service_charge.cgst").regex(keywords),
-				Criteria.where("service_charge.sgst").regex(keywords),
-				Criteria.where("service_charge.igst").regex(keywords),
-				Criteria.where("service_charge.tcs").regex(keywords),
-				Criteria.where("service_charge.total_tax").regex(keywords),
-				Criteria.where("service_charge.total_amount").regex(keywords),
-				Criteria.where("service_charge.units").regex(keywords),
-				Criteria.where("service_charge.updated_datetime").regex(keywords),
-				Criteria.where("service_charge.rate").regex(keywords),
+				Criteria.where("service_charge.date").regex(keywords,constants),
+				Criteria.where("service_charge.designer_invoice_id").regex(keywords,constants),
+				Criteria.where("service_charge.status").regex(keywords,constants),
+				Criteria.where("service_charge.remarks").regex(keywords,constants),
+				Criteria.where("service_charge.date").regex(keywords,constants),
+				Criteria.where("service_charge.fee").regex(keywords,constants),
+				Criteria.where("service_charge.cgst").regex(keywords,constants),
+				Criteria.where("service_charge.sgst").regex(keywords,constants),
+				Criteria.where("service_charge.igst").regex(keywords,constants),
+				Criteria.where("service_charge.tcs").regex(keywords,constants),
+				Criteria.where("service_charge.total_tax").regex(keywords,constants),
+				Criteria.where("service_charge.total_amount").regex(keywords,constants),
+				Criteria.where("service_charge.units").regex(keywords,constants),
+				Criteria.where("service_charge.updated_datetime").regex(keywords,constants),
+				Criteria.where("service_charge.rate").regex(keywords,constants),
 
-				Criteria.where("order_details").elemMatch(Criteria.where("datetime").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("product_sku").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("size").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("tax_type").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("order_status").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("delivery_datetime").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("remarks").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("order_id").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("hsn_code").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("payment_mode").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("discount").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("sales_price").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("invoice_id").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("hsn_amount").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("hsn_rate").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("hsn_cgst").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("hsn_sgst").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("hsn_igst").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("total_tax").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("order_status").regex(keywords)),
-				Criteria.where("order_details").elemMatch(Criteria.where("mrp").regex(keywords)),
+				Criteria.where("order_details").elemMatch(Criteria.where("datetime").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("product_sku").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("size").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("tax_type").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("order_status").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("delivery_datetime").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("remarks").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("order_id").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_code").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("payment_mode").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("discount").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("sales_price").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("invoice_id").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_amount").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_rate").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_cgst").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_sgst").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("hsn_igst").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("total_tax").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("order_status").regex(keywords,constants)),
+				Criteria.where("order_details").elemMatch(Criteria.where("mrp").regex(keywords,constants)),
 
-				Criteria.where("govt_charge").elemMatch(Criteria.where("designer_invoice_id").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("status").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("datetime").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("remarks").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("fee").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("cgst").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("sgst").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("igst").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("tcs").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("total_tax").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("total_amount").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("units").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("updated_datetime").regex(keywords)),
-				Criteria.where("govt_charge").elemMatch(Criteria.where("rate").regex(keywords)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("designer_invoice_id").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("status").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("datetime").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("remarks").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("fee").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("cgst").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("sgst").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("igst").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("tcs").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("total_tax").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("total_amount").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("units").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("updated_datetime").regex(keywords,constants)),
+				Criteria.where("govt_charge").elemMatch(Criteria.where("rate").regex(keywords,constants)),
 
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("datetime").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("order_id").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("product_sku").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("size").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("tax_type").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("updated_datetime").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("remarks").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("mrp").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("discount").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("sales_price").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_rate").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_code").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_amount").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_cgst").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_sgst").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_igst").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("tcs").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_tax_amount").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_amount_received").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("net_payable_designer").regex(keywords)),
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("payment_datetime").regex(keywords))
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("datetime").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("order_id").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("product_sku").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("size").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("tax_type").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("updated_datetime").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("remarks").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("mrp").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("discount").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("sales_price").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_rate").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_code").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_amount").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_cgst").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_sgst").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("hsn_igst").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("tcs").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_tax_amount").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("total_amount_received").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("net_payable_designer").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("payment_datetime").regex(keywords,constants)),
+				Criteria.where("designer_return_amount").elemMatch(Criteria.where("basic_amount").regex(keywords,constants))
 
 		));
 		final List<AccountEntity> find = mongoTemplate.find(query, AccountEntity.class);
@@ -288,6 +292,7 @@ public class AccountTemplateRepo {
 			designerReturnAmount.setTotal_tax_amount(value.getTotal_tax_amount());
 			designerReturnAmount.setUnits(value.getUnits());
 			designerReturnAmount.setPayment_datetime(value.getPayment_datetime());
+			designerReturnAmount.setBasic_amount(value.getBasic_amount());
 
 			DesignerReturnAmountList.add(designerReturnAmount);
 		});
@@ -338,7 +343,55 @@ public class AccountTemplateRepo {
 			match = Aggregation.match(new Criteria());
 		}
 
-		GroupOperation mapCondition = Aggregation.group().sum("service_charge.total_amount").as("serviceFee");
+		GroupOperation mapCondition = Aggregation.group().sum("service_charge.fee").as("serviceFee");
+		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
+		return results.getMappedResults();
+	}
+	
+	public List<AccountMapEntity> getServicGst(String settlement, int year, int month) {
+
+		LocalDate today = LocalDate.now();
+		int dayDivide = 0;
+		int lengthOfMonth = 0;
+		YearMonth yearMonth = null;
+		MatchOperation match = null;
+		LocalDate startDate = null;
+		LocalDate endDate =null;
+		
+		if(year !=0) {
+			startDate = LocalDate.of(year, Month.JANUARY, 1);
+			endDate = LocalDate.of(year, Month.DECEMBER, 31);
+		}
+		if (year != 0 && month != 0) {
+			yearMonth = YearMonth.of(year, month);
+			startDate = yearMonth.atDay(1);
+			endDate = yearMonth.atEndOfMonth();
+		}
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else if (year != 0 && month != 0) {
+			match = Aggregation
+					.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
+		} else if (year != 0) {
+			match = Aggregation
+					.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
+		} else {
+			match = Aggregation.match(new Criteria());
+		}
+
+		GroupOperation mapCondition = Aggregation.group().sum("service_charge.igst").as("serviceGst");
 		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
 				AccountMapEntity.class);
@@ -385,9 +438,10 @@ public class AccountTemplateRepo {
 		} else {
 			match = Aggregation.match(new Criteria());
 		}
-
-		GroupOperation mapCondition = Aggregation.group().sum("service_charge.total_amount").as("gstAmount");
-		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
+		
+		AggregationOperation unwind = Aggregation.unwind("order_details");
+		GroupOperation mapCondition = Aggregation.group().sum("order_details.hsn_amount").as("gstAmount");
+		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
 				AccountMapEntity.class);
 		return results.getMappedResults();
@@ -696,7 +750,7 @@ public class AccountTemplateRepo {
 		}
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
-		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.sales_price").as("basicAmount");
+		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.basic_amount").as("basicAmount");
 
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
@@ -809,9 +863,8 @@ public class AccountTemplateRepo {
 		LocalDate endDate =null;
 		
 		if(year !=0) {
-			yearMonth = YearMonth.of(year, month);
-			startDate = yearMonth.atDay(1);
-			endDate = yearMonth.atEndOfMonth();
+			startDate = LocalDate.of(year, Month.JANUARY, 1);
+			endDate = LocalDate.of(year, Month.DECEMBER, 31);
 		}
 		if (year != 0 && month != 0 && !settlement.equals(null)) {
 			yearMonth = YearMonth.of(year, month);

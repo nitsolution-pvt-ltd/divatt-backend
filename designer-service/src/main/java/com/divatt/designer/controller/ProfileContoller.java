@@ -50,6 +50,7 @@ import com.divatt.designer.constant.RestTemplateConstant;
 import com.divatt.designer.entity.LoginEntity;
 import com.divatt.designer.entity.Measurement;
 import com.divatt.designer.entity.SendMail;
+import com.divatt.designer.entity.UserDesignerEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
@@ -217,8 +218,7 @@ public class ProfileContoller {
 			LOGGER.info("	TEST" + findByBoutiqueName);
 			if (!findByBoutiqueName.isPresent()) {
 
-				designerLoginRepo
-						.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
+				designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
 
 				ResponseEntity<String> forEntity = restTemplate
 						.getForEntity(RestTemplateConstant.PRESENT_DESIGNER.getMessage()
@@ -275,8 +275,7 @@ public class ProfileContoller {
 				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
 						"Successfully Registration", sb.toString(), false);
 				try {
-					restTemplate
-							.postForEntity(RestTemplateConstant.AUTH_SEND_MAIL.getMessage(), mail, String.class);
+					restTemplate.postForEntity(RestTemplateConstant.AUTH_SEND_MAIL.getMessage(), mail, String.class);
 				} catch (Exception e) {
 					System.out.println(e.getMessage());
 				}
@@ -775,7 +774,7 @@ public class ProfileContoller {
 					// designerData.get(i).setDesignerCategory(designerProfileData.getDesignerProfile().getDesignerCategory());
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
 					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
-					LOGGER.info("countData<><><><><"+countData);
+					LOGGER.info("countData<><><><><" + countData);
 					String productCount = countData.get("Products").toString();
 					String followerCount = countData.get("FollowersData").toString();
 					designerData.get(i).setProductCount(Integer.parseInt(productCount));
@@ -784,20 +783,22 @@ public class ProfileContoller {
 				if (usermail.isBlank()) {
 					return designerData;
 				} else {
-					DesignerProfileEntity[] body = restTemplate
-							.getForEntity(RestTemplateConstant.USER_FOLLOWED_DESIGNER.getMessage() + usermail,
-									DesignerProfileEntity[].class)
+//					DesignerProfileEntity[] body = restTemplate
+//							.getForEntity(RestTemplateConstant.USER_FOLLOWED_DESIGNER.getMessage() + usermail,
+//									DesignerProfileEntity[].class)
+//							.getBody();
+					UserDesignerEntity[] userDesignerEntity = restTemplate
+							.getForEntity(RestTemplateConstant.USER_DESIGNER_DETAILS.getMessage() + usermail,
+									UserDesignerEntity[].class)
 							.getBody();
-					List<DesignerProfileEntity> designerList = Arrays.asList(body);
-					LOGGER.info("designerList"+designerList);
-					for (int a = 0; a < designerData.size(); a++) {
-						for (int i = 0; i < designerList.size(); i++) {
-							if (designerList.get(i).getDesignerId()
-									.equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
-								designerData.get(a).setIsFollowing(true);
-							}
-						}
-					}
+					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
+					LOGGER.info("designerList" + designerList);
+					designerData.stream().forEach(designer -> {
+						 if (designerList.stream().filter(dl -> dl.getDesignerId().equals(designer.getdId())).count()>0)
+							 designer.setIsFollowing(true);
+						 else 
+							 designer.setIsFollowing(false);
+					});
 					return designerData;
 				}
 
@@ -810,6 +811,7 @@ public class ProfileContoller {
 							DesignerProfileEntity.class);
 					designerData.get(i).setDesignerProfileEntity(designerProfileData);
 					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
+					LOGGER.info("countData<><><!!!!!"+countData);
 
 					if (designerData.get(i).getdId() == 264) {
 						LOGGER.info("Count data is = {}", countData);
@@ -822,19 +824,21 @@ public class ProfileContoller {
 				if (usermail.isBlank()) {
 					return designerData;
 				} else {
-					DesignerProfileEntity[] body = restTemplate
-							.getForEntity(RestTemplateConstant.USER_FOLLOWED_DESIGNER.getMessage() + usermail,
-									DesignerProfileEntity[].class)
+//					DesignerProfileEntity[] body = restTemplate
+//							.getForEntity(RestTemplateConstant.USER_FOLLOWED_DESIGNER.getMessage() + usermail,
+//									DesignerProfileEntity[].class)
+//							.getBody();
+					UserDesignerEntity[] userDesignerEntity = restTemplate
+							.getForEntity(RestTemplateConstant.USER_DESIGNER_DETAILS.getMessage() + usermail,
+									UserDesignerEntity[].class)
 							.getBody();
-					List<DesignerProfileEntity> designerList = Arrays.asList(body);
-					for (int a = 0; a < designerData.size(); a++) {
-						for (int i = 0; i < designerList.size(); i++) {
-							if (designerList.get(i).getDesignerId()
-									.equals(designerData.get(a).getDesignerProfileEntity().getDesignerId())) {
-								designerData.get(a).setIsFollowing(true);
-							}
-						}
-					}
+					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
+					designerData.stream().forEach(designer -> {
+						 if (designerList.stream().filter(dl -> dl.getDesignerId().equals(designer.getdId())).count()>0)
+							 designer.setIsFollowing(true);
+						 else 
+							 designer.setIsFollowing(false);
+					});
 					return designerData;
 				}
 			}

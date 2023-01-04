@@ -42,6 +42,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
@@ -100,6 +101,12 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.razorpay.BankTransfer;
+import com.razorpay.Invoice;
+import com.razorpay.Payment;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
+import com.razorpay.Transfer;
 
 @Validated
 @RestController
@@ -213,9 +220,8 @@ public class OrderAndPaymentContoller {
 	public Map<String, Object> getOrderPaymentDetails(@RequestHeader("Authorization") String token,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
-			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
+			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) throws RazorpayException {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderPaymentDetails()");
-
 		try {
 			return orderAndPaymentService.getOrderPaymentService(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
@@ -455,13 +461,6 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderByDesigner() for Designer side listing");
 
 		try {
-//        	String orderItemStatusValue = null;
-//        	if(orderItemStatus.equals("New")) {
-//				orderItemStatusValue = "Active";
-//			}
-//			else {
-//				orderItemStatusValue = orderItemStatus;
-//			}
 			return orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword, sortBy,
 					orderItemStatus, sortDateType, startDate, endDate);
 		} catch (Exception e) {

@@ -843,5 +843,13 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	@GetMapping("getUserDesignerDetails/{userEmail}")
+	public List<UserDesignerEntity> getUserDesignerDetails(@PathVariable String userEmail){
+		try {
+		return this.userService.getUserDesignerDetails(userEmail);	
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 
 }

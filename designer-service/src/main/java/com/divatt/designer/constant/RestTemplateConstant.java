@@ -28,7 +28,8 @@ public enum RestTemplateConstant {
 	ACCOUNT_VIEW_BY_ID("https://localhost:8084/dev/account/view/"),
 	ACCOUNT_UPDATE_BY_ID("https://localhost:8084/dev/account/update/"),
 	ACCOUNT_LIST("https://localhost:8084/dev/account/list"),
-	ADMIN_ROLE_NAME("https://localhost:8084/dev/admin/profile/getRoleName/");
+	ADMIN_ROLE_NAME("https://localhost:8084/dev/admin/profile/getRoleName/"),
+	USER_DESIGNER_DETAILS("https://localhost:8082/dev/user/getUserDesignerDetails/");
 
 	// FOR PROD
 //	 USERORDER_GET_ORDER("https://localhost:9092/prod/userOrder/getOrder/"),
@@ -52,8 +53,8 @@ public enum RestTemplateConstant {
 //	 AUTH_SEND_MAIL("https://65.1.190.195:9091/prod/auth/sendMail"),
 //	 DESIGNER("https://dev.divatt.com/designer/"),
 //	 USER_FOLLOWER_COUNT("https://localhost:9090/prod/user/followerCount/"),
-//	 USER_FOLLOWED_DESIGNER("https://localhost:9092/prod/user/followedDesigner/")
-	;
+//	 USER_FOLLOWED_DESIGNER("https://localhost:9092/prod/user/followedDesigner/"),
+//	USER_DESIGNER_DETAILS("https://localhost:9092/dev/user/getUserDesignerDetails/");
 
 	private String message;
 

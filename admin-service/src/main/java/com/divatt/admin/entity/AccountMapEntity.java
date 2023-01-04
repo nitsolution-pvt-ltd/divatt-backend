@@ -5,6 +5,7 @@ public class AccountMapEntity {
 	
 	public String _id;
 	public Double serviceFee;
+	public Double serviceGst;
 	public Double basicAmount;
 	public Double gstAmount;
 	public Double totalAmount;
@@ -13,16 +14,6 @@ public class AccountMapEntity {
 	public Double pendingAmount;
 	public Double govtGstAmount;
 	public Double designerGstAmount;
-	
-	
-	
-	@Override
-	public String toString() {
-		return "AccountMapEntity [_id=" + _id + ", serviceFee=" + serviceFee + ", basicAmount=" + basicAmount
-				+ ", gstAmount=" + gstAmount + ", totalAmount=" + totalAmount + ", tcs=" + tcs + ", payableAmount="
-				+ payableAmount + ", pendingAmount=" + pendingAmount + ", govtGstAmount=" + govtGstAmount
-				+ ", designerGstAmount=" + designerGstAmount + "]";
-	}
 	public String get_id() {
 		return _id;
 	}
@@ -34,6 +25,12 @@ public class AccountMapEntity {
 	}
 	public void setServiceFee(Double serviceFee) {
 		this.serviceFee = serviceFee;
+	}
+	public Double getServiceGst() {
+		return serviceGst;
+	}
+	public void setServiceGst(Double serviceGst) {
+		this.serviceGst = serviceGst;
 	}
 	public Double getBasicAmount() {
 		return basicAmount;
@@ -83,6 +80,9 @@ public class AccountMapEntity {
 	public void setDesignerGstAmount(Double designerGstAmount) {
 		this.designerGstAmount = designerGstAmount;
 	}
+	
+	
+	
 	
 	
 
