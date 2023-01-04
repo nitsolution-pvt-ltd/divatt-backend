@@ -304,7 +304,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public ResponseEntity<?> postOrderSKUService(OrderSKUDetailsEntity orderSKUDetailsEntityRow) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderSKUService()");
 
@@ -336,24 +335,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			orderSKUDetailsEntityRow.setDesignerId(orderSKUDetailsEntityRow.getDesignerId());
 			orderSKUDetailsEntityRow.setOrderItemStatus("New");
-//			int shipmentTime = Integer
-//					.parseInt(restTemplate
-//							.getForEntity(RestTemplateConstant.DESIGNER_PRODUCT.getLink()
-//									+ orderSKUDetailsEntityRow.getProductId(), org.json.simple.JSONObject.class)
-//							.getBody().get("shipmentTime").toString());
+
 			try {
 				ResponseEntity<org.json.simple.JSONObject> forEntity = restTemplate.getForEntity(
 						RestTemplateConstant.DESIGNER_PRODUCT.getLink() + orderSKUDetailsEntityRow.getProductId(),
 						org.json.simple.JSONObject.class);
 				int shipmentTime = Integer.parseInt(forEntity.getBody().get("shipmentTime").toString());
-				LOGGER.info(shipmentTime + "inside");
 				Object productSku = forEntity.getBody().get("sku");
-				LOGGER.info(productSku + "inside");
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
 				c.add(Calendar.DATE, shipmentTime);
 				String output = formatter.format(c.getTime());
-				LOGGER.info(output);
 				HsnData hsndata = new HsnData();
 				hsndata.setCgst(orderSKUDetailsEntityRow.getHsnData().getCgst());
 				hsndata.setIgst(orderSKUDetailsEntityRow.getHsnData().getIgst());
@@ -362,8 +354,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderSKUDetailsEntityRow.setShippingDate(output);
 				orderSKUDetailsEntityRow.setProductSku(productSku.toString());
 				orderSKUDetailsRepo.save(orderSKUDetailsEntityRow);
-				LOGGER.info(orderSKUDetailsEntityRow + "");
-				LOGGER.info("Ok<><><><>");
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
 			}
@@ -446,25 +436,18 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				findAll = orderDetailsRepo.findAll(pagingSort);
 			} else {
 				findAll = orderDetailsRepo.Search(keyword, pagingSort);
-
 			}
 
 			List<OrderSKUDetailsEntity> orderSKUDetails = new ArrayList<>();
 			orderSKUDetails = this.orderSKUDetailsRepo.findAll();
-			LOGGER.info("inside orderSKUDetails" + orderSKUDetails.size());
 
 			if (!orderStatus.isBlank() && !orderStatus.equals("All")) {
 				List<String> collect = orderSKUDetails.stream().filter(e -> e.getOrderItemStatus().equals(orderStatus))
 						.map(e -> e.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(collect, pagingSort);
-				LOGGER.info("collect <><><><>" + collect);
 			} else {
 				findAll = orderDetailsRepo.findAll(pagingSort);
-				LOGGER.info("hiiii");
-//				LOGGER.info("inside no status" + findAll);
 			}
-
-//			LOGGER.info("Data for find ALL <><><><><><><><><> !!!!!! = {}",findAll.getContent());
 
 			List<Object> productId = new ArrayList<>();
 
@@ -478,7 +461,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
-
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 
 				String writeValueAsString = null;
