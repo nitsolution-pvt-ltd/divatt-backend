@@ -388,7 +388,7 @@ public class AccountTemplateRepo {
 			match = Aggregation.match(new Criteria());
 		}
 
-		GroupOperation mapCondition = Aggregation.group().sum("service_charge.total_tax").as("serviceGst");
+		GroupOperation mapCondition = Aggregation.group().sum("service_charge.igst").as("serviceGst");
 		Aggregation aggregations = Aggregation.newAggregation(match, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
 				AccountMapEntity.class);
