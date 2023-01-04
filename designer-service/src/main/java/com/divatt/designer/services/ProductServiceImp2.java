@@ -2,6 +2,8 @@ package com.divatt.designer.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1005,7 +1007,7 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	public List<ProductMasterEntity2> productSearching(String searchBy, String designerId, String categoryId,
 			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
-			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey) {
+			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey, String sortDateType) {
 
 		try {
 			LOGGER.info("Inside ProductServiceImpl.productSearching()");
@@ -1046,6 +1048,12 @@ public class ProductServiceImp2 implements ProductService2 {
 							.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
 									.anyMatch(dId -> dId.equals(product.getDesignerId().toString())) : true)
 							.collect(Collectors.toList());
+			if(sortDateType.equalsIgnoreCase("new")) {
+				Collections.sort(productMaster, Comparator.comparing(ProductMasterEntity2::getCreatedOn).reversed());
+			} else if (sortDateType.equalsIgnoreCase("old")) {
+				Collections.sort(productMaster, Comparator.comparing(ProductMasterEntity2::getCreatedOn));
+			}
+
 			productMaster.forEach(element -> {
 				DesignerProfile designerProfile = designerProfileRepo
 						.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get()
@@ -1055,6 +1063,7 @@ public class ProductServiceImp2 implements ProductService2 {
 				}
 			});
 			productMaster.removeIf(element -> element.getDesignerProfile() == null);
+			
 			return productMaster;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

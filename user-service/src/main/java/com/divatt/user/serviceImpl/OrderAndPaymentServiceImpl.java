@@ -1300,10 +1300,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	public GlobalResponse cancelOrderService(OrderSKUDetailsEntity orderSKUDetailsEntity, String refOrderId, Integer refProductId) {
 		try {
 			Query query = new Query();
-			query.addCriteria(Criteria.where("orderId").is(refOrderId).and("productId").is(refProductId));
+			query.addCriteria(Criteria.where("order_id").is(refOrderId).and("productId").is(refProductId));
 			OrderSKUDetailsEntity skuDetailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
-			
-			if (orderSKUDetailsEntity.getOrderItemStatus() == "cancelled") {
+
+			if (orderSKUDetailsEntity.getOrderItemStatus().equals("cancelled")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
@@ -1317,14 +1317,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
-			}else if (orderSKUDetailsEntity.getOrderItemStatus() ==  "refundRequest") {
+			}else if (orderSKUDetailsEntity.getOrderItemStatus().equals("refundRequest")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
 				
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
-			}else if (orderSKUDetailsEntity.getOrderItemStatus() == "refund") {
+			}else if (orderSKUDetailsEntity.getOrderItemStatus().equals("refund")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
