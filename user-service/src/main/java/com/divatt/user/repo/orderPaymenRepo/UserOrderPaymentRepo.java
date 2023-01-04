@@ -19,6 +19,9 @@ public interface UserOrderPaymentRepo extends MongoRepository<OrderPaymentEntity
 	Page<OrderPaymentEntity> Search(String sortKey, Pageable pageable);
 
 	Optional<OrderPaymentEntity> findByOrderId(String orderId);
+	
+	@Query(value = "{'order_id' : ?0 }")
+	List<OrderPaymentEntity> findByOrderIdList(String orderId);
 
 	Optional<OrderPaymentEntity> findByUserId(Integer userId);
 
