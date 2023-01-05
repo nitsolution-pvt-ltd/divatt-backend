@@ -42,6 +42,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.InputStreamSource;
@@ -142,8 +143,18 @@ public class OrderAndPaymentContoller {
 
 	@Autowired
 	private CommonUtility commonUtility;
+	
 	@Autowired
 	private TemplateEngine templateEngine;
+	
+	@Value("${spring.profiles.active}")
+	private String contextPath;
+
+	@Value("${host}")
+	private String host;
+	
+	@Value("${interfaceId}")
+	private String interfaceId;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 
@@ -966,4 +977,41 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/transactions")
+	public ResponseEntity<?> getTransactions(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - OrderAndPaymentContoller.getTransactions()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - OrderAndPaymentContoller.getTransactions()");
+		}
+
+		try {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/userOrder/transactions", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/userOrder/transactions", "Success", HttpStatus.OK);
+			}
+			return orderAndPaymentService.getTransactionsService(page, limit, sort, sortName, keyword, sortBy);
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/userOrder/transactions", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+	
+	
+	
 }

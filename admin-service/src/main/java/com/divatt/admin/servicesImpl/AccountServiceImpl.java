@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +17,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.admin.constant.MessageConstant;
+import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.AccountMapEntity;
 import com.divatt.admin.entity.GlobalResponse;
@@ -39,6 +46,8 @@ import com.divatt.admin.utility.CommonUtility;
 import com.google.gson.Gson;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
+
+import springfox.documentation.spring.web.json.Json;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -59,6 +68,9 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private TemplateEngine templateEngine;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Value("${spring.profiles.active}")
 	private String contextPath;
@@ -72,6 +84,7 @@ public class AccountServiceImpl implements AccountService {
 	@Autowired
 	private Gson gson;
 
+	@Override
 	public GlobalResponse postAccountDetails(@RequestBody AccountEntity accountEntity) {
 
 		if (LOGGER.isInfoEnabled()) {
@@ -121,7 +134,8 @@ public class AccountServiceImpl implements AccountService {
 		}
 
 	}
-
+	
+	@Override
 	public ResponseEntity<?> viewAccountDetails(long accountId) {
 
 		if (LOGGER.isInfoEnabled()) {
@@ -163,6 +177,7 @@ public class AccountServiceImpl implements AccountService {
 
 	}
 
+	@Override
 	public GlobalResponse putAccountDetails(long accountId, @RequestBody AccountEntity accountEntity) {
 
 		if (LOGGER.isInfoEnabled()) {
@@ -211,6 +226,7 @@ public class AccountServiceImpl implements AccountService {
 
 	}
 
+	@Override
 	public Map<String, Object> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder,
 			String ReturnStatus, String settlement, int year, int month, String designerId, Optional<String> sortBy) {
@@ -346,6 +362,7 @@ public class AccountServiceImpl implements AccountService {
 
 	}
 
+	@Override
 	public List<AccountEntity> excelReportService(String designerReturn, String serviceCharge, String govtCharge,
 			String userOrder, String ReturnStatus, String settlement, int year, int month, String designerId) {
 
@@ -367,7 +384,7 @@ public class AccountServiceImpl implements AccountService {
 			}
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/excelReport", gson.toJson(""), HttpStatus.OK);
+						host + contextPath + "/account/excelReport", gson.toJson(findAll), HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
@@ -382,7 +399,8 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public ResponseEntity<byte[]> getDesignerInvoice(String orderId, Long designerId) {
+	public ResponseEntity<?> getDesignerInvoice(String orderId, Long designerId) {
+		
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.getDesignerInvoice()");
 		}
@@ -391,6 +409,25 @@ public class AccountServiceImpl implements AccountService {
 		}
 		try {
 			List<AccountEntity> order = accountTemplateRepo.getOrder(orderId, designerId);
+
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Get account data {}", gson.toJson(order));
+			}
+			if(order.size() <= 0) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, "Account data not found",
+							HttpStatus.NOT_FOUND);
+				}
+				Map<String, Object> mapObj= new HashMap<>();
+				mapObj.put("status", 404);
+				mapObj.put("reason", "Error");
+				mapObj.put("message", "Account data not found");
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Error: {}","Account data not found");
+				}
+				return new ResponseEntity<>(mapObj, HttpStatus.NOT_FOUND);
+			}
 			List<PaymentCharges> productDetailsList = new ArrayList<>();
 			List<PaymentCharges> details = new ArrayList<>();
 			Map<String, Object> map = new HashMap<>();
@@ -414,6 +451,7 @@ public class AccountServiceImpl implements AccountService {
 
 			details.add(commonUtility.invoiceUpdateMapper(order));
 			String displayName = order.get(0).getDesigner_details().getDisplay_name();
+			
 			for (AccountEntity data1 : order) {
 				productDetailsList.add(commonUtility.invoiceUpdateMap(data1));
 				ServiceCharge service = data1.getService_charge();
@@ -422,11 +460,9 @@ public class AccountServiceImpl implements AccountService {
 				tSgst = tSgst + Double.parseDouble(service.getSgst() + "" == null ? "0" : service.getSgst() + "");
 				tIgst = tIgst + Double.parseDouble(service.getIgst() + "" == null ? "0" : service.getIgst() + "");
 				tGross = tGross + Double.parseDouble(service.getFee() + "" == null ? "0" : service.getFee() + "");
-				tTotal = tTotal + Double
-						.parseDouble(service.getTotal_amount() + "" == null ? "0" : service.getTotal_amount() + "");
+				tTotal = tTotal + Double.parseDouble(service.getTotal_amount() + "" == null ? "0" : service.getTotal_amount() + "");
 				tcs = tcs + Double.parseDouble(service.getTcs() + "" == null ? "0" : service.getTcs() + "");
-				tcspercentage = tcspercentage
-						+ Double.parseDouble(service.getTcs_rate() + "" == null ? "0" : service.getTcs_rate() + "");
+				tcspercentage = tcspercentage + Double.parseDouble(service.getTcs_rate() + "" == null ? "0" : service.getTcs_rate() + "");
 
 				totalCgst = String.valueOf(df.format(tCgst));
 				totalSgst = String.valueOf(df.format(tSgst));
@@ -454,20 +490,86 @@ public class AccountServiceImpl implements AccountService {
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			ConverterProperties converterProperties = new ConverterProperties();
 			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);
-
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Disposition", "attachment; filename=" + "designerInvoice.pdf");
-			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
-					.body(target.toByteArray());
+			
+			headers.add("Content-Disposition", "attachment; filename=" + order.get(0).getService_charge().getDesigner_invoice_id()+".pdf");
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, gson.toJson(target.toByteArray()), HttpStatus.OK);
+			}
+			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(target.toByteArray());
 
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/getDesignerInvoice", e.getLocalizedMessage(),
+						host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, e.getLocalizedMessage(),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			throw new CustomException(e.getMessage());
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	public ResponseEntity<?> getTransactionsService(int page, int limit, String sort, String sortName,
+			Boolean isDeleted, String keyword, Optional<String> sortBy){
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountServiceImpl.getTransactionsService()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountServiceImpl.getTransactionsService()");
+		} 
+		ResponseEntity<Object> getExchange = null;
+		try {
+			
+			HttpHeaders header= new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Object> httpEntity = new HttpEntity<>(header);
+			
+			try {
+				String urlParam="userOrder/transactions?page="+page+"&limit="+limit+"&sort="+sort+"&sortName="+sortName+"&keyword="+keyword;
+				getExchange = restTemplate.exchange(RestTemplateConstant.USER_URL.getMessage()+urlParam,HttpMethod.GET, httpEntity,Object.class);
+				
+			} catch (HttpStatusCodeException ex) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/transactions/", ex.getResponseBodyAsByteArray(),
+							ex.getRawStatusCode());
+				}
+				return new ResponseEntity<>(new Json(new String(ex.getResponseBodyAsByteArray())), ex.getStatusCode());
+			} catch (Exception e) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/transactions/", e.getLocalizedMessage(),
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+				return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/transactions", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/transactions", gson.toJson(getExchange.getBody()), HttpStatus.OK);
+			}
+			
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/transactions/", e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<>(getExchange.getBody(), HttpStatus.OK);
 
 	}
+	
+	
+	
 }

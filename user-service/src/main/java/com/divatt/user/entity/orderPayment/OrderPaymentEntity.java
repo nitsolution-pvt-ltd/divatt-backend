@@ -50,7 +50,7 @@ public class OrderPaymentEntity {
 	
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd HH:mm:ss")
 	@Field(value = "created_on")
-	private Date createdOn;
+	private String createdOn;
 
 
 	public OrderPaymentEntity() {
@@ -63,7 +63,7 @@ public class OrderPaymentEntity {
 			@NotNull(message = "Payment mode is required!") String paymentMode,
 			@NotNull(message = "Payment details is required!") Object paymentDetails,
 			@NotNull(message = "Payment response is required!") Object paymentResponse,
-			@NotNull(message = "Payment status is required!") String paymentStatus, Date createdOn) {
+			@NotNull(message = "Payment status is required!") String paymentStatus, String createdOn) {
 		super();
 		this.id = id;
 		this.orderId = orderId;
@@ -154,12 +154,12 @@ public class OrderPaymentEntity {
 	}
 
 
-	public Date getCreatedOn() {
+	public String getCreatedOn() {
 		return createdOn;
 	}
 
 
-	public void setCreatedOn(Date createdOn) {
+	public void setCreatedOn(String createdOn) {
 		this.createdOn = createdOn;
 	}
 

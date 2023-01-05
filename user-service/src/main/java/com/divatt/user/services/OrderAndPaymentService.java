@@ -118,4 +118,7 @@ public interface OrderAndPaymentService {
 
 	public ResponseEntity<byte[]> getOrderSummary(String orderId);
 
+	public ResponseEntity<?> getTransactionsService(int page, int limit, String sort, String sortName, String keyword,
+			Optional<String> sortBy);
+
 }
