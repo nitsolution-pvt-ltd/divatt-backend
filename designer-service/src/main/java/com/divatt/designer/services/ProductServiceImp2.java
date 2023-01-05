@@ -35,7 +35,6 @@ import com.divatt.designer.entity.LoginEntity;
 import com.divatt.designer.entity.SubCategoryEntity;
 import com.divatt.designer.entity.UserProfile;
 import com.divatt.designer.entity.UserProfileInfo;
-import com.divatt.designer.entity.product.Deal;
 import com.divatt.designer.entity.product.ImageEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.entity.profile.DesignerProfile;
