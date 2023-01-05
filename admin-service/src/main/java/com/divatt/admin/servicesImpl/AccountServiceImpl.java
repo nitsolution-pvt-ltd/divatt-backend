@@ -521,7 +521,7 @@ public class AccountServiceImpl implements AccountService {
 		}
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Inside - AccountServiceImpl.getTransactionsService()");
-		}
+		} 
 		ResponseEntity<Object> getExchange = null;
 		try {
 			
