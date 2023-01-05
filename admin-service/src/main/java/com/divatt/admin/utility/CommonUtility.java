@@ -3,8 +3,6 @@ package com.divatt.admin.utility;
 import java.text.DecimalFormat;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -31,7 +29,7 @@ public class CommonUtility {
 	@Autowired
 	private RestTemplate restTemplate;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtility.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtility.class);
 
 	public static double duoble(float f) {
 

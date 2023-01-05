@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 public class FieldValidation {
 	public boolean isEmpty(String string) {
 		if (string == null) {
-
 			return false;
 		} else {
 			if (string.isEmpty() | string.equals(null)) {
@@ -17,6 +16,7 @@ public class FieldValidation {
 		}
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	public boolean isEmpty(Date string) {
 		if (string == null | string.equals("")) {
 			return false;
@@ -67,7 +67,7 @@ public class FieldValidation {
 	public boolean isNumber(String number) {
 		if (isEmpty(number)) {
 			try {
-				Double num = Double.parseDouble(number);
+				Double.parseDouble(number);
 				return true;
 			} catch (Exception e) {
 				return false;

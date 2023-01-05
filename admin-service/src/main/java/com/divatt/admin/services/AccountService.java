@@ -28,4 +28,7 @@ public interface AccountService {
 
 	public ResponseEntity<?> getDesignerInvoice(String orderId,Long designerId);
 
+	public ResponseEntity<?> getTransactionsService(int page, int limit, String sort, String sortName,
+			Boolean isDeleted, String keyword, Optional<String> sortBy);
+
 }

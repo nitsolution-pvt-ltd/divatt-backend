@@ -2,7 +2,6 @@ package com.divatt.admin.entity.specification;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -39,7 +38,6 @@ public class SpecificationEntity {
 	private Date addonDate;
 	public SpecificationEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public SpecificationEntity(Integer id, @NotNull(message = "Required entity requred") Boolean required,
 			@NotNull(message = "category name required") String categoryName,

@@ -1,13 +1,5 @@
 package com.divatt.designer.entity;
 
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.DefaultValue;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class UserDesignerEntity {
 	private Integer id;
 	 
@@ -20,7 +12,6 @@ public class UserDesignerEntity {
 	
 	public UserDesignerEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public UserDesignerEntity(Integer id, Long userId, Long designerId, String comment, Long raiting,

@@ -9,6 +9,7 @@ public enum RestTemplateConstant {
 	AUTH_PRESENT("https://localhost:8080/dev/auth/Present/"),
 	AUTH_SEND_MAIL("https://localhost:8080/dev/auth/sendMail"),
 	DESIGNER_BYID("https://localhost:8083/dev/designer/"),
+	USER_URL("https://localhost:8082/dev/"),
 	;
 	
 	  // FOR PROD

@@ -1,7 +1,5 @@
 package com.divatt.admin.entity.product;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class ImageEntity {
 	private String tiny;
 	private String medium;
@@ -10,7 +8,6 @@ public class ImageEntity {
 	private Integer order;
 	public ImageEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public ImageEntity(String tiny, String medium, String large, Boolean isPrimary, Integer order) {
 		super();

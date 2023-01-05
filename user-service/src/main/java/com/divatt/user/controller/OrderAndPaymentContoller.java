@@ -14,12 +14,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
@@ -42,7 +39,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
@@ -77,9 +74,7 @@ import com.divatt.user.designerProductEntity.DesignerProfileEntity;
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
-import com.divatt.user.entity.ProductDetails;
 import com.divatt.user.entity.UserLoginEntity;
-import com.divatt.user.entity.order.HsnData;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
@@ -87,12 +82,10 @@ import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.repo.OrderDetailsRepo;
-import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.serviceDTO.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.serviceDTO.CancelationRequestDTO;
-import com.divatt.user.serviceDTO.InvoiceUpdatedModel;
 import com.divatt.user.serviceDTO.OrderPlacedDTO;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
@@ -101,12 +94,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
-import com.razorpay.BankTransfer;
-import com.razorpay.Invoice;
-import com.razorpay.Payment;
-import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
-import com.razorpay.Transfer;
 
 @Validated
 @RestController
@@ -137,13 +125,23 @@ public class OrderAndPaymentContoller {
 	@Autowired
 	private MongoOperations mongoOperations;
 
-	@Autowired
-	private OrderSKUDetailsRepo orderSKUDetailsRepo;
+//	@Autowired
+//	private OrderSKUDetailsRepo orderSKUDetailsRepo;
 
 	@Autowired
 	private CommonUtility commonUtility;
+	
 	@Autowired
 	private TemplateEngine templateEngine;
+	
+	@Value("${spring.profiles.active}")
+	private String contextPath;
+
+	@Value("${host}")
+	private String host;
+	
+	@Value("${interfaceId}")
+	private String interfaceId;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 
@@ -161,7 +159,6 @@ public class OrderAndPaymentContoller {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-
 	}
 
 	@PostMapping("/payment/add")
@@ -260,10 +257,8 @@ public class OrderAndPaymentContoller {
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderDate(formatDate);
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setCreatedOn(format);
 				orderDetailsEntity.setNetPrice(orderAndPaymentGlobalEntity.getOrderDetailsEntity().getNetPrice());
-				LOGGER.info("DATA BEFOUR SAVE, = {}", orderAndPaymentGlobalEntity.getOrderDetailsEntity());
 				OrderDetailsEntity OrderData = orderDetailsRepo
 						.save(orderAndPaymentGlobalEntity.getOrderDetailsEntity());
-				LOGGER.info("AFTER SAVE DATA IN DATABASE = {}", OrderData);
 
 				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
 						.getOrderSKUDetailsEntity();
@@ -286,6 +281,7 @@ public class OrderAndPaymentContoller {
 				String designerEmail = null;
 				String displayName = null;
 				String designerName = null;
+				String tgrossGrandTotal = null;
 
 				ordersdata.add(commonUtility.placedOrder(orderAndPaymentGlobalEntity));
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
@@ -294,11 +290,10 @@ public class OrderAndPaymentContoller {
 							.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
-					LOGGER.info(orderSKUDetailsEntityRow + "Inside Sku before Save");
+					
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
-					LOGGER.info(orderSKUDetailsEntityRow.toString() + "inside skurow");
+					
 					int designerId = orderSKUDetailsEntityRow.getDesignerId();
-
 					orders.add(commonUtility.skuOrders(orderSKUDetailsEntityRow));
 					taxAmount = taxAmount
 							+ Double.parseDouble(orderSKUDetailsEntityRow.getTaxAmount() + "" == null ? "0"
@@ -306,21 +301,16 @@ public class OrderAndPaymentContoller {
 					if (orderSKUDetailsEntityRow.getSalesPrice() == 0) {
 						String mrp2 = orderSKUDetailsEntityRow.getMrp() + "";
 						mrp = mrp + Double.parseDouble(mrp2 == null ? "0" : mrp2);
-						LOGGER.info(mrp+"Inside mrp");
-						Double totals = mrp - taxAmount;
-						LOGGER.info("DATA <><><><><><><> ###" + totals.toString());
-//						total = total - Double.parseDouble(totals == null ? "0" : totals.toString());
-						total = totals - total;
 						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
-						grandTotal = grandTotal + Double.parseDouble(total + "" == null ? "0" : total + "");
+						grandTotal = grandTotal + Double.parseDouble(orderSKUDetailsEntityRow.getMrp() == null ? "0" :  orderSKUDetailsEntityRow.getMrp().toString());
 					} else {
 						String salesPrice = orderSKUDetailsEntityRow.getSalesPrice() + "";
-						mrp = mrp + Double.parseDouble(salesPrice == null ? "0" : salesPrice);
-						Double totals = mrp - taxAmount;
-//						total = total - Double.parseDouble(totals == null ? "0" : totals.toString());
-						total = totals - total;
 						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
-						grandTotal = grandTotal + Double.parseDouble(total + "" == null ? "0" : total + "");
+						grandTotal = grandTotal + Double.parseDouble(salesPrice == null ? "0" : salesPrice);
+					}
+					Double grossGrandTotal  = 0.00;
+					for(OrderPlacedDTO order : orders) {
+						grossGrandTotal = grossGrandTotal + Double.parseDouble(order.getTotal());
 					}
 					totalTax = totalTax + Double.parseDouble(totalTax + "" == null ? "0" : totalTax + "");
 					tmrp = String.valueOf(df.format(mrp));
@@ -329,6 +319,7 @@ public class OrderAndPaymentContoller {
 					ttotalMrp = String.valueOf(totalMrp);
 					ttotalTax = String.valueOf(totalTax);
 					tgrandTotal = String.valueOf(grandTotal);
+					tgrossGrandTotal = String.valueOf(grossGrandTotal);
 					try {
 						DesignerProfileEntity forEntity = restTemplate
 								.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
@@ -337,7 +328,6 @@ public class OrderAndPaymentContoller {
 						designerEmail = forEntity.getDesignerProfile().getEmail();
 						designerName = forEntity.getDesignerName();
 						displayName = forEntity.getDesignerProfile().getDisplayName();
-						LOGGER.info(designerName);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -349,8 +339,6 @@ public class OrderAndPaymentContoller {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
-
-				LOGGER.info(orderSKUDetailsEntity.toString());
 
 				String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
 
@@ -366,6 +354,7 @@ public class OrderAndPaymentContoller {
 				data.put("ttotalMrp", ttotalMrp);
 				data.put("ttotalTax", ttotalTax);
 				data.put("tgrandTotal", tgrandTotal);
+				data.put("tgrossGrandTotal", tgrossGrandTotal);
 				Context context = new Context();
 				context.setVariables(data);
 				String htmlContent = templateEngine.process("orderPlaced.html", context);
@@ -969,5 +958,38 @@ public class OrderAndPaymentContoller {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+	
+	@GetMapping("/transactions")
+	public ResponseEntity<?> getTransactions(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam Optional<String> sortBy) {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - OrderAndPaymentContoller.getTransactions()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - OrderAndPaymentContoller.getTransactions()");
+		}
+
+		try {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/userOrder/transactions", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/userOrder/transactions", "Success", HttpStatus.OK);
+			}
+			return orderAndPaymentService.getTransactionsService(page, limit, sort, sortName, keyword, sortBy);
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/userOrder/transactions", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
 	}
 }

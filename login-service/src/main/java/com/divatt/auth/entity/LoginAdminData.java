@@ -11,6 +11,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class LoginAdminData implements UserDetails{
 	
+		/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+
 		public LoginAdminData() {
 		super();
 	}

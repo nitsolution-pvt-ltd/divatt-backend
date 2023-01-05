@@ -1,7 +1,5 @@
 package com.divatt.user.entity.order;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
@@ -100,10 +98,12 @@ public class OrderDetailsEntity {
 	private String razorpayOrderId;
 	@Field(name = "netPrice")
 	private Double netPrice;
+	
+	@Field(name = "gift_wrap_amount")
+	private String giftWrapAmount;
 
 	public OrderDetailsEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public OrderDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
@@ -113,7 +113,7 @@ public class OrderDetailsEntity {
 			String deliveryStatus, String deliveryMode, String deliveryDate, String deliveryCheckUrl,
 			Double shippingCharges, Double discount, Double mrp, Double taxAmount, Double cgst, Double sgst,
 			Double igst, Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST,
-			String createdOn, String razorpayOrderId, Double netPrice) {
+			String createdOn, String razorpayOrderId, Double netPrice, String giftWrapAmount) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -141,6 +141,20 @@ public class OrderDetailsEntity {
 		this.createdOn = createdOn;
 		this.razorpayOrderId = razorpayOrderId;
 		this.netPrice = netPrice;
+		this.giftWrapAmount = giftWrapAmount;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", shippingAddress="
+				+ shippingAddress + ", billingAddress=" + billingAddress + ", totalAmount=" + totalAmount
+				+ ", orderDate=" + orderDate + ", orderStatus=" + orderStatus + ", deliveryStatus=" + deliveryStatus
+				+ ", deliveryMode=" + deliveryMode + ", deliveryDate=" + deliveryDate + ", deliveryCheckUrl="
+				+ deliveryCheckUrl + ", shippingCharges=" + shippingCharges + ", discount=" + discount + ", mrp=" + mrp
+				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
+				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
+				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", createdOn=" + createdOn + ", razorpayOrderId="
+				+ razorpayOrderId + ", netPrice=" + netPrice + ", giftWrapAmount=" + giftWrapAmount + "]";
 	}
 
 	public Integer getId() {
@@ -351,20 +365,21 @@ public class OrderDetailsEntity {
 		this.netPrice = netPrice;
 	}
 
+	public String getGiftWrapAmount() {
+		return giftWrapAmount;
+	}
+
+	public void setGiftWrapAmount(String giftWrapAmount) {
+		this.giftWrapAmount = giftWrapAmount;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
-	@Override
-	public String toString() {
-		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", shippingAddress="
-				+ shippingAddress + ", billingAddress=" + billingAddress + ", totalAmount=" + totalAmount
-				+ ", orderDate=" + orderDate + ", orderStatus=" + orderStatus + ", deliveryStatus=" + deliveryStatus
-				+ ", deliveryMode=" + deliveryMode + ", deliveryDate=" + deliveryDate + ", deliveryCheckUrl="
-				+ deliveryCheckUrl + ", shippingCharges=" + shippingCharges + ", discount=" + discount + ", mrp=" + mrp
-				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
-				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
-				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", createdOn=" + createdOn + ", razorpayOrderId="
-				+ razorpayOrderId + ", netPrice=" + netPrice + "]";
-	}
+	
+	
+	
+	
+	
 }

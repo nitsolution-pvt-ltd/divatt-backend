@@ -140,11 +140,16 @@ public class OrderSKUDetailsEntity {
 
 	private HsnData hsnData;
 	private JSONObject measurementObject;
+	
+	@Field(name = "gift_wrap_amount")
+	private String giftWrapAmount;
+	
 
 	public OrderSKUDetailsEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
 
 	public OrderSKUDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
 			@NotNull(message = "HSN is required!") Object hsn,
@@ -162,7 +167,7 @@ public class OrderSKUDetailsEntity {
 			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn,
 			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
 			Boolean giftwrapStatus, Boolean cancelAcceptable, JSONObject giftWrapObject, String userComment,
-			String shippingDate, String status, HsnData hsnData, JSONObject measurementObject) {
+			String shippingDate, String status, HsnData hsnData, JSONObject measurementObject, String giftWrapAmount) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -203,7 +208,9 @@ public class OrderSKUDetailsEntity {
 		this.status = status;
 		this.hsnData = hsnData;
 		this.measurementObject = measurementObject;
+		this.giftWrapAmount = giftWrapAmount;
 	}
+
 
 	@Override
 	public String toString() {
@@ -219,326 +226,415 @@ public class OrderSKUDetailsEntity {
 				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
 				+ ", cancelAcceptable=" + cancelAcceptable + ", giftWrapObject=" + giftWrapObject + ", userComment="
 				+ userComment + ", shippingDate=" + shippingDate + ", status=" + status + ", hsnData=" + hsnData
-				+ ", measurementObject=" + measurementObject + "]";
+				+ ", measurementObject=" + measurementObject + ", giftWrapAmount=" + giftWrapAmount + "]";
 	}
+
 
 	public Integer getId() {
 		return id;
 	}
 
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
 
 	public Long getUserId() {
 		return userId;
 	}
 
+
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
+
 
 	public String getOrderId() {
 		return orderId;
 	}
 
+
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
+
 
 	public Object getHsn() {
 		return hsn;
 	}
 
+
 	public void setHsn(Object hsn) {
 		this.hsn = hsn;
 	}
+
 
 	public int getDesignerId() {
 		return designerId;
 	}
 
+
 	public void setDesignerId(int designerId) {
 		this.designerId = designerId;
 	}
+
 
 	public int getProductId() {
 		return productId;
 	}
 
+
 	public void setProductId(int productId) {
 		this.productId = productId;
 	}
+
 
 	public String getProductName() {
 		return productName;
 	}
 
+
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
+
 
 	public String getProductSku() {
 		return productSku;
 	}
 
+
 	public void setProductSku(String productSku) {
 		this.productSku = productSku;
 	}
+
 
 	public String getSize() {
 		return size;
 	}
 
+
 	public void setSize(String size) {
 		this.size = size;
 	}
+
 
 	public String getImages() {
 		return images;
 	}
 
+
 	public void setImages(String images) {
 		this.images = images;
 	}
+
 
 	public String getColour() {
 		return colour;
 	}
 
+
 	public void setColour(String colour) {
 		this.colour = colour;
 	}
+
 
 	public Long getUnits() {
 		return units;
 	}
 
+
 	public void setUnits(Long units) {
 		this.units = units;
 	}
+
 
 	public Long getMrp() {
 		return mrp;
 	}
 
+
 	public void setMrp(Long mrp) {
 		this.mrp = mrp;
 	}
+
 
 	public Long getSalesPrice() {
 		return salesPrice;
 	}
 
+
 	public void setSalesPrice(Long salesPrice) {
 		this.salesPrice = salesPrice;
 	}
+
 
 	public Long getDiscount() {
 		return discount;
 	}
 
+
 	public void setDiscount(Long discount) {
 		this.discount = discount;
 	}
+
 
 	public Long getTaxAmount() {
 		return taxAmount;
 	}
 
+
 	public void setTaxAmount(Long taxAmount) {
 		this.taxAmount = taxAmount;
 	}
+
 
 	public Double getCgst() {
 		return cgst;
 	}
 
+
 	public void setCgst(Double cgst) {
 		this.cgst = cgst;
 	}
+
 
 	public Double getSgst() {
 		return sgst;
 	}
 
+
 	public void setSgst(Double sgst) {
 		this.sgst = sgst;
 	}
+
 
 	public Double getIgst() {
 		return igst;
 	}
 
+
 	public void setIgst(Double igst) {
 		this.igst = igst;
 	}
+
 
 	public Double getShippingCharge() {
 		return shippingCharge;
 	}
 
+
 	public void setShippingCharge(Double shippingCharge) {
 		this.shippingCharge = shippingCharge;
 	}
+
 
 	public Double getShippingCGST() {
 		return shippingCGST;
 	}
 
+
 	public void setShippingCGST(Double shippingCGST) {
 		this.shippingCGST = shippingCGST;
 	}
+
 
 	public Double getShippingSGST() {
 		return shippingSGST;
 	}
 
+
 	public void setShippingSGST(Double shippingSGST) {
 		this.shippingSGST = shippingSGST;
 	}
+
 
 	public Double getShippingIGST() {
 		return shippingIGST;
 	}
 
+
 	public void setShippingIGST(Double shippingIGST) {
 		this.shippingIGST = shippingIGST;
 	}
+
 
 	public String getTaxType() {
 		return taxType;
 	}
 
+
 	public void setTaxType(String taxType) {
 		this.taxType = taxType;
 	}
+
 
 	public String getOrderItemStatus() {
 		return orderItemStatus;
 	}
 
+
 	public void setOrderItemStatus(String orderItemStatus) {
 		this.orderItemStatus = orderItemStatus;
 	}
+
 
 	public String getReachedCentralHub() {
 		return reachedCentralHub;
 	}
 
+
 	public void setReachedCentralHub(String reachedCentralHub) {
 		this.reachedCentralHub = reachedCentralHub;
 	}
+
 
 	public String getCreatedOn() {
 		return createdOn;
 	}
 
+
 	public void setCreatedOn(String createdOn) {
 		this.createdOn = createdOn;
 	}
+
 
 	public String getUpdatedOn() {
 		return updatedOn;
 	}
 
+
 	public void setUpdatedOn(String updatedOn) {
 		this.updatedOn = updatedOn;
 	}
+
 
 	public OrderStatusDetails getOrderStatusDetails() {
 		return orderStatusDetails;
 	}
 
+
 	public void setOrderStatusDetails(OrderStatusDetails orderStatusDetails) {
 		this.orderStatusDetails = orderStatusDetails;
 	}
+
 
 	public JSONObject getCustomObject() {
 		return customObject;
 	}
 
+
 	public void setCustomObject(JSONObject customObject) {
 		this.customObject = customObject;
 	}
+
 
 	public Boolean getCustomizationStatus() {
 		return customizationStatus;
 	}
 
+
 	public void setCustomizationStatus(Boolean customizationStatus) {
 		this.customizationStatus = customizationStatus;
 	}
+
 
 	public Boolean getGiftwrapStatus() {
 		return giftwrapStatus;
 	}
 
+
 	public void setGiftwrapStatus(Boolean giftwrapStatus) {
 		this.giftwrapStatus = giftwrapStatus;
 	}
+
 
 	public Boolean getCancelAcceptable() {
 		return cancelAcceptable;
 	}
 
+
 	public void setCancelAcceptable(Boolean cancelAcceptable) {
 		this.cancelAcceptable = cancelAcceptable;
 	}
+
 
 	public JSONObject getGiftWrapObject() {
 		return giftWrapObject;
 	}
 
+
 	public void setGiftWrapObject(JSONObject giftWrapObject) {
 		this.giftWrapObject = giftWrapObject;
 	}
+
 
 	public String getUserComment() {
 		return userComment;
 	}
 
+
 	public void setUserComment(String userComment) {
 		this.userComment = userComment;
 	}
+
 
 	public String getShippingDate() {
 		return shippingDate;
 	}
 
+
 	public void setShippingDate(String shippingDate) {
 		this.shippingDate = shippingDate;
 	}
+
 
 	public String getStatus() {
 		return status;
 	}
 
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 
 	public HsnData getHsnData() {
 		return hsnData;
 	}
 
+
 	public void setHsnData(HsnData hsnData) {
 		this.hsnData = hsnData;
 	}
+
 
 	public JSONObject getMeasurementObject() {
 		return measurementObject;
 	}
 
+
 	public void setMeasurementObject(JSONObject measurementObject) {
 		this.measurementObject = measurementObject;
 	}
+
+
+	public String getGiftWrapAmount() {
+		return giftWrapAmount;
+	}
+
+
+	public void setGiftWrapAmount(String giftWrapAmount) {
+		this.giftWrapAmount = giftWrapAmount;
+	}
+
 
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
-
+	
 
 	
 

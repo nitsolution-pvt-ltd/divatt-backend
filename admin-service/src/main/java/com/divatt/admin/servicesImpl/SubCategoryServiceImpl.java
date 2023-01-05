@@ -15,18 +15,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.constant.MessageConstant;
-import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
-import com.divatt.admin.repo.CategoryRepo;
 import com.divatt.admin.repo.SubCategoryRepo;
 import com.divatt.admin.services.SequenceGenerator;
 import com.divatt.admin.services.SubCategoryService;
@@ -43,11 +40,11 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
 
-	@Autowired
-	private MongoTemplate mongoTemplate;
+//	@Autowired
+//	private MongoTemplate mongoTemplate;
 	
-	@Autowired
-	private CategoryRepo categoryRepo;
+//	@Autowired
+//	private CategoryRepo categoryRepo;
 	
 	
 	@Autowired

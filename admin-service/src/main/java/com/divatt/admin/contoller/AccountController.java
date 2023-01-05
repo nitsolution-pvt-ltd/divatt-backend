@@ -3,6 +3,7 @@ package com.divatt.admin.contoller;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.exception.CustomException;
+import com.divatt.admin.helper.JwtUtil;
+import com.divatt.admin.repo.LoginRepository;
 import com.divatt.admin.services.AccountService;
 import com.divatt.admin.utility.AccountExcelExporter;
 
@@ -49,7 +54,14 @@ public class AccountController {
 
 	@Value("${interfaceId}")
 	private String interfaceId;
+	
+	@Autowired
+	private JwtUtil JwtUtil;
 
+	@Autowired
+	private LoginRepository loginRepository;
+	
+	
 	@PostMapping("/add")
 	public GlobalResponse postAccountDetails(@Valid @RequestBody AccountEntity accountEntity) {
 
@@ -254,5 +266,54 @@ public class AccountController {
 		}
 
 	}
+
+	@RequestMapping(value = { "/transactions" }, method = RequestMethod.GET)
+	public ResponseEntity<?> getTransactions(@RequestHeader("Authorization") String token, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "_id") String sortName,@RequestParam(defaultValue = "false") Boolean isDeleted, 
+			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountController.getTransactions()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountController.getTransactions()");
+		}
+
+		try {
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			final Optional<LoginEntity> findByEmail = loginRepository.findByEmail(extractUsername);
+			
+			if(findByEmail.orElse(null) == null) {
+				Map<String, Object> mapObj= new HashMap<>();
+				mapObj.put("status", 401);
+				mapObj.put("reason", "Error");
+				mapObj.put("message", "Unauthorized");
+				
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/transactions","Unauthorized", HttpStatus.UNAUTHORIZED);
+				}
+				return new ResponseEntity<>(mapObj, HttpStatus.UNAUTHORIZED);
+			}
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/transactions", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/transactions", "Success", HttpStatus.OK);
+			}
+			return this.accountService.getTransactionsService(page, limit, sort, sortName, isDeleted, keyword, sortBy);
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/transactions", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
 
 }

@@ -106,8 +106,7 @@ public class ProductServiceImp2 implements ProductService2 {
 
 			});
 			userId.forEach(user -> {
-				restTemplate
-						.getForEntity(RestTemplateConstant.INFO_USER.getMessage() + user, UserProfileInfo.class);
+				restTemplate.getForEntity(RestTemplateConstant.INFO_USER.getMessage() + user, UserProfileInfo.class);
 
 			});
 			Integer productId = entity2.getProductId();
@@ -164,12 +163,12 @@ public class ProductServiceImp2 implements ProductService2 {
 				LOGGER.info("inside if");
 				productRepo2.save(customFunction.updateProductData(productMasterEntity2, productId));
 				try {
-					LoginEntity forEntity = restTemplate.getForEntity(
-							RestTemplateConstant.ADMIN_ROLE_NAME.getMessage() + MessageConstant.ADMIN_ROLES.getMessage(),
-							LoginEntity.class).getBody();
+					LoginEntity forEntity = restTemplate.getForEntity(RestTemplateConstant.ADMIN_ROLE_NAME.getMessage()
+							+ MessageConstant.ADMIN_ROLES.getMessage(), LoginEntity.class).getBody();
 					String email2 = forEntity.getEmail();
 					Integer designerId = productMasterEntity2.getDesignerId();
-					DesignerProfileEntity findBydesignerId = designerProfileRepo.findBydesignerId(designerId.longValue()).get();
+					DesignerProfileEntity findBydesignerId = designerProfileRepo
+							.findBydesignerId(designerId.longValue()).get();
 					String email = findBydesignerId.getDesignerProfile().getEmail();
 					String designerName = findBydesignerId.getDesignerName();
 					Context context = new Context();
@@ -179,10 +178,10 @@ public class ProductServiceImp2 implements ProductService2 {
 							true, null, restTemplate);
 					emailSenderThread.start();
 					String htmlContent1 = templateEngine.process("productUpdateAdmin.html", context);
-					EmailSenderThread emailSenderThread1 = new EmailSenderThread(email2, "Product updated", htmlContent1,
-							true, null, restTemplate);
+					EmailSenderThread emailSenderThread1 = new EmailSenderThread(email2, "Product updated",
+							htmlContent1, true, null, restTemplate);
 					emailSenderThread1.start();
-					
+
 				} catch (Exception e) {
 					throw new CustomException(e.getMessage());
 				}
@@ -1007,7 +1006,8 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	public List<ProductMasterEntity2> productSearching(String searchBy, String designerId, String categoryId,
 			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
-			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey, String sortDateType) {
+			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey,
+			String sortDateType, String sortPrice) {
 
 		try {
 			LOGGER.info("Inside ProductServiceImpl.productSearching()");
@@ -1048,22 +1048,28 @@ public class ProductServiceImp2 implements ProductService2 {
 							.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
 									.anyMatch(dId -> dId.equals(product.getDesignerId().toString())) : true)
 							.collect(Collectors.toList());
-			if(sortDateType.equalsIgnoreCase("new")) {
+			if (sortDateType.equalsIgnoreCase("new")) {
 				Collections.sort(productMaster, Comparator.comparing(ProductMasterEntity2::getCreatedOn).reversed());
 			} else if (sortDateType.equalsIgnoreCase("old")) {
 				Collections.sort(productMaster, Comparator.comparing(ProductMasterEntity2::getCreatedOn));
 			}
-
+			if (sortPrice.equalsIgnoreCase("lowToHigh")) {
+				Collections.sort(productMaster, Comparator.comparing(
+					product -> product.getDeal().getSalePrice() == null ? product.getMrp() : product.getDeal().getSalePrice()));
+			}else if(sortPrice.equalsIgnoreCase("highToLow")) {
+				Collections.sort(productMaster, Comparator.comparing(
+					product -> product.getDeal().getSalePrice() == null ? product.getMrp() : product.getDeal().getSalePrice()));
+				Collections.reverse(productMaster);
+			}
 			productMaster.forEach(element -> {
 				DesignerProfile designerProfile = designerProfileRepo
 						.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get()
 						.getDesignerProfile();
-				if(designerProfile.getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
+				if (designerProfile.getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
 					element.setDesignerProfile(designerProfile);
 				}
 			});
 			productMaster.removeIf(element -> element.getDesignerProfile() == null);
-			
 			return productMaster;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

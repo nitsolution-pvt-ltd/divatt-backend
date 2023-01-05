@@ -1,7 +1,5 @@
 package com.divatt.auth.entity;
 
-import javax.annotation.Generated;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -87,7 +85,6 @@ public class AdminLoginEntity {
 
 	public AdminLoginEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public AdminLoginEntity(Object uid, String firstName, String lastName, String email, String password,
