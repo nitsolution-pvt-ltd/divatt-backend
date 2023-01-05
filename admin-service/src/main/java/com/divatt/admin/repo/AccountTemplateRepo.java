@@ -6,10 +6,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Constants;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +28,6 @@ import com.divatt.admin.entity.AccountMapEntity;
 import com.divatt.admin.entity.DesignerReturnAmount;
 import com.divatt.admin.entity.GovtCharge;
 import com.divatt.admin.entity.OrderDetails;
-import com.google.gson.Gson;
 
 @Repository
 public class AccountTemplateRepo {
@@ -40,11 +36,11 @@ public class AccountTemplateRepo {
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
-	private Gson gson;
+//	private Gson gson;
 	
 	private static final String constants = "i";
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AccountTemplateRepo.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(AccountTemplateRepo.class);
 
 	public Page<AccountEntity> AccountSearchByKeywords(String keywords, Pageable pagingSort) {
 

@@ -1,7 +1,5 @@
 package com.divatt.user.entity.orderPayment;
 
-import java.util.Date;
-
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
@@ -55,7 +53,6 @@ public class OrderPaymentEntity {
 
 	public OrderPaymentEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 

@@ -69,8 +69,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 @RequestMapping("/user")
 public class UserController {
 
-	private static final String UNCHECKED = "unchecked";
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
@@ -320,7 +318,7 @@ public class UserController {
 							+ MessageConstant.VERIFY_DETAILS_SOON.getMessage(),
 					false);
 			try {
-				ResponseEntity<String> mailStatus = restTemplate.postForEntity(RestTemplateConstant.MAIL_SEND.getLink(),
+				restTemplate.postForEntity(RestTemplateConstant.MAIL_SEND.getLink(),
 						mail, String.class);
 				
 			} catch (Exception e) {
@@ -573,7 +571,6 @@ public class UserController {
 
 	}
 
-	@SuppressWarnings(UNCHECKED)
 	@GetMapping("/address")
 	public ResponseEntity<?> getAllAddress(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - UserController.getAllAddress()");

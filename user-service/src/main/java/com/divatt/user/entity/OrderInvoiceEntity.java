@@ -2,9 +2,7 @@ package com.divatt.user.entity;
 
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
-import org.json.simple.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -45,7 +43,6 @@ public class OrderInvoiceEntity {
 
 	public OrderInvoiceEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

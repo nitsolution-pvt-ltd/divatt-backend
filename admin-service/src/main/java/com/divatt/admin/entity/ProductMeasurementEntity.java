@@ -2,14 +2,11 @@ package com.divatt.admin.entity;
 
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import nonapi.io.github.classgraph.json.Id;
 
 @Document(collection = "tbl_admin_mdata")
 public class ProductMeasurementEntity {
-
-
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_admin_mdata";
 	
@@ -37,7 +34,6 @@ public class ProductMeasurementEntity {
 
 	public ProductMeasurementEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public ProductMeasurementEntity(Integer id, String metaKey, String categoryName, String subCategoryName,

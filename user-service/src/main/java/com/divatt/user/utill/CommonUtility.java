@@ -1,14 +1,11 @@
 package com.divatt.user.utill;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.divatt.user.controller.OrderAndPaymentContoller;
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
@@ -20,7 +17,7 @@ public class CommonUtility {
 	@Autowired
 	private  MongoOperations mongoOperations;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
 	
 	public OrderPlacedDTO placedOrder(OrderAndPaymentGlobalEntity orderAndPaymentGlobalEntity) {
 		

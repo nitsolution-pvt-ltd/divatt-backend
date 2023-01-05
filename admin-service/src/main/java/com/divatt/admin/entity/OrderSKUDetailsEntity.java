@@ -1,7 +1,5 @@
 package com.divatt.admin.entity;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
@@ -115,7 +113,6 @@ public class OrderSKUDetailsEntity {
 
 	public OrderSKUDetailsEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public OrderSKUDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,

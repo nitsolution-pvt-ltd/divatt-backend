@@ -1,7 +1,5 @@
 package com.divatt.user.designerProductEntity;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class DesignerProfile {
 
 	private String email;
@@ -22,7 +20,6 @@ public class DesignerProfile {
 
 	public DesignerProfile() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public DesignerProfile(String email, String displayName, String mobileNo, String dob, String gender, String country,

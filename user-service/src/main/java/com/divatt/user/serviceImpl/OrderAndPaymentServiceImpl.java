@@ -1,17 +1,11 @@
 package com.divatt.user.serviceImpl;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,11 +18,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.commons.io.IOUtils;
-import org.etsi.uri.x01903.v13.impl.CRLIdentifierTypeImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,16 +50,13 @@ import org.thymeleaf.context.Context;
 import com.divatt.user.config.JWTConfig;
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
-import com.divatt.user.designerProductEntity.DesignerProfile;
 import com.divatt.user.designerProductEntity.DesignerProfileEntity;
 import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.InvoiceEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
-import com.divatt.user.entity.ProductDetails;
 import com.divatt.user.entity.ProductInvoice;
 import com.divatt.user.entity.UserLoginEntity;
-import com.divatt.user.entity.measurement.MeasurementEntity;
 import com.divatt.user.entity.order.HsnData;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
@@ -78,7 +66,6 @@ import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.helper.PDFRunner;
 import com.divatt.user.helper.UtillUserService;
-import com.divatt.user.repo.MeasurementRepo;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.OrderInvoiceRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
@@ -141,8 +128,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@Autowired
 	private MongoOperations mongoOperations;
 
-	@Autowired
-	private MeasurementRepo measurementRepo;
+//	@Autowired
+//	private MeasurementRepo measurementRepo;
 
 	@Autowired
 	private Environment env;
@@ -1026,7 +1013,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			try {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("order_id").is(orderId));
-				OrderDetailsEntity orderDetailsEntity = mongoTemplate.findOne(query, OrderDetailsEntity.class);
+				mongoTemplate.findOne(query, OrderDetailsEntity.class);
 
 				Pageable pagingSort = null;
 
@@ -1205,7 +1192,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 		try {
 
-			List<OrderTrackingEntity> OrderTrackingRow = orderTrackingRepo
+			orderTrackingRepo
 					.findByTrackingIds(orderTrackingEntity.getTrackingId());
 
 //			if (OrderTrackingRow.size() <= 0){
@@ -1227,7 +1214,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			filterCatDetails.setUserId(orderTrackingEntity.getUserId());
 			filterCatDetails.setDesignerId(orderTrackingEntity.getDesignerId());
 
-			OrderTrackingEntity data = orderTrackingRepo.save(filterCatDetails);
+			orderTrackingRepo.save(filterCatDetails);
 
 			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 					MessageConstant.TRACKING_UPDATED.getMessage(), 200));
@@ -1265,7 +1252,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				filterCatDetails.setUserId(orderTrackingEntity.getUserId());
 				filterCatDetails.setDesignerId(orderTrackingEntity.getDesignerId());
 
-				OrderTrackingEntity data = orderTrackingRepo.save(filterCatDetails);
+				orderTrackingRepo.save(filterCatDetails);
 
 				return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.TRACKING_UPDATED.getMessage(), 200));
@@ -1675,7 +1662,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@Override
 	public GlobalResponse cancelOrderService(String orderId, String productId, String token,
 			CancelationRequestDTO cancelationRequestDTO) {
-		// TODO Auto-generated method stub
 		try {
 			String designerEmail = jwtconfig.extractUsername(token.substring(7));
 			LOGGER.info(designerEmail);
@@ -2714,7 +2700,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<byte[]> getOrderSummary(String orderId) {
 		try {

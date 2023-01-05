@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.divatt.user.entity.ProductEntity;
 import com.divatt.user.entity.UserLoginEntity;
 
 

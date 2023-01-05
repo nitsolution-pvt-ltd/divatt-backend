@@ -3,7 +3,6 @@ package com.divatt.auth.repo;
 import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 
 import com.divatt.auth.entity.AdminLoginEntity;
 

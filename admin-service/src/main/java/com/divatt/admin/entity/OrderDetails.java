@@ -1,7 +1,5 @@
 package com.divatt.admin.entity;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
@@ -38,7 +36,6 @@ public class OrderDetails {
 
 	public OrderDetails() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public OrderDetails(String datetime, int designer_id, int user_id, float discount, String payment_mode, float mrp,
