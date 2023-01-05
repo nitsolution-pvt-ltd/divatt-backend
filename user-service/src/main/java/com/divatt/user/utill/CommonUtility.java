@@ -1,5 +1,10 @@
 package com.divatt.user.utill;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -10,6 +15,9 @@ import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.serviceDTO.OrderPlacedDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 @Component
 public class CommonUtility {
@@ -17,7 +25,7 @@ public class CommonUtility {
 	@Autowired
 	private  MongoOperations mongoOperations;
 	
-//	private static final Logger LOGGER = LoggerFactory.getLogger(OrderAndPaymentContoller.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtility.class);
 	
 	public OrderPlacedDTO placedOrder(OrderAndPaymentGlobalEntity orderAndPaymentGlobalEntity) {
 		
@@ -36,7 +44,26 @@ public class CommonUtility {
 		dto.setBillState(orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getState());
 		dto.setBillPostalCode(orderAndPaymentGlobalEntity.getOrderDetailsEntity().getBillingAddress().getPostalCode());
 		String ship= orderAndPaymentGlobalEntity.getOrderDetailsEntity().getShippingAddress().toString();
+		LOGGER.info("DATA ********************* = {}",ship);
 		String shippingAddress = ship.substring(1, ship.toString().length() - 1).replaceAll("=", " : ");
+		LOGGER.info("DATA *********************|*********** = {}",shippingAddress);
+		
+		//bima test
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		JSONParser parser = new JSONParser();
+		
+		try {
+			String json = ow.writeValueAsString(orderAndPaymentGlobalEntity.getOrderDetailsEntity().getShippingAddress());
+			JSONObject json1 = (JSONObject) parser.parse(json);
+			LOGGER.info("DATA#####**** = {}",json);
+			LOGGER.info("DATA#####**** = {}",json1.get("address2") == null);
+		} catch (JsonProcessingException | ParseException e) {
+			e.printStackTrace();
+		}
+		// END
+		
+		
 		dto.setShippingAddress(shippingAddress);
 		
 		return dto;
