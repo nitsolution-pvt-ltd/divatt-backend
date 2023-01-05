@@ -48,7 +48,7 @@ public enum MessageConstant {
 	TO(" to "), ORDER_CANCELATION_REJECTED("Order cancelation rejected"), RANDOM_STRING("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 	RANDOM_STRING_INT("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"), RANDOM_INT("1234567890"),
 	DATE_FORMAT_TYPE("dd/MM/yyyy HH:mm:ss"), DATA_TYPE_FORMAT("dd/MM/yyyy"),
-	PRODUCT_PLACED("Your product has been ordered by ");
+	PRODUCT_PLACED("Your product has been ordered by "),ADMIN_ROLES("SADMIN");
 
 	private String message;
 
