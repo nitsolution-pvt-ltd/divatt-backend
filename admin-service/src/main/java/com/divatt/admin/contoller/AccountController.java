@@ -227,7 +227,7 @@ public class AccountController {
 	}
 
 	@GetMapping("/getDesignerInvoice/{orderId}/{designerId}")
-	public ResponseEntity<byte[]> getDesignerInvoice(@PathVariable String orderId,@PathVariable Long designerId) {
+	public ResponseEntity<?> getDesignerInvoice(@PathVariable String orderId,@PathVariable Long designerId) {
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.getDesignerInvoice()");
 		}
@@ -237,21 +237,20 @@ public class AccountController {
 		try {
 			if (LOGGER.isInfoEnabled()) {
 				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/getDesignerInvoice", "Success", HttpStatus.OK);
+						host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, "Success", HttpStatus.OK);
 			}
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/getDesignerInvoice", "Success", HttpStatus.OK);
+						host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, "Success", HttpStatus.OK);
 			}
-			return this.accountService.getDesignerInvoice(orderId,designerId);
+			return this.accountService.getDesignerInvoice(orderId, designerId);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/getDesignerInvoice", e.getLocalizedMessage(),
+						host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, e.getLocalizedMessage(),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			throw new CustomException(e.getLocalizedMessage());
-
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
