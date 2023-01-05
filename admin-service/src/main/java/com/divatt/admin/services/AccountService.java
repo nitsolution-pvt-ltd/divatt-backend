@@ -26,6 +26,6 @@ public interface AccountService {
 	public List<AccountEntity> excelReportService(String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, 
 			String settlement, int year, int month, String designerId);
 
-	public ResponseEntity<byte[]> getDesignerInvoice(String orderId,Long designerId);
+	public ResponseEntity<?> getDesignerInvoice(String orderId,Long designerId);
 
 }

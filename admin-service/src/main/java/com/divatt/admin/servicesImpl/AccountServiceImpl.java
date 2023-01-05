@@ -72,6 +72,7 @@ public class AccountServiceImpl implements AccountService {
 	@Autowired
 	private Gson gson;
 
+	@Override
 	public GlobalResponse postAccountDetails(@RequestBody AccountEntity accountEntity) {
 
 		if (LOGGER.isInfoEnabled()) {
@@ -121,7 +122,8 @@ public class AccountServiceImpl implements AccountService {
 		}
 
 	}
-
+	
+	@Override
 	public ResponseEntity<?> viewAccountDetails(long accountId) {
 
 		if (LOGGER.isInfoEnabled()) {
@@ -163,6 +165,7 @@ public class AccountServiceImpl implements AccountService {
 
 	}
 
+	@Override
 	public GlobalResponse putAccountDetails(long accountId, @RequestBody AccountEntity accountEntity) {
 
 		if (LOGGER.isInfoEnabled()) {
@@ -211,6 +214,7 @@ public class AccountServiceImpl implements AccountService {
 
 	}
 
+	@Override
 	public Map<String, Object> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder,
 			String ReturnStatus, String settlement, int year, int month, String designerId, Optional<String> sortBy) {
@@ -346,6 +350,7 @@ public class AccountServiceImpl implements AccountService {
 
 	}
 
+	@Override
 	public List<AccountEntity> excelReportService(String designerReturn, String serviceCharge, String govtCharge,
 			String userOrder, String ReturnStatus, String settlement, int year, int month, String designerId) {
 
@@ -367,7 +372,7 @@ public class AccountServiceImpl implements AccountService {
 			}
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/excelReport", gson.toJson(""), HttpStatus.OK);
+						host + contextPath + "/account/excelReport", gson.toJson(findAll), HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
@@ -382,7 +387,8 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public ResponseEntity<byte[]> getDesignerInvoice(String orderId, Long designerId) {
+	public ResponseEntity<?> getDesignerInvoice(String orderId, Long designerId) {
+		
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.getDesignerInvoice()");
 		}
@@ -391,6 +397,22 @@ public class AccountServiceImpl implements AccountService {
 		}
 		try {
 			List<AccountEntity> order = accountTemplateRepo.getOrder(orderId, designerId);
+
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Get account data {}", gson.toJson(order));
+			}
+			if(order.size() <= 0) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, "Account data not found",
+							HttpStatus.NOT_FOUND);
+				}
+				Map<String, Object> mapObj= new HashMap<>();
+				mapObj.put("Status", 404);
+				mapObj.put("Reason", "Error");
+				mapObj.put("Message", "Account data not found");
+				return new ResponseEntity<>(mapObj, HttpStatus.NOT_FOUND);
+			}
 			List<PaymentCharges> productDetailsList = new ArrayList<>();
 			List<PaymentCharges> details = new ArrayList<>();
 			Map<String, Object> map = new HashMap<>();
@@ -414,6 +436,7 @@ public class AccountServiceImpl implements AccountService {
 
 			details.add(commonUtility.invoiceUpdateMapper(order));
 			String displayName = order.get(0).getDesigner_details().getDisplay_name();
+			
 			for (AccountEntity data1 : order) {
 				productDetailsList.add(commonUtility.invoiceUpdateMap(data1));
 				ServiceCharge service = data1.getService_charge();
@@ -422,11 +445,9 @@ public class AccountServiceImpl implements AccountService {
 				tSgst = tSgst + Double.parseDouble(service.getSgst() + "" == null ? "0" : service.getSgst() + "");
 				tIgst = tIgst + Double.parseDouble(service.getIgst() + "" == null ? "0" : service.getIgst() + "");
 				tGross = tGross + Double.parseDouble(service.getFee() + "" == null ? "0" : service.getFee() + "");
-				tTotal = tTotal + Double
-						.parseDouble(service.getTotal_amount() + "" == null ? "0" : service.getTotal_amount() + "");
+				tTotal = tTotal + Double.parseDouble(service.getTotal_amount() + "" == null ? "0" : service.getTotal_amount() + "");
 				tcs = tcs + Double.parseDouble(service.getTcs() + "" == null ? "0" : service.getTcs() + "");
-				tcspercentage = tcspercentage
-						+ Double.parseDouble(service.getTcs_rate() + "" == null ? "0" : service.getTcs_rate() + "");
+				tcspercentage = tcspercentage + Double.parseDouble(service.getTcs_rate() + "" == null ? "0" : service.getTcs_rate() + "");
 
 				totalCgst = String.valueOf(df.format(tCgst));
 				totalSgst = String.valueOf(df.format(tSgst));
@@ -454,19 +475,26 @@ public class AccountServiceImpl implements AccountService {
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			ConverterProperties converterProperties = new ConverterProperties();
 			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);
-
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Disposition", "attachment; filename=" + "designerInvoice.pdf");
-			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
-					.body(target.toByteArray());
+			
+			headers.add("Content-Disposition", "attachment; filename=" + order.get(0).getService_charge().getDesigner_invoice_id()+".pdf");
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, gson.toJson(target.toByteArray()), HttpStatus.OK);
+			}
+			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(target.toByteArray());
 
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/getDesignerInvoice", e.getLocalizedMessage(),
+						host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, e.getLocalizedMessage(),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			throw new CustomException(e.getMessage());
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
