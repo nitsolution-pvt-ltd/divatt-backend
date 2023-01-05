@@ -167,6 +167,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Value("${host}")
 	private String host;
+	
+	@Value("${interfaceId}")
+	private String interfaceId;
 
 	@Autowired
 	private UserLoginRepo userloginRepo;
@@ -284,6 +287,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			LOGGER.info(OrderPayJson.getObject().get("razorpay_payment_id").toString() + "Inside Json");
 			Optional<OrderPaymentEntity> findByOrderId = userOrderPaymentRepo
 					.findByOrderId(orderPaymentEntity.getOrderId());
+			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
+			Date date = new Date();
+			String format = formatter.format(date);
 			if (!findByOrderId.isPresent()) {
 				OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 				filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
@@ -293,7 +299,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				filterCatDetails.setPaymentResponse(map);
 				filterCatDetails.setPaymentStatus(payStatus);
 				filterCatDetails.setUserId(orderPaymentEntity.getUserId());
-				filterCatDetails.setCreatedOn(new Date());
+				filterCatDetails.setCreatedOn(format);
 				userOrderPaymentRepo.save(filterCatDetails);
 				return ResponseEntity.ok(mapPayId);
 			} else
@@ -402,7 +408,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
 
-			if (findAll.getSize() <= 1) {
+			if (findAll.getSize() <= 0) {
 				throw new CustomException(MessageConstant.PAYMENT_NOT_FOUND.getMessage());
 			} else {
 				return response;
@@ -1049,7 +1055,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				response.put("perPage", findAll.getSize());
 				response.put("perPageElement", findAll.getNumberOfElements());
 
-				if (findAll.getSize() <= 1) {
+				if (findAll.getSize() <= 0) {
 					throw new CustomException(MessageConstant.PAYMENT_NOT_FOUND.getMessage());
 				} else {
 					return response;
@@ -1173,6 +1179,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				filterCatDetails = PaymentRow.get();
 				payId = PaymentRow.get().getId();
 			}
+			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
+			Date date = new Date();
+			String format = formatter.format(date);
 
 			filterCatDetails.setId(payId);
 			filterCatDetails.setOrderId(OrderRow.get(0).getOrderId());
@@ -1180,7 +1189,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			filterCatDetails.setPaymentResponse(map);
 			filterCatDetails.setPaymentStatus(payStatus);
 			filterCatDetails.setUserId(OrderRow.get(0).getUserId());
-			filterCatDetails.setCreatedOn(new Date());
+			filterCatDetails.setCreatedOn(format);
 
 			OrderPaymentEntity data = userOrderPaymentRepo.save(filterCatDetails);
 
@@ -2860,4 +2869,79 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		return baos;
 	}
 
+	public ResponseEntity<?> getTransactionsService(int page, int limit, String sort, String sortName, String keyword,
+			Optional<String> sortBy){
+				
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - OrderAndPaymentContoller.getOrderPaymentService()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - OrderAndPaymentContoller.getOrderPaymentService()");
+		}
+
+		try {
+			int CountData = (int) userOrderPaymentRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+
+			Page<OrderPaymentEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = userOrderPaymentRepo.findAll(pagingSort);
+			} else {
+				findAll = userOrderPaymentRepo.Search(keyword, pagingSort);
+			}
+			
+			if (findAll.getSize() <= 0) {
+				Map<String, Object> mapObj= new HashMap<>();
+				mapObj.put("status", 404);
+				mapObj.put("reason", "Error");
+				mapObj.put("message", MessageConstant.PAYMENT_NOT_FOUND.getMessage());
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Error: {}",MessageConstant.PAYMENT_NOT_FOUND.getMessage());
+				}
+				return new ResponseEntity<>(mapObj, HttpStatus.NOT_FOUND);
+			} 
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/userOrder/transactions", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/userOrder/transactions", "Success", HttpStatus.OK);
+			}
+			return ResponseEntity.ok(response);
+			
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/userOrder/transactions", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+	
 }

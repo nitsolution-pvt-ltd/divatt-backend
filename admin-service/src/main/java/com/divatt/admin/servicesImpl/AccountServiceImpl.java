@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +17,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.admin.constant.MessageConstant;
+import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.AccountMapEntity;
 import com.divatt.admin.entity.GlobalResponse;
@@ -39,6 +46,8 @@ import com.divatt.admin.utility.CommonUtility;
 import com.google.gson.Gson;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
+
+import springfox.documentation.spring.web.json.Json;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -59,6 +68,9 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private TemplateEngine templateEngine;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Value("${spring.profiles.active}")
 	private String contextPath;
@@ -408,9 +420,12 @@ public class AccountServiceImpl implements AccountService {
 							HttpStatus.NOT_FOUND);
 				}
 				Map<String, Object> mapObj= new HashMap<>();
-				mapObj.put("Status", 404);
-				mapObj.put("Reason", "Error");
-				mapObj.put("Message", "Account data not found");
+				mapObj.put("status", 404);
+				mapObj.put("reason", "Error");
+				mapObj.put("message", "Account data not found");
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Error: {}","Account data not found");
+				}
 				return new ResponseEntity<>(mapObj, HttpStatus.NOT_FOUND);
 			}
 			List<PaymentCharges> productDetailsList = new ArrayList<>();
@@ -496,6 +511,65 @@ public class AccountServiceImpl implements AccountService {
 			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	public ResponseEntity<?> getTransactionsService(int page, int limit, String sort, String sortName,
+			Boolean isDeleted, String keyword, Optional<String> sortBy){
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountServiceImpl.getTransactionsService()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountServiceImpl.getTransactionsService()");
+		}
+		ResponseEntity<Object> getExchange = null;
+		try {
+			
+			HttpHeaders header= new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Object> httpEntity = new HttpEntity<>(header);
+			
+			try {
+				String urlParam="userOrder/transactions?page="+page+"&limit="+limit+"&sort="+sort+"&sortName="+sortName+"&keyword="+keyword;
+				getExchange = restTemplate.exchange(RestTemplateConstant.USER_URL.getMessage()+urlParam,HttpMethod.GET, httpEntity,Object.class);
+				
+			} catch (HttpStatusCodeException ex) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/transactions/", ex.getResponseBodyAsByteArray(),
+							ex.getRawStatusCode());
+				}
+				return new ResponseEntity<>(new Json(new String(ex.getResponseBodyAsByteArray())), ex.getStatusCode());
+			} catch (Exception e) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/transactions/", e.getLocalizedMessage(),
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+				return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/transactions", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/transactions", gson.toJson(getExchange.getBody()), HttpStatus.OK);
+			}
+			
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/transactions/", e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<>(getExchange.getBody(), HttpStatus.OK);
 
 	}
+	
+	
+	
 }
