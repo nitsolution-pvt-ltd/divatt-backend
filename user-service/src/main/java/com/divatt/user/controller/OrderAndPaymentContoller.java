@@ -161,7 +161,6 @@ public class OrderAndPaymentContoller {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-
 	}
 
 	@PostMapping("/payment/add")
@@ -286,6 +285,7 @@ public class OrderAndPaymentContoller {
 				String designerEmail = null;
 				String displayName = null;
 				String designerName = null;
+				String tgrossGrandTotal = null;
 
 				ordersdata.add(commonUtility.placedOrder(orderAndPaymentGlobalEntity));
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
@@ -298,7 +298,6 @@ public class OrderAndPaymentContoller {
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
 					LOGGER.info(orderSKUDetailsEntityRow.toString() + "inside skurow");
 					int designerId = orderSKUDetailsEntityRow.getDesignerId();
-
 					orders.add(commonUtility.skuOrders(orderSKUDetailsEntityRow));
 					taxAmount = taxAmount
 							+ Double.parseDouble(orderSKUDetailsEntityRow.getTaxAmount() + "" == null ? "0"
@@ -306,21 +305,16 @@ public class OrderAndPaymentContoller {
 					if (orderSKUDetailsEntityRow.getSalesPrice() == 0) {
 						String mrp2 = orderSKUDetailsEntityRow.getMrp() + "";
 						mrp = mrp + Double.parseDouble(mrp2 == null ? "0" : mrp2);
-						LOGGER.info(mrp+"Inside mrp");
-						Double totals = mrp - taxAmount;
-						LOGGER.info("DATA <><><><><><><> ###" + totals.toString());
-//						total = total - Double.parseDouble(totals == null ? "0" : totals.toString());
-						total = totals - total;
 						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
-						grandTotal = grandTotal + Double.parseDouble(total + "" == null ? "0" : total + "");
+						grandTotal = grandTotal + Double.parseDouble(orderSKUDetailsEntityRow.getMrp() == null ? "0" :  orderSKUDetailsEntityRow.getMrp().toString());
 					} else {
 						String salesPrice = orderSKUDetailsEntityRow.getSalesPrice() + "";
-						mrp = mrp + Double.parseDouble(salesPrice == null ? "0" : salesPrice);
-						Double totals = mrp - taxAmount;
-//						total = total - Double.parseDouble(totals == null ? "0" : totals.toString());
-						total = totals - total;
 						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
-						grandTotal = grandTotal + Double.parseDouble(total + "" == null ? "0" : total + "");
+						grandTotal = grandTotal + Double.parseDouble(salesPrice == null ? "0" : salesPrice);
+					}
+					Double grossGrandTotal  = 0.00;
+					for(OrderPlacedDTO order : orders) {
+						grossGrandTotal = grossGrandTotal + Double.parseDouble(order.getTotal());
 					}
 					totalTax = totalTax + Double.parseDouble(totalTax + "" == null ? "0" : totalTax + "");
 					tmrp = String.valueOf(df.format(mrp));
@@ -329,6 +323,7 @@ public class OrderAndPaymentContoller {
 					ttotalMrp = String.valueOf(totalMrp);
 					ttotalTax = String.valueOf(totalTax);
 					tgrandTotal = String.valueOf(grandTotal);
+					tgrossGrandTotal = String.valueOf(grossGrandTotal);
 					try {
 						DesignerProfileEntity forEntity = restTemplate
 								.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
@@ -366,6 +361,7 @@ public class OrderAndPaymentContoller {
 				data.put("ttotalMrp", ttotalMrp);
 				data.put("ttotalTax", ttotalTax);
 				data.put("tgrandTotal", tgrandTotal);
+				data.put("tgrossGrandTotal", tgrossGrandTotal);
 				Context context = new Context();
 				context.setVariables(data);
 				String htmlContent = templateEngine.process("orderPlaced.html", context);
