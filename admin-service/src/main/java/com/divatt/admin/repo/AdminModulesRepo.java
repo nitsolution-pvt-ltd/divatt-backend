@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import com.divatt.admin.entity.AdminModules;
-import com.divatt.admin.entity.LoginEntity;
 
 
 public interface AdminModulesRepo extends MongoRepository<AdminModules, Long>{

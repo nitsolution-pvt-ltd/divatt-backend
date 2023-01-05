@@ -459,7 +459,7 @@ public class AdminMServiceImpl implements AdminMService {
 			DesignerCategoryEntity designerEntity = mongoOperations.findOne(query, DesignerCategoryEntity.class);
 			updatedList.addAll(designerEntity.getDesignerLevels());
 			List<String> list = designerEntity.getDesignerLevels();
-			for (int i = 0; i < list.size(); i++) {
+			for (int i = 0; i < list.size();) {
 				if (list.get(i).equals(name)) {
 					updatedList.set(i, designerCategoryEntity.getDesignerLevels().get(0));
 					designerEntity.setDesignerLevels(updatedList);
@@ -489,8 +489,7 @@ public class AdminMServiceImpl implements AdminMService {
 			DesignerCategoryEntity designerEntity = mongoOperations.findOne(query, DesignerCategoryEntity.class);
 			updatedList.addAll(designerEntity.getDesignerLevels());
 			List<String> list = designerEntity.getDesignerLevels();
-			for (int i = 0; i < list.size(); i++) {
-
+			for (int i = 0; i < list.size();) {
 				if (list.get(i).equals(name)) {
 					updatedList.remove(i);
 					designerEntity.setDesignerLevels(updatedList);

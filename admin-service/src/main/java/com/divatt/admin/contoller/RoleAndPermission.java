@@ -4,16 +4,12 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +39,7 @@ import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.AdminModulesRepo;
-import com.divatt.admin.repo.LoginRepository;
-import com.divatt.admin.services.RoleAndPermissionService;
 import com.divatt.admin.services.SequenceGenerator;
-import com.google.gson.JsonObject;
-import com.mongodb.BasicDBList;
-
-import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("/admin")
@@ -67,8 +57,8 @@ public class RoleAndPermission {
 	private MongoOperations mongoOperations;
 	
 	
-	@Autowired
-	private RoleAndPermissionService roleAndPermissionService;
+//	@Autowired
+//	private RoleAndPermissionService roleAndPermissionService;
 
 	Logger LOGGER = LoggerFactory.getLogger(RoleAndPermission.class);
 

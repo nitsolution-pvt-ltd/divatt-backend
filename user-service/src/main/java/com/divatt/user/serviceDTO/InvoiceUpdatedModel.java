@@ -1,7 +1,5 @@
 package com.divatt.user.serviceDTO;
 
-import java.util.List;
-
 public class InvoiceUpdatedModel {
 	
 	private String billedUserName;
@@ -46,7 +44,6 @@ public class InvoiceUpdatedModel {
 	private String totalQunatuty;
 	public InvoiceUpdatedModel() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public InvoiceUpdatedModel(String billedUserName, String bllingAddress, String billingCity, String billingState,
 			String pincode, String billingMobile, String billingPinCode, String billingCountry, String shippingCountry,

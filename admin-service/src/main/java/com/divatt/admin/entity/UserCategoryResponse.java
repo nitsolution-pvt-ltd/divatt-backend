@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.divatt.admin.entity.category.CategoryEntity;
-import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
@@ -25,7 +24,6 @@ public class UserCategoryResponse {
 	private List<CategoryEntity> subCategoryEntities;
 	public UserCategoryResponse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public UserCategoryResponse(Integer id, String categoryName, String categoryDescription, String categoryImage,
 			Integer level, Boolean isActive, Boolean isDeleted, String parentId, Date createdOn, String createdBy,

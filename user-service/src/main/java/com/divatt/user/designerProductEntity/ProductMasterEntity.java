@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -15,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.google.gson.JsonObject;
 @Document(collection = "tbl_products")
 public class ProductMasterEntity {
 
@@ -358,7 +356,6 @@ public class ProductMasterEntity {
 	}
 	public ProductMasterEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	
