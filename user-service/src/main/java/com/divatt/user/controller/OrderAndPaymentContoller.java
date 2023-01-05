@@ -257,10 +257,8 @@ public class OrderAndPaymentContoller {
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderDate(formatDate);
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setCreatedOn(format);
 				orderDetailsEntity.setNetPrice(orderAndPaymentGlobalEntity.getOrderDetailsEntity().getNetPrice());
-				LOGGER.info("DATA BEFOUR SAVE, = {}", orderAndPaymentGlobalEntity.getOrderDetailsEntity());
 				OrderDetailsEntity OrderData = orderDetailsRepo
 						.save(orderAndPaymentGlobalEntity.getOrderDetailsEntity());
-				LOGGER.info("AFTER SAVE DATA IN DATABASE = {}", OrderData);
 
 				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
 						.getOrderSKUDetailsEntity();
@@ -292,9 +290,9 @@ public class OrderAndPaymentContoller {
 							.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
-					LOGGER.info(orderSKUDetailsEntityRow + "Inside Sku before Save");
+					
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
-					LOGGER.info(orderSKUDetailsEntityRow.toString() + "inside skurow");
+					
 					int designerId = orderSKUDetailsEntityRow.getDesignerId();
 					orders.add(commonUtility.skuOrders(orderSKUDetailsEntityRow));
 					taxAmount = taxAmount
@@ -330,7 +328,6 @@ public class OrderAndPaymentContoller {
 						designerEmail = forEntity.getDesignerProfile().getEmail();
 						designerName = forEntity.getDesignerName();
 						displayName = forEntity.getDesignerProfile().getDisplayName();
-						LOGGER.info(designerName);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -342,8 +339,6 @@ public class OrderAndPaymentContoller {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
-
-				LOGGER.info(orderSKUDetailsEntity.toString());
 
 				String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
 

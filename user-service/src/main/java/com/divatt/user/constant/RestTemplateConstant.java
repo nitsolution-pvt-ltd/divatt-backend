@@ -19,7 +19,8 @@ public enum RestTemplateConstant {
 	DESIGNER_USER("https://localhost:8083/dev/designer/user/"),
 	DESIGNER_PER_PRODUCT("https://localhost:8083/dev/designerProduct/getPerDesignerProductUser/"),
 	USER_BY_ID("https://localhost:8082/dev/user/getUserId/"),
-	DESIGNER_IDLIST("https://localhost:8083/dev/designer/designerIdList");
+	DESIGNER_IDLIST("https://localhost:8083/dev/designer/designerIdList"),
+	ADMIN_ROLE_NAME("https://localhost:8084/dev/admin/profile/getRoleName/");
 
 //prod
 
