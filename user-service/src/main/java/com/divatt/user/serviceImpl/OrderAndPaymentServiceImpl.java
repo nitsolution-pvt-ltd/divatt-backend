@@ -1297,7 +1297,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-	public GlobalResponse cancelOrderService(OrderSKUDetailsEntity orderSKUDetailsEntity, String refOrderId, Integer refProductId) {
+	public GlobalResponse cancelOrderService(OrderSKUDetailsEntity orderSKUDetailsEntity, String refOrderId,
+			Integer refProductId) {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(refOrderId).and("productId").is(refProductId));
@@ -1316,15 +1317,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
-				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
-			}else if (orderSKUDetailsEntity.getOrderItemStatus().equals("refundRequest")) {
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_CANCEL.getMessage(), 200);
+			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("refundRequest")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
-				
-				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
-			}else if (orderSKUDetailsEntity.getOrderItemStatus().equals("refund")) {
+
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_CANCEL.getMessage(), 200);
+			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("refund")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
@@ -1337,9 +1340,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
-				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_CANCEL.getMessage(), 200);
 			} else {
-				return new GlobalResponse(MessageConstant.ERROR.getMessage(),MessageConstant.PRODUCT_ALREADY_CANCEL.getMessage(), 400);
+				return new GlobalResponse(MessageConstant.ERROR.getMessage(),
+						MessageConstant.PRODUCT_ALREADY_CANCEL.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1850,20 +1855,22 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@SuppressWarnings("all")
 	@Override
-	public GlobalResponse itemStatusChange(String token, String orderId, String productId,org.json.simple.JSONObject statusChange, String orderItemStatus) {
+	public GlobalResponse itemStatusChange(String token, String orderId, String productId,
+			org.json.simple.JSONObject statusChange, String orderItemStatus) {
 		LOGGER.info("Inside - ItemStatusChange");
 		try {
 			String designerEmail = jwtconfig.extractUsername(token.substring(7));
 			DesignerProfileEntity entity = restTemplate
-					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail, DesignerProfileEntity.class)
+					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail,
+							DesignerProfileEntity.class)
 					.getBody();
 
 			String designerId = entity.getDesignerId().toString();
 			String displayName = entity.getDesignerProfile().getDisplayName();
-			OrderSKUDetailsEntity item1 = orderSKUDetailsRepo.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
+			OrderSKUDetailsEntity item1 = orderSKUDetailsRepo
+					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 			String designerId2 = item1.getDesignerId() + "";
-			
-			
+
 			if (designerId.equals(designerId2)) {
 				try {
 					OrderSKUDetailsEntity item = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderId(
@@ -1884,7 +1891,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								Gson gson = new Gson();
 								org.json.simple.JSONObject fromJson = gson.fromJson(string,
 										org.json.simple.JSONObject.class);
-								if (fromJson.containsKey("withCustomization") || fromJson.containsKey("withDesignCustomization")) {
+								if (fromJson.containsKey("withCustomization")
+										|| fromJson.containsKey("withDesignCustomization")) {
 									try {
 										OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
 										jsonObject3.put("withCustomization", fromJson.get("withCustomization"));
@@ -2021,31 +2029,36 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 									e.printStackTrace();
 								}
 								JsonNode fromJson1 = new JsonNode(writeValueAsString);
-								String courierName = fromJson1.getObject().get("courierName").toString();
-								String awbNumber = fromJson1.getObject().get("awbNumber").toString();
-								LOGGER.info(courierName);
-								LOGGER.info(awbNumber);
 								try {
-									OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-									orderStatusDetails.setShippedDetails(jsonObject1);
-									jsonObject1.put("courierName", courierName);
-									jsonObject1.put("awbNumber", awbNumber);
-									jsonObject1.put("orderShippedTime", format);
-									orderStatusDetails.setShippedDetails(jsonObject1);
-									orderDetails.setOrderItemStatus(orderItemStatus);
-									orderSKUDetailsRepo.save(orderDetails);
+									String courierName = fromJson1.getObject().get("courierName").toString();
+									String awbNumber = fromJson1.getObject().get("awbNumber").toString();
+									LOGGER.info(courierName);
+									LOGGER.info(awbNumber);
 
+									try {
+										OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+										orderStatusDetails.setShippedDetails(jsonObject1);
+										jsonObject1.put("courierName", courierName);
+										jsonObject1.put("awbNumber", awbNumber);
+										jsonObject1.put("orderShippedTime", format);
+										orderStatusDetails.setShippedDetails(jsonObject1);
+										orderDetails.setOrderItemStatus(orderItemStatus);
+										orderSKUDetailsRepo.save(orderDetails);
+
+									} catch (Exception e) {
+										OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+										LOGGER.info(orderDetails + "Inside OrderDetails");
+										LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
+										jsonObject1.put("courierName", courierName);
+										jsonObject1.put("awbNumber", awbNumber);
+										jsonObject1.put("orderShippedTime", format);
+										orderStatusDetails.setShippedDetails(jsonObject1);
+										orderDetails.setOrderStatusDetails(orderStatusDetails);
+										orderDetails.setOrderItemStatus(orderItemStatus);
+										orderSKUDetailsRepo.save(orderDetails);
+									}
 								} catch (Exception e) {
-									OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-									LOGGER.info(orderDetails + "Inside OrderDetails");
-									LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
-									jsonObject1.put("courierName", courierName);
-									jsonObject1.put("awbNumber", awbNumber);
-									jsonObject1.put("orderShippedTime", format);
-									orderStatusDetails.setShippedDetails(jsonObject1);
-									orderDetails.setOrderStatusDetails(orderStatusDetails);
-									orderDetails.setOrderItemStatus(orderItemStatus);
-									orderSKUDetailsRepo.save(orderDetails);
+									throw new CustomException("Please fill up the Required Fields");
 								}
 							} else
 								throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
@@ -2056,16 +2069,19 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						if (!itemStatus.equals(orderItemStatus)) {
 							if (itemStatus.equals("Shipped")) {
 								OrderSKUDetailsEntity orderDetails = orderSKUDetailsRepo
-										.findByProductIdAndDesignerIdAndOrderId(Integer.parseInt(productId),Integer.parseInt(designerId), orderId)
+										.findByProductIdAndDesignerIdAndOrderId(Integer.parseInt(productId),
+												Integer.parseInt(designerId), orderId)
 										.get(0);
 								org.json.simple.JSONObject jsonObject4 = new org.json.simple.JSONObject();
 								String string = statusChange.get("DeliveryDTO").toString();
 								LOGGER.info(string + "InsideObject");
 								Gson gson = new Gson();
-								org.json.simple.JSONObject fromJson = gson.fromJson(string, org.json.simple.JSONObject.class);
+								org.json.simple.JSONObject fromJson = gson.fromJson(string,
+										org.json.simple.JSONObject.class);
 								LOGGER.info(fromJson.get("deliveredDate") + "Inside fromjson");
 								String deliveredDate = (String) fromJson.get("deliveredDate");
-								SimpleDateFormat dateFormat = new SimpleDateFormat(MessageConstant.DATA_TYPE_FORMAT.getMessage());
+								SimpleDateFormat dateFormat = new SimpleDateFormat(
+										MessageConstant.DATA_TYPE_FORMAT.getMessage());
 								DateFormat inputText = new SimpleDateFormat("yyyy-MM-dd");
 								Date date = inputText.parse(deliveredDate);
 								String format1 = dateFormat.format(date);
@@ -2092,8 +2108,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						} else
 							throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 					}
-					
-					
+
 					Long userId = item.getUserId();
 					UserLoginEntity userById = userServiceImpl.getUserById(userId);
 					String email = userById.getEmail();
@@ -2107,82 +2122,84 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					String email2 = entity.getDesignerProfile().getEmail();
 					String colour = item.getColour();
 					List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
-				
-					if(findByOrderIdList.size()>0) {
-					
-					String paymentMode = findByOrderIdList.get(0).getPaymentMode();
-					OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
-					System.out.println("orderDetailsEntity "+orderDetailsEntity.toString());
-					Object shippingAddress = orderDetailsEntity.getShippingAddress();
-					String substring2 = shippingAddress.toString().substring(1, shippingAddress.toString().length() - 1)
-							.replaceAll("=", " : ");
-					String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
-							.replace("country : ", "").replace("state : ", "").replace("city : ", "")
-							.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
-							.replace("email : ", "").replace("mobile : ", "");
-					String orderDate = item.getCreatedOn();
-					Date parse = formatter.parse(orderDate);
-					Calendar calendar = Calendar.getInstance();
-					calendar.setTime(parse);
-					Date time = calendar.getTime();
-					DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
-					DecimalFormat decimalFormat = new DecimalFormat("0.00");
-					String format1 = dateFormat2.format(time);
-					Double disc = orderDetailsEntity.getDiscount();
-					String discount = decimalFormat.format(disc);
-					Double taxAmount = orderDetailsEntity.getTaxAmount();
-					String format2 = decimalFormat.format(taxAmount);
-					Context context = new Context();
-					context.setVariable("firstName", firstName);
-					context.setVariable("productId", productId);
-					context.setVariable("productName", productName);
-					if (mrp == 0) {
-						context.setVariable("mrp", item.getMrp());
-						double format3 = (Double.parseDouble(format2) + item.getMrp()) - Double.parseDouble(discount);
-						context.setVariable("format3", format3);
-					} else {
-						context.setVariable("mrp", mrp);
-						double format3 = (Double.parseDouble(format2) + mrp) - Double.parseDouble(discount);
-						context.setVariable("format3", format3);
-					}
-					context.setVariable("discount", discount);
-					context.setVariable("taxAmount", format2);
-					context.setVariable("size", size);
-					context.setVariable("displayName", displayName);
-					context.setVariable("paymentMode", paymentMode);
-					context.setVariable("shippingAddress", replace);
-					context.setVariable("orderDate", format1);
-					context.setVariable("orderId", orderId);
-					context.setVariable("quantity", units);
-					context.setVariable("colour", colour);
 
-					if (orderItemStatus.equals("Orders")) {
-						context.setVariable("orderItemStatus", "Verified");
-					} else {
-						context.setVariable("orderItemStatus", orderItemStatus);
-					}
-					context.setVariable("orderId", orderId);
-					context.setVariable("productImage", images);
-					if (orderItemStatus.equals("Orders")) {
-						String htmlContent = templateEngine.process("statusChange.html", context);
-						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-								"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
-						String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
-						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-								"Your Product Has been " + "Verified", htmlContentDesigner, true, null, restTemplate);
-						emailSenderThreadDesigner.start();
-						emailSenderThread.start();
-					} else {
-						String htmlContent = templateEngine.process("statusChange.html", context);
-						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-								"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
-						String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
-						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-								"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null,
-								restTemplate);
-						emailSenderThreadDesigner.start();
-						emailSenderThread.start();
-					}
+					if (findByOrderIdList.size() > 0) {
+
+						String paymentMode = findByOrderIdList.get(0).getPaymentMode();
+						OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
+						System.out.println("orderDetailsEntity " + orderDetailsEntity.toString());
+						Object shippingAddress = orderDetailsEntity.getShippingAddress();
+						String substring2 = shippingAddress.toString()
+								.substring(1, shippingAddress.toString().length() - 1).replaceAll("=", " : ");
+						String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
+								.replace("country : ", "").replace("state : ", "").replace("city : ", "")
+								.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
+								.replace("email : ", "").replace("mobile : ", "");
+						String orderDate = item.getCreatedOn();
+						Date parse = formatter.parse(orderDate);
+						Calendar calendar = Calendar.getInstance();
+						calendar.setTime(parse);
+						Date time = calendar.getTime();
+						DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+						DecimalFormat decimalFormat = new DecimalFormat("0.00");
+						String format1 = dateFormat2.format(time);
+						Double disc = orderDetailsEntity.getDiscount();
+						String discount = decimalFormat.format(disc);
+						Double taxAmount = orderDetailsEntity.getTaxAmount();
+						String format2 = decimalFormat.format(taxAmount);
+						Context context = new Context();
+						context.setVariable("firstName", firstName);
+						context.setVariable("productId", productId);
+						context.setVariable("productName", productName);
+						if (mrp == 0) {
+							context.setVariable("mrp", item.getMrp());
+							double format3 = (Double.parseDouble(format2) + item.getMrp())
+									- Double.parseDouble(discount);
+							context.setVariable("format3", format3);
+						} else {
+							context.setVariable("mrp", mrp);
+							double format3 = (Double.parseDouble(format2) + mrp) - Double.parseDouble(discount);
+							context.setVariable("format3", format3);
+						}
+						context.setVariable("discount", discount);
+						context.setVariable("taxAmount", format2);
+						context.setVariable("size", size);
+						context.setVariable("displayName", displayName);
+						context.setVariable("paymentMode", paymentMode);
+						context.setVariable("shippingAddress", replace);
+						context.setVariable("orderDate", format1);
+						context.setVariable("orderId", orderId);
+						context.setVariable("quantity", units);
+						context.setVariable("colour", colour);
+
+						if (orderItemStatus.equals("Orders")) {
+							context.setVariable("orderItemStatus", "Verified");
+						} else {
+							context.setVariable("orderItemStatus", orderItemStatus);
+						}
+						context.setVariable("orderId", orderId);
+						context.setVariable("productImage", images);
+						if (orderItemStatus.equals("Orders")) {
+							String htmlContent = templateEngine.process("statusChange.html", context);
+							EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+									"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
+							String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
+							EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+									"Your Product Has been " + "Verified", htmlContentDesigner, true, null,
+									restTemplate);
+							emailSenderThreadDesigner.start();
+							emailSenderThread.start();
+						} else {
+							String htmlContent = templateEngine.process("statusChange.html", context);
+							EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+									"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
+							String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
+							EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+									"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null,
+									restTemplate);
+							emailSenderThreadDesigner.start();
+							emailSenderThread.start();
+						}
 					}
 
 					return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
@@ -2307,33 +2324,36 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								e.printStackTrace();
 							}
 							JsonNode fromJson1 = new JsonNode(writeValueAsString);
-							String courierName = fromJson1.getObject().get("courierName").toString();
-							String awbNumber = fromJson1.getObject().get("awbNumber").toString();
-							LOGGER.info(courierName);
-							LOGGER.info(awbNumber);
 							try {
-								OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
-								orderStatusDetails.setShippedDetails(jsonObject1);
-								jsonObject1.put("courierName", courierName);
-								jsonObject1.put("awbNumber", awbNumber);
-								jsonObject1.put("orderShippedTime", format);
-								orderStatusDetails.setShippedDetails(jsonObject1);
-								orderDetails.setOrderItemStatus(orderItemStatus);
-								orderSKUDetailsRepo.save(orderDetails);
+								String courierName = fromJson1.getObject().get("courierName").toString();
+								String awbNumber = fromJson1.getObject().get("awbNumber").toString();
+								LOGGER.info(courierName);
+								LOGGER.info(awbNumber);
+								try {
+									OrderStatusDetails orderStatusDetails = orderDetails.getOrderStatusDetails();
+									orderStatusDetails.setShippedDetails(jsonObject1);
+									jsonObject1.put("courierName", courierName);
+									jsonObject1.put("awbNumber", awbNumber);
+									jsonObject1.put("orderShippedTime", format);
+									orderStatusDetails.setShippedDetails(jsonObject1);
+									orderDetails.setOrderItemStatus(orderItemStatus);
+									orderSKUDetailsRepo.save(orderDetails);
 
+								} catch (Exception e) {
+									OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
+									LOGGER.info(orderDetails + "Inside OrderDetails");
+									LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
+									jsonObject1.put("courierName", courierName);
+									jsonObject1.put("awbNumber", awbNumber);
+									jsonObject1.put("orderShippedTime", format);
+									orderStatusDetails.setShippedDetails(jsonObject1);
+									orderDetails.setOrderStatusDetails(orderStatusDetails);
+									orderDetails.setOrderItemStatus(orderItemStatus);
+									orderSKUDetailsRepo.save(orderDetails);
+								}
 							} catch (Exception e) {
-								OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-								LOGGER.info(orderDetails + "Inside OrderDetails");
-								LOGGER.info("Inside Shipped " + statusChange.get("ShippedDTO"));
-								jsonObject1.put("courierName", courierName);
-								jsonObject1.put("awbNumber", awbNumber);
-								jsonObject1.put("orderShippedTime", format);
-								orderStatusDetails.setShippedDetails(jsonObject1);
-								orderDetails.setOrderStatusDetails(orderStatusDetails);
-								orderDetails.setOrderItemStatus(orderItemStatus);
-								orderSKUDetailsRepo.save(orderDetails);
+								throw new CustomException("Please fill up requied Fields");
 							}
-
 						} else
 							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 					} else
