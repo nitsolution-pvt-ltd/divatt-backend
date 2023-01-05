@@ -63,7 +63,7 @@ public class CommonUtility {
 		}
 	}
 
-	public static PaymentCharges invoiceUpdateMapper(List<AccountEntity> accountEntity) {
+	public PaymentCharges invoiceUpdateMapper(List<AccountEntity> accountEntity) {
 		PaymentCharges charges = new PaymentCharges();
 		charges.setAdminCity(accountEntity.get(0).getAdmin_details().getCity());
 		charges.setAdminCountry(accountEntity.get(0).getAdmin_details().getCountry());
@@ -85,7 +85,7 @@ public class CommonUtility {
 		return charges;
 	}
 
-	public static PaymentCharges invoiceUpdateMap(AccountEntity accountEntity) {
+	public PaymentCharges invoiceUpdateMap(AccountEntity accountEntity) {
 		PaymentCharges charges = new PaymentCharges();
 		charges.setProductName(MessageConstant.DIVATT_CHARGES.getMessage());
 		charges.setFee(accountEntity.getService_charge().getFee() + "");

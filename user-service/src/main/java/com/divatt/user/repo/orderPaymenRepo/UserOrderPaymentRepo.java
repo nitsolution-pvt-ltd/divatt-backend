@@ -13,9 +13,13 @@ import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 
 public interface UserOrderPaymentRepo extends MongoRepository<OrderPaymentEntity, Integer> {
 
-//	Optional<UserOrderPaymentRepo> findByProductIdAndUserId(Integer ProductId,Integer UserId);
-
-	@Query(value = "{ $or: [ { 'order_id' : {$regex:?0,$options:'i'} }, { 'user_id' : {$regex:?0,$options:'i'} } ]}")
+	@Query(value = "{ $or: [ { 'order_id' : {$regex:?0,$options:'i'} }, { 'user_id' : {$regex:?0,$options:'i'} },"
+			+ "{ 'payment_mode' : {$regex:?0,$options:'i'} },{ 'payment_details.razorpay_payment_id' : {$regex:?0,$options:'i'} },"
+			+ "{ 'payment_details.razorpay_order_id' : {$regex:?0,$options:'i'} },{ 'payment_response.fee' : {$regex:?0,$options:'i'} },"
+			+ "{ 'payment_response.contact' : {$regex:?0,$options:'i'} },{ 'payment_response.email' : {$regex:?0,$options:'i'} },"
+			+ "{ 'payment_response.amount' : {$regex:?0,$options:'i'} },{ 'payment_response.method' : {$regex:?0,$options:'i'} },"
+			+ "{ 'payment_response.status' : {$regex:?0,$options:'i'} },{ 'payment_status' : {$regex:?0,$options:'i'} },"
+			+ "{ 'created_on' : {$regex:?0,$options:'i'} } ]}")
 	Page<OrderPaymentEntity> Search(String sortKey, Pageable pageable);
 
 	Optional<OrderPaymentEntity> findByOrderId(String orderId);
