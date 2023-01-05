@@ -233,12 +233,13 @@ public class ProductController2 {
 			@RequestParam(defaultValue = "") String priceType, @RequestParam(defaultValue = "") Boolean returnStatus,
 			@RequestParam(defaultValue = "-1") String maxPrice, @RequestParam(defaultValue = "-1") String minPrice,
 			@RequestParam(defaultValue = "") String size, @RequestParam(defaultValue = "") Boolean giftWrap,
-			@RequestParam(defaultValue = "") String searchKey,@RequestParam(defaultValue = "") String sortDateType) {
+			@RequestParam(defaultValue = "") String searchKey,@RequestParam(defaultValue = "") String sortDateType,
+			@RequestParam(defaultValue = "") String sortPrice) {
 		try {
 			LOGGER.info("Inside- ProductController.productSearching()");
 			LOGGER.info("COD data = {}", cod);
 			return this.productService2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour,
-					cod, customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType);
+					cod, customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
