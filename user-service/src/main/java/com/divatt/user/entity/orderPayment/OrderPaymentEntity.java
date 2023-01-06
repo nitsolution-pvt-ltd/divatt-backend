@@ -41,6 +41,9 @@ public class OrderPaymentEntity {
 	@Field(value = "payment_response")
 	private Object paymentResponse;
 	
+	@Field(value = "refund")
+	private Object refund;
+	
 	@NotNull(message = "Payment status is required!")
 	@Field(value = "payment_status")
 	private String paymentStatus;
@@ -59,7 +62,7 @@ public class OrderPaymentEntity {
 	public OrderPaymentEntity(Integer id, String orderId, @NotNull(message = "Username is required!") Long userId,
 			@NotNull(message = "Payment mode is required!") String paymentMode,
 			@NotNull(message = "Payment details is required!") Object paymentDetails,
-			@NotNull(message = "Payment response is required!") Object paymentResponse,
+			@NotNull(message = "Payment response is required!") Object paymentResponse, Object refund,
 			@NotNull(message = "Payment status is required!") String paymentStatus, String createdOn) {
 		super();
 		this.id = id;
@@ -68,6 +71,7 @@ public class OrderPaymentEntity {
 		this.paymentMode = paymentMode;
 		this.paymentDetails = paymentDetails;
 		this.paymentResponse = paymentResponse;
+		this.refund = refund;
 		this.paymentStatus = paymentStatus;
 		this.createdOn = createdOn;
 	}
@@ -77,7 +81,7 @@ public class OrderPaymentEntity {
 	public String toString() {
 		return "OrderPaymentEntity [id=" + id + ", orderId=" + orderId + ", userId=" + userId + ", paymentMode="
 				+ paymentMode + ", paymentDetails=" + paymentDetails + ", paymentResponse=" + paymentResponse
-				+ ", paymentStatus=" + paymentStatus + ", createdOn=" + createdOn + "]";
+				+ ", refund=" + refund + ", paymentStatus=" + paymentStatus + ", createdOn=" + createdOn + "]";
 	}
 
 
@@ -141,6 +145,16 @@ public class OrderPaymentEntity {
 	}
 
 
+	public Object getRefund() {
+		return refund;
+	}
+
+
+	public void setRefund(Object refund) {
+		this.refund = refund;
+	}
+
+
 	public String getPaymentStatus() {
 		return paymentStatus;
 	}
@@ -160,6 +174,11 @@ public class OrderPaymentEntity {
 		this.createdOn = createdOn;
 	}
 
-	
+
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
+	}
+
+
 	
 }

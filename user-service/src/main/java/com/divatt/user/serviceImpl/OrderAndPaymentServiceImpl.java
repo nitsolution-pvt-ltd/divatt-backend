@@ -1319,7 +1319,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				getPaymentData = new JSONObject(gson.toJson(findByOrderIdList.get(0).getPaymentDetails()));
 				findByOrderSKU = orderSKUDetailsRepo.findByOrderId(refOrderId);
 			}
-
+			
 			if (orderSKUDetailsEntity.getOrderItemStatus().equals("cancelled")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
@@ -1335,7 +1335,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
 				
-				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData);
+				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData, findByOrderIdList);
 				
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
 			
@@ -1362,7 +1362,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
 				
-				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData);
+				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData, findByOrderIdList);
 				
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_APPROVED.getMessage(), 200);
