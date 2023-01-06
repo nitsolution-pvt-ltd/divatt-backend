@@ -128,7 +128,7 @@ public class ProfileContoller {
 
 	@Autowired
 	private TemplateEngine templateEngine;
-
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
 		try {
