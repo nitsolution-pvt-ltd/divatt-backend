@@ -17,12 +17,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.divatt.designer.config.JWTConfig;
+import com.divatt.designer.constant.MessageConstant;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
+import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.exception.CustomException;
+import com.divatt.designer.repo.DesignerLoginRepo;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.ProductService2;
 
@@ -34,6 +39,12 @@ public class ProductController2 {
 //	
 	@Autowired
 	private ProductService2 productService2;
+	
+	@Autowired
+	private JWTConfig jwtConfig;
+	
+	@Autowired
+	private DesignerLoginRepo designerLoginRepo;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController2.class);
 
@@ -79,10 +90,16 @@ public class ProductController2 {
 
 //	@Override
 	@GetMapping("/productList/{productId}")
-	public ProductMasterEntity2 getProduct(@PathVariable Integer productId) {
+	public ProductMasterEntity2 getProduct(@RequestHeader("Authorization") String token, @PathVariable Integer productId) {
 		try {
 			LOGGER.info("Inside- ProductController2.getProduct()");
-			return productService2.getProduct(productId);
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
+					.findByEmail(jwtConfig.extractUsername(token.substring(7)));
+			if(findByEmail.get().getdId() == productId.longValue()) {
+				return productService2.getProduct(productId);
+			} else {
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
+			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
