@@ -158,9 +158,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@Value("${interfaceId}")
 	private String interfaceId;
 
-	@Value("${interfaceId}")
-	private String interfaceId;
-
 	@Autowired
 	private UserLoginRepo userloginRepo;
 
@@ -2215,7 +2212,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("Packed")) {
 							org.json.simple.JSONObject jsonObject1 = new org.json.simple.JSONObject();
-							String string = statusChange.get("ShippedDTO").toString();
+							statusChange.get("ShippedDTO").toString();
 							Object string1 = statusChange.get("ShippedDTO");
 							String writeValueAsString = null;
 							ObjectMapper objectMapper = new ObjectMapper();
