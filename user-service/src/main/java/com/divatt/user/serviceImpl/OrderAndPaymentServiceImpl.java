@@ -155,6 +155,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@Value("${host}")
 	private String host;
 
+	@Value("${interfaceId}")
+	private String interfaceId;
+
 	@Autowired
 	private UserLoginRepo userloginRepo;
 
