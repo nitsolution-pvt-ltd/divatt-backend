@@ -2549,8 +2549,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Cancelled", orderSKUDetailsRepo.findByOrderItemStatus("cancelled").size());
 			response.put("Orders", orderSKUDetailsRepo.findByOrderItemStatus("Orders").size());
 			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
-			response.put("returnRequest", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
-			response.put("returnRefund", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
+			response.put("returnRequest", orderSKUDetailsRepo.findByOrderItemStatus("returnRequest").size());
+			response.put("returnRefund", orderSKUDetailsRepo.findByOrderItemStatus("returnRefund").size());
 			
 
 			return response;
