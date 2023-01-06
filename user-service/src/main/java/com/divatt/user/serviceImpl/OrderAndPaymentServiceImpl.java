@@ -80,6 +80,7 @@ import com.divatt.user.serviceDTO.DesignerRequestDTO;
 import com.divatt.user.serviceDTO.InvoiceUpdatedModel;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
+import com.divatt.user.utill.CommonUtility;
 import com.divatt.user.utill.EmailSenderThread;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -97,6 +98,7 @@ import com.razorpay.Order;
 import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
+import com.razorpay.Refund;
 
 import springfox.documentation.spring.web.json.Json;
 
@@ -163,6 +165,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Autowired
 	private Gson gson;
+	
+	@Autowired
+	private CommonUtility commonUtility;
 
 	protected String getRandomString() {
 //		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -233,7 +238,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
 					env.getProperty("secretKey"));
-			LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentService() get data");
+			LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentService()");
 
 			String paymentIdFilter = null;
 			ObjectMapper obj = new ObjectMapper();
@@ -1295,18 +1300,32 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-	public GlobalResponse cancelOrderService(OrderSKUDetailsEntity orderSKUDetailsEntity, String refOrderId,
+	public GlobalResponse orderStatusUpdateService(OrderSKUDetailsEntity orderSKUDetailsEntity, String refOrderId,
 			Integer refProductId) {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(refOrderId).and("productId").is(refProductId));
 			OrderSKUDetailsEntity skuDetailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
+			
+			if(skuDetailsEntity.getOrderId().equals(null) && skuDetailsEntity.getOrderId().toString() == "") {
+				throw new CustomException(MessageConstant.BAD_REQUEST.getMessage());
+			}
+			
+			List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(refOrderId);
+			List<OrderSKUDetailsEntity> findByOrderSKU = new ArrayList<>();
+			JSONObject getPaymentData = null;
+			
+			if(findByOrderIdList.size() >0 ) {
+				getPaymentData = new JSONObject(gson.toJson(findByOrderIdList.get(0).getPaymentDetails()));
+				findByOrderSKU = orderSKUDetailsRepo.findByOrderId(refOrderId);
+			}
 
 			if (orderSKUDetailsEntity.getOrderItemStatus().equals("cancelled")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
+				
 				Query query2 = new Query();
 				query.addCriteria(Criteria.where("orderId").is(refOrderId));
 				OrderDetailsEntity detailsEntity = mongoOperations.findOne(query2, OrderDetailsEntity.class);
@@ -1315,21 +1334,25 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
-				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
-						MessageConstant.ORDER_CANCEL.getMessage(), 200);
-			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("refundRequest")) {
+				
+				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData);
+				
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
+			
+			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("returnRequest")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
 
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
-						MessageConstant.ORDER_CANCEL.getMessage(), 200);
-			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("refund")) {
+						MessageConstant.ORDER_REFUND_REQUEST.getMessage(), 200);
+			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("returnRefund")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
+
 				Query query2 = new Query();
 				query.addCriteria(Criteria.where("orderId").is(refOrderId));
 				OrderDetailsEntity detailsEntity = mongoOperations.findOne(query2, OrderDetailsEntity.class);
@@ -1338,11 +1361,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
+				
+				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData);
+				
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
-						MessageConstant.ORDER_CANCEL.getMessage(), 200);
+						MessageConstant.ORDER_REFUND_APPROVED.getMessage(), 200);
 			} else {
-				return new GlobalResponse(MessageConstant.ERROR.getMessage(),
-						MessageConstant.PRODUCT_ALREADY_CANCEL.getMessage(), 400);
+				throw new CustomException(MessageConstant.BAD_REQUEST.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

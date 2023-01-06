@@ -654,10 +654,10 @@ public class OrderAndPaymentContoller {
 	}
 
 	@PutMapping("/cancelOrder/{orderId}/{productId}")
-	public GlobalResponse cancelOrder(@RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity,
+	public GlobalResponse orderStatusUpdate(@RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity,
 			@PathVariable String orderId, @PathVariable Integer productId) {
 		try {
-			return orderAndPaymentService.cancelOrderService(orderSKUDetailsEntity, orderId, productId);
+			return orderAndPaymentService.orderStatusUpdateService(orderSKUDetailsEntity, orderId, productId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

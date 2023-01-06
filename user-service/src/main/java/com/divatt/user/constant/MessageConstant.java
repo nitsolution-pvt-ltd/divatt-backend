@@ -27,18 +27,21 @@ public enum MessageConstant {
 	REVIEW_NOT_EXIST("Reviewed not exist!"), REVIEW_UPDATE("Reviewed updated succesfully"),
 	REVIEW_STATUS("Reviewed status "), SUCCESSFULLY(" successfully"), REVIEW_REMOVED("Reviewed removed succesfully"),
 	DESIGNER_FOLLOWING("Following designer"), DESIGNER_UNFOLLOWING("Unfollowing designer"),
-	ERROR("Error!!"), CART_DATA_DELETED("Cart data deleted successfully"), INVOICE_NOT_FOUND("Invoice not found!"),
+	ERROR("Error"), CART_DATA_DELETED("Cart data deleted successfully"), INVOICE_NOT_FOUND("Invoice not found!"),
 
 	// ORDER & PAYMENT CONTROLLER
 
 	UNAUTHORIZED("Unauthorized"), ORDER_PLACED("Order placed successfully"), ORDER_SUMMARY("Order summary"),
 	ORDER_CREATED(" Your order created successfully. "), PDF_GENERATED("PDF generated successfully"),
 	ORDER_DELIVERED("Order Already delivered"), ORDER_CANCEL("Order cancelled successfully"),
+	ORDER_REFUND_REQUEST("Refund request submitted successfully"),
+	ORDER_REFUND_APPROVED("Refund successfully"),
 	ORDER_ID_EXIST("OrderId Already Exist"), PAYMENT_NOT_FOUND("Payment not found!"),
 	ORDER_NOT_FOUND("Order not found"), ORDER_STATUS_UPDATED("Order status updated"),
 	TRACKING_UPDATED("Tracking updated successfully"),
 	SOMETHING_WENT_WRONG("Something went to wrong! from order related"),
 	PRODUCT_ALREADY_CANCEL("Product already cancelled "), INVOICE_EXIST("Invoice already exist!"),
+	BAD_REQUEST("Bad request"),
 	INVOICE_ADDED("Invoice added succesfully"), INVOICE_UPDATED("Invoice updated succesfully"),
 	CANCELATION_REQUEST("Cancelation request send successfully"),
 	ORDER_CANCEL_FROM_DESIGNER("Order cnacelled from designer side"),

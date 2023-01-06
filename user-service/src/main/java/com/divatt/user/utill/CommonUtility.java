@@ -1,11 +1,14 @@
 package com.divatt.user.utill;
 
-import org.json.simple.JSONObject;
+import java.util.List;
+
+import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -18,12 +21,18 @@ import com.divatt.user.serviceDTO.OrderPlacedDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
+import com.razorpay.Refund;
 
 @Component
 public class CommonUtility {
 
 	@Autowired
 	private MongoOperations mongoOperations;
+	
+	@Autowired
+	private Environment env;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtility.class);
 
@@ -104,6 +113,28 @@ public class CommonUtility {
 		dto.setUnits(orderSKUDetailsEntity.getUnits() + "");
 
 		return dto;
+	}
+	
+	@SuppressWarnings("all")
+	public void orderRefund(List<OrderSKUDetailsEntity> findByOrderSKU, 
+			OrderSKUDetailsEntity skuDetailsEntity, JSONObject getPaymentData) throws RazorpayException {
+		
+		final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
+		JSONObject refundRequest = new JSONObject();
+		
+		if(findByOrderSKU.size() == 1) {
+			refundRequest.put("payment_id", getPaymentData.get("razorpay_payment_id"));
+		}else if(findByOrderSKU.size() > 1) {
+			refundRequest.put("amount", skuDetailsEntity.getSalesPrice());
+			refundRequest.put("payment_id", getPaymentData.get("razorpay_payment_id"));
+		}
+		Refund refund = razorpayClient.Payments.refund(refundRequest);
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("orderSKU count {}",findByOrderSKU.size());
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("orderSKU count {}",refund.toJson());
+		} 
 	}
 
 }
