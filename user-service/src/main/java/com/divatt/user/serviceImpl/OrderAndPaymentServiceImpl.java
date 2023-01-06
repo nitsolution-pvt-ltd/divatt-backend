@@ -36,7 +36,9 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -540,7 +542,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-	public ResponseEntity<?> getOrderDetailsService(String orderId) {
+	public ResponseEntity<?> getOrderDetailsService(String orderId, Object token) {
 		try {
 
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
@@ -576,9 +578,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					// "https://localhost:8083/dev/designerProducts/productList/"
 					try {
 						LOGGER.info(D.getProductId() + " inside productid");
-						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
-								RestTemplateConstant.DESIGNER_PRODUCT.getLink() + D.getProductId(),
-								org.json.simple.JSONObject.class);
+						HttpHeaders headers = new HttpHeaders();
+						headers.set("Authorization",token.toString());
+						HttpEntity<Void> request = new HttpEntity<>(headers);
+//						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
+//								RestTemplateConstant.DESIGNER_PRODUCT.getLink() + D.getProductId(),
+//								org.json.simple.JSONObject.class);
+						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.exchange(RestTemplateConstant.DESIGNER_PRODUCT.getLink() + D.getProductId()
+						, HttpMethod.GET, request, org.json.simple.JSONObject.class);
+						
 						LOGGER.info("Dta after rest call = {} ", productById);
 //						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));
 						D.setHsn(productById.getBody().get("hsnData"));

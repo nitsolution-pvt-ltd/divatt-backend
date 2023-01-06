@@ -40,6 +40,9 @@ public class DesignerLoginEntity {
 	private String socialId;
 	private String name;
 	private Boolean isProfileCompleted;
+	private String designerCurrentStatus;
+	private Long productCount;
+	private Long follwerCount;
 
 	public DesignerLoginEntity() {
 		super();
@@ -48,7 +51,7 @@ public class DesignerLoginEntity {
 
 	public DesignerLoginEntity(Object uid, String email, String password, String authToken, Boolean isDeleted,
 			String adminComment, String profileStatus, String accountStatus, Json logins, String socialType,
-			String socialId, String name, Boolean isProfileCompleted) {
+			String socialId, String name, Boolean isProfileCompleted,String designerCurrentStatus) {
 		super();
 		this.uid = uid;
 		this.email = email;
@@ -63,6 +66,7 @@ public class DesignerLoginEntity {
 		this.socialId = socialId;
 		this.name = name;
 		this.isProfileCompleted = isProfileCompleted;
+		this.designerCurrentStatus = designerCurrentStatus;
 	}
 
 	public Object getUid() {
@@ -173,12 +177,36 @@ public class DesignerLoginEntity {
 		this.isProfileCompleted = isProfileCompleted;
 	}
 
+	public String getDesignerCurrentStatus() {
+		return designerCurrentStatus;
+	}
+
+	public void setDesignerCurrentStatus(String designerCurrentStatus) {
+		this.designerCurrentStatus = designerCurrentStatus;
+	}
+
+	public Long getProductCount() {
+		return productCount;
+	}
+
+	public void setProductCount(Long productCount) {
+		this.productCount = productCount;
+	}
+
+	public Long getFollwerCount() {
+		return follwerCount;
+	}
+
+	public void setFollwerCount(Long follwerCount) {
+		this.follwerCount = follwerCount;
+	}
+
 	@Override
 	public String toString() {
 		return "DesignerLoginEntity [uid=" + uid + ", email=" + email + ", password=" + password + ", authToken="
 				+ authToken + ", isDeleted=" + isDeleted + ", adminComment=" + adminComment + ", profileStatus="
 				+ profileStatus + ", accountStatus=" + accountStatus + ", logins=" + logins + ", socialType="
 				+ socialType + ", socialId=" + socialId + ", name=" + name + ", isProfileCompleted="
-				+ isProfileCompleted + "]";
+				+ isProfileCompleted + "designerCurrentStatus, " + designerCurrentStatus +"]";
 	}
 }

@@ -242,6 +242,10 @@ public class ProfileContoller {
 				designerLoginEntity.setAccountStatus("INACTIVE");
 				designerLoginEntity.setProfileStatus("new");
 				designerLoginEntity.setIsProfileCompleted(false);
+				designerLoginEntity.setDesignerCurrentStatus("Online");
+				designerLoginEntity.setProductCount(0);
+				designerLoginEntity.setFollwerCount(0);
+
 				if (designerLoginRepo.save(designerLoginEntity) != null) {
 					designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
 					designerProfileEntity
@@ -920,6 +924,7 @@ public class ProfileContoller {
 				designerProfileEntity.setDesignerCategory(findByEmail.get().getDesignerCategory());
 				designerProfileEntity.setDisplayName(findByEmail.get().getDisplayName());
 				designerProfileEntity.setEmail(findByEmail.get().getEmail());
+				designerProfileEntity.setPassword(findByEmail.get().getPassword());
 				designerProfileEntity.setDesignerCurrentStatus(status);
 				designerLoginRepo.save(designerProfileEntity);
 			} else {

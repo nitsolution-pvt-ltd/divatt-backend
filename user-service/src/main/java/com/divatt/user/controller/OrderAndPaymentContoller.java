@@ -401,7 +401,8 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()");
 
 		try {
-			return orderAndPaymentService.getOrderDetailsService(orderId);
+			Object token1 = (Object)token;
+			return orderAndPaymentService.getOrderDetailsService(orderId, token1);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

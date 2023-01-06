@@ -37,7 +37,7 @@ public interface OrderAndPaymentService {
 	public Map<String, Object> getOrders(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy, String token, String orderStatus);
 
-	public ResponseEntity<?> getOrderDetailsService(String orderId);
+	public ResponseEntity<?> getOrderDetailsService(String orderId, Object token);
 
 	public Map<String, Object> getUserOrderDetailsService(Integer userId, int page, int limit, String sort, String sortName,
 			String keyword, Optional<String> sortBy, String token);

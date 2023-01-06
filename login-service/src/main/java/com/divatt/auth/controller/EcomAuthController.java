@@ -255,6 +255,9 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 
 					DesignerLoginEntity designerLoginEntity = findByUserNameDesigner.get();
 					designerLoginEntity.setAuthToken(token);
+					designerLoginEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
+					designerLoginEntity.setProductCount(designerLoginEntity.getProductCount());
+					designerLoginEntity.setFollwerCount(designerLoginEntity.getFollwerCount());
 					designerLoginRepo.save(designerLoginEntity);
 					LoginDesignerData loginDesignerData = new LoginDesignerData(findByUserNameDesigner.get().getUid(),
 							findByUserNameDesigner.get().getEmail(), findByUserNameDesigner.get().getPassword(),
