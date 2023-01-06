@@ -422,9 +422,6 @@ public class AccountServiceImpl implements AccountService {
 				mapObj.put("status", 404);
 				mapObj.put("reason", "Error");
 				mapObj.put("message", "Account data not found");
-				if (LOGGER.isErrorEnabled()) {
-					LOGGER.error("Error: {}","Account data not found");
-				}
 				return new ResponseEntity<>(mapObj, HttpStatus.NOT_FOUND);
 			}
 			List<PaymentCharges> productDetailsList = new ArrayList<>();
