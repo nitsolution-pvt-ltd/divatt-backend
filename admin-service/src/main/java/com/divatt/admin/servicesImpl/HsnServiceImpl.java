@@ -1,7 +1,6 @@
 package com.divatt.admin.servicesImpl;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,12 +10,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +37,6 @@ import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.HsnRepo;
 import com.divatt.admin.services.HsnService;
 import com.divatt.admin.services.SequenceGenerator;
-import com.divatt.category.validation.FieldValidation;
 
 @Service
 public class HsnServiceImpl implements HsnService {
@@ -302,13 +298,13 @@ public class HsnServiceImpl implements HsnService {
 
 	@Override
 	public boolean upload(MultipartFile uploadFile) {
-		Map<String, String> errorMap = new HashMap<>();
+//		Map<String, String> errorMap = new HashMap<>();
 		HsnEntity hsnEntity = new HsnEntity();
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 		DataFormatter dataFormatter = new DataFormatter();
 		String sheetName = "Sheet1";
 		boolean returnFlag = true;
-		File fileName = new File(uploadFile.getOriginalFilename());
+		new File(uploadFile.getOriginalFilename());
 		Sheet sheet = loadTemplate(uploadFile, sheetName);
 		int minRow = sheet.getFirstRowNum() + 1;
 		int maxRow = sheet.getLastRowNum();
@@ -392,10 +388,10 @@ public class HsnServiceImpl implements HsnService {
 	private Sheet loadTemplate(MultipartFile uploadFile, String sheetName) {
 		File fileName = new File(uploadFile.getOriginalFilename());
 		XSSFWorkbook workbook = null;
-		OPCPackage pkg;
+//		OPCPackage pkg;
 		Sheet sheet = null;
 		int count = 0;
-		File file = null;
+//		File file = null;
 		LOGGER.info("1");
 		try {
 			if (fileName != null) {

@@ -126,7 +126,7 @@ public class OrderSKUDetailsEntity {
 
 	@Field(name = "giftwrap_status")
 	private Boolean giftwrapStatus;
-	
+
 	private Boolean cancelAcceptable;
 
 	private JSONObject giftWrapObject;
@@ -139,7 +139,14 @@ public class OrderSKUDetailsEntity {
 	private String status;
 
 	private HsnData hsnData;
+
 	private JSONObject measurementObject;
+
+	@Field(name = "gift_wrap_amount")
+	private Long giftWrapAmount;
+
+	@Field(name = "return_acceptable")
+	private Boolean returnAcceptable;
 
 	public OrderSKUDetailsEntity() {
 		super();
@@ -162,7 +169,8 @@ public class OrderSKUDetailsEntity {
 			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn,
 			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
 			Boolean giftwrapStatus, Boolean cancelAcceptable, JSONObject giftWrapObject, String userComment,
-			String shippingDate, String status, HsnData hsnData, JSONObject measurementObject) {
+			String shippingDate, String status, HsnData hsnData, JSONObject measurementObject, Long giftWrapAmount,
+			Boolean returnAcceptable) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -203,6 +211,8 @@ public class OrderSKUDetailsEntity {
 		this.status = status;
 		this.hsnData = hsnData;
 		this.measurementObject = measurementObject;
+		this.giftWrapAmount = giftWrapAmount;
+		this.returnAcceptable = returnAcceptable;
 	}
 
 	@Override
@@ -219,7 +229,8 @@ public class OrderSKUDetailsEntity {
 				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
 				+ ", cancelAcceptable=" + cancelAcceptable + ", giftWrapObject=" + giftWrapObject + ", userComment="
 				+ userComment + ", shippingDate=" + shippingDate + ", status=" + status + ", hsnData=" + hsnData
-				+ ", measurementObject=" + measurementObject + "]";
+				+ ", measurementObject=" + measurementObject + ", giftWrapAmount=" + giftWrapAmount
+				+ ", returnAcceptable=" + returnAcceptable + "]";
 	}
 
 	public Integer getId() {
@@ -534,12 +545,28 @@ public class OrderSKUDetailsEntity {
 		this.measurementObject = measurementObject;
 	}
 
+	public Long getGiftWrapAmount() {
+		return giftWrapAmount;
+	}
+
+	public void setGiftWrapAmount(Long giftWrapAmount) {
+		this.giftWrapAmount = giftWrapAmount;
+	}
+
+	public Boolean getReturnAcceptable() {
+		return returnAcceptable;
+	}
+
+	public void setReturnAcceptable(Boolean returnAcceptable) {
+		this.returnAcceptable = returnAcceptable;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
-
-
 	
-
+	
+	
+	
 }

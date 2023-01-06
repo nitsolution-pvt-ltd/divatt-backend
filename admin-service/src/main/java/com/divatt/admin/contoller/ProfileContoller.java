@@ -23,7 +23,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,14 +48,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.services.cloudfront.model.CustomErrorResponse;
 import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AdminModule;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.entity.SendMail;
-import com.divatt.admin.exception.CustomErrorMessage;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.helper.JwtUtil;
 import com.divatt.admin.repo.AdminModulesRepo;
@@ -196,7 +193,7 @@ public class ProfileContoller {
 					false);
 
 			try {
-				ResponseEntity<String> response = restTemplate
+				restTemplate
 						.postForEntity(RestTemplateConstant.AUTH_SEND_MAIL.getMessage(), mail, String.class);
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());

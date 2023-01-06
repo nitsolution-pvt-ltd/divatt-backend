@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -423,9 +422,6 @@ public class AccountServiceImpl implements AccountService {
 				mapObj.put("status", 404);
 				mapObj.put("reason", "Error");
 				mapObj.put("message", "Account data not found");
-				if (LOGGER.isErrorEnabled()) {
-					LOGGER.error("Error: {}","Account data not found");
-				}
 				return new ResponseEntity<>(mapObj, HttpStatus.NOT_FOUND);
 			}
 			List<PaymentCharges> productDetailsList = new ArrayList<>();

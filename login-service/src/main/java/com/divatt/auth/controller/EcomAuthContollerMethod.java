@@ -1,18 +1,14 @@
 package com.divatt.auth.controller;
 
-import javax.validation.Valid;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import com.divatt.auth.entity.AdminLoginEntity;
 import com.divatt.auth.entity.GlobalEntity;
 import com.divatt.auth.entity.GlobalResponse;
-import com.divatt.auth.entity.AdminLoginEntity;
 import com.divatt.auth.entity.SendMail;
-import com.divatt.auth.entity.UserLoginEntity;
 
 public interface EcomAuthContollerMethod {
 	

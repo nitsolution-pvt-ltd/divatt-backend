@@ -1,9 +1,6 @@
 package com.divatt.user.serviceDTO;
 
-import javax.validation.constraints.NotNull;
-
 import org.json.simple.JSONObject;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 
 public class DesignerRequestDTO {
@@ -16,7 +13,6 @@ public class DesignerRequestDTO {
 
 	public DesignerRequestDTO() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 

@@ -14,12 +14,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
@@ -78,9 +74,7 @@ import com.divatt.user.designerProductEntity.DesignerProfileEntity;
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
-import com.divatt.user.entity.ProductDetails;
 import com.divatt.user.entity.UserLoginEntity;
-import com.divatt.user.entity.order.HsnData;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
@@ -88,12 +82,10 @@ import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.repo.OrderDetailsRepo;
-import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.serviceDTO.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.serviceDTO.CancelationRequestDTO;
-import com.divatt.user.serviceDTO.InvoiceUpdatedModel;
 import com.divatt.user.serviceDTO.OrderPlacedDTO;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
@@ -102,12 +94,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
-import com.razorpay.BankTransfer;
-import com.razorpay.Invoice;
-import com.razorpay.Payment;
-import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
-import com.razorpay.Transfer;
 
 @Validated
 @RestController
@@ -138,8 +125,8 @@ public class OrderAndPaymentContoller {
 	@Autowired
 	private MongoOperations mongoOperations;
 
-	@Autowired
-	private OrderSKUDetailsRepo orderSKUDetailsRepo;
+//	@Autowired
+//	private OrderSKUDetailsRepo orderSKUDetailsRepo;
 
 	@Autowired
 	private CommonUtility commonUtility;
@@ -270,10 +257,8 @@ public class OrderAndPaymentContoller {
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderDate(formatDate);
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setCreatedOn(format);
 				orderDetailsEntity.setNetPrice(orderAndPaymentGlobalEntity.getOrderDetailsEntity().getNetPrice());
-				LOGGER.info("DATA BEFOUR SAVE, = {}", orderAndPaymentGlobalEntity.getOrderDetailsEntity());
 				OrderDetailsEntity OrderData = orderDetailsRepo
 						.save(orderAndPaymentGlobalEntity.getOrderDetailsEntity());
-				LOGGER.info("AFTER SAVE DATA IN DATABASE = {}", OrderData);
 
 				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
 						.getOrderSKUDetailsEntity();
@@ -305,9 +290,9 @@ public class OrderAndPaymentContoller {
 							.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
-					LOGGER.info(orderSKUDetailsEntityRow + "Inside Sku before Save");
+					
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
-					LOGGER.info(orderSKUDetailsEntityRow.toString() + "inside skurow");
+					
 					int designerId = orderSKUDetailsEntityRow.getDesignerId();
 					orders.add(commonUtility.skuOrders(orderSKUDetailsEntityRow));
 					taxAmount = taxAmount
@@ -343,7 +328,6 @@ public class OrderAndPaymentContoller {
 						designerEmail = forEntity.getDesignerProfile().getEmail();
 						designerName = forEntity.getDesignerName();
 						displayName = forEntity.getDesignerProfile().getDisplayName();
-						LOGGER.info(designerName);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -355,8 +339,6 @@ public class OrderAndPaymentContoller {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
-
-				LOGGER.info(orderSKUDetailsEntity.toString());
 
 				String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
 
@@ -1010,8 +992,4 @@ public class OrderAndPaymentContoller {
 		}
 
 	}
-
-	
-	
-	
 }

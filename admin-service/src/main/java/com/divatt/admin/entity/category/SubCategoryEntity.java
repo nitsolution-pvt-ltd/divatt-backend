@@ -11,8 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
-import springfox.documentation.spring.web.json.Json;
-
 @Document(collection="tbl_categories")
 public class SubCategoryEntity {
 

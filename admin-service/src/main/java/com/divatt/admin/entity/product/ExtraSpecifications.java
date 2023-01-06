@@ -1,7 +1,5 @@
 package com.divatt.admin.entity.product;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class ExtraSpecifications {
 
 	private String sleeveLength;
@@ -10,7 +8,6 @@ public class ExtraSpecifications {
 
 	public ExtraSpecifications() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public ExtraSpecifications(String sleeveLength, String sleeve) {

@@ -6,7 +6,6 @@ public class AgeEntity {
 	private Integer max;
 	public AgeEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public AgeEntity(Integer min, Integer max) {
 		super();

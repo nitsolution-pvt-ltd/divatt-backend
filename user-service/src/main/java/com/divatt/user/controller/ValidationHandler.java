@@ -28,7 +28,7 @@ public class ValidationHandler extends ResponseEntityExceptionHandler{
 			errors.put("fieldName", fieldName);
 			
 		});
-		return new ResponseEntity(errors, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<Object>(errors, HttpStatus.BAD_REQUEST);
 	}
 
 }

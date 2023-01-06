@@ -1,11 +1,9 @@
 package com.divatt.auth.config;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Optional;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -32,8 +29,6 @@ import com.divatt.auth.repo.DesignerLoginRepo;
 import com.divatt.auth.repo.UserLoginRepo;
 import com.divatt.auth.services.LoginUserDetails;
 
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
 @Controller
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -42,8 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private LoginUserDetails loginUserDetails;
 	
 	
-	@Autowired
-	private YMLConfig myConfig;
+//	@Autowired
+//	private YMLConfig myConfig;
 	
 	@Autowired
 	private JwtUtil jwtUtil;

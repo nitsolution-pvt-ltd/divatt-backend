@@ -1,6 +1,5 @@
 package com.divatt.admin.entity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -14,15 +13,7 @@ public class AdminModule {
 	private HashMap<String,Boolean> modPrivs;
 	
 	private Object modDetails;
-
 	
-
-	
-
-	
-
-
-
 	public AdminModule(String modName, HashMap<String, Boolean> modPrivs, BasicDBList modDetails) {
 		super();
 		this.modName = modName;

@@ -1,41 +1,29 @@
 package com.divatt.user.helper;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import com.divatt.user.constant.RestTemplateConstant;
-import com.divatt.user.designerProductEntity.DesignerProfileEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
-import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.serviceDTO.InvoiceUpdatedModel;
 
 @Service
 public class UtillUserService {
 	
-	@Autowired private MongoOperations mongoOperations;
+//	@Autowired private MongoOperations mongoOperations;
 	
-	@Autowired private static OrderSKUDetailsRepo dat1;
+//	@Autowired private static OrderSKUDetailsRepo dat1;
 	
-	@Autowired private static RestTemplate restTemplate;
+//	@Autowired private static RestTemplate restTemplate;
 	
 	private static Logger LOGGER=LoggerFactory.getLogger(UtillUserService.class);
-	private static List<Integer> mrpList= new ArrayList<>();
-	private static List<Integer> salePriceList=new ArrayList<>();
-	private static List<Integer> cgstList=new ArrayList<>();
-	private static List<Integer> sgstList= new ArrayList<>();
-	private static List<Integer> totalList= new ArrayList<>();
-	private static List<Integer> discountedAmount= new ArrayList<>();
+//	private static List<Integer> mrpList= new ArrayList<>();
+//	private static List<Integer> salePriceList=new ArrayList<>();
+//	private static List<Integer> cgstList=new ArrayList<>();
+//	private static List<Integer> sgstList= new ArrayList<>();
+//	private static List<Integer> totalList= new ArrayList<>();
+//	private static List<Integer> discountedAmount= new ArrayList<>();
 	public static InvoiceUpdatedModel invoiceUpdatedModelMapper(OrderInvoiceEntity invoiceEntity,OrderSKUDetailsEntity detailsEntity) {
 		
 		

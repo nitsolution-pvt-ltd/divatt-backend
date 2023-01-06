@@ -1,7 +1,6 @@
 package com.divatt.user.entity;
 
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.DefaultValue;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -36,7 +35,6 @@ public class UserDesignerEntity {
 	
 	public UserDesignerEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public UserDesignerEntity(Integer id, @NotNull(message = "Username is required!") Long userId,

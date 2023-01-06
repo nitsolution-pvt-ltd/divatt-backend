@@ -1,32 +1,24 @@
 package com.divatt.user.helper;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.xhtmlrenderer.pdf.ITextRenderer;
+
 import com.divatt.user.entity.InvoiceEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.exception.CustomException;
-import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.response.GlobalResponse;
-import com.lowagie.text.DocumentException;
 
 @Component
 public class PDFRunner {
 	
 	
-	@Autowired
-	private TemplateEngine templateEngine;
+//	@Autowired
+//	private TemplateEngine templateEngine;
 	
 	
 //	@Value("${pdf.directory}")
@@ -34,8 +26,8 @@ public class PDFRunner {
 	
 	@Autowired
 	private InvoiceEntity invoiceEntity;
-	@Autowired
-	private OrderDetailsRepo detailsRepo;
+//	@Autowired
+//	private OrderDetailsRepo detailsRepo;
 	
 	@Autowired
 	private MongoOperations mongoOperations;
@@ -46,7 +38,6 @@ public class PDFRunner {
 	}
 	public PDFRunner() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public void fun1() {
 		
