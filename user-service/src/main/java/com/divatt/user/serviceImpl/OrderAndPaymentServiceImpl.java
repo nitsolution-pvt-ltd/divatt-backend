@@ -154,9 +154,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Value("${host}")
 	private String host;
-	
-	@Value("${interfaceId}")
-	private String interfaceId;
 
 	@Value("${interfaceId}")
 	private String interfaceId;
@@ -1198,8 +1195,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 		try {
 
-			orderTrackingRepo
-					.findByTrackingIds(orderTrackingEntity.getTrackingId());
+			orderTrackingRepo.findByTrackingIds(orderTrackingEntity.getTrackingId());
 
 //			if (OrderTrackingRow.size() <= 0){
 
@@ -2729,8 +2725,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	public ResponseEntity<?> getTransactionsService(int page, int limit, String sort, String sortName, String keyword,
-			Optional<String> sortBy){
-				
+			Optional<String> sortBy) {
+
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - OrderAndPaymentContoller.getOrderPaymentService()");
 		}
@@ -2758,17 +2754,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} else {
 				findAll = userOrderPaymentRepo.Search(keyword, pagingSort);
 			}
-			
+
 			if (findAll.getSize() <= 0) {
-				Map<String, Object> mapObj= new HashMap<>();
+				Map<String, Object> mapObj = new HashMap<>();
 				mapObj.put("status", 404);
 				mapObj.put("reason", "Error");
 				mapObj.put("message", MessageConstant.PAYMENT_NOT_FOUND.getMessage());
 				if (LOGGER.isErrorEnabled()) {
-					LOGGER.error("Error: {}",MessageConstant.PAYMENT_NOT_FOUND.getMessage());
+					LOGGER.error("Error: {}", MessageConstant.PAYMENT_NOT_FOUND.getMessage());
 				}
 				return new ResponseEntity<>(mapObj, HttpStatus.NOT_FOUND);
-			} 
+			}
 
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
@@ -2792,15 +2788,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						host + contextPath + "/userOrder/transactions", "Success", HttpStatus.OK);
 			}
 			return ResponseEntity.ok(response);
-			
+
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/userOrder/transactions", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+						host + contextPath + "/userOrder/transactions", e.getLocalizedMessage(),
+						HttpStatus.BAD_REQUEST);
 			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 	}
-	
+
 }
