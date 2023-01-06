@@ -1,9 +1,6 @@
 package com.divatt.designer.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1013,68 +1010,14 @@ public class ProductServiceImp2 implements ProductService2 {
 			LOGGER.info("Inside ProductServiceImpl.productSearching()");
 			LOGGER.info("priceType = {}", priceType);
 			LOGGER.info("subCategoryId = {}", subCategoryId);
-
-			List<ProductMasterEntity2> productMaster = !searchKey.equals("") ? productRepo2.findbySearchKey(searchKey)
-					: productRepo2.findAll().stream().filter(product -> cod != null ? product.getCod() == cod : true)
-							.filter(product -> customization != null ? product.getWithCustomization() == customization
-									: true)
-							.filter(product -> !priceType.equals("") ? product.getPriceType().equals(priceType) : true)
-							.filter(product -> giftWrap != null ? product.getWithGiftWrap() == giftWrap : true)
-							.filter(product -> !maxPrice.equals("-1") ? product.getMrp() <= Long.parseLong(maxPrice)
-									: true)
-							.filter(product -> !minPrice.equals("-1") ? product.getMrp() >= Long.parseLong(minPrice)
-									: true)
-							.filter(product -> !size.equals("") ? Arrays.asList(size.split(",")).stream().anyMatch(
-									s -> product.getSizes().stream().anyMatch(sizee -> sizee.equals(s))) : true)
-//							.filter(product -> !colour.equals("")
-//									? Arrays.asList(colour.split(",")).stream()
-//											.anyMatch(color -> Arrays.asList(product.getImages()).stream()
-//													.anyMatch(image -> Optional.ofNullable(image.getLarge())
-//															.filter(image1 -> image1.equals("#" + color)).isPresent()))
-//									: true)
-							.filter(product -> !colour.equals("")
-									? Arrays.asList(colour.split(",")).stream().anyMatch(
-											color -> product.getColour().equals(color))
-									: true)
-							.filter(product -> !categoryId.equals("")
-									? Arrays.asList(categoryId.split(",")).stream()
-											.anyMatch(category -> category.equals(product.getCategoryId().toString()))
-									: true)
-							.filter(product -> !subCategoryId.equals("")
-									? Arrays.asList(subCategoryId.split(",")).stream()
-											.anyMatch(subCategory -> subCategory
-													.equals(product.getSubCategoryId().toString()))
-									: true)
-							.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
-									.anyMatch(dId -> dId.equals(product.getDesignerId().toString())) : true)
-							.collect(Collectors.toList());
-			if (sortDateType.equalsIgnoreCase("new")) {
-				Collections.sort(productMaster, Comparator.comparing(ProductMasterEntity2::getCreatedOn).reversed());
-			} else if (sortDateType.equalsIgnoreCase("old")) {
-				Collections.sort(productMaster, Comparator.comparing(ProductMasterEntity2::getCreatedOn));
+			if (!searchKey.equals("")) {
+				return customFunction.filterProduct(productRepo2.findbySearchKey(searchKey), searchBy, designerId, categoryId, subCategoryId, colour, cod, customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap,searchKey, sortDateType, sortPrice);
+			} else {
+				return customFunction.filterProduct(productRepo2.findAll(), searchBy, designerId, categoryId, subCategoryId, colour, cod, customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap,searchKey, sortDateType, sortPrice);
 			}
-			if (sortPrice.equalsIgnoreCase("lowToHigh")) {
-				Collections.sort(productMaster, Comparator.comparing(
-					product -> product.getDeal().getSalePrice() == null ? product.getMrp() : product.getDeal().getSalePrice()));
-			}else if(sortPrice.equalsIgnoreCase("highToLow")) {
-				Collections.sort(productMaster, Comparator.comparing(
-					product -> product.getDeal().getSalePrice() == null ? product.getMrp() : product.getDeal().getSalePrice()));
-				Collections.reverse(productMaster);
-			}
-			productMaster.forEach(element -> {
-				DesignerProfile designerProfile = designerProfileRepo
-						.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get()
-						.getDesignerProfile();
-				if (designerProfile.getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
-					element.setDesignerProfile(designerProfile);
-				}
-			});
-			productMaster.removeIf(element -> element.getDesignerProfile() == null);
-			return productMaster;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-
 	}
 
 }
