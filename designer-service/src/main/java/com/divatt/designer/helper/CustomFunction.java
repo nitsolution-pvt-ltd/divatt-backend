@@ -433,6 +433,7 @@ public class CustomFunction {
 			this.productMasterEntity2.setProductStage(productMasterEntity2.getProductStage());
 			this.productMasterEntity2.setProductStageDetails(productMasterEntity2.getProductStageDetails());
 			this.productMasterEntity2.setCreatedOn(productMasterEntity2.getCreatedOn());
+			this.productMasterEntity2.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
 
 			return this.productMasterEntity2;
 		} catch (Exception e) {
