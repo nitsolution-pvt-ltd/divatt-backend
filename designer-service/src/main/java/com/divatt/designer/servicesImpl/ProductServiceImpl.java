@@ -85,7 +85,7 @@ public class ProductServiceImpl implements ProductService{
 
 	@Autowired
 	private TemplateEngine templateEngine;
-	
+
 	@Autowired
 	private ProductRepo2 productRepo2;
 
@@ -120,7 +120,8 @@ public class ProductServiceImpl implements ProductService{
 			}
 
 			if (allData.isEmpty()) {
-				LOGGER.info("MessageConstant.PRODUCT_NOT_FOUND.getMessage()"+MessageConstant.PRODUCT_NOT_FOUND.getMessage());
+				LOGGER.info("MessageConstant.PRODUCT_NOT_FOUND.getMessage()"
+						+ MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			} else {
 
@@ -145,7 +146,8 @@ public class ProductServiceImpl implements ProductService{
 				response.put("perPageElement", findAll.getNumberOfElements());
 
 				if (findAll.getSize() <= 0) {
-					LOGGER.info("MessageConstant.PRODUCT_NOT_FOUND.getMessage()"+MessageConstant.PRODUCT_NOT_FOUND.getMessage());
+					LOGGER.info("MessageConstant.PRODUCT_NOT_FOUND.getMessage()"
+							+ MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 					throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 				} else {
 					return response;
@@ -184,15 +186,19 @@ public class ProductServiceImpl implements ProductService{
 								String.class);
 						productRepo.save(customFunction.filterDataEntity(productData));
 
-						return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_ADDED_SUCCESSFULLY.getMessage(), 200);
+						return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+								MessageConstant.PRODUCT_ADDED_SUCCESSFULLY.getMessage(), 200);
 					} else {
-						return new GlobalResponce(MessageConstant.ERROR.getMessage(), MessageConstant.PRODUCT_ALREADY_ADDED.getMessage(), 400);
+						return new GlobalResponce(MessageConstant.ERROR.getMessage(),
+								MessageConstant.PRODUCT_ALREADY_ADDED.getMessage(), 400);
 					}
 				} else {
-					return new GlobalResponce(MessageConstant.ERROR.getMessage(), MessageConstant.DESIGNER_DOCUMENT_IS_NOT_APPROVE.getMessage(), 400);
+					return new GlobalResponce(MessageConstant.ERROR.getMessage(),
+							MessageConstant.DESIGNER_DOCUMENT_IS_NOT_APPROVE.getMessage(), 400);
 				}
 			} else {
-				return new GlobalResponce(MessageConstant.ERROR.getMessage(), MessageConstant.DESIGNER_ID_DOES_NOT_EXIST.getMessage(), 400);
+				return new GlobalResponce(MessageConstant.ERROR.getMessage(),
+						MessageConstant.DESIGNER_ID_DOES_NOT_EXIST.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -209,7 +215,8 @@ public class ProductServiceImpl implements ProductService{
 				ResponseEntity<Object> categoryEntity = restTemplate.getForEntity(
 						RestTemplateConstant.CATEGORY_VIEW.getMessage() + masterEntity.getCategoryId(), Object.class);
 				ResponseEntity<Object> subCategoryEntity = restTemplate.getForEntity(
-						RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + masterEntity.getSubCategoryId(), Object.class);
+						RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + masterEntity.getSubCategoryId(),
+						Object.class);
 				ProductEntity productData = customFunction.productFilter(masterEntity);
 				productData.setCategoryObject(categoryEntity.getBody());
 				productData.setSubCategoryObject(subCategoryEntity.getBody());
@@ -236,18 +243,21 @@ public class ProductServiceImpl implements ProductService{
 					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 					productEntity.setUpdatedOn(new Date());
 					productRepo.save(productEntity);
-					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STATUS_INACTIVATED.getMessage(), 200);
+					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+							MessageConstant.STATUS_INACTIVATED.getMessage(), 200);
 				} else {
 					status = true;
 					productEntity.setIsActive(status);
 					productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 					productEntity.setUpdatedOn(new Date());
 					productRepo.save(productEntity);
-					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STATUS_ACTIVATED.getMessage(), 200);
+					return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+							MessageConstant.STATUS_ACTIVATED.getMessage(), 200);
 				}
 
 			} else {
-				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
+				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(),
+						MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -265,7 +275,8 @@ public class ProductServiceImpl implements ProductService{
 					throw new CustomException(MessageConstant.DESIGNER_ID_CHANGE.getMessage());
 				}
 				productRepo.save(customFunction.updateFunction(productMasterEntity, productId));
-				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_UPDATED.getMessage(), 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.PRODUCT_UPDATED.getMessage(), 200);
 			} else {
 				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			}
@@ -285,15 +296,18 @@ public class ProductServiceImpl implements ProductService{
 				if (productEntity.getIsDeleted().equals(false)) {
 					isDelete = true;
 				} else {
-					return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.ALREADY_DELETED.getMessage(), 400);
+					return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(),
+							MessageConstant.ALREADY_DELETED.getMessage(), 400);
 				}
 				productEntity.setIsDeleted(isDelete);
 				productEntity.setUpdatedBy(productEntity.getDesignerId().toString());
 				productEntity.setUpdatedOn(new Date());
 				productRepo.save(productEntity);
-				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.DELETED.getMessage(), 200);
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.DELETED.getMessage(),
+						200);
 			} else {
-				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
+				return new GlobalResponce(MessageConstant.BAD_REQUEST.getMessage(),
+						MessageConstant.PRODUCT_NOT_FOUND.getMessage(), 400);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -776,11 +790,11 @@ public class ProductServiceImpl implements ProductService{
 					Criteria.where("designerId").is(Id).and("isActive").is(true).and("adminStatus").is("Approved"));
 			List<ProductMasterEntity2> productList = mongoOperations.find(query, ProductMasterEntity2.class);
 
-			productList.stream()
-			.forEach(e->{
-				e.setDesignerProfile(designerProfileRepo.findBydesignerId(Long.parseLong(e.getDesignerId().toString())).get().getDesignerProfile());
+			productList.stream().forEach(e -> {
+				e.setDesignerProfile(designerProfileRepo.findBydesignerId(Long.parseLong(e.getDesignerId().toString()))
+						.get().getDesignerProfile());
 			});
-			
+
 			if (productList.isEmpty()) {
 				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			}
@@ -866,7 +880,8 @@ public class ProductServiceImpl implements ProductService{
 			List<Long> userId = new ArrayList<Long>();
 
 			ResponseEntity<String> forEntity = restTemplate.getForEntity(
-					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + productData.getDesignerId(), String.class);
+					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + productData.getDesignerId(),
+					String.class);
 			String data = forEntity.getBody();
 			JSONArray jsonArray = new JSONArray(data);
 			String designerImageData = designerProfileRepo.findBydesignerId(productData.getDesignerId().longValue())
@@ -875,12 +890,13 @@ public class ProductServiceImpl implements ProductService{
 				ObjectMapper objectMapper = new ObjectMapper();
 				UserProfile readValue = objectMapper.readValue(jsonArray.get(i).toString(), UserProfile.class);
 				ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(
-						RestTemplateConstant.USER_GET_USER_ID.getMessage() + readValue.getUserId(), UserProfileInfo.class);
+						RestTemplateConstant.USER_GET_USER_ID.getMessage() + readValue.getUserId(),
+						UserProfileInfo.class);
 				userInfoList.add(userInfo.getBody());
 			}
 			for (int i = 0; i < userId.size(); i++) {
-				restTemplate.getForEntity(
-						RestTemplateConstant.INFO_USER.getMessage() + userId.get(i), UserProfileInfo.class);
+				restTemplate.getForEntity(RestTemplateConstant.INFO_USER.getMessage() + userId.get(i),
+						UserProfileInfo.class);
 
 			}
 			ProductMasterEntity productMasterEntity = productRepo.findById(productData.getProductId()).get();
@@ -918,7 +934,8 @@ public class ProductServiceImpl implements ProductService{
 						"New product Arrived", htmlContent, true, null, restTemplate);
 				emailSenderThread.start();
 			}
-			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_APPROVED.getMessage(), 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.PRODUCT_APPROVED.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -950,10 +967,8 @@ public class ProductServiceImpl implements ProductService{
 			for (int i = 0; i < orderSKUDetailsEntities.size(); i++) {
 				int productId = orderSKUDetailsEntities.get(i).getProductId();
 				int productQty = orderSKUDetailsEntities.get(i).getUnits().intValue();
-				String productSize = orderSKUDetailsEntities.get(i).getSize();
-//				List<StandardSOH> updatedSOH = new ArrayList<StandardSOH>();
+				String productSize = orderSKUDetailsEntities.get(i).getSize();				
 				ProductMasterEntity2 productMasterEntity = productRepo2.findById(productId).get();
-				LOGGER.info("Size for the product = {}",productSize);
 				if(productSize.equals("Custom") && productMasterEntity.getWithCustomization()) {	
 					productRepo2.save(new CustomFunction().setProduDetails(productMasterEntity, productQty));
 				}
@@ -972,8 +987,7 @@ public class ProductServiceImpl implements ProductService{
 
 	public List<ProductMasterEntity> productListCategorySubcategory(String categoryName, String subcategoryName) {
 		try {
-			restTemplate
-					.getForEntity(RestTemplateConstant.DEV_CATEGORY.getMessage(), CategoryEntity.class);
+			restTemplate.getForEntity(RestTemplateConstant.DEV_CATEGORY.getMessage(), CategoryEntity.class);
 			return null;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1124,7 +1138,8 @@ public class ProductServiceImpl implements ProductService{
 					emailSenderThread.start();
 				}
 			}
-			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.DESIGNER_INFORMED.getMessage(), 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+					MessageConstant.DESIGNER_INFORMED.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -1132,14 +1147,15 @@ public class ProductServiceImpl implements ProductService{
 
 	public GlobalResponce stockRecovereService(OrderSKUDetailsEntity orderDetails) {
 		try {
-			ProductMasterEntity2 productMasterEntity2=productRepo2.findById(orderDetails.getProductId()).get();
+			ProductMasterEntity2 productMasterEntity2 = productRepo2.findById(orderDetails.getProductId()).get();
 			productMasterEntity2.setProductId(orderDetails.getProductId());
-			productMasterEntity2.setSoh(productMasterEntity2.getSoh() + orderDetails.getUnits().intValue()) ;
+			productMasterEntity2.setSoh(productMasterEntity2.getSoh() + orderDetails.getUnits().intValue());
 			productMasterEntity2.setNotify(productMasterEntity2.getNotify());
 			productMasterEntity2.setOos(productMasterEntity2.getOos());
 			productMasterEntity2.setSizes(productMasterEntity2.getSizes());
 			productRepo2.save(productMasterEntity2);
-			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STOCK_RECOVER.getMessage(), 200);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.STOCK_RECOVER.getMessage(),
+					200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -1187,8 +1203,9 @@ public class ProductServiceImpl implements ProductService{
 									: true)
 							.filter(product -> !priceType.equals("") ? product.getPriceType().equals(priceType) : true)
 							.filter(product -> giftWrap != null ? product.getGiftWrap() == giftWrap : true)
-							.filter(product -> !maxPrice.equals("-1") ? product.getPrice().getIndPrice()
-									.getMrp() <= Long.parseLong(maxPrice) : true)
+							.filter(product -> !maxPrice.equals("-1")
+									? product.getPrice().getIndPrice().getMrp() <= Long.parseLong(maxPrice)
+									: true)
 							.filter(product -> !minPrice.equals("-1")
 									? product.getPrice().getIndPrice().getMrp() >= Long.parseLong(minPrice)
 									: true)
@@ -1200,8 +1217,9 @@ public class ProductServiceImpl implements ProductService{
 													.anyMatch(image -> Optional.ofNullable(image.getColour())
 															.filter(image1 -> image1.equals("#" + color)).isPresent()))
 									: true)
-							.filter(product -> !categoryId.equals("") ? Arrays.asList(categoryId.split(",")).stream()
-									.anyMatch(category -> category.equals(product.getCategoryId().toString()))
+							.filter(product -> !categoryId.equals("")
+									? Arrays.asList(categoryId.split(",")).stream()
+											.anyMatch(category -> category.equals(product.getCategoryId().toString()))
 									: true)
 							.filter(product -> !subCategoryId.equals("")
 									? Arrays.asList(subCategoryId.split(",")).stream()
