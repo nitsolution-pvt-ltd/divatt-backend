@@ -683,14 +683,16 @@ public class UserServiceImpl implements UserService {
 					.getForEntity(RestTemplateConstant.DESIGNER_USER.getLink() + designerId, String.class).getBody();
 			JsonNode jn = new JsonNode(body);
 			JSONObject object = jn.getObject();
-//			System.out.println(object);
 			LOGGER.info("Data after service call = {}", object);
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
 			if (userId != 0) {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("designerId").is(designerId));
-				List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
+				// List<UserDesignerEntity> userDesignerList = mongoOperations.find(query,
+				// UserDesignerEntity.class);
+				List<UserDesignerEntity> userDesignerList = this.userDesignerRepo
+						.findByDesignerIdAndUserId(designerId.longValue(), userId);
 				// List<UserDesignerEntity> findByUserId =
 				// userDesignerRepo.findByUserId(userId);
 				if (!userDesignerList.isEmpty()) {
@@ -876,7 +878,7 @@ public class UserServiceImpl implements UserService {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("userId").is(userId));
 			List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
-			LOGGER.info("userDesignerList<><><><!!!!"+userDesignerList);
+			LOGGER.info("userDesignerList<><><><!!!!" + userDesignerList);
 			userDesignerList.stream().forEach(e -> {
 				designerList.add(restTemplate
 						.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), Object.class)
@@ -1086,8 +1088,9 @@ public class UserServiceImpl implements UserService {
 		}
 
 	}
+
 	@Override
-	public List<UserDesignerEntity> getUserDesignerDetails(String userEmail){
+	public List<UserDesignerEntity> getUserDesignerDetails(String userEmail) {
 		try {
 			Long userId = userLoginRepo.findByEmail(userEmail).get().getId();
 			LOGGER.info("userId<><><>!!!!" + userId);
@@ -1095,7 +1098,7 @@ public class UserServiceImpl implements UserService {
 			query.addCriteria(Criteria.where("userId").is(userId));
 			List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
 			return userDesignerList;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

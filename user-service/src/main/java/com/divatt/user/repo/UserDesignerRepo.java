@@ -12,6 +12,7 @@ public interface UserDesignerRepo extends MongoRepository<UserDesignerEntity,Int
 	Optional<UserDesignerEntity> findByUserId(Long userId);
 	//List<UserDesignerEntity> findByUserId(Long userId);
 	List<UserDesignerEntity> findByDesignerIdAndIsFollowing(Long designerId,Boolean isFollowing);
+	List<UserDesignerEntity> findByDesignerIdAndUserId(Long designerId, Long userId);
 	Long countByDesignerId(Long designerId);
 	
 
