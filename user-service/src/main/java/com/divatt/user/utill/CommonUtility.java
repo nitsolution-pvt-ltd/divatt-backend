@@ -155,9 +155,10 @@ public class CommonUtility {
 		Payment payment = razorpayClient.Payments.fetch(getPaymentData.get("razorpay_payment_id").toString());
 		ObjectMapper obj = new ObjectMapper();
 		Map<String, Object> map = obj.readValue(payment.toString(), new TypeReference<Map<String, Object>>() { });
+		Map<String, Object> refundMap = obj.readValue(refund.toString(), new TypeReference<Map<String, Object>>() { });
 		orderPaymentEntity.setPaymentResponse(map);
 		orderPaymentEntity.setPaymentStatus("REFUNDED");
-		orderPaymentEntity.setRefund(refund);
+		orderPaymentEntity.setRefund(refundMap);
 		userOrderPaymentRepo.save(orderPaymentEntity);
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Update order payment {}", "refund updated");
