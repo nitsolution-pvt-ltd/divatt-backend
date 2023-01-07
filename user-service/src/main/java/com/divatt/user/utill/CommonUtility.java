@@ -76,11 +76,10 @@ public class CommonUtility {
 		try {
 			String json = ow
 					.writeValueAsString(orderAndPaymentGlobalEntity.getOrderDetailsEntity().getShippingAddress());
-			JSONObject json1 = (JSONObject) parser.parse(json);
+			org.json.simple.JSONObject json1 = (org.json.simple.JSONObject) parser.parse(json);
 			LOGGER.info("DATA#####**** = {}", json);
 			LOGGER.info("DATA#####**** = {}", json1.get("address2") == null);
 			if (json1.get("address2") != null) {
-				json1.remove("address2");
 				String address1 = json1.get("address1").toString();
 				String address2 = json1.get("address2").toString();
 				String country = json1.get("country").toString();
@@ -92,6 +91,7 @@ public class CommonUtility {
 				dto.setShippingAddress(address1 + "," + address2 + "," + country + "," + state + "," + city + ","
 						+ postalCode + "," + landmark + "," + mobile);
 			} else {
+				json1.remove("address2");
 				String address1 = json1.get("address1").toString();
 				String country = json1.get("country").toString();
 				String state = json1.get("state").toString();
