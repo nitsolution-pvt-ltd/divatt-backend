@@ -130,16 +130,16 @@ public class OrderAndPaymentContoller {
 
 	@Autowired
 	private CommonUtility commonUtility;
-	
+
 	@Autowired
 	private TemplateEngine templateEngine;
-	
+
 	@Value("${spring.profiles.active}")
 	private String contextPath;
 
 	@Value("${host}")
 	private String host;
-	
+
 	@Value("${interfaceId}")
 	private String interfaceId;
 
@@ -217,7 +217,8 @@ public class OrderAndPaymentContoller {
 	public Map<String, Object> getOrderPaymentDetails(@RequestHeader("Authorization") String token,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
-			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) throws RazorpayException {
+			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy)
+			throws RazorpayException {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderPaymentDetails()");
 		try {
 			return orderAndPaymentService.getOrderPaymentService(page, limit, sort, sortName, keyword, sortBy);
@@ -290,9 +291,9 @@ public class OrderAndPaymentContoller {
 							.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
-					
+
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
-					
+
 					int designerId = orderSKUDetailsEntityRow.getDesignerId();
 					orders.add(commonUtility.skuOrders(orderSKUDetailsEntityRow));
 					taxAmount = taxAmount
@@ -302,14 +303,15 @@ public class OrderAndPaymentContoller {
 						String mrp2 = orderSKUDetailsEntityRow.getMrp() + "";
 						mrp = mrp + Double.parseDouble(mrp2 == null ? "0" : mrp2);
 						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
-						grandTotal = grandTotal + Double.parseDouble(orderSKUDetailsEntityRow.getMrp() == null ? "0" :  orderSKUDetailsEntityRow.getMrp().toString());
+						grandTotal = grandTotal + Double.parseDouble(orderSKUDetailsEntityRow.getMrp() == null ? "0"
+								: orderSKUDetailsEntityRow.getMrp().toString());
 					} else {
 						String salesPrice = orderSKUDetailsEntityRow.getSalesPrice() + "";
 						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
 						grandTotal = grandTotal + Double.parseDouble(salesPrice == null ? "0" : salesPrice);
 					}
-					Double grossGrandTotal  = 0.00;
-					for(OrderPlacedDTO order : orders) {
+					Double grossGrandTotal = 0.00;
+					for (OrderPlacedDTO order : orders) {
 						grossGrandTotal = grossGrandTotal + Double.parseDouble(order.getTotal());
 					}
 					totalTax = totalTax + Double.parseDouble(totalTax + "" == null ? "0" : totalTax + "");
@@ -395,14 +397,13 @@ public class OrderAndPaymentContoller {
 	}
 
 	@GetMapping("/getOrder/{orderId}")
-	public ResponseEntity<?> getOrderDetails(@RequestHeader("Authorization") String token,
-			@PathVariable() String orderId) {
+	public ResponseEntity<?> getOrderDetails(@PathVariable() String orderId) {
 
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()");
 
 		try {
-			Object token1 = (Object)token;
-			return orderAndPaymentService.getOrderDetailsService(orderId, token1);
+
+			return orderAndPaymentService.getOrderDetailsService(orderId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -960,7 +961,7 @@ public class OrderAndPaymentContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/transactions")
 	public ResponseEntity<?> getTransactions(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
@@ -987,7 +988,8 @@ public class OrderAndPaymentContoller {
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/userOrder/transactions", e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+						host + contextPath + "/userOrder/transactions", e.getLocalizedMessage(),
+						HttpStatus.BAD_REQUEST);
 			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}

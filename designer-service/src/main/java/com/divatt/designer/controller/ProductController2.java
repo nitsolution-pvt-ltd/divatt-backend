@@ -39,10 +39,10 @@ public class ProductController2 {
 //	
 	@Autowired
 	private ProductService2 productService2;
-	
+
 	@Autowired
 	private JWTConfig jwtConfig;
-	
+
 	@Autowired
 	private DesignerLoginRepo designerLoginRepo;
 
@@ -90,15 +90,16 @@ public class ProductController2 {
 
 //	@Override
 	@GetMapping("/productList/{productId}")
-	public ProductMasterEntity2 getProduct(@RequestHeader("Authorization") String token, @PathVariable Integer productId) {
+	public ProductMasterEntity2 getProduct(@RequestHeader("Authorization") String token,
+			@PathVariable Integer productId) {
 		try {
 			LOGGER.info("Inside- ProductController2.getProduct()");
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
 					.findByEmail(jwtConfig.extractUsername(token.substring(7)));
-			if(findByEmail.get().getdId() == productId.longValue()) {
-				return productService2.getProduct(productId);
+			if (findByEmail.isPresent()) {
+				return productService2.getProduct(productId, findByEmail.get().getdId());
 			} else {
-				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
+				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -114,8 +115,8 @@ public class ProductController2 {
 			@RequestParam Optional<String> sortBy) {
 		try {
 			LOGGER.info("Inside - designer -> ProductController2.getProductDetailsallStatus()");
-			return this.productService2.getProductDetailsallStatus(adminStatus, page, limit, sort, sortName,
-					isDeleted, keyword, sortBy);
+			return this.productService2.getProductDetailsallStatus(adminStatus, page, limit, sort, sortName, isDeleted,
+					keyword, sortBy);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -132,8 +133,8 @@ public class ProductController2 {
 			@RequestParam Optional<String> sortBy, @RequestParam(defaultValue = "") String sortDateType) {
 		try {
 			LOGGER.info("Inside - designer -> ProductController2.designerProductByDesignerId()");
-			return this.productService2.getDesignerProductByDesignerId(designerId, adminStatus, isActive, page,
-					limit, sort, sortName, isDeleted, keyword, sortBy, sortDateType);
+			return this.productService2.getDesignerProductByDesignerId(designerId, adminStatus, isActive, page, limit,
+					sort, sortName, isDeleted, keyword, sortBy, sortDateType);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -250,13 +251,24 @@ public class ProductController2 {
 			@RequestParam(defaultValue = "") String priceType, @RequestParam(defaultValue = "") Boolean returnStatus,
 			@RequestParam(defaultValue = "-1") String maxPrice, @RequestParam(defaultValue = "-1") String minPrice,
 			@RequestParam(defaultValue = "") String size, @RequestParam(defaultValue = "") Boolean giftWrap,
-			@RequestParam(defaultValue = "") String searchKey,@RequestParam(defaultValue = "") String sortDateType,
+			@RequestParam(defaultValue = "") String searchKey, @RequestParam(defaultValue = "") String sortDateType,
 			@RequestParam(defaultValue = "") String sortPrice) {
 		try {
 			LOGGER.info("Inside- ProductController.productSearching()");
 			LOGGER.info("COD data = {}", cod);
-			return this.productService2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour,
-					cod, customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice);
+			return this.productService2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour, cod,
+					customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType,
+					sortPrice);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@GetMapping("/productLists/{productId}")
+	public ProductMasterEntity2 getProducts(@PathVariable Integer productId) {
+		try {
+			LOGGER.info("Inside- ProductController2.getProduct()");
+			return productService2.getProducts(productId);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

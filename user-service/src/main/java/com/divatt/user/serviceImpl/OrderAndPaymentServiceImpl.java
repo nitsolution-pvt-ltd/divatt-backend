@@ -547,7 +547,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
-	public ResponseEntity<?> getOrderDetailsService(String orderId, Object token) {
+	public ResponseEntity<?> getOrderDetailsService(String orderId) {
 		try {
 
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
@@ -583,14 +583,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					// "https://localhost:8083/dev/designerProducts/productList/"
 					try {
 						LOGGER.info(D.getProductId() + " inside productid");
-						HttpHeaders headers = new HttpHeaders();
-						headers.set("Authorization",token.toString());
-						HttpEntity<Void> request = new HttpEntity<>(headers);
-//						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
-//								RestTemplateConstant.DESIGNER_PRODUCT.getLink() + D.getProductId(),
-//								org.json.simple.JSONObject.class);
-						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.exchange(RestTemplateConstant.DESIGNER_PRODUCT.getLink() + D.getProductId()
-						, HttpMethod.GET, request, org.json.simple.JSONObject.class);
+//						HttpHeaders headers = new HttpHeaders();
+//						headers.set("Authorization",token.toString());
+//						HttpEntity<Void> request = new HttpEntity<>(headers);
+						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
+								RestTemplateConstant.DESIGNER_PRODUCT.getLink() + D.getProductId(),
+								org.json.simple.JSONObject.class);
+//						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.exchange(RestTemplateConstant.DESIGNER_PRODUCT.getLink() + D.getProductId()
+//						, HttpMethod.GET, request, org.json.simple.JSONObject.class);
 						
 						LOGGER.info("Dta after rest call = {} ", productById);
 //						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));

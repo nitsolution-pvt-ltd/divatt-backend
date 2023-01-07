@@ -18,6 +18,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -68,6 +71,9 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	@Autowired
 	private TemplateEngine templateEngine;
+
+	@Autowired
+	private MongoOperations mongoOperations;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImp2.class);
 
@@ -240,20 +246,30 @@ public class ProductServiceImp2 implements ProductService2 {
 	}
 
 	@Override
-	public ProductMasterEntity2 getProduct(Integer productId) {
+	public ProductMasterEntity2 getProduct(Integer productId, Long designerId) {
 		try {
-			ProductMasterEntity2 productMasterEntity2 = productRepo2.findById(productId).get();
-			LOGGER.info("Product data by product ID = {}", productMasterEntity2);
-			DesignerProfileEntity designerProfileEntity = designerProfileRepo
-					.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get();
-			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-					RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productMasterEntity2.getSubCategoryId(),
-					SubCategoryEntity.class);
-			LOGGER.info("RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()"
-					+ RestTemplateConstant.SUBCATEGORY_VIEW.getMessage());
-			ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-					RestTemplateConstant.CATEGORY_VIEW.getMessage() + productMasterEntity2.getCategoryId(),
-					CategoryEntity.class);
+			Query query = new Query();
+			query.addCriteria(Criteria.where("designerId").is(designerId));
+			List<ProductMasterEntity2> find = mongoOperations.find(query, ProductMasterEntity2.class);
+			List<ProductMasterEntity2> list = new ArrayList<>();
+			for(ProductMasterEntity2 data :find) {
+				if (data.getProductId().equals(productId)) {
+				list.add(data);
+			}
+			}
+			if (list.size() > 0) {
+				ProductMasterEntity2 productMasterEntity2 = list.get(0);
+				LOGGER.info("Product data by product ID = {}", productMasterEntity2);
+				DesignerProfileEntity designerProfileEntity = designerProfileRepo
+						.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get();
+				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+						RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productMasterEntity2.getSubCategoryId(),
+						SubCategoryEntity.class);
+				LOGGER.info("RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()"
+						+ RestTemplateConstant.SUBCATEGORY_VIEW.getMessage());
+				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+						RestTemplateConstant.CATEGORY_VIEW.getMessage() + productMasterEntity2.getCategoryId(),
+						CategoryEntity.class);
 //			LOGGER.info("RestTemplateConstant.CATEGORY_VIEW.getMessage()"+RestTemplateConstant.CATEGORY_VIEW.getMessage());
 //			LOGGER.info("MessageConstant.PRODUCT_NOT_FOUND.getMessage()"+MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 //			LOGGER.info("MessageConstant.SUCCESS.getMessage()"+MessageConstant.SUCCESS.getMessage());
@@ -262,10 +278,12 @@ public class ProductServiceImp2 implements ProductService2 {
 //			LOGGER.info("RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage()"+RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage());
 //			LOGGER.info("RestTemplateConstant.USER_GET_USER_ID.getMessage()"+RestTemplateConstant.USER_GET_USER_ID.getMessage());
 
-			productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
-			productMasterEntity2.setCategoryName(catagory.getBody().getCategoryName());
-			productMasterEntity2.setDesignerProfile(designerProfileEntity.getDesignerProfile());
-			return productMasterEntity2;
+				productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
+				productMasterEntity2.setCategoryName(catagory.getBody().getCategoryName());
+				productMasterEntity2.setDesignerProfile(designerProfileEntity.getDesignerProfile());
+				return productMasterEntity2;
+			} else
+				throw new CustomException("Product not found");
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -1011,13 +1029,50 @@ public class ProductServiceImp2 implements ProductService2 {
 			LOGGER.info("priceType = {}", priceType);
 			LOGGER.info("subCategoryId = {}", subCategoryId);
 			if (!searchKey.equals("")) {
-				return customFunction.filterProduct(productRepo2.findbySearchKey(searchKey), searchBy, designerId, categoryId, subCategoryId, colour, cod, customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap,searchKey, sortDateType, sortPrice);
+				return customFunction.filterProduct(productRepo2.findbySearchKey(searchKey), searchBy, designerId,
+						categoryId, subCategoryId, colour, cod, customization, priceType, returnStatus, maxPrice,
+						minPrice, size, giftWrap, searchKey, sortDateType, sortPrice);
 			} else {
-				return customFunction.filterProduct(productRepo2.findAll(), searchBy, designerId, categoryId, subCategoryId, colour, cod, customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap,searchKey, sortDateType, sortPrice);
+				return customFunction.filterProduct(productRepo2.findAll(), searchBy, designerId, categoryId,
+						subCategoryId, colour, cod, customization, priceType, returnStatus, maxPrice, minPrice, size,
+						giftWrap, searchKey, sortDateType, sortPrice);
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	@Override
+	public ProductMasterEntity2 getProducts(Integer productId) {
+		try {
+			ProductMasterEntity2 productMasterEntity2 = productRepo2.findById(productId).get();
+			LOGGER.info("Product data by product ID = {}", productMasterEntity2);
+			DesignerProfileEntity designerProfileEntity = designerProfileRepo
+					.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get();
+			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+					RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productMasterEntity2.getSubCategoryId(),
+					SubCategoryEntity.class);
+			LOGGER.info("RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()"
+					+ RestTemplateConstant.SUBCATEGORY_VIEW.getMessage());
+			ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+					RestTemplateConstant.CATEGORY_VIEW.getMessage() + productMasterEntity2.getCategoryId(),
+					CategoryEntity.class);
+//			LOGGER.info("RestTemplateConstant.CATEGORY_VIEW.getMessage()"+RestTemplateConstant.CATEGORY_VIEW.getMessage());
+//			LOGGER.info("MessageConstant.PRODUCT_NOT_FOUND.getMessage()"+MessageConstant.PRODUCT_NOT_FOUND.getMessage());
+//			LOGGER.info("MessageConstant.SUCCESS.getMessage()"+MessageConstant.SUCCESS.getMessage());
+//			LOGGER.info("MessageConstant.BAD_REQUEST.getMessage()"+MessageConstant.BAD_REQUEST.getMessage());
+//			LOGGER.info("MessageConstant.DELETED.getMessage()"+MessageConstant.DELETED.getMessage());
+//			LOGGER.info("RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage()"+RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage());
+//			LOGGER.info("RestTemplateConstant.USER_GET_USER_ID.getMessage()"+RestTemplateConstant.USER_GET_USER_ID.getMessage());
+
+			productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
+			productMasterEntity2.setCategoryName(catagory.getBody().getCategoryName());
+			productMasterEntity2.setDesignerProfile(designerProfileEntity.getDesignerProfile());
+			return productMasterEntity2;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 
 }

@@ -13,7 +13,7 @@ public enum RestTemplateConstant {
 	DESIGNER_BYID("https://localhost:8083/dev/designer/"),
 	PRODUCT_LIST_USER("https://localhost:8083/dev/designerProducts/productListUser"),
 	DESIGNER_PRODUCT_LIST_USER("https://localhost:8083/dev/designerProduct/getDesignerProductListUser?page="),
-	DESIGNER_PRODUCT("https://localhost:8083/dev/designerProducts/productList/"),
+	DESIGNER_PRODUCT("https://localhost:8083/dev/designerProducts/productLists/"),
 	CATEGORY_VIEW("https://localhost:8084/dev/category/view/"),
 	USER_DESIGNER_LIST("https://localhost:8083/dev/designer/userDesignerList"),
 	DESIGNER_USER("https://localhost:8083/dev/designer/user/"),
