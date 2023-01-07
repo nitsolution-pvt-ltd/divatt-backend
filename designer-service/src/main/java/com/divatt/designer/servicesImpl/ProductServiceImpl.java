@@ -974,7 +974,7 @@ public class ProductServiceImpl implements ProductService{
 				}
 				List<String> sizes = productMasterEntity.getSizes();
 				for(int k = 0; k < sizes.size(); k++) {
-					if(sizes.get(i).equals(productSize)) {
+					if(sizes.get(k).equals(productSize)) {
 						productRepo2.save(new CustomFunction().setProduDetails(productMasterEntity, productQty));
 					}
 				}
