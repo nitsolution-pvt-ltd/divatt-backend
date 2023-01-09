@@ -35,7 +35,7 @@ public class AccountTemplateRepo {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-	@Autowired
+//	@Autowired
 //	private Gson gson;
 	
 	private static final String constants = "i";
