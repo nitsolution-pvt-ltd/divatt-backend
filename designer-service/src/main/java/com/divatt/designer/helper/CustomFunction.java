@@ -434,14 +434,15 @@ public class CustomFunction {
 			this.productMasterEntity2.setProductStage(productMasterEntity2.getProductStage());
 			this.productMasterEntity2.setProductStageDetails(productMasterEntity2.getProductStageDetails());
 			this.productMasterEntity2.setCreatedOn(productMasterEntity2.getCreatedOn());
-			this.productMasterEntity2.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
+			this.productMasterEntity2
+					.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
 
 			return this.productMasterEntity2;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	public List<ProductMasterEntity2> filterProduct(List<ProductMasterEntity2> unFilterList, String searchBy,
 			String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,
 			Boolean customization, String priceType, Boolean returnStatus, String maxPrice, String minPrice,
