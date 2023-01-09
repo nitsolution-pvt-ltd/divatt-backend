@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -416,8 +415,12 @@ public class CustomFunction {
 			this.productMasterEntity2.setPriceType(productMasterEntity2.getPriceType());
 			this.productMasterEntity2.setColour(productMasterEntity2.getColour());
 			this.productMasterEntity2.setSizes(productMasterEntity2.getSizes());
-			this.productMasterEntity2.setSoh(productMasterEntity2.getSoh() - qty);
-			this.productMasterEntity2.setOos(productMasterEntity2.getOos() + qty);
+			if (productMasterEntity2.getSoh() == 0) {
+				throw new CustomException("Product is already out of stock");
+			} else {
+				this.productMasterEntity2.setSoh(productMasterEntity2.getSoh() - qty);
+				this.productMasterEntity2.setOos(productMasterEntity2.getOos() + qty);
+			}
 			this.productMasterEntity2.setNotify(productMasterEntity2.getNotify());
 			this.productMasterEntity2.setPriceCode(productMasterEntity2.getPriceCode());
 			this.productMasterEntity2.setMrp(productMasterEntity2.getMrp());
@@ -493,12 +496,10 @@ public class CustomFunction {
 		}
 
 		list.forEach(element -> {
-			Optional<DesignerProfileEntity> designerProfile = designerProfileRepo
-					.findBydesignerIdAndDesignerCurrentStatus(Long.parseLong(element.getDesignerId().toString()),"Online");
-			
-			if (designerProfile.orElse(null) != null && designerProfile.get().getDesignerProfile().getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
-				DesignerProfile designerProfile2 = designerProfile.get().getDesignerProfile();
-				element.setDesignerProfile(designerProfile2);
+			DesignerProfile designerProfile = designerProfileRepo
+					.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get().getDesignerProfile();
+			if (designerProfile.getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
+				element.setDesignerProfile(designerProfile);
 			}
 		});
 		list.removeIf(element -> element.getDesignerProfile() == null);

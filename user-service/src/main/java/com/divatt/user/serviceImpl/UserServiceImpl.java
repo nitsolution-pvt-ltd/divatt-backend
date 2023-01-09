@@ -38,6 +38,7 @@ import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
 import com.divatt.user.designerProductEntity.DesignerProfileEntity;
 import com.divatt.user.designerProductEntity.ProductMasterEntity;
+import com.divatt.user.entity.ProductEntity;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserDesignerEntity;
@@ -293,6 +294,14 @@ public class UserServiceImpl implements UserService {
 
 			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(userCartEntity.getProductId(),
 					userCartEntity.getUserId());
+			org.json.simple.JSONObject body = restTemplate
+					.getForEntity(RestTemplateConstant.DESIGNER_PRODUCT.getLink() + userCartEntity.getProductId(),
+							org.json.simple.JSONObject.class)
+					.getBody();
+			String soh = body.get("soh").toString();
+			if (Integer.parseInt(soh) < userCartEntity.getQty()) {
+				throw new CustomException("Product has no Stock");
+			}
 
 			if (!findByCat.isPresent()) {
 				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND_IN_CART.getMessage());
