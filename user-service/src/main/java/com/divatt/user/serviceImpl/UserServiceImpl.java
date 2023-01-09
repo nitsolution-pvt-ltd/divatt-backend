@@ -636,7 +636,7 @@ public class UserServiceImpl implements UserService {
 					try {
 						JsonNode jn = new JsonNode(exchange.getBody().toString());
 						JSONObject object = jn.getObject();
-						LOGGER.info("object Data : = {}", object);
+
 						ObjectMapper obj = new ObjectMapper();
 						String writeValueAsString = null;
 						ResponseEntity<org.json.simple.JSONObject> categoryById = restTemplate.getForEntity(

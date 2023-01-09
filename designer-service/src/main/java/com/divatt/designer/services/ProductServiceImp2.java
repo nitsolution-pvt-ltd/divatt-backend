@@ -912,19 +912,20 @@ public class ProductServiceImp2 implements ProductService2 {
 			List<ProductMasterEntity2> findall = new ArrayList<>();
 
 			List<DesignerProfileEntity> findByDesignerByCurrentStatus = designerProfileRepo.findByDesignerCurrentStatus("Online");
-
 			findByDesignerByCurrentStatus.forEach(designerRow -> {
-				if (designerRow.getDesignerCurrentStatus().equals("Online")) {
 					List<ProductMasterEntity2> findProduct = productRepo2
 							.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerId(false, "Approved", true,
 									designerRow.getDesignerId());
 					findall.addAll(findProduct);
-					findall.forEach(designerdat -> {
-						designerdat.setDesignerProfile(designerRow.getDesignerProfile());
-					});
-				}
 			});
 
+			findall.forEach(designerdat -> {
+				Optional<DesignerProfileEntity> designerProfileEntity = designerProfileRepo
+						.findBydesignerIdAndDesignerCurrentStatus(Long.parseLong(designerdat.getDesignerId().toString()),"Online");
+				if(designerProfileEntity.orElse(null) != null) {
+				designerdat.setDesignerProfile(designerProfileEntity.get().getDesignerProfile());
+				}
+			});
 			if (findall.size() <= 15) {
 				return ResponseEntity.ok(findall);
 			}

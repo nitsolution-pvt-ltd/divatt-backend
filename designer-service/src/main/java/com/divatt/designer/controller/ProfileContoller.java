@@ -529,8 +529,8 @@ public class ProfileContoller {
 			long count = databaseSeqRepo.findById(DesignerLoginEntity.SEQUENCE_NAME).get().getSeq();
 			Random rd = new Random();
 			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
-			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(false,
-					"COMPLETED", "ACTIVE");
+			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatusAndDesignerCurrentStatus(false,
+					"COMPLETED", "ACTIVE","Online");
 			List<Integer> lst = new ArrayList<>();
 			if (findAll.size() <= 15) {
 				designerLoginEntity = findAll;
