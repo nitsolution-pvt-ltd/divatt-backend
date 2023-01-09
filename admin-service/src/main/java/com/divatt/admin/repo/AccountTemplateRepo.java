@@ -754,6 +754,56 @@ public class AccountTemplateRepo {
 				AccountMapEntity.class);
 		return results.getMappedResults();
 	}
+	
+	public List<AccountMapEntity> getGiftWrapAmount(String settlement, int year, int month) {
+
+		LocalDate today = LocalDate.now();
+		int dayDivide = 0;
+		int lengthOfMonth = 0;
+		YearMonth yearMonth = null;
+		MatchOperation match = null;
+
+		LocalDate startDate = null;
+		LocalDate endDate =null;
+		if(year !=0) {
+			startDate = LocalDate.of(year, Month.JANUARY, 1);
+			endDate = LocalDate.of(year, Month.DECEMBER, 31);
+		}
+		if (year != 0 && month != 0) {
+			yearMonth = YearMonth.of(year, month);
+			startDate = yearMonth.atDay(1);
+			endDate = yearMonth.atEndOfMonth();
+		}
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else if (year != 0 && month != 0) {
+			match = Aggregation
+					.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
+		} else if (year != 0) {
+			match = Aggregation
+					.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
+		} else {
+			match = Aggregation.match(new Criteria());
+		}
+
+		AggregationOperation unwind = Aggregation.unwind("order_details");
+		GroupOperation mapCondition = Aggregation.group().sum("order_details.giftWrapAmount").as("giftWrapAmount");
+
+		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
+		return results.getMappedResults();
+	}
 
 	public Page<AccountEntity> getAccountData(String designerReturn, String serviceCharge, String govtCharge,
 			String userOrder, String ReturnStatus, String settlement, int year, int month, String designerId,
