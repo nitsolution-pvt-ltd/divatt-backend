@@ -252,7 +252,8 @@ public class AccountTemplateRepo {
 			orderDetails.setUnits(value.getUnits());
 			orderDetails.setUser_id(value.getUser_id());
 			orderDetails.setImage(value.getImage());
-
+			orderDetails.setGiftWrapAmount(value.getGiftWrapAmount());
+			
 			orderDetailsList.add(orderDetails);
 		});
 		findOne.setOrder_details(orderDetailsList);
