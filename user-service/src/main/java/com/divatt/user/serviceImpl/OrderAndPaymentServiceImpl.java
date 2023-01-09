@@ -2665,6 +2665,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 //						displayName = forEntity.getDesignerProfile().getDisplayName();
 //					});
 					List<OrderInvoiceEntity> findByInvoiceId = orderInvoiceRepo.findByInvoiceId(element.getInvoiceId());
+					System.out.println(invoiceUpdatedModels.get(0).getInvoiceId()+" findByInvoiceId "+findByInvoiceId.toString());
 					for (OrderInvoiceEntity e : findByInvoiceId) {
 						DesignerProfileEntity forEntity = restTemplate.getForEntity(
 								RestTemplateConstant.DESIGNER_BYID.getLink() + e.getProductDetails().getDesignerId(),
