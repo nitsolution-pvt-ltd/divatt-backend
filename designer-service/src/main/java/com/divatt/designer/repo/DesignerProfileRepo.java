@@ -16,6 +16,7 @@ public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEnti
 	
 	List<DesignerProfileEntity> findByDesignerCurrentStatus(String D);
 	
+	List<DesignerProfileEntity> findByDesignerCurrentStatusAndDesignerId(String D,Integer did);
 	
 	@Query("{'boutique_profile.boutique_name':?0}")
 	Optional<DesignerProfileEntity> findByBoutiqueName(String boutiqueProfile);
@@ -23,5 +24,8 @@ public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEnti
 	@Query("{'designer_profile.designer_category':?0}")
 	List<DesignerProfileEntity> findByDesignerCategory(String designerCategory);
 	
+//	@Query("{'designer_profile.designer_category':?0,'designerCurrentStatus':?1}")
+//	List<DesignerProfileEntity> findByDesignerCategoryAndDesignerCurrentStatus(String designerCategory, String designerCurrentStatus);
+//	
 	List<DesignerProfileEntity> findByDesignerIdIn(List<Long> designerId);
 }
