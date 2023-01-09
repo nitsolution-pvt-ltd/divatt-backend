@@ -252,8 +252,7 @@ public class OrderAndPaymentContoller {
 				String format = formatter.format(date);
 				String formatDate = formatter.format(date);
 
-				orderAndPaymentGlobalEntity.getOrderDetailsEntity()
-						.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderId("OR" + System.currentTimeMillis());
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderDate(formatDate);
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setCreatedOn(format);
@@ -287,8 +286,7 @@ public class OrderAndPaymentContoller {
 				ordersdata.add(commonUtility.placedOrder(orderAndPaymentGlobalEntity));
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
 
-					orderSKUDetailsEntityRow
-							.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
+					orderSKUDetailsEntityRow.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
 
@@ -361,9 +359,10 @@ public class OrderAndPaymentContoller {
 				context.setVariables(data);
 				String htmlContent = templateEngine.process("orderPlaced.html", context);
 				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-				sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true,
+				
+				this.sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true,
 						createPdfSupplier);
-				sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
+				this.sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
 						htmlContent + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
 								+ userLoginEntity.getLastName(),
 						true, createPdfSupplier);
@@ -544,7 +543,7 @@ public class OrderAndPaymentContoller {
 			helper.setFrom("no-reply@nitsolution.in");
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
-			helper.addAttachment("order-summary", file);
+//			helper.addAttachment("order-summary", file);
 			mailSender.send(message);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -935,7 +934,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
 
 		try {
-			LOGGER.info("Order Status form controller ={}", orderItemStatus);
+			LOGGER.info("skuList form controller {}", orderItemStatus);
 			return orderAndPaymentService.getOrdersItemstatus(page, limit, sort, sortName, keyword, sortBy, token,
 					orderItemStatus);
 		} catch (Exception e) {
