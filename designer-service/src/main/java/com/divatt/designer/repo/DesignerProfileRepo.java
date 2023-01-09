@@ -11,7 +11,12 @@ import com.divatt.designer.entity.profile.DesignerProfileEntity;
 public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEntity, Long> {
 
 	Optional<DesignerProfileEntity> findBydesignerId(Long valueOf);
-
+	
+	Optional<DesignerProfileEntity> findBydesignerIdAndDesignerCurrentStatus(Long valueOf, String D);
+	
+	List<DesignerProfileEntity> findByDesignerCurrentStatus(String D);
+	
+	
 	@Query("{'boutique_profile.boutique_name':?0}")
 	Optional<DesignerProfileEntity> findByBoutiqueName(String boutiqueProfile);
 	

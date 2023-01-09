@@ -907,9 +907,15 @@ public class ProfileContoller {
 			@PathVariable String status) {
 		try {
 			LOGGER.info("Inside changeDesignerStatus");
-			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
-					.findByEmail(jwtConfig.extractUsername(token.substring(7)));
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7)));
 			DesignerLoginEntity designerProfileEntity = new DesignerLoginEntity();
+			Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo.findBydesignerId(findByEmail.get().getdId());
+			
+			if(findBydesignerId.orElse(null) != null) {
+				DesignerProfileEntity designerProfileEntity2 = findBydesignerId.get();
+				designerProfileEntity2.setDesignerCurrentStatus(status);
+				designerProfileRepo.save(designerProfileEntity2);
+			}
 			if (findByEmail.isPresent()) {
 				designerProfileEntity.setdId(findByEmail.get().getdId());
 				designerProfileEntity.setAdminComment(findByEmail.get().getAdminComment());
@@ -927,6 +933,7 @@ public class ProfileContoller {
 				designerProfileEntity.setPassword(findByEmail.get().getPassword());
 				designerProfileEntity.setDesignerCurrentStatus(status);
 				designerLoginRepo.save(designerProfileEntity);
+				
 			} else {
 				throw new CustomException(MessageConstant.USER_NOT_FOUND.getMessage());
 			}

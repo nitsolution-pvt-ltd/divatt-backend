@@ -970,7 +970,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Packed", orderSKUDetailsRepo.findByOrderTotal(designerId, "Packed").size());
 			response.put("Shipped", orderSKUDetailsRepo.findByOrderTotal(designerId, "Shipped").size());
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered").size());
-			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "Return").size());
+			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRefund").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId, "Active").size());
 			response.put("cancelRequest",
 					orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
@@ -2469,13 +2469,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			Page<OrderSKUDetailsEntity> findAll = null;
 
-			if (!orderItemStatus.equals("All")) {
+			if (!orderItemStatus.equals("All") && keyword.isEmpty()) {
 				findAll = orderSKUDetailsRepo.findOrderStatus(orderItemStatus, pagingSort);
 			} else if (keyword.isEmpty()) {
 				findAll = orderSKUDetailsRepo.findAll(pagingSort);
 			} else {
 				findAll = orderSKUDetailsRepo.Searching(keyword, pagingSort);
-
 			}
 
 			LOGGER.info(findAll.getContent() + "Inside Findall");
@@ -2497,7 +2496,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				ResponseEntity<DesignerProfileEntity> forEntity = restTemplate.getForEntity(
 						RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), DesignerProfileEntity.class);
 				String designerName = forEntity.getBody().getDesignerName();
-				LOGGER.info("designerName<><><><>???" + designerName);
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 
 				String writeValueAsString = null;
@@ -2516,7 +2514,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				JSONObject objects = cartJN.getObject();
 				if (invoiceData.size() > 0) {
 					invoiceData.forEach(invoice -> {
-						LOGGER.info("invoiceId<><>??????" + invoice.getInvoiceId());
 						objects.put("invoiceId", invoice.getInvoiceId());
 					});
 				} else {
@@ -2526,7 +2523,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				objects.put("paymentData", payRow);
 				productId.add(objects);
 			});
-			LOGGER.info("<><><><><><><><><><>!!!!!!!! = {}", productId.size());
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
@@ -2551,8 +2547,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
 			response.put("returnRequest", orderSKUDetailsRepo.findByOrderItemStatus("returnRequest").size());
 			response.put("returnRefund", orderSKUDetailsRepo.findByOrderItemStatus("returnRefund").size());
-			
-
 			return response;
 
 		} catch (Exception e) {

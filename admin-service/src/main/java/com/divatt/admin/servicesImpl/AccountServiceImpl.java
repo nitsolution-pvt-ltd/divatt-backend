@@ -256,6 +256,7 @@ public class AccountServiceImpl implements AccountService {
 			List<AccountMapEntity> getTotalTcs = accountTemplateRepo.getTcsAmount(settlement, year, month);
 			List<AccountMapEntity> getTotalAmount = accountTemplateRepo.getTotalAmount(settlement, year, month);
 			List<AccountMapEntity> getTotalServicGst = accountTemplateRepo.getServicGst(settlement, year, month);
+			List<AccountMapEntity> getGiftWrapAmount = accountTemplateRepo.getGiftWrapAmount(settlement, year, month);
 			
 			if (keyword.isEmpty()) {
 				/***findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);***/
@@ -281,6 +282,8 @@ public class AccountServiceImpl implements AccountService {
 			double payableAmount = 0.00;
 			double designerGstAmount = 0.00;
 			double totalServicGst = 0.00;
+			double totalGiftWrapAmount = 0.00;
+			
 
 			if (getServiceFee.size() > 0) {
 				totalServiceFee = getServiceFee.get(0).getServiceFee();
@@ -312,6 +315,9 @@ public class AccountServiceImpl implements AccountService {
 			if (getTotalServicGst.size() > 0) {
 				totalServicGst = getTotalServicGst.get(0).getServiceGst();
 			}
+			if (getGiftWrapAmount.size() > 0) {
+				totalGiftWrapAmount = getGiftWrapAmount.get(0).getGiftWrapAmount();
+			}
 			
 
 			final Map<String, Object> response = new HashMap<>();
@@ -331,6 +337,7 @@ public class AccountServiceImpl implements AccountService {
 			response.put("totalTcs", Double.valueOf(df.format(totalTcs)));
 			response.put("pendingAmount", Double.valueOf(df.format(pendingAmount)));
 			response.put("servicGst", Double.valueOf(df.format(totalServicGst)));
+			response.put("giftWrapAmount", Double.valueOf(df.format(totalGiftWrapAmount)));
 
 			if (findAll.getSize() < 1) {
 				if (LOGGER.isErrorEnabled()) {

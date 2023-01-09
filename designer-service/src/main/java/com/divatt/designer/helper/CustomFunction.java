@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -492,10 +493,12 @@ public class CustomFunction {
 		}
 
 		list.forEach(element -> {
-			DesignerProfile designerProfile = designerProfileRepo
-					.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get().getDesignerProfile();
-			if (designerProfile.getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
-				element.setDesignerProfile(designerProfile);
+			Optional<DesignerProfileEntity> designerProfile = designerProfileRepo
+					.findBydesignerIdAndDesignerCurrentStatus(Long.parseLong(element.getDesignerId().toString()),"Online");
+			
+			if (designerProfile.orElse(null) != null && designerProfile.get().getDesignerProfile().getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
+				DesignerProfile designerProfile2 = designerProfile.get().getDesignerProfile();
+				element.setDesignerProfile(designerProfile2);
 			}
 		});
 		list.removeIf(element -> element.getDesignerProfile() == null);

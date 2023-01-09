@@ -612,10 +612,10 @@ public class UserServiceImpl implements UserService {
 
 	public ResponseEntity<?> productDetails(Integer productId, String userId) {
 		try {
-			LOGGER.info("Inside - UserServiceImpl.productDetails() <><><><><><><>");
+			LOGGER.info("Inside - UserServiceImpl.productDetails()");
 			ResponseEntity<String> exchange = restTemplate.exchange(
 					RestTemplateConstant.DESIGNER_PRODUCT.getLink() + productId, HttpMethod.GET, null, String.class);
-			LOGGER.info("DATAAAAAAAAAAAAAAAAAAAAAAAA = {}", exchange);
+
 			Json js = new Json(exchange.getBody());
 
 			if (!userId.equals("")) {
@@ -627,16 +627,13 @@ public class UserServiceImpl implements UserService {
 					try {
 						JsonNode jn = new JsonNode(exchange.getBody().toString());
 						JSONObject object = jn.getObject();
-
-						Object categoryId = object.get("categoryId");
-						LOGGER.info(categoryId.toString());
+						LOGGER.info("object Data : = {}", object);
 						ObjectMapper obj = new ObjectMapper();
 						String writeValueAsString = null;
 						ResponseEntity<org.json.simple.JSONObject> categoryById = restTemplate.getForEntity(
 								RestTemplateConstant.CATEGORY_VIEW.getLink() + object.get("categoryId"),
 								org.json.simple.JSONObject.class);
 						Object categoryName = categoryById.getBody().get("categoryName");
-						LOGGER.info(categoryName.toString());
 						try {
 							writeValueAsString = obj.writeValueAsString(cart);
 						} catch (JsonProcessingException e1) {
@@ -646,7 +643,6 @@ public class UserServiceImpl implements UserService {
 						JSONObject cartObject = cartJN.getObject();
 						object.put("cartData", cartObject);
 						object.put("categoryName", categoryName);
-						LOGGER.info("Data for ADMIN: = {}" + new Json(jn.toString()).toString());
 
 						return ResponseEntity.ok(new Json(jn.toString()));
 					} catch (Exception e2) {
