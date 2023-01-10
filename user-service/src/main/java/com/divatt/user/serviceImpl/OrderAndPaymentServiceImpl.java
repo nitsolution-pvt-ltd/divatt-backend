@@ -2632,6 +2632,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Double tIgst = 0.0;
 				Double tGross = 0.0;
 				Double tTotal = 0.0;
+				Double tMrp = 0.0;
+				Double tTaxableValue = 0.0;
 				int tQty = 0;
 
 				String totalCgst = null;
@@ -2643,7 +2645,27 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String total = null;
 				String displayName = null;
 				String designerName = null;
+				String taxableValue = null;
 
+				invoiceUpdatedModels.stream().forEach(entity->{
+					
+					//LOGGER.info("taxableValue"+taxAmount);
+					if(entity.getTotal().equals("0")) {
+						if(entity.getDiscount().equals("0")) {
+						entity.setTotal(entity.getMrp());
+					}
+					}
+					
+				});
+				invoiceUpdatedModels.stream().forEach(entity ->{
+					String taxAmount = entity.getTaxAmount();
+					int parseInt = Integer.parseInt(taxAmount);
+					LOGGER.info("taxAmount"+parseInt);
+					String total2 = entity.getTotal();
+					int parseInt2 = Integer.parseInt(total2);
+					int taxValue= parseInt2 - parseInt;
+					entity.setTaxableValue(taxValue+"");
+				});
 				for (InvoiceUpdatedModel element : invoiceUpdatedModels) {
 					element.setIgst(element.getIgst() == null ? "0" : element.getIgst());
 					tCgst = tCgst + Double.parseDouble(element.getCgst() == null ? "0" : element.getCgst());
@@ -2655,13 +2677,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					tGross = tGross
 							+ Double.parseDouble(element.getGrossAmount() == null ? "0" : element.getGrossAmount());
 					tTotal = tTotal + Double.parseDouble(element.getTotal() == null ? "0" : element.getTotal());
+					tMrp= tMrp + Double.parseDouble(element.getMrp() == null ? "0" : element.getMrp());
+					tTaxableValue = tTaxableValue + Double.parseDouble(element.getTaxableValue() == null ? "0" : element.getTaxableValue());
 					totalCgst = String.valueOf(tCgst);
 					totalSgst = String.valueOf(tSgst);
 					totalDiscount = String.valueOf(tDis);
 					totalQunatuty = String.valueOf(tQty);
 					totalIgst = String.valueOf(tIgst);
 					totalGross = String.valueOf(tGross);
-					total = String.valueOf(tTotal);
+					total = String.valueOf(tTotal);	
+					taxableValue = String.valueOf(tTaxableValue);
 //					orderInvoiceRepo.findByInvoiceId(element.getInvoiceId()).forEach(e -> {
 //						DesignerProfileEntity forEntity = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink()+e.getProductDetails().getDesignerId(), DesignerProfileEntity.class).getBody();
 //						displayName = forEntity.getDesignerProfile().getDisplayName();
@@ -2677,6 +2702,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						designerName = forEntity.getDesignerName();
 					}
 				}
+				LOGGER.info("invoiceUpdatedModels"+invoiceUpdatedModels);
 				Map<String, Object> data = new HashMap<>();
 				data.put("data", invoiceUpdatedModels);
 				data.put("totalCgst", totalCgst);
@@ -2688,6 +2714,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				data.put("total", total);
 				data.put("displayName", displayName);
 				data.put("designerName", designerName);
+				data.put("totalTaxableValue", taxableValue);
 				Context context = new Context();
 				context.setVariables(data);
 				LOGGER.info("!!!@@@@ = {}", data);

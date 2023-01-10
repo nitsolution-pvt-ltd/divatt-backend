@@ -209,6 +209,9 @@
                 <th style="text-align: left; font-weight: 600;font-size: 12px;">
                     Discounts ₹
                 </th>
+                <th style="text-align: left; font-weight: 600;font-size: 12px;">
+                    TaxableValue ₹
+                </th>
                 <th style="text-align: left; font-weight: 600;font-size: 12px;">CGST ₹ </th>
                 <th style="text-align: left; font-weight: 600;font-size: 12px;">SGST ₹ </th>
                 <th style="text-align: left; font-weight: 600;font-size: 12px;">IGST ₹ </th>
@@ -227,6 +230,9 @@
                     </td>
                     <td style="border-top: 1px solid #999;border-bottom: 1px solid #999;padding: 10px 0;text-align: left; font-weight: 600;font-size: 12px;color: #000;">
                         <th:block th:text="${data1.discount}"></th:block>
+                    </td>
+                    <td style="border-top: 1px solid #999;border-bottom: 1px solid #999;padding: 10px 0;text-align: left; font-weight: 600;font-size: 12px;color: #000;">
+                        <th:block th:text="${data1.taxableValue}"></th:block>
                     </td>
                     <td style="border-top: 1px solid #999;border-bottom: 1px solid #999;padding: 10px 0;text-align: left; font-weight: 600;font-size: 12px;color: #000;">
                         <th:block th:text="${data1.cgst}"></th:block>
@@ -256,6 +262,9 @@
                     </td>
                     <td style="padding: 10px 0;">
                         <th:block th:text="${totalDiscount}"></th:block>
+                    </td>
+                    <td style="padding: 10px 0;">
+                        <th:block th:text="${totalTaxableValue}"></th:block>
                     </td>
                     <td style="padding: 10px 0;">
                         <th:block th:text="${totalCgst}"></th:block>

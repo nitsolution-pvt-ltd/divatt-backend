@@ -43,6 +43,8 @@ public class InvoiceUpdatedModel {
 	private String totalDiscount;
 	private String totalQunatuty;
 	private String mrp;
+	private String taxableValue;
+	private String taxAmount;
 	public InvoiceUpdatedModel() {
 		super();
 	}
@@ -54,7 +56,7 @@ public class InvoiceUpdatedModel {
 			String sellerState, String sellerPincode, String sellerMobile, String productName, String qty,
 			String grossAmount, String discount, String cgst, String sgst, String igst, String total,
 			String sellerGSTNO, String grandTotal, String totalCgst, String totalSgst, String totalDiscount,
-			String totalQunatuty, String mrp) {
+			String totalQunatuty, String mrp, String taxableValue, String taxAmount) {
 		super();
 		this.billedUserName = billedUserName;
 		this.bllingAddress = bllingAddress;
@@ -97,6 +99,8 @@ public class InvoiceUpdatedModel {
 		this.totalDiscount = totalDiscount;
 		this.totalQunatuty = totalQunatuty;
 		this.mrp = mrp;
+		this.taxableValue = taxableValue;
+		this.taxAmount = taxAmount;
 	}
 	public String getBilledUserName() {
 		return billedUserName;
@@ -344,6 +348,18 @@ public class InvoiceUpdatedModel {
 	public void setMrp(String mrp) {
 		this.mrp = mrp;
 	}
+	public String getTaxableValue() {
+		return taxableValue;
+	}
+	public void setTaxableValue(String taxableValue) {
+		this.taxableValue = taxableValue;
+	}
+	public String getTaxAmount() {
+		return taxAmount;
+	}
+	public void setTaxAmount(String taxAmount) {
+		this.taxAmount = taxAmount;
+	}
 	@Override
 	public String toString() {
 		return "InvoiceUpdatedModel [billedUserName=" + billedUserName + ", bllingAddress=" + bllingAddress
@@ -359,9 +375,9 @@ public class InvoiceUpdatedModel {
 				+ ", grossAmount=" + grossAmount + ", discount=" + discount + ", cgst=" + cgst + ", sgst=" + sgst
 				+ ", igst=" + igst + ", total=" + total + ", sellerGSTNO=" + sellerGSTNO + ", grandTotal=" + grandTotal
 				+ ", totalCgst=" + totalCgst + ", totalSgst=" + totalSgst + ", totalDiscount=" + totalDiscount
-				+ ", totalQunatuty=" + totalQunatuty + ", mrp=" + mrp + "]";
+				+ ", totalQunatuty=" + totalQunatuty + ", mrp=" + mrp + ", taxableValue=" + taxableValue
+				+ ", taxAmount=" + taxAmount + "]";
 	}
-	
 	
 	
 }
