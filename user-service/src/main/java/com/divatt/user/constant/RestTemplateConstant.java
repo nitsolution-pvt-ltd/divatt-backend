@@ -20,7 +20,8 @@ public enum RestTemplateConstant {
 	DESIGNER_PER_PRODUCT("https://localhost:8083/dev/designerProduct/getPerDesignerProductUser/"),
 	USER_BY_ID("https://localhost:8082/dev/user/getUserId/"),
 	DESIGNER_IDLIST("https://localhost:8083/dev/designer/designerIdList"),
-	ADMIN_ROLE_NAME("https://localhost:8084/dev/admin/profile/getRoleName/");
+	ADMIN_ROLE_NAME("https://localhost:8084/dev/admin/profile/getRoleName/"),
+	USER_REDIRECT("https://dev.divatt.com/dev/user/redirect/");
 
 //prod
 

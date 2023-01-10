@@ -103,7 +103,7 @@ public class UserController {
 
 //	@Autowired
 //	private OrderSKUDetailsRepo detailsRepo;
-	
+
 	@Value("${mail.from}")
 	private String mail;
 
@@ -308,19 +308,19 @@ public class UserController {
 			userLoginEntity.setSocialType(userLoginEntity.getSocialType());
 			userLoginRepo.save(userLoginEntity);
 
-			SendMail mail = new SendMail(userLoginEntity.getEmail(),
-					MessageConstant.SUCCESSFUL_REGISTRATION.getMessage(),
-					MessageConstant.WELLCOME.getMessage() + userLoginEntity.getFirstName() + "" + ",\n   "
-							+ MessageConstant.REGISTERED_SUCESSFULLY.getMessage()
-							+ MessageConstant.ACTIVATE_LINK.getMessage()
-							+ URI.create(env.getProperty("redirectapi") + Base64.getEncoder()
-									.encodeToString(userLoginEntity.getEmail().toString().getBytes()))
-							+ MessageConstant.VERIFY_DETAILS_SOON.getMessage(),
-					false);
+			StringBuilder sb = new StringBuilder();
+			URI uri = URI.create(RestTemplateConstant.USER_REDIRECT.getLink()
+					+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()));
+			sb.append("Hi " + userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName() + "" + ",\n\n"
+					+ "Welcome to Divatt We are delighted to have you join us as a user.\n"
+					+ "We are committed to providing our user with a secure and safe platform  . Our website has been designed to make it easy for buyers to find the products they need and for designer to reach those buyers. We offer a wide range of tools and services to help you succeed, including payment processing, customer support, product listing, and promotions.\n\n"
+					+ "We look forward to working with you . Please feel free to contact us with any questions or concerns. You can do active your account by clicking the button below.");
+			sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
+					+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">ACTIVE ACCOUNT</a></div><br><br>We will verify your details and come back to you soon.");
+			SendMail mail = new SendMail(userLoginEntity.getEmail(), "Successfully Registration", sb.toString(), false);
 			try {
-				restTemplate.postForEntity(RestTemplateConstant.MAIL_SEND.getLink(),
-						mail, String.class);
-				
+				restTemplate.postForEntity(RestTemplateConstant.MAIL_SEND.getLink(), mail, String.class);
+
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
 			}
@@ -840,11 +840,12 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@GetMapping("getUserDesignerDetails/{userEmail}")
-	public List<UserDesignerEntity> getUserDesignerDetails(@PathVariable String userEmail){
+	public List<UserDesignerEntity> getUserDesignerDetails(@PathVariable String userEmail) {
 		try {
-		return this.userService.getUserDesignerDetails(userEmail);	
-		}catch (Exception e) {
+			return this.userService.getUserDesignerDetails(userEmail);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
