@@ -43,13 +43,15 @@ public class ProductServiceImpl implements ProductService {
 			String ApprovedBy, String adminStatus) {
 		try {
 			ResponseEntity<ProductEntity2> exchange = restTemplate.exchange(
-					RestTemplateConstant.DESIGNER_PRODUCTS_PRODUCT_LIST.getMessage() + productId, HttpMethod.GET, null,
+					RestTemplateConstant.DESIGNER_URL.getMessage()+"designerProducts/productAdmin/" + productId, HttpMethod.GET, null,
 					ProductEntity2.class);
+			System.out.println(
+					RestTemplateConstant.DESIGNER_URL.getMessage()+"designerProducts/productAdmin/" + productId);
 			ProductEntity2 productdata = exchange.getBody();
 			LOGGER.info("Product data is = {}",productdata);
 			if (productdata.getDesignerId().equals(designerId)) {
 
-				productdata.getProductStageDetails().setApprovedBy(ApprovedBy);;
+				productdata.getProductStageDetails().setApprovedBy(ApprovedBy);
 				productdata.getProductStageDetails().setApprovedOn(new Date());
 				productdata.getProductStageDetails().setComment(commString);
 				productdata.setIsActive(true);

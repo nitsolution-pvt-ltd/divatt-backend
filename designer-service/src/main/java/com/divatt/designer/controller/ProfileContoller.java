@@ -529,8 +529,8 @@ public class ProfileContoller {
 			long count = databaseSeqRepo.findById(DesignerLoginEntity.SEQUENCE_NAME).get().getSeq();
 			Random rd = new Random();
 			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
-			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatusAndDesignerCurrentStatus(false,
-					"COMPLETED", "ACTIVE","Online");
+			List<DesignerLoginEntity> findAll = designerLoginRepo.findByIsDeletedAndAndIsProfileCompletedAndAccountStatusAndDesignerCurrentStatus(false,
+					true, "ACTIVE","Online");
 			List<Integer> lst = new ArrayList<>();
 			if (findAll.size() <= 15) {
 				designerLoginEntity = findAll;
@@ -806,8 +806,9 @@ public class ProfileContoller {
 				}
 			
 			} else {
-				List<DesignerLoginEntity> designerData = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatusAndDesignerCurrentStatus(false,
-						"COMPLETED", "ACTIVE","Online");
+				List<DesignerLoginEntity> designerData = designerLoginRepo.findByIsDeletedAndAndIsProfileCompletedAndAccountStatusAndDesignerCurrentStatus(false,
+						true, "ACTIVE","Online");
+				System.out.println("designerData "+designerData.size());
 					designerData.forEach(designerRow->{
 						Query query2 = new Query();
 						query2.addCriteria(Criteria.where("designerId").is(designerRow.getdId()).andOperator(Criteria.where("designerCurrentStatus").is("Online")));
