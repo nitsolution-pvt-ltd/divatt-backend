@@ -785,29 +785,36 @@ public class ProductServiceImpl implements ProductService{
 
 	public List<ProductMasterEntity2> UserDesignerProductList(Integer Id) {
 		try {
-			Query query = new Query();
-			query.addCriteria(
-					Criteria.where("designerId").is(Id).and("isActive").is(true).and("adminStatus").is("Approved"));
-			List<ProductMasterEntity2> productList = mongoOperations.find(query, ProductMasterEntity2.class);
+			List<ProductMasterEntity2> findall = new ArrayList<>();
+			List<DesignerProfileEntity> findByDesignerByCurrentStatus = designerProfileRepo.findByDesignerCurrentStatusAndDesignerId("Online",Id);
 
-			productList.stream().forEach(e -> {
-				e.setDesignerProfile(designerProfileRepo.findBydesignerId(Long.parseLong(e.getDesignerId().toString()))
-						.get().getDesignerProfile());
+			findByDesignerByCurrentStatus.forEach(designerRow -> {
+				if (designerRow.getDesignerCurrentStatus().equals("Online")) {
+					List<ProductMasterEntity2> findProduct = new ArrayList<>();
+					
+						findProduct = productRepo2
+								.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerId(false, "Approved", true,
+										designerRow.getDesignerId());
+						findProduct.forEach(d->{
+							d.setDesignerProfile(designerRow.getDesignerProfile());
+						});
+					findall.addAll(findProduct);
+				}
 			});
 
-			if (productList.isEmpty()) {
+			if (findall.isEmpty()) {
 				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
 			}
 			long count = sequenceGenarator.getCurrentSequence(ProductMasterEntity2.SEQUENCE_NAME);
 			Random rd = new Random();
-			if (productList.size() < 15) {
-				return productList;
+			if (findall.size() < 15) {
+				return findall;
 			}
 			List<ProductMasterEntity2> productMasterEntity = new ArrayList<>();
 			Boolean flag = true;
 			while (flag) {
 				int nextInt = rd.nextInt((int) count);
-				for (ProductMasterEntity2 obj : productList) {
+				for (ProductMasterEntity2 obj : findall) {
 					if (obj.getProductId() == nextInt) {
 						productMasterEntity.add(obj);
 					}

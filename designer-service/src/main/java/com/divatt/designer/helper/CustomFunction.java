@@ -415,8 +415,12 @@ public class CustomFunction {
 			this.productMasterEntity2.setPriceType(productMasterEntity2.getPriceType());
 			this.productMasterEntity2.setColour(productMasterEntity2.getColour());
 			this.productMasterEntity2.setSizes(productMasterEntity2.getSizes());
-			this.productMasterEntity2.setSoh(productMasterEntity2.getSoh() - qty);
-			this.productMasterEntity2.setOos(productMasterEntity2.getOos() + qty);
+			if (productMasterEntity2.getSoh() == 0) {
+				throw new CustomException("Product is already out of stock");
+			} else {
+				this.productMasterEntity2.setSoh(productMasterEntity2.getSoh() - qty);
+				this.productMasterEntity2.setOos(productMasterEntity2.getOos() + qty);
+			}
 			this.productMasterEntity2.setNotify(productMasterEntity2.getNotify());
 			this.productMasterEntity2.setPriceCode(productMasterEntity2.getPriceCode());
 			this.productMasterEntity2.setMrp(productMasterEntity2.getMrp());
@@ -433,14 +437,15 @@ public class CustomFunction {
 			this.productMasterEntity2.setProductStage(productMasterEntity2.getProductStage());
 			this.productMasterEntity2.setProductStageDetails(productMasterEntity2.getProductStageDetails());
 			this.productMasterEntity2.setCreatedOn(productMasterEntity2.getCreatedOn());
-			this.productMasterEntity2.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
+			this.productMasterEntity2
+					.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
 
 			return this.productMasterEntity2;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	public List<ProductMasterEntity2> filterProduct(List<ProductMasterEntity2> unFilterList, String searchBy,
 			String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,
 			Boolean customization, String priceType, Boolean returnStatus, String maxPrice, String minPrice,

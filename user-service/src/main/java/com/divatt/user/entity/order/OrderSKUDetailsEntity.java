@@ -147,6 +147,9 @@ public class OrderSKUDetailsEntity {
 
 	@Field(name = "return_acceptable")
 	private Boolean returnAcceptable;
+	
+	@Field(name = "displayName")
+	private String displayName;
 
 	public OrderSKUDetailsEntity() {
 		super();
@@ -170,7 +173,7 @@ public class OrderSKUDetailsEntity {
 			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
 			Boolean giftwrapStatus, Boolean cancelAcceptable, JSONObject giftWrapObject, String userComment,
 			String shippingDate, String status, HsnData hsnData, JSONObject measurementObject, Long giftWrapAmount,
-			Boolean returnAcceptable) {
+			Boolean returnAcceptable, String displayName) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -213,6 +216,7 @@ public class OrderSKUDetailsEntity {
 		this.measurementObject = measurementObject;
 		this.giftWrapAmount = giftWrapAmount;
 		this.returnAcceptable = returnAcceptable;
+		this.displayName = displayName;
 	}
 
 	@Override
@@ -230,7 +234,7 @@ public class OrderSKUDetailsEntity {
 				+ ", cancelAcceptable=" + cancelAcceptable + ", giftWrapObject=" + giftWrapObject + ", userComment="
 				+ userComment + ", shippingDate=" + shippingDate + ", status=" + status + ", hsnData=" + hsnData
 				+ ", measurementObject=" + measurementObject + ", giftWrapAmount=" + giftWrapAmount
-				+ ", returnAcceptable=" + returnAcceptable + "]";
+				+ ", returnAcceptable=" + returnAcceptable + ", displayName=" + displayName + "]";
 	}
 
 	public Integer getId() {
@@ -561,9 +565,19 @@ public class OrderSKUDetailsEntity {
 		this.returnAcceptable = returnAcceptable;
 	}
 
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+
+	
 
 	
 	

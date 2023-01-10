@@ -1333,9 +1333,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setTotalAmount(detailsEntity.getTotalAmount() - skuDetailsEntity.getSalesPrice());
 				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
-//				orderDetailsRepo.save(detailsEntity);
+				orderDetailsRepo.save(detailsEntity);
 				
-//				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData, findByOrderIdList);
+				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData, findByOrderIdList);
 				
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
 			
@@ -2469,13 +2469,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			Page<OrderSKUDetailsEntity> findAll = null;
 
-			if (!orderItemStatus.equals("All")) {
+			if (!orderItemStatus.equals("All") && keyword.isEmpty()) {
 				findAll = orderSKUDetailsRepo.findOrderStatus(orderItemStatus, pagingSort);
 			} else if (keyword.isEmpty()) {
 				findAll = orderSKUDetailsRepo.findAll(pagingSort);
 			} else {
 				findAll = orderSKUDetailsRepo.Searching(keyword, pagingSort);
-
 			}
 
 			LOGGER.info(findAll.getContent() + "Inside Findall");

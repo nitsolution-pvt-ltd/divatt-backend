@@ -58,6 +58,15 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
 
 	List<ProductMasterEntity2> findByIsDeletedAndAdminStatusAndIsActive(Boolean isDeleted, String adminStatus,
 			Boolean isActive);
+	
+	List<ProductMasterEntity2> findByIsDeletedAndAdminStatusAndIsActiveAndDesignerId(Boolean isDeleted, String adminStatus,
+			Boolean isActive, Long did);
+	
+	List<ProductMasterEntity2> findByIsDeletedAndAdminStatusAndIsActiveAndDesignerIdAndProductId(Boolean isDeleted, String adminStatus,
+			Boolean isActive, Long did, Integer productId);
+	
+	List<ProductMasterEntity2> findByIsDeletedAndIsActiveAndDesignerIdAndProductId(Boolean isDeleted,
+			Boolean isActive, Long did, Integer productId);
 
 	Page<ProductMasterEntity2> findByProductIdIn(List<Integer> productIdList, Pageable pagingSort);
 
@@ -70,8 +79,8 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
 	List<ProductMasterEntity2> findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(Boolean isDeleted,
 			Integer designerId, String adminStatus, Boolean isActive);
 
-	List<ProductMasterEntity2> findByDesignerIdAndIsDeletedAndAdminStatusAndIsActive(Integer designerId, Boolean isDeleted,
-			String adminStatus, Boolean isActive);
+	List<ProductMasterEntity2> findByDesignerIdAndIsDeletedAndAdminStatusAndIsActive(Integer designerId,
+			Boolean isDeleted, String adminStatus, Boolean isActive);
 
 	@Query(value = "{$or: [ { 'filter.soh==filter.notify' : {$regex:?0,$options:'i'} }, { 'filter.soh<=filter.notify' : {$regex:?0,$options:'i'} } } ]}")
 	Page<ProductMasterEntity2> findProduct(List<ProductMasterEntity2> filter, Pageable pagingSort);

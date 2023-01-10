@@ -46,4 +46,6 @@ public interface ProductService2 {
 
 	public ProductMasterEntity2 getProducts(Integer productId);
 
+	public ProductMasterEntity2 getProductsAdmin(Integer productId);
+
 }

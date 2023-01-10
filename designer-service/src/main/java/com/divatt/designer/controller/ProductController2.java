@@ -255,7 +255,6 @@ public class ProductController2 {
 			@RequestParam(defaultValue = "") String sortPrice) {
 		try {
 			LOGGER.info("Inside- ProductController.productSearching()");
-			LOGGER.info("COD data = {}", cod);
 			return this.productService2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour, cod,
 					customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType,
 					sortPrice);
@@ -273,5 +272,16 @@ public class ProductController2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/productAdmin/{productId}")
+	public ProductMasterEntity2 getProductsAdmin(@PathVariable Integer productId) {
+		try {
+			LOGGER.info("Inside- ProductController2.getProductsAdmin()");
+			return productService2.getProductsAdmin(productId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 
 }

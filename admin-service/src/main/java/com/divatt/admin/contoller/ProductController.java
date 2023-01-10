@@ -41,7 +41,7 @@ public class ProductController {
 			List<Object> commString = comment.getComments();
 			String ApprovedBy = comment.getApprovedBy();
 
-			return this.productService.productApproval(productId, designerId, commString, ApprovedBy, adminStatus);
+			return this.productService.productApproval(productId, designerId, (List)commString, ApprovedBy, adminStatus);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
