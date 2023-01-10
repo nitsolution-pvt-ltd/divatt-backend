@@ -95,6 +95,9 @@ public class UtillUserService {
 		invoiceUpdatedModel.setCgst(invoiceEntity.getProductDetails().getTaxAmount()/2+"");
 		invoiceUpdatedModel.setDiscount(invoiceEntity.getProductDetails().getDiscount()+"");
 		LOGGER.info(invoiceEntity.getProductDetails().getTaxAmount()/2+"");
+		invoiceUpdatedModel.setMrp(invoiceEntity.getProductDetails().getMrp()+"");
+		invoiceUpdatedModel.setTaxAmount(invoiceEntity.getProductDetails().getTaxAmount()+"");
+		invoiceUpdatedModel.setInvoiceId("InvoiceId-"+invoiceEntity.getInvoiceId());
 //		mrpList.add(invoiceEntity.getProductDetails().getMrp());
 //		salePriceList.add(invoiceEntity.getProductDetails().getSalesPrice());
 //		cgstList.add(invoiceEntity.getProductDetails().getTaxAmount()/2);

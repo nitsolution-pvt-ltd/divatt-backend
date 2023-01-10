@@ -2657,16 +2657,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					}
 					
 				});
-				invoiceUpdatedModels.stream().forEach(entity ->{
-					String taxAmount = entity.getTaxAmount();
-					int parseInt = Integer.parseInt(taxAmount);
-					LOGGER.info("taxAmount"+parseInt);
-					String total2 = entity.getTotal();
-					int parseInt2 = Integer.parseInt(total2);
-					int taxValue= parseInt2 - parseInt;
-					entity.setTaxableValue(taxValue+"");
-				});
+//				invoiceUpdatedModels.forEach(entity ->{
+//					String taxAmount = entity.getTaxAmount();
+//					int parseInt = Integer.parseInt(taxAmount);
+//					LOGGER.info("taxAmount"+parseInt);
+//					String total2 = entity.getTotal();
+//					int parseInt2 = Integer.parseInt(total2);
+//					int taxValue= parseInt2 - parseInt;
+//					entity.setTaxableValue(taxValue+"");
+//				});
 				for (InvoiceUpdatedModel element : invoiceUpdatedModels) {
+					String taxAmount = element.getTaxAmount();
+					String total2 = element.getTotal();
+
+					String taxValue=(Integer.parseInt(total2)-Integer.parseInt(taxAmount))+"";
+					element.setTaxableValue(taxValue);
 					element.setIgst(element.getIgst() == null ? "0" : element.getIgst());
 					tCgst = tCgst + Double.parseDouble(element.getCgst() == null ? "0" : element.getCgst());
 					tSgst = tSgst + Double.parseDouble(element.getSgst() == null ? "0" : element.getSgst());
