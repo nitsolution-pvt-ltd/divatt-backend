@@ -2626,6 +2626,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			for (String key : keyList) {
 
 				List<InvoiceUpdatedModel> invoiceUpdatedModels = responceData.get(key);
+				LOGGER.info("invoiceUpdatedModels"+invoiceUpdatedModels);
 				Double tCgst = 0.0;
 				Double tSgst = 0.0;
 				Double tDis = 0.0;
@@ -2642,6 +2643,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String totalGross = null;
 				String total = null;
 				String displayName = null;
+				String designerName = null;
 
 				for (InvoiceUpdatedModel element : invoiceUpdatedModels) {
 					element.setIgst(element.getIgst() == null ? "0" : element.getIgst());
@@ -2665,12 +2667,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 //						DesignerProfileEntity forEntity = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink()+e.getProductDetails().getDesignerId(), DesignerProfileEntity.class).getBody();
 //						displayName = forEntity.getDesignerProfile().getDisplayName();
 //					});
-					List<OrderInvoiceEntity> findByInvoiceId = orderInvoiceRepo.findByInvoiceId(element.getInvoiceId());
+					String invoiceId = element.getInvoiceId();
+			    	String modifiedInvoiceId=invoiceId.substring(10,invoiceId.length());
+					List<OrderInvoiceEntity> findByInvoiceId = this.orderInvoiceRepo.findByInvoiceId(modifiedInvoiceId);
 					for (OrderInvoiceEntity e : findByInvoiceId) {
 						DesignerProfileEntity forEntity = restTemplate.getForEntity(
 								RestTemplateConstant.DESIGNER_BYID.getLink() + e.getProductDetails().getDesignerId(),
 								DesignerProfileEntity.class).getBody();
 						displayName = forEntity.getDesignerProfile().getDisplayName();
+						designerName = forEntity.getDesignerName();
 					}
 				}
 				Map<String, Object> data = new HashMap<>();
@@ -2683,6 +2688,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				data.put("totalGross", totalGross);
 				data.put("total", total);
 				data.put("displayName", displayName);
+				data.put("designerName", designerName);
 				Context context = new Context();
 				context.setVariables(data);
 				LOGGER.info("!!!@@@@ = {}", data);

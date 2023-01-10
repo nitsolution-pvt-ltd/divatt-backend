@@ -42,6 +42,7 @@ public class InvoiceUpdatedModel {
 	private String totalSgst;
 	private String totalDiscount;
 	private String totalQunatuty;
+	private String mrp;
 	public InvoiceUpdatedModel() {
 		super();
 	}
@@ -53,7 +54,7 @@ public class InvoiceUpdatedModel {
 			String sellerState, String sellerPincode, String sellerMobile, String productName, String qty,
 			String grossAmount, String discount, String cgst, String sgst, String igst, String total,
 			String sellerGSTNO, String grandTotal, String totalCgst, String totalSgst, String totalDiscount,
-			String totalQunatuty) {
+			String totalQunatuty, String mrp) {
 		super();
 		this.billedUserName = billedUserName;
 		this.bllingAddress = bllingAddress;
@@ -95,23 +96,7 @@ public class InvoiceUpdatedModel {
 		this.totalSgst = totalSgst;
 		this.totalDiscount = totalDiscount;
 		this.totalQunatuty = totalQunatuty;
-	}
-	@Override
-	public String toString() {
-		return "InvoiceUpdatedModel [billedUserName=" + billedUserName + ", bllingAddress=" + bllingAddress
-				+ ", billingCity=" + billingCity + ", billingState=" + billingState + ", pincode=" + pincode
-				+ ", billingMobile=" + billingMobile + ", billingPinCode=" + billingPinCode + ", billingCountry="
-				+ billingCountry + ", shippingCountry=" + shippingCountry + ", sellerCountry=" + sellerCountry
-				+ ", shippingUserName=" + shippingUserName + ", shippingAddress=" + shippingAddress + ", shippingCity="
-				+ shippingCity + ", shippingState=" + shippingState + ", shippingPincode=" + shippingPincode
-				+ ", shippingMobile=" + shippingMobile + ", orderId=" + orderId + ", orderDate=" + orderDate
-				+ ", invoiceId=" + invoiceId + ", soldBy=" + soldBy + ", sellerName=" + sellerName + ", sellerAddress="
-				+ sellerAddress + ", sellerCity=" + sellerCity + ", sellerState=" + sellerState + ", sellerPincode="
-				+ sellerPincode + ", sellerMobile=" + sellerMobile + ", productName=" + productName + ", qty=" + qty
-				+ ", grossAmount=" + grossAmount + ", discount=" + discount + ", cgst=" + cgst + ", sgst=" + sgst
-				+ ", igst=" + igst + ", total=" + total + ", sellerGSTNO=" + sellerGSTNO + ", grandTotal=" + grandTotal
-				+ ", totalCgst=" + totalCgst + ", totalSgst=" + totalSgst + ", totalDiscount=" + totalDiscount
-				+ ", totalQunatuty=" + totalQunatuty + "]";
+		this.mrp = mrp;
 	}
 	public String getBilledUserName() {
 		return billedUserName;
@@ -353,6 +338,30 @@ public class InvoiceUpdatedModel {
 	public void setTotalQunatuty(String totalQunatuty) {
 		this.totalQunatuty = totalQunatuty;
 	}
+	public String getMrp() {
+		return mrp;
+	}
+	public void setMrp(String mrp) {
+		this.mrp = mrp;
+	}
+	@Override
+	public String toString() {
+		return "InvoiceUpdatedModel [billedUserName=" + billedUserName + ", bllingAddress=" + bllingAddress
+				+ ", billingCity=" + billingCity + ", billingState=" + billingState + ", pincode=" + pincode
+				+ ", billingMobile=" + billingMobile + ", billingPinCode=" + billingPinCode + ", billingCountry="
+				+ billingCountry + ", shippingCountry=" + shippingCountry + ", sellerCountry=" + sellerCountry
+				+ ", shippingUserName=" + shippingUserName + ", shippingAddress=" + shippingAddress + ", shippingCity="
+				+ shippingCity + ", shippingState=" + shippingState + ", shippingPincode=" + shippingPincode
+				+ ", shippingMobile=" + shippingMobile + ", orderId=" + orderId + ", orderDate=" + orderDate
+				+ ", invoiceId=" + invoiceId + ", soldBy=" + soldBy + ", sellerName=" + sellerName + ", sellerAddress="
+				+ sellerAddress + ", sellerCity=" + sellerCity + ", sellerState=" + sellerState + ", sellerPincode="
+				+ sellerPincode + ", sellerMobile=" + sellerMobile + ", productName=" + productName + ", qty=" + qty
+				+ ", grossAmount=" + grossAmount + ", discount=" + discount + ", cgst=" + cgst + ", sgst=" + sgst
+				+ ", igst=" + igst + ", total=" + total + ", sellerGSTNO=" + sellerGSTNO + ", grandTotal=" + grandTotal
+				+ ", totalCgst=" + totalCgst + ", totalSgst=" + totalSgst + ", totalDiscount=" + totalDiscount
+				+ ", totalQunatuty=" + totalQunatuty + ", mrp=" + mrp + "]";
+	}
+	
 	
 	
 }
