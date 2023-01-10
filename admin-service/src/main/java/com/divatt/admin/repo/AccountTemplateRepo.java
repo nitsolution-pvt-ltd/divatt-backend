@@ -35,7 +35,7 @@ public class AccountTemplateRepo {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-	@Autowired
+//	@Autowired
 //	private Gson gson;
 	
 	private static final String constants = "i";
@@ -252,7 +252,8 @@ public class AccountTemplateRepo {
 			orderDetails.setUnits(value.getUnits());
 			orderDetails.setUser_id(value.getUser_id());
 			orderDetails.setImage(value.getImage());
-
+			orderDetails.setGiftWrapAmount(value.getGiftWrapAmount());
+			
 			orderDetailsList.add(orderDetails);
 		});
 		findOne.setOrder_details(orderDetailsList);
@@ -747,6 +748,56 @@ public class AccountTemplateRepo {
 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
 		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.basic_amount").as("basicAmount");
+
+		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
+		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,
+				AccountMapEntity.class);
+		return results.getMappedResults();
+	}
+	
+	public List<AccountMapEntity> getGiftWrapAmount(String settlement, int year, int month) {
+
+		LocalDate today = LocalDate.now();
+		int dayDivide = 0;
+		int lengthOfMonth = 0;
+		YearMonth yearMonth = null;
+		MatchOperation match = null;
+
+		LocalDate startDate = null;
+		LocalDate endDate =null;
+		if(year !=0) {
+			startDate = LocalDate.of(year, Month.JANUARY, 1);
+			endDate = LocalDate.of(year, Month.DECEMBER, 31);
+		}
+		if (year != 0 && month != 0) {
+			yearMonth = YearMonth.of(year, month);
+			startDate = yearMonth.atDay(1);
+			endDate = yearMonth.atEndOfMonth();
+		}
+		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+
+			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+		} else if (year != 0 && month != 0) {
+			match = Aggregation
+					.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
+		} else if (year != 0) {
+			match = Aggregation
+					.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
+		} else {
+			match = Aggregation.match(new Criteria());
+		}
+
+		AggregationOperation unwind = Aggregation.unwind("order_details");
+		GroupOperation mapCondition = Aggregation.group().sum("order_details.giftWrapAmount").as("giftWrapAmount");
 
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
 		final AggregationResults<AccountMapEntity> results = mongoTemplate.aggregate(aggregations, AccountEntity.class,

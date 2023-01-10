@@ -11,22 +11,13 @@ public class OrderStatusDetails {
 	private JSONObject deliveryDetails;
 	private JSONObject cancelOrderDetails;
 	private JSONObject cancelRequestDetails;
+	private JSONObject cancelFromUser;
+	private JSONObject returnFromUser;
+	private JSONObject returnFromAdmin;
 
 	public OrderStatusDetails() {
 		super();
 		// TODO Auto-generated constructor stub
-	}
-
-	public OrderStatusDetails(String command, JSONObject ordersDetails, JSONObject packedDetails,
-			JSONObject shippedDetails, JSONObject deliveryDetails, JSONObject cancelOrderDetails, JSONObject cancelRequestDetails) {
-		super();
-		this.command = command;
-		this.ordersDetails = ordersDetails;
-		this.packedDetails = packedDetails;
-		this.shippedDetails = shippedDetails;
-		this.deliveryDetails = deliveryDetails;
-		this.cancelOrderDetails = cancelOrderDetails;
-		this.cancelRequestDetails = cancelRequestDetails;
 	}
 
 	public String getCommand() {
@@ -76,7 +67,7 @@ public class OrderStatusDetails {
 	public void setCancelOrderDetails(JSONObject cancelOrderDetails) {
 		this.cancelOrderDetails = cancelOrderDetails;
 	}
-	
+
 	public JSONObject getCancelRequestDetails() {
 		return cancelRequestDetails;
 	}
@@ -85,11 +76,30 @@ public class OrderStatusDetails {
 		this.cancelRequestDetails = cancelRequestDetails;
 	}
 
-	@Override
-	public String toString() {
-		return "OrderStatusDetails [command=" + command + ", ordersDetails=" + ordersDetails + ", packedDetails="
-				+ packedDetails + ", shippedDetails=" + shippedDetails + ", deliveryDetails=" + deliveryDetails
-				+ ", cancelOrderDetails=" + cancelOrderDetails + ", cancelRequestDetails=" + cancelRequestDetails +"]";
+	public JSONObject getCancelFromUser() {
+		return cancelFromUser;
 	}
+
+	public void setCancelFromUser(JSONObject cancelFromUser) {
+		this.cancelFromUser = cancelFromUser;
+	}
+
+	public JSONObject getReturnFromUser() {
+		return returnFromUser;
+	}
+
+	public void setReturnFromUser(JSONObject returnFromUser) {
+		this.returnFromUser = returnFromUser;
+	}
+
+	public JSONObject getReturnFromAdmin() {
+		return returnFromAdmin;
+	}
+
+	public void setReturnFromAdmin(JSONObject returnFromAdmin) {
+		this.returnFromAdmin = returnFromAdmin;
+	}
+
+	
 
 }

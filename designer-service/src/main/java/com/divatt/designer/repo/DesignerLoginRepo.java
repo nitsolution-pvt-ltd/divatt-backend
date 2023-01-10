@@ -16,6 +16,10 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 
 	List<DesignerLoginEntity> findByIsDeletedAndProfileStatusAndAccountStatus(Boolean isDeleted, String profileStatus,
 			String AccountStatus);
+	
+	List<DesignerLoginEntity> findByIsDeletedAndProfileStatusAndAccountStatusAndDesignerCurrentStatus(Boolean isDeleted, String profileStatus,
+			String AccountStatus, String designerCurrentStatus);
+	
 	@Query("{'isDeleted':?0,'isProfileCompleted':?1, 'accountStatus':?2}")
 	List<DesignerLoginEntity> findByIsDeletedAndisProfileCompletedAndAccountStatus(Boolean isDeleted, Boolean isProfileCompleted,
 			String AccountStatus);

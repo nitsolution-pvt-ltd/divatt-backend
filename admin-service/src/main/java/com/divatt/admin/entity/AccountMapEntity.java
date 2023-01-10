@@ -14,6 +14,8 @@ public class AccountMapEntity {
 	public Double pendingAmount;
 	public Double govtGstAmount;
 	public Double designerGstAmount;
+	public Double giftWrapAmount;
+	
 	public String get_id() {
 		return _id;
 	}
@@ -80,6 +82,13 @@ public class AccountMapEntity {
 	public void setDesignerGstAmount(Double designerGstAmount) {
 		this.designerGstAmount = designerGstAmount;
 	}
+	public Double getGiftWrapAmount() {
+		return giftWrapAmount;
+	}
+	public void setGiftWrapAmount(Double giftWrapAmount) {
+		this.giftWrapAmount = giftWrapAmount;
+	}
+	
 	
 	
 	

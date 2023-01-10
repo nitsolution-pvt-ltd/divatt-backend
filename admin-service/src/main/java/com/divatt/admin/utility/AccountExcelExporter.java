@@ -44,7 +44,7 @@ public class AccountExcelExporter {
 	}
 
 	private void writeHeaderLine() {
-		sheet = workbook.createSheet("Account");
+		sheet = workbook.createSheet("Reports");
 
 		Row row = sheet.createRow(0);
 
@@ -92,6 +92,7 @@ public class AccountExcelExporter {
 		createCell(row, 32, "Designer Status", style);
 		createCell(row, 33, "Payment Datetime", style);
 		createCell(row, 34, "Order ID", style);
+		createCell(row, 35, "Giftwrap Amount", style);
 	
 
 	}
@@ -147,6 +148,7 @@ public class AccountExcelExporter {
 			createCell(row, columnCount++, rowsAccount.getDesigner_return_amount().get(0).getStatus(), style);
 			createCell(row, columnCount++, rowsAccount.getDesigner_return_amount().get(0).getPayment_datetime(), style);
 			createCell(row, columnCount++, rowsAccount.getDesigner_return_amount().get(0).getOrder_id(), style);
+			createCell(row, columnCount++, rowsAccount.getOrder_details().get(0).getGiftWrapAmount(), style);
 			
 			
 			count++;
