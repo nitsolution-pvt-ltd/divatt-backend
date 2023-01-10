@@ -7,8 +7,14 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import springfox.documentation.spring.web.json.Json;
 
+//@JsonIgnoreProperties(value = { "password" })
 @Document(collection = "tbl_users")
 public class UserLoginEntity {
 	
@@ -24,6 +30,7 @@ public class UserLoginEntity {
 	@Field("user_exist") private String userExist;
 	@NotNull
 	@Field("email") private String email;
+	@JsonProperty(access = Access.WRITE_ONLY)
 	@NotNull
 	@Field("password") private String password;
 	@NotNull

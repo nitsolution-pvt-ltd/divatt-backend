@@ -88,8 +88,8 @@ public class CommonUtility {
 				String postalCode = json1.get("postalCode").toString();
 				String landmark = json1.get("landmark").toString();
 				String mobile = json1.get("mobile").toString();
-				dto.setShippingAddress(address1 + "," + address2 + "," + country + "," + state + "," + city + ","
-						+ postalCode + "," + landmark + "," + mobile);
+				dto.setShippingAddress(address1 + ", " + address2 + ", " + country + ", " + state + ", " + city + ", "
+						+ postalCode + ", " + landmark + ", " + mobile);
 			} else {
 				json1.remove("address2");
 				String address1 = json1.get("address1").toString();
@@ -99,8 +99,8 @@ public class CommonUtility {
 				String postalCode = json1.get("postalCode").toString();
 				String landmark = json1.get("landmark").toString();
 				String mobile = json1.get("mobile").toString();
-				dto.setShippingAddress(address1 + "," + country + "," + state + "," + city + "," + postalCode + ","
-						+ landmark + "," + mobile);
+				dto.setShippingAddress(address1 + ", " + country + ", " + state + ", " + city + ", " + postalCode + ", "
+						+ landmark + ", " + mobile);
 			}
 		} catch (JsonProcessingException | ParseException e) {
 			e.printStackTrace();

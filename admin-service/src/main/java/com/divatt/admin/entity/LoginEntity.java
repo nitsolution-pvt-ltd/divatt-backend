@@ -8,6 +8,9 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 @Document(collection = "tbl_admin")
 public class LoginEntity {
 
@@ -16,23 +19,24 @@ public class LoginEntity {
 
 	@Id
 	private Long uid;
-	@NotNull(message = "User's first name must not be null")
+	@NotNull(message = "Admin first name must not be null")
 	@Field(name = "first_name")
 	private String firstName;
-	@NotNull(message = "User's last name must not be null")
+	@NotNull(message = "Admin last name must not be null")
 	@Field(name = "last_name")
 	private String lastName;
 //	@Email
-	@NotNull(message = "User's email must not be null")
+	@NotNull(message = "Admin email must not be null")
 	private String email;
-	@NotNull(message = "User's password must not be null")
+	@JsonProperty(access = Access.WRITE_ONLY)
+	@NotNull(message = "Admin password must not be null")
 	private String password;
 //	@NumberFormat
-	@NotNull(message = "User's mobile_no must not be null")
+	@NotNull(message = "Admin mobile_no must not be null")
 	@Field(name = "mobile_no")
 	private String mobileNo;
 //	@DateTimeFormat()
-	@NotNull(message = "User's dob must not be null")
+	@NotNull(message = "Admin dob must not be null")
 	private String dob;
 
 	@Field(name = "is_active")
@@ -40,11 +44,11 @@ public class LoginEntity {
 
 	@Field(value = "is_deleted")
 	private boolean isDeleted;
-	@NotNull(message = "User's role must not be null")
+	@NotNull(message = "Admin role must not be null")
 	private Long role;
 
 	@Field(name = "roel_name")
-	@NotNull(message = "User's role must not be null")
+	@NotNull(message = "Admin role must not be null")
 	private String roleName;
 
 	@Field(name = "auth_token")
@@ -65,7 +69,7 @@ public class LoginEntity {
 	@Field(name = "modified_on")
 	private String modifiedOn;
 
-	@NotNull(message = "User's profile_pic must not be null")
+	@NotNull(message = "Admin profile_pic must not be null")
 	@Field(name = "profile_pic")
 	private String profilePic;
 

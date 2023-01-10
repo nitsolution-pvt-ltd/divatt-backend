@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import springfox.documentation.spring.web.json.Json;
 
 @Document(collection = "tbl_designer_login")
@@ -24,7 +27,9 @@ public class DesignerLoginEntity {
 	@NotNull
 	@Field(name = "email") private String email;
 	@Field(name = "user_exist") private String userExist;
-	@Field(name = "password") private String password;
+	@JsonProperty(access = Access.WRITE_ONLY)
+	@Field(name = "password") 
+	private String password;
 	@Field(name = "auth_token") private String authToken;
 	@NotNull
 	@Field(name = "is_deleted") private Boolean isDeleted;
