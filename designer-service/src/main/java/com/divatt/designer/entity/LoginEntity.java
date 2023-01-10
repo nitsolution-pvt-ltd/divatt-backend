@@ -1,19 +1,17 @@
 package com.divatt.designer.entity;
 
-
-
-
-
 import javax.validation.constraints.NotNull;
-
 import org.json.simple.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
+@JsonIgnoreProperties(value = { "password" })
 @Document(collection = "tbl_admin")
 public class LoginEntity {
 	
@@ -31,6 +29,8 @@ public class LoginEntity {
 //	@Email
 	@NotNull(message = "User's email must not be null")
 	private String email;
+	
+	@JsonIgnore
 	@NotNull(message = "User's password must not be null")
 	private String password;
 //	@NumberFormat
