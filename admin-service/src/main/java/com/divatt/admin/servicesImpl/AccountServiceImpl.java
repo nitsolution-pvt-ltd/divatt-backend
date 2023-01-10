@@ -451,9 +451,12 @@ public class AccountServiceImpl implements AccountService {
 			String totalGross = null;
 			String total = null;
 			String totalTcspercentage = null;
+			String designerName=null;
+			String displayName=null;
 
 			details.add(commonUtility.invoiceUpdateMapper(order));
-			String displayName = order.get(0).getDesigner_details().getDisplay_name();
+			displayName = order.get(0).getDesigner_details().getDisplay_name();
+			designerName=order.get(0).getDesigner_details().getDesigner_name();
 			
 			for (AccountEntity data1 : order) {
 				productDetailsList.add(commonUtility.invoiceUpdateMap(data1));
@@ -474,6 +477,7 @@ public class AccountServiceImpl implements AccountService {
 				totalTcs = String.valueOf(tcs);
 				totalTcspercentage = String.valueOf(tcspercentage);
 				total = String.valueOf(df.format(tTotal));
+				
 			}
 			map.put("data", productDetailsList);
 			map.put("datas", details);
@@ -485,6 +489,7 @@ public class AccountServiceImpl implements AccountService {
 			map.put("totalTcs", totalTcs);
 			map.put("totalTcspercentage", totalTcspercentage);
 			map.put("displayName", displayName);
+			map.put("designerName", designerName);
 
 			Context context = new Context();
 			context.setVariables(map);
