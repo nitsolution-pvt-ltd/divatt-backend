@@ -29,7 +29,8 @@ public enum RestTemplateConstant {
 	ACCOUNT_UPDATE_BY_ID("https://localhost:8084/dev/account/update/"),
 	ACCOUNT_LIST("https://localhost:8084/dev/account/list"),
 	ADMIN_ROLE_NAME("https://localhost:8084/dev/admin/profile/getRoleName/"),
-	USER_DESIGNER_DETAILS("https://localhost:8082/dev/user/getUserDesignerDetails/");
+	USER_DESIGNER_DETAILS("https://localhost:8082/dev/user/getUserDesignerDetails/"),
+	DESIGNER_BY_ID("https://localhost:8083/dev/designer/");
 
 	// FOR PROD
 //	 USERORDER_GET_ORDER("https://localhost:9092/prod/userOrder/getOrder/"),
