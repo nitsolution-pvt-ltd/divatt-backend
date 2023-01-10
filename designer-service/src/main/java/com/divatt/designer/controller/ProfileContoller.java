@@ -640,7 +640,7 @@ public class ProfileContoller {
 					.filter(e -> !keyword.isBlank() ? e.getEmail().startsWith(keyword.toLowerCase()) : true)
 					.map(e -> e.getdId()).collect(Collectors.toList());
 			LOGGER.info(collect.toString());
-			findAll = designerLoginRepo.findBydIdIn(collect, pagingSort);
+			findAll = designerLoginRepo.findBydIdInAndDesignerCurrentStatus(collect,"Online", pagingSort);
 
 			if (findAll.getSize() <= 1)
 				throw new CustomException(MessageConstant.DESIGNER_ID_DOES_NOT_EXIST.getMessage());
@@ -757,84 +757,76 @@ public class ProfileContoller {
 	public List<DesignerLoginEntity> getDesignerDetails(@RequestParam(defaultValue = "") String usermail,
 			@PathVariable String designerCategories) {
 		try {
+			List<DesignerLoginEntity> blankList = new ArrayList<>();
 			if (!designerCategories.equals("all")) {
 				List<DesignerProfileEntity> designerProfileDetailsByCategory = this.designerProfileRepo
 						.findByDesignerCategory(designerCategories);
-				String designerCategory = designerProfileDetailsByCategory.get(0).getDesignerProfile()
-						.getDesignerCategory();
-				List<Long> list = new ArrayList<>();
-				for (int i = 0; i < designerProfileDetailsByCategory.size(); i++) {
-					list.add(designerProfileDetailsByCategory.get(i).getDesignerId());
-					List<DesignerLoginEntity> designerLoginDetails = this.designerLoginRepo.findBydIdIn(list);
-					designerLoginDetails.get(i).setDesignerCategory(designerCategory);
-					LOGGER.info("findBydId" + designerLoginDetails.get(i));
+				if(designerProfileDetailsByCategory.size() <= 0) {
+					return blankList;
 				}
-				List<DesignerLoginEntity> designerData = this.designerLoginRepo.findBydIdIn(list);
-				for (int i = 0; i < designerData.size(); i++) {
+				String designerCategory = designerProfileDetailsByCategory.get(0).getDesignerProfile().getDesignerCategory();
+				if(designerCategory.isEmpty()) {
+					return blankList;
+				}
+				
+				List<Long> list = new ArrayList<>();
+				for (DesignerProfileEntity dCategory : designerProfileDetailsByCategory) {
+					list.add(dCategory.getDesignerId());
+				}
+
+				List<DesignerLoginEntity> designerData = this.designerLoginRepo.findBydIdInAndDesignerCurrentStatus(list,"Online");
+				
+				if(designerData.size()>0) {
+					designerData.forEach(dRow->{
 					Query query2 = new Query();
-					query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
-					DesignerProfileEntity designerProfileData = mongoOperations.findOne(query2,
-							DesignerProfileEntity.class);
-					// designerData.get(i).setDesignerCategory(designerProfileData.getDesignerProfile().getDesignerCategory());
-					designerData.get(i).setDesignerProfileEntity(designerProfileData);
-					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
-					LOGGER.info("countData<><><><><" + countData);
+					query2.addCriteria(Criteria.where("designerId").is(dRow.getdId()).andOperator(Criteria.where("designerCurrentStatus").is("Online")));
+					DesignerProfileEntity designerProfileData = mongoOperations.findOne(query2, DesignerProfileEntity.class);
+					dRow.setDesignerProfileEntity(designerProfileData);
+					org.json.simple.JSONObject countData = countData(dRow.getdId());
 					String productCount = countData.get("Products").toString();
 					String followerCount = countData.get("FollowersData").toString();
-					designerData.get(i).setProductCount(Integer.parseInt(productCount));
-					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
+					dRow.setProductCount(Integer.parseInt(productCount));
+					dRow.setFollwerCount(Integer.parseInt(followerCount));
+					});
 				}
 				if (usermail.isBlank()) {
 					return designerData;
 				} else {
-//					DesignerProfileEntity[] body = restTemplate
-//							.getForEntity(RestTemplateConstant.USER_FOLLOWED_DESIGNER.getMessage() + usermail,
-//									DesignerProfileEntity[].class)
-//							.getBody();
 					UserDesignerEntity[] userDesignerEntity = restTemplate
-							.getForEntity(RestTemplateConstant.USER_DESIGNER_DETAILS.getMessage() + usermail,
-									UserDesignerEntity[].class)
+							.getForEntity(RestTemplateConstant.USER_DESIGNER_DETAILS.getMessage() + usermail, UserDesignerEntity[].class)
 							.getBody();
 					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
-					LOGGER.info("designerList" + designerList);
 					designerData.stream().forEach(designer -> {
-						 if (designerList.stream().filter(dl -> dl.getDesignerId().equals(designer.getdId())).count()>0)
-							 designer.setIsFollowing(true);
-						 else 
-							 designer.setIsFollowing(false);
+					 if (designerList.stream().filter(dl -> dl.getDesignerId().equals(designer.getdId())).count()>0)
+						 designer.setIsFollowing(true);
+					 else 
+						 designer.setIsFollowing(false);
 					});
 					return designerData;
 				}
-
+			
 			} else {
-				List<DesignerLoginEntity> designerData = designerLoginRepo.findAll();
-				for (int i = 0; i < designerData.size(); i++) {
-					Query query2 = new Query();
-					query2.addCriteria(Criteria.where("designerId").is(designerData.get(i).getdId()));
-					DesignerProfileEntity designerProfileData = mongoOperations.findOne(query2,
-							DesignerProfileEntity.class);
-					designerData.get(i).setDesignerProfileEntity(designerProfileData);
-					org.json.simple.JSONObject countData = countData(designerData.get(i).getdId());
-					LOGGER.info("countData<><><!!!!!"+countData);
-
-					if (designerData.get(i).getdId() == 264) {
-						LOGGER.info("Count data is = {}", countData);
-					}
-					String productCount = countData.get("Products").toString();
-					String followerCount = countData.get("FollowersData").toString();
-					designerData.get(i).setProductCount(Integer.parseInt(productCount));
-					designerData.get(i).setFollwerCount(Integer.parseInt(followerCount));
-				}
+				List<DesignerLoginEntity> designerData = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatusAndDesignerCurrentStatus(false,
+						"COMPLETED", "ACTIVE","Online");
+					designerData.forEach(designerRow->{
+						Query query2 = new Query();
+						query2.addCriteria(Criteria.where("designerId").is(designerRow.getdId()).andOperator(Criteria.where("designerCurrentStatus").is("Online")));
+						DesignerProfileEntity designerProfileData = mongoOperations.findOne(query2, DesignerProfileEntity.class);
+						designerRow.setDesignerProfileEntity(designerProfileData);
+						org.json.simple.JSONObject countData = countData(designerRow.getdId());
+						
+						String productCount = countData.get("Products").toString();
+						String followerCount = countData.get("FollowersData").toString();
+						designerRow.setProductCount(Integer.parseInt(productCount));
+						designerRow.setFollwerCount(Integer.parseInt(followerCount));
+					});
+					
 				if (usermail.isBlank()) {
 					return designerData;
 				} else {
-//					DesignerProfileEntity[] body = restTemplate
-//							.getForEntity(RestTemplateConstant.USER_FOLLOWED_DESIGNER.getMessage() + usermail,
-//									DesignerProfileEntity[].class)
-//							.getBody();
+
 					UserDesignerEntity[] userDesignerEntity = restTemplate
-							.getForEntity(RestTemplateConstant.USER_DESIGNER_DETAILS.getMessage() + usermail,
-									UserDesignerEntity[].class)
+							.getForEntity(RestTemplateConstant.USER_DESIGNER_DETAILS.getMessage() + usermail, UserDesignerEntity[].class)
 							.getBody();
 					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
 					designerData.stream().forEach(designer -> {
