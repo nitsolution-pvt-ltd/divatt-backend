@@ -152,10 +152,10 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			if (loginEntity.getType().equals("USER")) {
 
 				try {
-					UserLoginEntity entity = userLoginRepo.findByEmail(loginEntity.getEmail()).get();
+					UserLoginEntity entity = userLoginRepo.findByEmail(loginEntity.getEmail().trim()).get();
 
 					this.authenticationManager.authenticate(
-							new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
+							new UsernamePasswordAuthenticationToken(loginEntity.getEmail().trim(), loginEntity.getPassword().trim()));
 
 				} catch (Exception e) {
 					if (e.getMessage().equals(MessageConstant.BADCREDENTIAL.getMessage()))
@@ -170,11 +170,11 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					|| loginEntity.getSocialType().equals("google"))) {
 
 				try {
-					UserLoginEntity entity = userLoginRepo.findByEmail(loginEntity.getEmail()).get();
+					UserLoginEntity entity = userLoginRepo.findByEmail(loginEntity.getEmail().trim()).get();
 
 					if (entity.getSocialType().contentEquals(loginEntity.getSocialType())) {
 						this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-								loginEntity.getEmail(), loginEntity.getPassword()));
+								loginEntity.getEmail().trim(), loginEntity.getPassword().trim()));
 					} else {
 						throw new CustomException(MessageConstant.SOCIAL_LOGIN_NOT_MATCH.getMessage());
 					}
@@ -192,7 +192,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				try {
 
 					this.authenticationManager.authenticate(
-							new UsernamePasswordAuthenticationToken(loginEntity.getEmail(), loginEntity.getPassword()));
+							new UsernamePasswordAuthenticationToken(loginEntity.getEmail().trim(), loginEntity.getPassword().trim()));
 
 				} catch (Exception e) {
 					if (e.getMessage().equals(MessageConstant.BADCREDENTIAL.getMessage()))
@@ -206,7 +206,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 
 			// ** CHECKING END(IF USER IS REAL THEN ONLY HE CAN GO TO NEXT LINE) **//
 
-			UserDetails vendor = this.loginUserDetails.loadUserByUsername(loginEntity.getEmail());
+			UserDetails vendor = this.loginUserDetails.loadUserByUsername(loginEntity.getEmail().trim());
 
 			String token = jwtUtil.generateToken(vendor);
 			// ***** WE ARE CHECKING IN THREE TABLE ADMIN DESIGNER AND USER *****//
@@ -260,7 +260,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					designerLoginEntity.setFollwerCount(designerLoginEntity.getFollwerCount());
 					designerLoginRepo.save(designerLoginEntity);
 					LoginDesignerData loginDesignerData = new LoginDesignerData(findByUserNameDesigner.get().getUid(),
-							findByUserNameDesigner.get().getEmail(), findByUserNameDesigner.get().getPassword(),
+							findByUserNameDesigner.get().getEmail().trim(), findByUserNameDesigner.get().getPassword().trim(),
 							MessageConstant.LOGIN_SUCESSFULL.getMessage(),
 							Stream.of("DESIGNER").map(SimpleGrantedAuthority::new).collect(Collectors.toList()), 200,
 							findByUserNameDesigner.get().getAdminComment(),
@@ -272,7 +272,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				}
 			}
 			if (loginEntity.getType().equals("USER")) {
-				Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(vendor.getUsername());
+				Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(vendor.getUsername().trim());
 				if (findByEmail.isPresent()) {
 					if (findByEmail.get().getIsActive() == false)
 						throw new CustomException(MessageConstant.ACCOUNT_INACTIVE.getMessage());
