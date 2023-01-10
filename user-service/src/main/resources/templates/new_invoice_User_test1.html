@@ -57,16 +57,16 @@
                                     <tr>
                                         <td style="color: #000;font-weight: 600;" >
                                             <div>
-                                                <span th:text="${data1.billedUserName}"></span>
+                                                <span th:text="${data1.billedUserName}"></span>,
                                             </div>
                                             <div>
                                                 <span  ></span>
                                             </div>
                                             <div>
-                                                <span th:text="${data1.billingCity}" ></span><span th:text="${data1.billingPinCode}" ></span>
+                                                <span th:text="${data1.billingCity}" >,</span>, <span th:text="${data1.billingPinCode}" ></span>,
                                             </div>
                                             <div>
-                                                <span th:text="${data1.billingState}"></span><span th:text="${data1.billingCountry}"></span>
+                                                <span th:text="${data1.billingState}"></span>, <span th:text="${data1.billingCountry}"></span>,
                                             </div>
                                             <div>
                                               <span th:text="${data1.billingMobile}"></span>
@@ -94,18 +94,18 @@
                                     <tr>
                                         <td style="color: #000;font-weight: 600;" >
                                             <div>
-                                                <span style="color: #000;font-weight: 600;" th:text="${data1.shippingUserName}"></span>
+                                                <span style="color: #000;font-weight: 600;" th:text="${data1.shippingUserName}"></span>,
                                             </div>
                                             <div>
                                                 <span style="color: #000;font-weight: 600;" th:text="${data1.shippingAddress}"></span>
                                             </div>   
                                             <div>
-                                                <span style="color: #000;font-weight: 600;" th:text="${data1.shippingCity}"></span>
+                                                <span style="color: #000;font-weight: 600;" th:text="${data1.shippingCity}"></span>,
                                                 
-                                                <span style="color: #000;font-weight: 600;" th:text="${data1.shippingPincode}"></span>
+                                                <span style="color: #000;font-weight: 600;" th:text="${data1.shippingPincode}"></span>,
                                             </div> 
                                             <div>
-                                                <span style="color: #000;font-weight: 600;" th:text="${data1.shippingState}"></span>
+                                                <span style="color: #000;font-weight: 600;" th:text="${data1.shippingState}"></span>,
                                                 
                                                 <span style="color: #000;font-weight: 600;" th:text="${data1.shippingCountry}"></span>
                                             </div>
@@ -200,7 +200,7 @@
                 <th style="text-align: left; font-weight: 600;font-size: 12px;max-width: 90px;">
                     Product
                 </th>
-                <th style="text-align: center; font-weight: 600;font-size: 12px;min-width: 60px;">
+                <th style="text-align: left; font-weight: 600;font-size: 12px;min-width: 60px;">
                     Qty
                 </th>
                 <th style="text-align: left; font-weight: 600;font-size: 12px;min-width: 70px;">
@@ -219,7 +219,7 @@
                     <td style="border-top: 1px solid #999;border-bottom: 1px solid #999;padding: 10px 0;text-align: left; font-weight: 600;font-size: 12px;color: #000;max-width: 120px;min-width: 120px;">
                             <th:block th:text="${data1.productName}"></th:block>
                     </td>
-                    <td style="border-top: 1px solid #999;border-bottom: 1px solid #999;padding: 10px 0;text-align: center; font-weight: 600;font-size: 12px;color: #000;min-width: 60px;">
+                    <td style="border-top: 1px solid #999;border-bottom: 1px solid #999;padding: 10px 0;text-align: left; font-weight: 600;font-size: 12px;color: #000;min-width: 60px;">
                         <th:block th:text="${data1.qty}"></th:block>
                     </td>
                     <td style="border-top: 1px solid #999;border-bottom: 1px solid #999;padding: 10px 0;text-align: left; font-weight: 600;font-size: 12px;color: #000;">
@@ -290,6 +290,8 @@
         </table>
         <div style="text-align: right;padding-right: 20px;font-weight: 600;">
             Name of saler
+            <br>
+            <span th:text="${designerName}"></span>
         </div>
         <!-- <table>
             <tbody>

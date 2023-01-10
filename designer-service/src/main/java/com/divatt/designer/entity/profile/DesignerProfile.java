@@ -6,12 +6,18 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(value = { "password" })
 public class DesignerProfile {
 
 	@NotNull
 	@Field(name = "email")
 	private String email;
+	
+	@JsonIgnore
 	@NotNull
 	@Field(name = "password")
 	private String password;

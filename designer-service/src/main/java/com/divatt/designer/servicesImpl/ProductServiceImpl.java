@@ -795,6 +795,9 @@ public class ProductServiceImpl implements ProductService{
 						findProduct = productRepo2
 								.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerId(false, "Approved", true,
 										designerRow.getDesignerId());
+						findProduct.forEach(d->{
+							d.setDesignerProfile(designerRow.getDesignerProfile());
+						});
 					findall.addAll(findProduct);
 				}
 			});

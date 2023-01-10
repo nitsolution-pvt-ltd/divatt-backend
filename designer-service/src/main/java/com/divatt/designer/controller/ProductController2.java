@@ -272,5 +272,16 @@ public class ProductController2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/productAdmin/{productId}")
+	public ProductMasterEntity2 getProductsAdmin(@PathVariable Integer productId) {
+		try {
+			LOGGER.info("Inside- ProductController2.getProductsAdmin()");
+			return productService2.getProductsAdmin(productId);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
 
 }
