@@ -55,6 +55,8 @@ public interface UserService {
             String keyword, Optional<String> sortBy);
 
     public ResponseEntity<?> productDetails(Integer productId, String userId);
+    
+    public ResponseEntity<?> productDetailsAdmin(Integer productId, String userId);
 
     public ResponseEntity<?> getDesignerUser();
 

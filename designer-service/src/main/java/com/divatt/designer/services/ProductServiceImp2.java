@@ -1069,13 +1069,10 @@ public class ProductServiceImp2 implements ProductService2 {
 		try {
 
 			List<ProductMasterEntity2> findall = new ArrayList<>();
-			List<DesignerProfileEntity> findByDesignerByCurrentStatus = designerProfileRepo
-					.findByDesignerCurrentStatus("Online");
-
+			List<DesignerProfileEntity> findByDesignerByCurrentStatus = designerProfileRepo.findByDesignerCurrentStatus("Online");
 			findByDesignerByCurrentStatus.forEach(designerRow -> {
 				if (designerRow.getDesignerCurrentStatus().equals("Online")) {
-					List<ProductMasterEntity2> findProduct = new ArrayList<>();
-					findProduct = productRepo2.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerIdAndProductId(false,
+					List<ProductMasterEntity2> findProduct = productRepo2.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerIdAndProductId(false,
 							"Approved", true, designerRow.getDesignerId(), productId);
 					findall.addAll(findProduct);
 				}
