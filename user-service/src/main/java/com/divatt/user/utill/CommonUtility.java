@@ -166,7 +166,6 @@ public class CommonUtility {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Update order payment {}", gson.toJson(orderPaymentEntity));
 		}
-		
 	}
-
+	
 }
