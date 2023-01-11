@@ -2657,15 +2657,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					}
 					
 				});
-//				invoiceUpdatedModels.forEach(entity ->{
-//					String taxAmount = entity.getTaxAmount();
-//					int parseInt = Integer.parseInt(taxAmount);
-//					LOGGER.info("taxAmount"+parseInt);
-//					String total2 = entity.getTotal();
-//					int parseInt2 = Integer.parseInt(total2);
-//					int taxValue= parseInt2 - parseInt;
-//					entity.setTaxableValue(taxValue+"");
-//				});
 				for (InvoiceUpdatedModel element : invoiceUpdatedModels) {
 					String taxAmount = element.getTaxAmount();
 					String total2 = element.getTotal();
