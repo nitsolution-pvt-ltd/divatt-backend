@@ -225,8 +225,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			return ResponseEntity.ok(new Json(order.toString()));
 
-		} catch (RazorpayException e) {
-			throw new CustomException(e.getMessage());
+		} catch (RazorpayException exe) {
+			return new ResponseEntity<>(new Json(exe.getLocalizedMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}

@@ -64,6 +64,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -152,12 +153,14 @@ public class OrderAndPaymentContoller {
 
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
-			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
-				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
+				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(),HttpStatus.UNAUTHORIZED);
+			}
 			return orderAndPaymentService.postRazorpayOrderCreateService(orderDetailsEntity);
-
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
