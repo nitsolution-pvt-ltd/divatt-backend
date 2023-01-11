@@ -936,7 +936,7 @@ public class UserServiceImpl implements UserService {
 						.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), org.json.simple.JSONObject.class)
 						.getBody());
 			});
-			designerList.forEach(data -> {
+			designerList.stream().forEach(data -> {
 				data.put("isFollowing", true);
 			});
 			return designerList;
