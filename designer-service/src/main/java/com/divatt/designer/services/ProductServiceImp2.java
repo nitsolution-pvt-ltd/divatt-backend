@@ -1077,7 +1077,7 @@ public class ProductServiceImp2 implements ProductService2 {
 					findall.addAll(findProduct);
 				}
 			}); 
-			ProductMasterEntity2 productMasterEntity22 = null;
+			ProductMasterEntity2 productMasterEntity22 = new ProductMasterEntity2();
 			
 			if (findall.size() > 0) {
 				productMasterEntity22 = findall.get(0);
@@ -1117,7 +1117,7 @@ public class ProductServiceImp2 implements ProductService2 {
 										designerRow.getDesignerId(),productId);
 					findall.addAll(findProduct);
 			});
-			ProductMasterEntity2 productMasterEntity22 = null;
+			ProductMasterEntity2 productMasterEntity22 = new ProductMasterEntity2();
 			if(findall.size() > 0) {
 					
 				productMasterEntity22 = findall.get(0);
