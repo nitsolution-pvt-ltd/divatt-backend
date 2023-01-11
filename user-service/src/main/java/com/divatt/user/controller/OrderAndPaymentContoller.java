@@ -154,13 +154,13 @@ public class OrderAndPaymentContoller {
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
-				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(),HttpStatus.UNAUTHORIZED);
+				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(), HttpStatus.UNAUTHORIZED);
 			}
 			return orderAndPaymentService.postRazorpayOrderCreateService(orderDetailsEntity);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -172,14 +172,14 @@ public class OrderAndPaymentContoller {
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
-				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(),HttpStatus.UNAUTHORIZED);
+				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(), HttpStatus.UNAUTHORIZED);
 			}
 			return orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
 
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -192,13 +192,13 @@ public class OrderAndPaymentContoller {
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
-				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(),HttpStatus.UNAUTHORIZED);
+				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(), HttpStatus.UNAUTHORIZED);
 			}
 			return orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -216,9 +216,9 @@ public class OrderAndPaymentContoller {
 
 			return orderAndPaymentService.postOrderHandleDetailsService(PayEntity);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -247,9 +247,9 @@ public class OrderAndPaymentContoller {
 		try {
 			LOGGER.info("Data for add order = {}", orderAndPaymentGlobalEntity);
 			Map<String, Object> map = new HashMap<>();
-			List<OrderPlacedDTO> orders = new ArrayList<>();
-			List<OrderPlacedDTO> ordersdata = new ArrayList<>();
-			Map<String, Object> data = new HashMap<>();
+//			List<OrderPlacedDTO> orders = new ArrayList<>();
+//			List<OrderPlacedDTO> ordersdata = new ArrayList<>();
+//			Map<String, Object> data = new HashMap<>();
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
 
 			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
@@ -262,7 +262,8 @@ public class OrderAndPaymentContoller {
 				String format = formatter.format(date);
 				String formatDate = formatter.format(date);
 
-				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity()
+						.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderId("OR" + System.currentTimeMillis());
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderDate(formatDate);
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setCreatedOn(format);
@@ -273,119 +274,120 @@ public class OrderAndPaymentContoller {
 				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
 						.getOrderSKUDetailsEntity();
 
-				final DecimalFormat df = new DecimalFormat("0.00");
-				Double mrp = 0.00;
-				Double taxAmount = 0.00;
-				Double total = 0.00;
-				Double grandTotal = 0.00;
-				Double totalMrp = 0.00;
-				Double totalTax = 0.00;
-
-				String tmrp = null;
-				String ttaxAmount = null;
-				String ttotal = null;
-				String ttotalMrp = null;
-				String tgrandTotal = null;
-				String ttotalTax = null;
-
-				String designerEmail = null;
-				String displayName = null;
-				String designerName = null;
-				String tgrossGrandTotal = null;
-
-				ordersdata.add(commonUtility.placedOrder(orderAndPaymentGlobalEntity));
+//				final DecimalFormat df = new DecimalFormat("0.00");
+//				Double mrp = 0.00;
+//				Double taxAmount = 0.00;
+//				Double total = 0.00;
+//				Double grandTotal = 0.00;
+//				Double totalMrp = 0.00;
+//				Double totalTax = 0.00;
+//
+//				String tmrp = null;
+//				String ttaxAmount = null;
+//				String ttotal = null;
+//				String ttotalMrp = null;
+//				String tgrandTotal = null;
+//				String ttotalTax = null;
+//
+//				String designerEmail = null;
+//				String displayName = null;
+//				String designerName = null;
+//				String tgrossGrandTotal = null;
+//
+//				ordersdata.add(commonUtility.placedOrder(orderAndPaymentGlobalEntity));
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
 
-					orderSKUDetailsEntityRow.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
+					orderSKUDetailsEntityRow
+							.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
-
+					
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
 
-					int designerId = orderSKUDetailsEntityRow.getDesignerId();
-					orders.add(commonUtility.skuOrders(orderSKUDetailsEntityRow));
-					taxAmount = taxAmount
-							+ Double.parseDouble(orderSKUDetailsEntityRow.getTaxAmount() + "" == null ? "0"
-									: orderSKUDetailsEntityRow.getTaxAmount() + "");
-					if (orderSKUDetailsEntityRow.getSalesPrice() == 0) {
-						String mrp2 = orderSKUDetailsEntityRow.getMrp() + "";
-						mrp = mrp + Double.parseDouble(mrp2 == null ? "0" : mrp2);
-						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
-						grandTotal = grandTotal + Double.parseDouble(orderSKUDetailsEntityRow.getMrp() == null ? "0"
-								: orderSKUDetailsEntityRow.getMrp().toString());
-					} else {
-						String salesPrice = orderSKUDetailsEntityRow.getSalesPrice() + "";
-						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
-						grandTotal = grandTotal + Double.parseDouble(salesPrice == null ? "0" : salesPrice);
-					}
-					Double grossGrandTotal = 0.00;
-					for (OrderPlacedDTO order : orders) {
-						grossGrandTotal = grossGrandTotal + Double.parseDouble(order.getTotal());
-					}
-					totalTax = totalTax + Double.parseDouble(totalTax + "" == null ? "0" : totalTax + "");
-					tmrp = String.valueOf(df.format(mrp));
-					ttaxAmount = String.valueOf(taxAmount);
-					ttotal = String.valueOf(total);
-					ttotalMrp = String.valueOf(totalMrp);
-					ttotalTax = String.valueOf(totalTax);
-					tgrandTotal = String.valueOf(grandTotal);
-					tgrossGrandTotal = String.valueOf(grossGrandTotal);
-					try {
-						DesignerProfileEntity forEntity = restTemplate
-								.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
-										DesignerProfileEntity.class)
-								.getBody();
-						designerEmail = forEntity.getDesignerProfile().getEmail();
-						designerName = forEntity.getDesignerName();
-						displayName = forEntity.getDesignerProfile().getDisplayName();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+//					int designerId = orderSKUDetailsEntityRow.getDesignerId();
+//					orders.add(commonUtility.skuOrders(orderSKUDetailsEntityRow));
+//					taxAmount = taxAmount
+//							+ Double.parseDouble(orderSKUDetailsEntityRow.getTaxAmount() + "" == null ? "0"
+//									: orderSKUDetailsEntityRow.getTaxAmount() + "");
+//					if (orderSKUDetailsEntityRow.getSalesPrice() == 0) {
+//						String mrp2 = orderSKUDetailsEntityRow.getMrp() + "";
+//						mrp = mrp + Double.parseDouble(mrp2 == null ? "0" : mrp2);
+//						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
+//						grandTotal = grandTotal + Double.parseDouble(orderSKUDetailsEntityRow.getMrp() == null ? "0"
+//								: orderSKUDetailsEntityRow.getMrp().toString());
+//					} else {
+//						String salesPrice = orderSKUDetailsEntityRow.getSalesPrice() + "";
+//						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
+//						grandTotal = grandTotal + Double.parseDouble(salesPrice == null ? "0" : salesPrice);
+//					}
+//					Double grossGrandTotal = 0.00;
+//					for (OrderPlacedDTO order : orders) {
+//						grossGrandTotal = grossGrandTotal + Double.parseDouble(order.getTotal());
+//					}
+//					totalTax = totalTax + Double.parseDouble(totalTax + "" == null ? "0" : totalTax + "");
+//					tmrp = String.valueOf(df.format(mrp));
+//					ttaxAmount = String.valueOf(taxAmount);
+//					ttotal = String.valueOf(total);
+//					ttotalMrp = String.valueOf(totalMrp);
+//					ttotalTax = String.valueOf(totalTax);
+//					tgrandTotal = String.valueOf(grandTotal);
+//					tgrossGrandTotal = String.valueOf(grossGrandTotal);
+//					try {
+//						DesignerProfileEntity forEntity = restTemplate
+//								.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
+//										DesignerProfileEntity.class)
+//								.getBody();
+//						designerEmail = forEntity.getDesignerProfile().getEmail();
+//						designerName = forEntity.getDesignerName();
+//						displayName = forEntity.getDesignerProfile().getDisplayName();
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
 				}
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", MessageConstant.ORDER_PLACED.getMessage());
 
-				Query query = new Query();
-				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
-				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
-
-				String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
-
-				String orderId = orderDetailsEntity.getOrderId();
-				data.put("displayName", displayName);
-				data.put("orderId", orderId);
-				data.put("userName", userName);
-				data.put("data", orders);
-				data.put("datas", ordersdata);
-				data.put("tmrp", tmrp);
-				data.put("ttotal", ttotal);
-				data.put("ttaxAmount", ttaxAmount);
-				data.put("ttotalMrp", ttotalMrp);
-				data.put("ttotalTax", ttotalTax);
-				data.put("tgrandTotal", tgrandTotal);
-				data.put("tgrossGrandTotal", tgrossGrandTotal);
-				Context context = new Context();
-				context.setVariables(data);
-				String htmlContent = templateEngine.process("orderPlaced.html", context);
-				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-				
-				this.sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true,
-						createPdfSupplier);
-				this.sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
-						htmlContent + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
-								+ userLoginEntity.getLastName(),
-						true, createPdfSupplier);
-
-				createPdfSupplier.delete();
+//				Query query = new Query();
+//				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
+//				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
+//
+//				String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
+//
+//				String orderId = orderDetailsEntity.getOrderId();
+//				data.put("displayName", displayName);
+//				data.put("orderId", orderId);
+//				data.put("userName", userName);
+//				data.put("data", orders);
+//				data.put("datas", ordersdata);
+//				data.put("tmrp", tmrp);
+//				data.put("ttotal", ttotal);
+//				data.put("ttaxAmount", ttaxAmount);
+//				data.put("ttotalMrp", ttotalMrp);
+//				data.put("ttotalTax", ttotalTax);
+//				data.put("tgrandTotal", tgrandTotal);
+//				data.put("tgrossGrandTotal", tgrossGrandTotal);
+//				Context context = new Context();
+//				context.setVariables(data);
+//				String htmlContent = templateEngine.process("orderPlaced.html", context);
+//				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
+//
+//				this.sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent,
+//						true, createPdfSupplier);
+//				this.sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
+//						htmlContent + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
+//								+ userLoginEntity.getLastName(),
+//						true, createPdfSupplier);
+//
+//				createPdfSupplier.delete();
 			}
 
 			return ResponseEntity.ok(map);
 
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -415,9 +417,9 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.getOrderDetailsService(orderId);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -635,9 +637,9 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.postOrderTrackingService(orderTrackingEntity);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -650,9 +652,9 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.putOrderTrackingService(orderTrackingEntity, trackingId);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -666,9 +668,9 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.getOrderTrackingDetailsService(orderId, userId, designerId);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -688,9 +690,9 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -809,9 +811,9 @@ public class OrderAndPaymentContoller {
 			return orderAndPaymentService.postOrderInvoiceService(orderInvoiceEntity);
 
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -824,9 +826,9 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.putOrderInvoiceService(invoiceId, orderInvoiceEntity);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}

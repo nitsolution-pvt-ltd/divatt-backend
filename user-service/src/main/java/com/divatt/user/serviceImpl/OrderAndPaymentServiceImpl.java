@@ -298,6 +298,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				filterCatDetails.setUserId(orderPaymentEntity.getUserId());
 				filterCatDetails.setCreatedOn(format);
 				userOrderPaymentRepo.save(filterCatDetails);
+				commonUtility.userOrder(orderPaymentEntity);
 				return ResponseEntity.ok(mapPayId);
 			} else
 				throw new CustomException(MessageConstant.ORDER_ID_EXIST.getMessage());
