@@ -874,10 +874,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<Object> getListDesignerData(String userEmail) {
+	public List<org.json.simple.JSONObject> getListDesignerData(String userEmail) {
 		LOGGER.info("inside service");
 		try {
-			List<Object> designerList = new ArrayList<Object>();
+			List<org.json.simple.JSONObject> designerList = new ArrayList<>();
 			Long userId = userLoginRepo.findByEmail(userEmail).get().getId();
 			LOGGER.info("userId<><><>!!!!" + userId);
 			Query query = new Query();
@@ -886,8 +886,11 @@ public class UserServiceImpl implements UserService {
 			LOGGER.info("userDesignerList<><><><!!!!" + userDesignerList);
 			userDesignerList.stream().forEach(e -> {
 				designerList.add(restTemplate
-						.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), Object.class)
+						.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), org.json.simple.JSONObject.class)
 						.getBody());
+			});
+			designerList.forEach(data -> {
+				data.put("isFollowing", true);
 			});
 			return designerList;
 		} catch (Exception e) {
