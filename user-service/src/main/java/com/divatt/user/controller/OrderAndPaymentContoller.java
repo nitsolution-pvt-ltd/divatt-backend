@@ -64,6 +64,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -152,12 +153,14 @@ public class OrderAndPaymentContoller {
 
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
-			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
-				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
+				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(),HttpStatus.UNAUTHORIZED);
+			}
 			return orderAndPaymentService.postRazorpayOrderCreateService(orderDetailsEntity);
-
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -168,12 +171,15 @@ public class OrderAndPaymentContoller {
 
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
-			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
-				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
+				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(),HttpStatus.UNAUTHORIZED);
+			}
 			return orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
 
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -185,12 +191,14 @@ public class OrderAndPaymentContoller {
 
 		try {
 			String extractUsername = JwtUtil.extractUsername(token.substring(7));
-			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
-				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
-
+			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
+				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(),HttpStatus.UNAUTHORIZED);
+			}
 			return orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -207,8 +215,10 @@ public class OrderAndPaymentContoller {
 			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) paymentE.get("payment"));
 
 			return orderAndPaymentService.postOrderHandleDetailsService(PayEntity);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -372,8 +382,10 @@ public class OrderAndPaymentContoller {
 
 			return ResponseEntity.ok(map);
 
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -401,10 +413,11 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()");
 
 		try {
-
 			return orderAndPaymentService.getOrderDetailsService(orderId);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -498,7 +511,7 @@ public class OrderAndPaymentContoller {
 		return new File("order-summary.pdf");
 	}
 
-	public ByteArrayOutputStream generatePdf(String html) {
+	private ByteArrayOutputStream generatePdf(String html) {
 
 		PdfWriter pdfWriter = null;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -533,7 +546,7 @@ public class OrderAndPaymentContoller {
 		return baos;
 	}
 
-	public void sendEmailWithAttachment(String to, String subject, String body, Boolean enableHtml, File file) {
+	private void sendEmailWithAttachment(String to, String subject, String body, Boolean enableHtml, File file) {
 
 		try {
 
@@ -621,8 +634,10 @@ public class OrderAndPaymentContoller {
 
 		try {
 			return orderAndPaymentService.postOrderTrackingService(orderTrackingEntity);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -634,8 +649,10 @@ public class OrderAndPaymentContoller {
 
 		try {
 			return orderAndPaymentService.putOrderTrackingService(orderTrackingEntity, trackingId);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -648,8 +665,10 @@ public class OrderAndPaymentContoller {
 
 		try {
 			return orderAndPaymentService.getOrderTrackingDetailsService(orderId, userId, designerId);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -668,8 +687,10 @@ public class OrderAndPaymentContoller {
 	public ResponseEntity<?> getOrderByInvoiceId(@PathVariable String invoiceId) {
 		try {
 			return orderAndPaymentService.getOrderServiceByInvoiceId(invoiceId);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -698,7 +719,7 @@ public class OrderAndPaymentContoller {
 	}
 
 	// @GetMapping("/getOrderList")
-	public List<OrderDetailsEntity> getOrderListAPI() {
+	private List<OrderDetailsEntity> getOrderListAPI() {
 		try {
 			int flag = 0;
 			List<OrderDetailsEntity> sortingList = new ArrayList<OrderDetailsEntity>();
@@ -787,8 +808,10 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.postOrderInvoiceService(orderInvoiceEntity);
 
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -800,8 +823,10 @@ public class OrderAndPaymentContoller {
 
 		try {
 			return orderAndPaymentService.putOrderInvoiceService(invoiceId, orderInvoiceEntity);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}

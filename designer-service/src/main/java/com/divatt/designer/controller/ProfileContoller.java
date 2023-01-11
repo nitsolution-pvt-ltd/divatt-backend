@@ -215,7 +215,7 @@ public class ProfileContoller {
 
 			Optional<DesignerProfileEntity> findByBoutiqueName = designerProfileRepo
 					.findByBoutiqueName(designerProfileEntity.getBoutiqueProfile().getBoutiqueName());
-			LOGGER.info("	TEST" + findByBoutiqueName);
+
 			if (!findByBoutiqueName.isPresent()) {
 
 				designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
@@ -248,13 +248,12 @@ public class ProfileContoller {
 
 				if (designerLoginRepo.save(designerLoginEntity) != null) {
 					designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
-					designerProfileEntity
-							.setId((long) sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
+					designerProfileEntity.setId((long) sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
 					designerProfileEntity.setIsProfileCompleted(false);
 					DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
-					designerProfile.setPassword(
-							bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
+					designerProfile.setPassword(bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 					designerProfileEntity.setDesignerProfile(designerProfile);
+					designerProfileEntity.setDesignerCurrentStatus("Online");
 					designerProfileRepo.save(designerProfileEntity);
 				}
 
@@ -330,20 +329,11 @@ public class ProfileContoller {
 		else {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 
-//			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
-
-			LOGGER.info("Inside Update");
-			LOGGER.info("Designer profile status = {}", designerLoginEntity.getProfileStatus());
-			LOGGER.info("Designer profile status = {}", designerLoginEntity.getIsProfileCompleted());
-			LOGGER.info("DATATATATATAT = {}", !designerLoginEntity.getIsDeleted().equals(true));
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
 			if (designerLoginEntity.getProfileStatus().equals("SUBMITTED")
 					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
 					|| designerLoginEntity.getProfileStatus().equals("SAVED")) {
-//				if ((!designerLoginEntity.getProfileStatus().equals("APPROVE")
-//						|| !designerLoginEntity.getProfileStatus().equals("REJECTED"))) {
-				LOGGER.info("INSIDE IF <><><><><><@!!!");
-				// update designer personal information from admin update
+
 				DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
 						.findByDesignerId(designerLoginEntity.getdId()).get();
 				DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
@@ -354,8 +344,6 @@ public class ProfileContoller {
 				designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity()
 						.getDesignerPersonalInfoEntity().getDesignerDocuments());
 				designerPersonalInfoRepo.save(designerPersonalInfoEntity);
-				// end update designer personal information from admin update
-				// }
 			}
 			// Old
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
@@ -363,9 +351,7 @@ public class ProfileContoller {
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
-			LOGGER.info(getDesigner(designerLoginEntityDB.getdId()).getBody().toString() + "Inside Did");
 			Object string = getDesigner(designerLoginEntityDB.getdId()).getBody();
-			LOGGER.info("Inside body " + string);
 			String designerId = null;
 			ObjectMapper mapper = new ObjectMapper();
 			try {
@@ -375,19 +361,16 @@ public class ProfileContoller {
 			}
 			JsonNode jsonNode = new JsonNode(designerId);
 			String string2 = jsonNode.getObject().get("designerName").toString();
-			LOGGER.info(string2);
 			String email = designerLoginEntityDB.getEmail();
 			designerLoginRepo.save(designerLoginEntityDB);
-			LOGGER.info(designerLoginEntityDB + "Inside designerLoginEntityDb");
+
 			try {
 				LoginEntity forEntity = restTemplate.getForEntity(
 						RestTemplateConstant.ADMIN_ROLE_NAME.getMessage() + MessageConstant.ADMIN_ROLES.getMessage(),
 						LoginEntity.class).getBody();
 				String email2 = forEntity.getEmail();
 				if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
-					LOGGER.info(email + "Inside Email");
 					designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
-					LOGGER.info(designerLoginEntity.getAdminComment() + "Inside Comment");
 					Context context = new Context();
 					context.setVariable("designerName", string2);
 					context.setVariable("adminComment", designerLoginEntity.getAdminComment());
@@ -612,76 +595,47 @@ public class ProfileContoller {
 
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
-				LOGGER.info("PAGEBLE data for ASC = {}", pagingSort);
 			} else {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-				LOGGER.info("PAGEBLE data for DESC = {}", pagingSort);
 			}
 
 			Page<DesignerLoginEntity> findAll = null;
-
-			List<DesignerLoginEntity> dataForSubmitted = designerLoginRepo
-					.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true, "SUBMITTED");
-			LOGGER.info("contentForSubmitted" + dataForSubmitted);
-			List<DesignerLoginEntity> dataForCompleted = designerLoginRepo
-					.findByIsDeletedAndIsProfileCompletedAndProfileStatusAndAccountStatus(isDeleted, true, "COMPLETED",
-							"ACTIVE");
-			LOGGER.info("contentForCompleted" + dataForCompleted);
+			Page<DesignerLoginEntity> dataForSubmittedAndCOMPLETED = designerLoginRepo
+					.findByIsDeletedAndIsProfileCompletedAndProfileStatusOrProfileStatus(isDeleted, true, "SUBMITTED","COMPLETED",pagingSort);
+			
 			if (!profileStatus.isBlank()) {
 				if (profileStatus.equals("changeRequest")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true,
 							"SUBMITTED", pagingSort);
-					LOGGER.info("DATA FOR CHANGE REQUEST = {}", findAll.getContent());
 				} else if (profileStatus.equals("COMPLETED")) {
-					List<DesignerLoginEntity> mergeList = new ArrayList<DesignerLoginEntity>();
-					mergeList.addAll(dataForSubmitted);
-					mergeList.addAll(dataForCompleted);
-					LOGGER.info("mergeList" + mergeList);
-					// findAll = designerLoginRepo.findByListIn(mergeList, pagingSort);
-					findAll = new PageImpl<DesignerLoginEntity>(mergeList, pagingSort, mergeList.size());
-					LOGGER.info("DATA FOR COMPLETED = {}" + findAll.getContent());
-				}
-
-				else if (profileStatus.equals("SUBMITTED")) {
+					findAll =dataForSubmittedAndCOMPLETED;
+				}else if (profileStatus.equals("SUBMITTED")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, false,
 							"SUBMITTED", pagingSort);
 				} else {
-					LOGGER.info("Profile Status = {} , Is deleted = {}, AccountStatus = {}", profileStatus, isDeleted,
-							"ACTIVE");
 					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(isDeleted,
 							profileStatus, "ACTIVE", pagingSort);
-//					findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted,
-//							profileStatus, pagingSort);
-					LOGGER.info("Find all data is  = {}", findAll.getContent());
 				}
 			} else if (profileStatus.isBlank() || keyword.isBlank()) {
 				findAll = designerLoginRepo.findDesignerisDeleted(isDeleted, pagingSort);
-
 			} else {
-				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted, profileStatus,
-						pagingSort);
-				LOGGER.info("Search data by email = {}", findAll.getContent());
-
-			} // List<DesignerLoginEntity> designerLoginData = designerLoginRepo.findAll();
+				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted, profileStatus, pagingSort);
+			}
+			
 			List<Long> collect = findAll.getContent().stream()
 					.filter(e -> !keyword.isBlank() ? e.getEmail().startsWith(keyword.toLowerCase()) : true)
 					.map(e -> e.getdId()).collect(Collectors.toList());
-			LOGGER.info(collect.toString());
-			findAll = designerLoginRepo.findBydIdInAndDesignerCurrentStatus(collect, "Online", pagingSort);
+			findAll = designerLoginRepo.findBydIdIn(collect, pagingSort);
 
-			if (findAll.getSize() <= 1)
+			if (findAll.getSize() <= 0)
 				throw new CustomException(MessageConstant.DESIGNER_ID_DOES_NOT_EXIST.getMessage());
-
 			findAll.map(e -> {
 				try {
-					e.setDesignerProfileEntity(
-							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
-					e.getDesignerProfileEntity().setDesignerPersonalInfoEntity(
-							designerPersonalInfoRepo.findByDesignerId(Long.parseLong(e.getdId().toString())).get());
+					e.setDesignerProfileEntity(designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
+					e.getDesignerProfileEntity().setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(Long.parseLong(e.getdId().toString())).get());
 				} catch (Exception o) {
-
+					LOGGER.error("list" + o.getLocalizedMessage());
 				}
-
 				return e;
 			});
 

@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.user.constant.MessageConstant;
@@ -552,8 +553,19 @@ public class UserController {
 		LOGGER.info("Inside- UserController.viewProductDetails()");
 		try {
 			return userService.productDetails(productId, userId);
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping("/viewAdmin/{productId}")
+	public ResponseEntity<?> viewProductDetailsAdmin(@PathVariable Integer productId,
+			@RequestParam(defaultValue = "") String userId) {
+		LOGGER.info("Inside- UserController.viewProductDetailsAdmin()");
+		try {
+			return userService.productDetailsAdmin(productId, userId);
 		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

@@ -225,8 +225,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			return ResponseEntity.ok(new Json(order.toString()));
 
-		} catch (RazorpayException e) {
-			throw new CustomException(e.getMessage());
+		} catch (RazorpayException exe) {
+			return new ResponseEntity<>(new Json(exe.getLocalizedMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -300,7 +302,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} else
 				throw new CustomException(MessageConstant.ORDER_ID_EXIST.getMessage());
 		} catch (RazorpayException e) {
-			throw new CustomException(e.getMessage());
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -359,8 +365,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				throw new CustomException(e.getMessage());
 			}
 			return ResponseEntity.ok(null);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -669,8 +677,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						"Designer Service", host + contextPath + "/userOrder/getOrder/" + orderId,
 						exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			// return new ResponseEntity<>(exception.getLocalizedMessage(),
-			// HttpStatus.INTERNAL_SERVER_ERROR);
 			throw new CustomException(exception.getLocalizedMessage());
 		}
 	}
@@ -2657,15 +2663,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					}
 					
 				});
-//				invoiceUpdatedModels.forEach(entity ->{
-//					String taxAmount = entity.getTaxAmount();
-//					int parseInt = Integer.parseInt(taxAmount);
-//					LOGGER.info("taxAmount"+parseInt);
-//					String total2 = entity.getTotal();
-//					int parseInt2 = Integer.parseInt(total2);
-//					int taxValue= parseInt2 - parseInt;
-//					entity.setTaxableValue(taxValue+"");
-//				});
 				for (InvoiceUpdatedModel element : invoiceUpdatedModels) {
 					String taxAmount = element.getTaxAmount();
 					String total2 = element.getTotal();

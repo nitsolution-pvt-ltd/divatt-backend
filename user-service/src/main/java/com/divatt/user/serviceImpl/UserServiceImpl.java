@@ -666,6 +666,53 @@ public class UserServiceImpl implements UserService {
 		}
 
 	}
+	public ResponseEntity<?> productDetailsAdmin(Integer productId, String userId) {
+		try {
+			LOGGER.info("Inside - UserServiceImpl.productDetails()");
+			ResponseEntity<String> exchange = restTemplate.exchange(
+					RestTemplateConstant.DESIGNER.getLink() +"designerProducts/productAdmin/"+ productId, HttpMethod.GET, null, String.class);
+
+			Json js = new Json(exchange.getBody());
+
+			if (!userId.equals("")) {
+				List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
+				LOGGER.info("Cart Data : = {}", cart);
+
+				if (!cart.isEmpty()) {
+
+					try {
+						JsonNode jn = new JsonNode(exchange.getBody().toString());
+						JSONObject object = jn.getObject();
+
+						ObjectMapper obj = new ObjectMapper();
+						String writeValueAsString = null;
+						ResponseEntity<org.json.simple.JSONObject> categoryById = restTemplate.getForEntity(
+								RestTemplateConstant.CATEGORY_VIEW.getLink() + object.get("categoryId"),
+								org.json.simple.JSONObject.class);
+						Object categoryName = categoryById.getBody().get("categoryName");
+						try {
+							writeValueAsString = obj.writeValueAsString(cart);
+						} catch (JsonProcessingException e1) {
+							e1.printStackTrace();
+						}
+						JsonNode cartJN = new JsonNode(writeValueAsString);
+						JSONObject cartObject = cartJN.getObject();
+						object.put("cartData", cartObject);
+						object.put("categoryName", categoryName);
+
+						return ResponseEntity.ok(new Json(jn.toString()));
+					} catch (Exception e2) {
+						return ResponseEntity.ok(e2.getMessage());
+					}
+				}
+			}
+			return ResponseEntity.ok(js);
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
 
 	public ResponseEntity<?> getDesignerUser() {
 		try {
