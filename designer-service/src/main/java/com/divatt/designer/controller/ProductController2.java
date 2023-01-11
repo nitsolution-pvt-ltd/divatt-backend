@@ -252,12 +252,12 @@ public class ProductController2 {
 			@RequestParam(defaultValue = "-1") String maxPrice, @RequestParam(defaultValue = "-1") String minPrice,
 			@RequestParam(defaultValue = "") String size, @RequestParam(defaultValue = "") Boolean giftWrap,
 			@RequestParam(defaultValue = "") String searchKey, @RequestParam(defaultValue = "") String sortDateType,
-			@RequestParam(defaultValue = "") String sortPrice) {
+			@RequestParam(defaultValue = "") String sortPrice, @RequestParam(defaultValue = "") String labelType) {
 		try {
 			LOGGER.info("Inside- ProductController.productSearching()");
 			return this.productService2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour, cod,
 					customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType,
-					sortPrice);
+					sortPrice,labelType);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

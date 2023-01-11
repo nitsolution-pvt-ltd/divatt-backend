@@ -1034,7 +1034,7 @@ public class ProductServiceImp2 implements ProductService2 {
 	public List<ProductMasterEntity2> productSearching(String searchBy, String designerId, String categoryId,
 			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
 			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey,
-			String sortDateType, String sortPrice) {
+			String sortDateType, String sortPrice, String labelType) {
 
 		try {
 			LOGGER.info("Inside ProductServiceImpl.productSearching()");
@@ -1058,7 +1058,7 @@ public class ProductServiceImp2 implements ProductService2 {
 
 			return customFunction.filterProduct(findall, searchBy, designerId, categoryId, subCategoryId, colour, cod,
 					customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType,
-					sortPrice);
+					sortPrice, labelType);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

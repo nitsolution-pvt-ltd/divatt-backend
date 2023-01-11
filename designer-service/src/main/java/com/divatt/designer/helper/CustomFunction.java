@@ -449,7 +449,7 @@ public class CustomFunction {
 	public List<ProductMasterEntity2> filterProduct(List<ProductMasterEntity2> unFilterList, String searchBy,
 			String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,
 			Boolean customization, String priceType, Boolean returnStatus, String maxPrice, String minPrice,
-			String size, Boolean giftWrap, String searchKey, String sortDateType, String sortPrice) {
+			String size, Boolean giftWrap, String searchKey, String sortDateType, String sortPrice, String labelType) {
 		List<ProductMasterEntity2> list = unFilterList.stream()
 				.filter(product -> cod != null ? product.getCod() == cod : true)
 				.filter(product -> customization != null ? product.getWithCustomization() == customization : true)
@@ -494,7 +494,7 @@ public class CustomFunction {
 							: product.getDeal().getSalePrice()));
 			Collections.reverse(list);
 		}
-
+		if(labelType.equals("")) {
 		list.forEach(element -> {
 			DesignerProfile designerProfile = designerProfileRepo
 					.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get().getDesignerProfile();
@@ -502,6 +502,13 @@ public class CustomFunction {
 				element.setDesignerProfile(designerProfile);
 			}
 		});
+		}else {
+			list.forEach(element -> {
+				DesignerProfile designerProfile = designerProfileRepo
+						.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get().getDesignerProfile();
+					element.setDesignerProfile(designerProfile);
+			});
+		}
 		list.removeIf(element -> element.getDesignerProfile() == null);
 
 		return list;
