@@ -302,7 +302,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} else
 				throw new CustomException(MessageConstant.ORDER_ID_EXIST.getMessage());
 		} catch (RazorpayException e) {
-			throw new CustomException(e.getMessage());
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -361,8 +365,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				throw new CustomException(e.getMessage());
 			}
 			return ResponseEntity.ok(null);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
+		} catch (HttpStatusCodeException ex) {
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
+		}catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -671,8 +677,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						"Designer Service", host + contextPath + "/userOrder/getOrder/" + orderId,
 						exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			// return new ResponseEntity<>(exception.getLocalizedMessage(),
-			// HttpStatus.INTERNAL_SERVER_ERROR);
 			throw new CustomException(exception.getLocalizedMessage());
 		}
 	}
