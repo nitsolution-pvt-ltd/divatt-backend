@@ -1117,31 +1117,25 @@ public class ProductServiceImp2 implements ProductService2 {
 										designerRow.getDesignerId(),productId);
 					findall.addAll(findProduct);
 			});
-			if(findall.size() <= 0) {
-				throw new CustomException("Something went wrong!");
+			ProductMasterEntity2 productMasterEntity22 = null;
+			if(findall.size() > 0) {
+					
+				productMasterEntity22 = findall.get(0);
+				DesignerProfileEntity designerProfileEntity = designerProfileRepo
+						.findBydesignerId(productMasterEntity22.getDesignerId().longValue()).get();
+				
+				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+						RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productMasterEntity22.getSubCategoryId(),
+						SubCategoryEntity.class);
+	
+				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+						RestTemplateConstant.CATEGORY_VIEW.getMessage() + productMasterEntity22.getCategoryId(),
+						CategoryEntity.class);
+	
+				productMasterEntity22.setSubCategoryName(subCatagory.getBody().getCategoryName());
+				productMasterEntity22.setCategoryName(catagory.getBody().getCategoryName());
+				productMasterEntity22.setDesignerProfile(designerProfileEntity.getDesignerProfile());
 			}
-			ProductMasterEntity2 productMasterEntity22 = findall.get(0);
-//			ProductMasterEntity2 productMasterEntity2 = productRepo2.findById(productId).get();
-			
-//			LOGGER.info("Product data by product ID = {}", productMasterEntity2);
-			DesignerProfileEntity designerProfileEntity = designerProfileRepo
-					.findBydesignerId(productMasterEntity22.getDesignerId().longValue()).get();
-			
-			ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
-					RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productMasterEntity22.getSubCategoryId(),
-					SubCategoryEntity.class);
-			
-
-			LOGGER.info("RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()"
-					+ RestTemplateConstant.SUBCATEGORY_VIEW.getMessage());
-
-			ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
-					RestTemplateConstant.CATEGORY_VIEW.getMessage() + productMasterEntity22.getCategoryId(),
-					CategoryEntity.class);
-
-			productMasterEntity22.setSubCategoryName(subCatagory.getBody().getCategoryName());
-			productMasterEntity22.setCategoryName(catagory.getBody().getCategoryName());
-			productMasterEntity22.setDesignerProfile(designerProfileEntity.getDesignerProfile());
 			return productMasterEntity22;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

@@ -595,76 +595,47 @@ public class ProfileContoller {
 
 			if (sort.equals("ASC")) {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
-				LOGGER.info("PAGEBLE data for ASC = {}", pagingSort);
 			} else {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-				LOGGER.info("PAGEBLE data for DESC = {}", pagingSort);
 			}
 
 			Page<DesignerLoginEntity> findAll = null;
-
-			List<DesignerLoginEntity> dataForSubmitted = designerLoginRepo
-					.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true, "SUBMITTED");
-			LOGGER.info("contentForSubmitted" + dataForSubmitted);
-			List<DesignerLoginEntity> dataForCompleted = designerLoginRepo
-					.findByIsDeletedAndIsProfileCompletedAndProfileStatusAndAccountStatus(isDeleted, true, "COMPLETED",
-							"ACTIVE");
-			LOGGER.info("contentForCompleted" + dataForCompleted);
+			Page<DesignerLoginEntity> dataForSubmittedAndCOMPLETED = designerLoginRepo
+					.findByIsDeletedAndIsProfileCompletedAndProfileStatusOrProfileStatus(isDeleted, true, "SUBMITTED","COMPLETED",pagingSort);
+			
 			if (!profileStatus.isBlank()) {
 				if (profileStatus.equals("changeRequest")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true,
 							"SUBMITTED", pagingSort);
-					LOGGER.info("DATA FOR CHANGE REQUEST = {}", findAll.getContent());
 				} else if (profileStatus.equals("COMPLETED")) {
-					List<DesignerLoginEntity> mergeList = new ArrayList<DesignerLoginEntity>();
-					mergeList.addAll(dataForSubmitted);
-					mergeList.addAll(dataForCompleted);
-					LOGGER.info("mergeList" + mergeList);
-					// findAll = designerLoginRepo.findByListIn(mergeList, pagingSort);
-					findAll = new PageImpl<DesignerLoginEntity>(mergeList, pagingSort, mergeList.size());
-					LOGGER.info("DATA FOR COMPLETED = {}" + findAll.getContent());
-				}
-
-				else if (profileStatus.equals("SUBMITTED")) {
+					findAll =dataForSubmittedAndCOMPLETED;
+				}else if (profileStatus.equals("SUBMITTED")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, false,
 							"SUBMITTED", pagingSort);
 				} else {
-					LOGGER.info("Profile Status = {} , Is deleted = {}, AccountStatus = {}", profileStatus, isDeleted,
-							"ACTIVE");
 					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(isDeleted,
 							profileStatus, "ACTIVE", pagingSort);
-//					findAll = designerLoginRepo.findByIsDeletedAndProfileStatus(isDeleted,
-//							profileStatus, pagingSort);
-					LOGGER.info("Find all data is  = {}", findAll.getContent());
 				}
 			} else if (profileStatus.isBlank() || keyword.isBlank()) {
 				findAll = designerLoginRepo.findDesignerisDeleted(isDeleted, pagingSort);
-
 			} else {
-				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted, profileStatus,
-						pagingSort);
-				LOGGER.info("Search data by email = {}", findAll.getContent());
-
-			} // List<DesignerLoginEntity> designerLoginData = designerLoginRepo.findAll();
+				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted, profileStatus, pagingSort);
+			}
+			
 			List<Long> collect = findAll.getContent().stream()
 					.filter(e -> !keyword.isBlank() ? e.getEmail().startsWith(keyword.toLowerCase()) : true)
 					.map(e -> e.getdId()).collect(Collectors.toList());
-			LOGGER.info(collect.toString());
-			findAll = designerLoginRepo.findBydIdInAndDesignerCurrentStatus(collect, "Online", pagingSort);
+			findAll = designerLoginRepo.findBydIdIn(collect, pagingSort);
 
-			if (findAll.getSize() <= 1)
+			if (findAll.getSize() <= 0)
 				throw new CustomException(MessageConstant.DESIGNER_ID_DOES_NOT_EXIST.getMessage());
-
 			findAll.map(e -> {
 				try {
-					e.setDesignerProfileEntity(
-							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
-					e.getDesignerProfileEntity().setDesignerPersonalInfoEntity(
-							designerPersonalInfoRepo.findByDesignerId(Long.parseLong(e.getdId().toString())).get());
+					e.setDesignerProfileEntity(designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
+					e.getDesignerProfileEntity().setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(Long.parseLong(e.getdId().toString())).get());
 				} catch (Exception o) {
-
+					LOGGER.error("list" + o.getLocalizedMessage());
 				}
-
 				return e;
 			});
 
