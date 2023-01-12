@@ -256,58 +256,66 @@ public class ProfileContoller {
 					designerProfileEntity.setDesignerCurrentStatus("Online");
 					designerProfileRepo.save(designerProfileEntity);
 				}
-
-				StringBuilder sb = new StringBuilder();
+				String designerName = designerProfileEntity.getDesignerName();
+				String designerEmail = designerProfileEntity.getDesignerProfile().getEmail();
+				//StringBuilder sb = new StringBuilder();
 				URI uri = URI.create(RestTemplateConstant.DESIGNER_REDIRECT.getMessage()
 						+ Base64.getEncoder().encodeToString(designerLoginEntity.getEmail().toString().getBytes()));
-				sb.append("Hi " + designerProfileEntity.getDesignerName() + "" + ",\n\n"
-						+ "Welcome to Divatt We are delighted to have you join us as a designer.\n"
-						+ "We are committed to providing our designer with a secure and safe platform to conduct business. Our website has been designed to make it easy for buyers to find the products they need and for designer to reach those buyers. We offer a wide range of tools and services to help you succeed, including payment processing, customer support, product listing, and promotions.\n\n"
-						+ "We look forward to working with you to help you reach your business goals. Please feel free to contact us with any questions or concerns. You can do active your account by clicking the button below.");
-				sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
-						+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">ACTIVE ACCOUNT</a></div><br><br>We will verify your details and come back to you soon.");
+				Context context = new Context();
+				context.setVariable("designerName", designerName);
+				context.setVariable("uri", uri);
+				String htmlContent = templateEngine.process("designerRegistration.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail, "Successfully Registration", htmlContent,
+						true, null, restTemplate);
+				emailSenderThread.start();
+//				sb.append("Hi " + designerProfileEntity.getDesignerName() + "" + ",\n\n"
+//						+ "Welcome to Divatt We are delighted to have you join us as a designer.\n"
+//						+ "We are committed to providing our designer with a secure and safe platform to conduct business. Our website has been designed to make it easy for buyers to find the products they need and for designer to reach those buyers. We offer a wide range of tools and services to help you succeed, including payment processing, customer support, product listing, and promotions.\n\n"
+//						+ "We look forward to working with you to help you reach your business goals. Please feel free to contact us with any questions or concerns. You can do active your account by clicking the button below.");
+//				sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
+//						+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">ACTIVE ACCOUNT</a></div><br><br>We will verify your details and come back to you soon.");
+////				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
+////						"Successfully Registration",
+////						"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
+////								+ ",\n                           "
+////								+ " you have been register successfully. Please active your account by clicking the bellow link "
+////								+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
+////										.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
+////								+ " . We will verify your details and come back to you soon.",
+////						false);
+//				sb.append("<div style=\"text-align: center;\">\r\n" + "			<a href=\"#\"\r\n"
+//						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
+//						+ "				<img\r\n"
+//						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png\"\r\n"
+//						+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
+//						+ "			</a> <a href=\"#\"\r\n"
+//						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
+//						+ "				<img\r\n"
+//						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg\"\r\n"
+//						+ "				alt=\"\" style=\"width: 37px; height: 37px;\">\r\n"
+//						+ "			</a> <a href=\"#\"\r\n"
+//						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
+//						+ "				<img\r\n"
+//						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png\"\r\n"
+//						+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
+//						+ "			</a> <a href=\"#\"\r\n"
+//						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
+//						+ "				<img\r\n"
+//						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png\"\r\n"
+//						+ "				alt=\"\" style=\"width: 42px; height: 42px;\">\r\n"
+//						+ "			</a> <a href=\"#\"\r\n"
+//						+ "				style=\"text-decoration: none; color: #000; text-align: center;\">\r\n"
+//						+ "				<img\r\n"
+//						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png\"\r\n"
+//						+ "				alt=\"\" style=\"width: 39px; height: 37px;\">\r\n" + "			</a>\r\n"
+//						+ "		</div>");
 //				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
-//						"Successfully Registration",
-//						"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
-//								+ ",\n                           "
-//								+ " you have been register successfully. Please active your account by clicking the bellow link "
-//								+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
-//										.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
-//								+ " . We will verify your details and come back to you soon.",
-//						false);
-				sb.append("<div style=\"text-align: center;\">\r\n" + "			<a href=\"#\"\r\n"
-						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-						+ "				<img\r\n"
-						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png\"\r\n"
-						+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
-						+ "			</a> <a href=\"#\"\r\n"
-						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-						+ "				<img\r\n"
-						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg\"\r\n"
-						+ "				alt=\"\" style=\"width: 37px; height: 37px;\">\r\n"
-						+ "			</a> <a href=\"#\"\r\n"
-						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-						+ "				<img\r\n"
-						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png\"\r\n"
-						+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
-						+ "			</a> <a href=\"#\"\r\n"
-						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-						+ "				<img\r\n"
-						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png\"\r\n"
-						+ "				alt=\"\" style=\"width: 42px; height: 42px;\">\r\n"
-						+ "			</a> <a href=\"#\"\r\n"
-						+ "				style=\"text-decoration: none; color: #000; text-align: center;\">\r\n"
-						+ "				<img\r\n"
-						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png\"\r\n"
-						+ "				alt=\"\" style=\"width: 39px; height: 37px;\">\r\n" + "			</a>\r\n"
-						+ "		</div>");
-				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
-						"Successfully Registration", sb.toString(), true);
-				try {
-					restTemplate.postForEntity(RestTemplateConstant.AUTH_SEND_MAIL.getMessage(), mail, String.class);
-				} catch (Exception e) {
-					System.out.println(e.getMessage());
-				}
+//						"Successfully Registration",htmlContent, true);
+//				try {
+//					restTemplate.postForEntity(RestTemplateConstant.AUTH_SEND_MAIL.getMessage(), mail, String.class);
+//				} catch (Exception e) {
+//					System.out.println(e.getMessage());
+//				}
 
 				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.REGISTERED.getMessage(), 200));
