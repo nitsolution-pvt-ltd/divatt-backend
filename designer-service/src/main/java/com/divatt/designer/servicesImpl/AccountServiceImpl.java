@@ -192,7 +192,7 @@ public class AccountServiceImpl implements AccountService {
 
 	public ResponseEntity<?> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder,
-			String ReturnStatus, Optional<String> sortBy, String settlement, int year, int month, String token) {
+			String ReturnStatus, Optional<String> sortBy, String settlement, int year, int month, String designerId) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.getAccountDetails()");
@@ -205,7 +205,7 @@ public class AccountServiceImpl implements AccountService {
 					+ sort + "&sortName=" + sortName + "&isDeleted=" + isDeleted + "&keyword=" + keyword
 					+ "&designerReturn=" + designerReturn + "&serviceCharge=" + serviceCharge + "&govtCharge="
 					+ govtCharge + "&userOrder=" + userOrder + "&ReturnStatus=" + ReturnStatus + "&sortBy=" + sortBy
-					+ "&settlement=" + settlement + "&year=" + year + "&month=" + month;
+					+ "&settlement=" + settlement + "&year=" + year + "&month=" + month + "&designerId=" + designerId;
 			try {
 				ResponseEntity<String> exchange = restTemplate.getForEntity(url, String.class);
 				if (LOGGER.isInfoEnabled()) {
