@@ -98,5 +98,19 @@ public class CommonUtility {
 		charges.setHsnCode(accountEntity.getOrder_details().get(0).getHsn_code());
 		return charges;
 	}
+	
+
+	public static double iNVValues(AccountEntity rowsAccount) {
+		
+		float iNVValuesAmount = 
+				rowsAccount.getOrder_details().get(0).getSales_price()
+				+ rowsAccount.getOrder_details().get(0).getHsn_cgst()
+				+ rowsAccount.getOrder_details().get(0).getHsn_sgst()
+				+ rowsAccount.getOrder_details().get(0).getHsn_igst()
+				+ rowsAccount.getOrder_details().get(0).getGiftWrapAmount();
+		
+		DecimalFormat df = new DecimalFormat("0.00");
+		return Double.valueOf(df.format(iNVValuesAmount));
+	}
 
 }
