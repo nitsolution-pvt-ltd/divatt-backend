@@ -3,10 +3,12 @@ package com.divatt.designer.services;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
@@ -930,7 +932,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			if (findall.size() <= 15) {
 				return ResponseEntity.ok(findall);
 			}
-			List<ProductMasterEntity2> productMasterEntity2 = new ArrayList<>();
+			Set<ProductMasterEntity2> productMasterEntity2 = new HashSet<>();
 			Boolean check = true;
 			while (check) {
 				int nextInt = random.nextInt((int) count);
