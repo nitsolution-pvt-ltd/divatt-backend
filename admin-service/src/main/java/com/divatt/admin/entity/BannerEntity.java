@@ -38,11 +38,11 @@ public class BannerEntity {
 	
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	@Field(name = "start_date")
-	private Date startDate;
+	private String startDate;
 	
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	@Field(name = "end_date")
-	private Date endDate;
+	private String endDate;
 	
 	@Field(name = "is_active")
 	private Boolean isActive;
@@ -98,19 +98,19 @@ public class BannerEntity {
 		this.image = image;
 	}
 
-	public Date getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public String getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
 
