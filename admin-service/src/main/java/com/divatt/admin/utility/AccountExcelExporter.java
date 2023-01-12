@@ -56,22 +56,23 @@ public class AccountExcelExporter {
 
 		createCell(row, 0, "Order Number", style);
 		createCell(row, 1, "Order Date", style);
-		createCell(row, 2, "GSTIN of Designer", style);
-		createCell(row, 3, "Invoice Number", style);
-		createCell(row, 4, "Invoice Date", style);
-		createCell(row, 5, "Transaction Value", style);
-		createCell(row, 6, "CGST", style);
-		createCell(row, 7, "SGST", style);
-		createCell(row, 8, "IGST", style);
-		createCell(row, 9, "Gift Wrapping Charges", style);
-		createCell(row, 10, "Invoice Value", style);
-		createCell(row, 11, "Return Particulars of any merchandise", style);
-		createCell(row, 12, "Return Particulars", style);
-		createCell(row, 13, "TCS", style);
-		createCell(row, 14, "Service Fees Collected by Divatt", style);
-		createCell(row, 15, "GST on Service Fees", style);
-		createCell(row, 16, "Total Service Fees Component", style);
-		createCell(row, 17, "Total Recovery Divatt", style);
+		createCell(row, 3, "Unique ID of Designer", style);
+		createCell(row, 4, "GSTIN of Designer", style);
+		createCell(row, 5, "Invoice Number", style);
+		createCell(row, 6, "Invoice Date", style);
+		createCell(row, 7, "Transaction Value", style);
+		createCell(row, 8, "CGST", style);
+		createCell(row, 9, "SGST", style);
+		createCell(row, 10, "IGST", style);
+		createCell(row, 11, "Gift Wrapping Charges", style);
+		createCell(row, 12, "Invoice Value", style);
+		createCell(row, 13, "Return Particulars of any merchandise", style);
+		createCell(row, 14, "Return Particulars", style);
+		createCell(row, 15, "TCS", style);
+		createCell(row, 16, "Service Fees Collected by Divatt", style);
+		createCell(row, 17, "GST on Service Fees", style);
+		createCell(row, 18, "Total Service Fees Component", style);
+		createCell(row, 19, "Total Recovery Divatt", style);
 
 	}
 
@@ -89,6 +90,7 @@ public class AccountExcelExporter {
 
 			createCell(row, columnCount++, rowsAccount.getDesigner_return_amount().get(0).getOrder_id(), style);
 			createCell(row, columnCount++, rowsAccount.getOrder_details().get(0).getOrder_date(), style);
+			createCell(row, columnCount++, rowsAccount.getDesigner_details().getUid(), style);
 			createCell(row, columnCount++, rowsAccount.getDesigner_details().getGst_in(), style);
 			createCell(row, columnCount++, rowsAccount.getService_charge().getDesigner_invoice_id(), style);
 			createCell(row, columnCount++, rowsAccount.getService_charge().getDate(), style);
