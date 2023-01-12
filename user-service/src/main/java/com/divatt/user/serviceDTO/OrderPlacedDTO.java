@@ -40,6 +40,10 @@ public class OrderPlacedDTO {
 
 	private String totalTax;
 
+	private String discount;
+
+	private String displayName;
+
 	public OrderPlacedDTO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -48,7 +52,7 @@ public class OrderPlacedDTO {
 	public OrderPlacedDTO(String userName, String orderId, String billAddress1, String billCity, String billAddress2,
 			String billState, String billPostalCode, String shippingAddress, String orderDate, String images,
 			String productName, String units, String size, String mrp, String taxAmount, String total,
-			String grandTotal, String totalMrp, String totalTax) {
+			String grandTotal, String totalMrp, String totalTax, String discount, String displayName) {
 		super();
 		this.userName = userName;
 		this.orderId = orderId;
@@ -69,6 +73,8 @@ public class OrderPlacedDTO {
 		this.grandTotal = grandTotal;
 		this.totalMrp = totalMrp;
 		this.totalTax = totalTax;
+		this.discount = discount;
+		this.displayName = displayName;
 	}
 
 	public String getUserName() {
@@ -223,6 +229,22 @@ public class OrderPlacedDTO {
 		this.totalTax = totalTax;
 	}
 
+	public String getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(String discount) {
+		this.discount = discount;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderPlacedDTO [userName=" + userName + ", orderId=" + orderId + ", billAddress1=" + billAddress1
@@ -230,7 +252,7 @@ public class OrderPlacedDTO {
 				+ ", billPostalCode=" + billPostalCode + ", shippingAddress=" + shippingAddress + ", orderDate="
 				+ orderDate + ", images=" + images + ", productName=" + productName + ", units=" + units + ", size="
 				+ size + ", mrp=" + mrp + ", taxAmount=" + taxAmount + ", total=" + total + ", grandTotal=" + grandTotal
-				+ ", totalMrp=" + totalMrp + ", totalTax=" + totalTax + "]";
+				+ ", totalMrp=" + totalMrp + ", totalTax=" + totalTax + ", discount=" + discount + ", displayName="
+				+ displayName + "]";
 	}
-
 }
