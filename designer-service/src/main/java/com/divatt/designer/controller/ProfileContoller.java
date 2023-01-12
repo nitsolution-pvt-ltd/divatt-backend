@@ -99,9 +99,6 @@ public class ProfileContoller {
 	@Autowired
 	private ProductRepository productRepo;
 
-//	@Autowired
-//	private DesignerLogRepo designerLogRepo;
-
 	@Autowired
 	private DatabaseSeqRepo databaseSeqRepo;
 
@@ -110,9 +107,6 @@ public class ProfileContoller {
 
 	@Autowired
 	private ProductRepo2 productRepo2;
-
-//	@Autowired
-//	private MeasurementMenRepo measurementMenRepo;
 
 	@Autowired
 	private MeasurementRepo measurementRepo;
@@ -130,6 +124,18 @@ public class ProfileContoller {
 	@Autowired
 	private TemplateEngine templateEngine;
 
+	protected String getRandomString() {
+		String SALTCHARS = "1234567890";
+		StringBuilder salt = new StringBuilder();
+		Random rnd = new Random();
+		while (salt.length() < 4) {
+			int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+			salt.append(SALTCHARS.charAt(index));
+		}
+		String saltStr = salt.toString();
+		return saltStr;
+	}
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
 		try {
@@ -190,7 +196,6 @@ public class ProfileContoller {
 		try {
 			DesignerLoginEntity designerLoginEntity = new DesignerLoginEntity();
 			Optional<DesignerLoginEntity> findById = designerLoginRepo.findById(id);
-			LOGGER.info("Dta By id for designer = {}", findById.get());
 			if (findById.get().getIsProfileCompleted() == null) {
 				findById.get().setIsProfileCompleted(true);
 			}
@@ -212,15 +217,16 @@ public class ProfileContoller {
 	@PostMapping("/add")
 	public ResponseEntity<?> addDesigner(@Valid @RequestBody DesignerProfileEntity designerProfileEntity) {
 		try {
-			LOGGER.info("TEST" + designerProfileEntity.getBoutiqueProfile().getBoutiqueName());
 
 			Optional<DesignerProfileEntity> findByBoutiqueName = designerProfileRepo
 					.findByBoutiqueName(designerProfileEntity.getBoutiqueProfile().getBoutiqueName());
 
 			if (!findByBoutiqueName.isPresent()) {
 
-				designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
-
+				Optional<DesignerLoginEntity> designerLoginData = designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
+				String randomId = this.getRandomString();
+				Long dUid=(designerLoginData.get().getdId()+1);
+				String uid=randomId+dUid;
 				ResponseEntity<String> forEntity = restTemplate
 						.getForEntity(RestTemplateConstant.PRESENT_DESIGNER.getMessage()
 								+ designerProfileEntity.getDesignerProfile().getEmail(), String.class);
@@ -234,7 +240,7 @@ public class ProfileContoller {
 									+ designerProfileEntity.getDesignerProfile().getEmail(), String.class);
 					designerLoginEntity.setUserExist(forEntity2.getBody());
 				}
-
+				
 				designerLoginEntity.setdId((long) sequenceGenerator.getNextSequence(DesignerLoginEntity.SEQUENCE_NAME));
 				designerLoginEntity.setEmail(designerProfileEntity.getDesignerProfile().getEmail());
 				designerLoginEntity.setPassword(
@@ -246,7 +252,8 @@ public class ProfileContoller {
 				designerLoginEntity.setDesignerCurrentStatus("Online");
 				designerLoginEntity.setProductCount(0);
 				designerLoginEntity.setFollwerCount(0);
-
+				designerLoginEntity.setUid(uid);
+				
 				if (designerLoginRepo.save(designerLoginEntity) != null) {
 					designerProfileEntity.setDesignerId(Long.parseLong(designerLoginEntity.getdId().toString()));
 					designerProfileEntity.setId((long) sequenceGenerator.getNextSequence(DesignerProfileEntity.SEQUENCE_NAME));
@@ -255,11 +262,12 @@ public class ProfileContoller {
 					designerProfile.setPassword(bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 					designerProfileEntity.setDesignerProfile(designerProfile);
 					designerProfileEntity.setDesignerCurrentStatus("Online");
+					designerProfileEntity.setUid(uid);
 					designerProfileRepo.save(designerProfileEntity);
 				}
 				String designerName = designerProfileEntity.getDesignerName();
 				String designerEmail = designerProfileEntity.getDesignerProfile().getEmail();
-				//StringBuilder sb = new StringBuilder();
+				
 				URI uri = URI.create(RestTemplateConstant.DESIGNER_REDIRECT.getMessage()
 						+ Base64.getEncoder().encodeToString(designerLoginEntity.getEmail().toString().getBytes()));
 				Context context = new Context();
@@ -1035,9 +1043,12 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
 	@GetMapping("/getDesignerToken")
 	public ResponseEntity<?> getDesignerToken(@RequestHeader("Authorization") String token) {
 		Optional<DesignerLoginEntity> findByEmail = Optional.empty();
+
 		try {
 			if(!token.isEmpty() && token != "") {
 				findByEmail = designerLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7)));
