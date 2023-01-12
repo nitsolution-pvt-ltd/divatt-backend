@@ -32,12 +32,22 @@
 					<td colspan="5"
 						style="padding: 20px 20px; text-align: left; font-family: 'Lato', sans-serif;">
 						Hi &nbsp;
-						<div th:text="${designerName}"></div> <!-- <div style="font-family: 'Lato', sans-serif;text-align: left;font-size: 15px;font-weight: 500;line-height: 30px;color: #000;">
+						<div th:text="${adminName}"></div> <!-- <div style="font-family: 'Lato', sans-serif;text-align: left;font-size: 15px;font-weight: 500;line-height: 30px;color: #000;">
 									&nbsp; &mailto:nbsp;chakraborty123@gmail.com
 									</div> -->
 						<div
-							style="font-family: 'Lato', sans-serif; text-align: center; font-size: 15px; margin-top: 12px; font-weight: bold; line-height: 25px; color: #5b5b5b; text-transform: uppercase; color: rgb(34, 139, 34); font-weight: 800;">
-							Designer has been Updated Sucessfully.</div>
+							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #5b5b5b;">
+							We are sending you this email because you are requested for reset password. You can change your Password by clicking the button below.
+						</div>
+						<br>
+						<div style="text-align:center">
+							<a th:href="${uri}" target="_bkank" style="text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;">CHANGE PASSWORD</a>
+						</div>
+						<div
+							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #5b5b5b;">
+							If you didn't request a password reset, you can ignore this email. Your password will not be changed.
+						</div>
+						
 						<hr
 							style="border-left: 0; border-width: 3px; border-bottom: 0; border-color: rgb(0, 0, 0); margin-top: 38px;">
 					</td>
