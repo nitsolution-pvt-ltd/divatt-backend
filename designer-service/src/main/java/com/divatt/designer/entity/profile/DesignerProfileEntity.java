@@ -42,6 +42,7 @@ public class DesignerProfileEntity {
 	private Boolean isDeleted ;
 	
 	private DesignerPersonalInfoEntity designerPersonalInfoEntity;
+	
 	private String designerLevel;
 	
 	private Integer followerCount;
@@ -53,7 +54,10 @@ public class DesignerProfileEntity {
 	private Boolean isProfileCompleted;
 	
 	private Measurement menChartData;
+	
 	private Measurement womenChartData;
+	
+	private String uid;
 
 	public DesignerProfileEntity() {
 		super();
@@ -65,7 +69,7 @@ public class DesignerProfileEntity {
 			String profileStatus, String accountStatus, Boolean isDeleted,
 			DesignerPersonalInfoEntity designerPersonalInfoEntity, String designerLevel, Integer followerCount,
 			Integer productCount, String designerCurrentStatus, Boolean isProfileCompleted, Measurement menChartData,
-			Measurement womenChartData) {
+			Measurement womenChartData, String uid) {
 		super();
 		this.id = id;
 		this.designerId = designerId;
@@ -84,6 +88,19 @@ public class DesignerProfileEntity {
 		this.isProfileCompleted = isProfileCompleted;
 		this.menChartData = menChartData;
 		this.womenChartData = womenChartData;
+		this.uid = uid;
+	}
+
+	@Override
+	public String toString() {
+		return "DesignerProfileEntity [id=" + id + ", designerId=" + designerId + ", designerProfile=" + designerProfile
+				+ ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile + ", designerName="
+				+ designerName + ", profileStatus=" + profileStatus + ", accountStatus=" + accountStatus
+				+ ", isDeleted=" + isDeleted + ", designerPersonalInfoEntity=" + designerPersonalInfoEntity
+				+ ", designerLevel=" + designerLevel + ", followerCount=" + followerCount + ", productCount="
+				+ productCount + ", designerCurrentStatus=" + designerCurrentStatus + ", isProfileCompleted="
+				+ isProfileCompleted + ", menChartData=" + menChartData + ", womenChartData=" + womenChartData
+				+ ", uid=" + uid + "]";
 	}
 
 	public Long getId() {
@@ -222,20 +239,18 @@ public class DesignerProfileEntity {
 		this.womenChartData = womenChartData;
 	}
 
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
-	@Override
-	public String toString() {
-		return "DesignerProfileEntity [id=" + id + ", designerId=" + designerId + ", designerProfile=" + designerProfile
-				+ ", boutiqueProfile=" + boutiqueProfile + ", socialProfile=" + socialProfile + ", designerName="
-				+ designerName + ", profileStatus=" + profileStatus + ", accountStatus=" + accountStatus
-				+ ", isDeleted=" + isDeleted + ", designerPersonalInfoEntity=" + designerPersonalInfoEntity
-				+ ", designerLevel=" + designerLevel + ", followerCount=" + followerCount + ", productCount="
-				+ productCount + ", designerCurrentStatus=" + designerCurrentStatus + ", isProfileCompleted="
-				+ isProfileCompleted + ", menChartData=" + menChartData + ", womenChartData=" + womenChartData + "]";
-	}
-
+	
 
 }

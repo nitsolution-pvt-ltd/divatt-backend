@@ -43,6 +43,7 @@ import com.divatt.admin.helper.JwtUtil;
 import com.divatt.admin.repo.LoginRepository;
 import com.divatt.admin.services.AccountService;
 import com.divatt.admin.utility.AccountExcelExporter;
+import com.divatt.admin.utility.CommonUtility;
 import com.divatt.admin.utility.DesignerAccountExcelExporter;
 
 import springfox.documentation.spring.web.json.Json;
@@ -73,6 +74,9 @@ public class AccountController {
 	
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private CommonUtility commonUtility;
 	
 	
 	@PostMapping("/add")
@@ -278,31 +282,9 @@ public class AccountController {
 		}
 
 		try {
-				ResponseEntity<Object> getExchange = null;
-				HttpHeaders header= new HttpHeaders();
-				header.setContentType(MediaType.APPLICATION_JSON);
-				header.set("Authorization", token);
-				HttpEntity<Object> httpEntity = new HttpEntity<>(header);
-				
-				try {
-					String urlParam="designer/getDesignerToken";
-					getExchange = restTemplate.exchange(RestTemplateConstant.DESIGNER_URL.getMessage()+urlParam,HttpMethod.GET, httpEntity,Object.class);
-					
-				} catch (HttpStatusCodeException ex) {
-					if (LOGGER.isErrorEnabled()) {
-						LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-								host + contextPath + "/account/excelReportDesigner/", ex.getResponseBodyAsByteArray(),
-								ex.getRawStatusCode());
-					}
-				} catch (Exception e) {
-					if (LOGGER.isErrorEnabled()) {
-						LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-								host + contextPath + "/account/excelReportDesigner/", e.getLocalizedMessage(),
-								HttpStatus.INTERNAL_SERVER_ERROR);
-					}
-				}
+			ResponseEntity<Object> designerDetails = commonUtility.getDesignerDetails(token);
 			
-			if(!getExchange.equals(null)) {
+			if(!designerDetails.equals(null)) {
 					
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,

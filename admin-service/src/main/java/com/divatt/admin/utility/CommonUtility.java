@@ -3,13 +3,24 @@ package com.divatt.admin.utility;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.admin.constant.MessageConstant;
+import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.entity.PaymentCharges;
@@ -28,8 +39,17 @@ public class CommonUtility {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Value("${spring.profiles.active}")
+	private String contextPath;
 
-//	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtility.class);
+	@Value("${host}")
+	private String host;
+
+	@Value("${interfaceId}")
+	private String interfaceId;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtility.class);
 
 	public static double duoble(float f) {
 
@@ -112,5 +132,36 @@ public class CommonUtility {
 		DecimalFormat df = new DecimalFormat("0.00");
 		return Double.valueOf(df.format(iNVValuesAmount));
 	}
+
+	public ResponseEntity<Object> getDesignerDetails(String token) {
+		
+		ResponseEntity<Object> getExchange = null;
+		HttpHeaders header= new HttpHeaders();
+		header.setContentType(MediaType.APPLICATION_JSON);
+		header.set("Authorization", token);
+		HttpEntity<Object> httpEntity = new HttpEntity<>(header);
+		
+		try {
+			String urlParam="designer/getDesignerToken";
+			getExchange = restTemplate.exchange(RestTemplateConstant.DESIGNER_URL.getMessage()+urlParam,HttpMethod.GET, httpEntity,Object.class);
+			
+		} catch (HttpStatusCodeException ex) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/excelReportDesigner/", ex.getResponseBodyAsByteArray(),
+						ex.getRawStatusCode());
+			}
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/excelReportDesigner/", e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		return getExchange;
+		
+	}
+	
+	
 
 }
