@@ -42,6 +42,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
 
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
@@ -62,6 +65,7 @@ import com.divatt.user.repo.wishlist.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
+import com.divatt.user.utill.EmailSenderThread;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -101,6 +105,9 @@ public class UserController {
 
 	@Autowired
 	private JwtUtil jwtUtil;
+	
+	@Autowired
+	private TemplateEngine templateEngine;
 
 //	@Autowired
 //	private OrderSKUDetailsRepo detailsRepo;
@@ -309,47 +316,58 @@ public class UserController {
 			userLoginEntity.setSocialType(userLoginEntity.getSocialType());
 			userLoginRepo.save(userLoginEntity);
 
-			StringBuilder sb = new StringBuilder();
+			String firstName = userLoginEntity.getFirstName();
+			String lastName = userLoginEntity.getLastName();
+			String userName = firstName + " " + lastName;
+			String userEmail = userLoginEntity.getEmail();
+			//StringBuilder sb = new StringBuilder();
 			URI uri = URI.create(RestTemplateConstant.USER_REDIRECT.getLink()
 					+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()));
-			sb.append("Hi " + userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName() + "" + ",\n\n"
-					+ "Welcome to Divatt We are delighted to have you join us as a user.\n"
-					+ "You can do active your account by clicking the button below.");
-			sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
-					+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">ACTIVE ACCOUNT</a></div><br><br>We will verify your details and come back to you soon.");
-			sb.append("<div style=\"text-align: center;\">\r\n" + "			<a href=\"#\"\r\n"
-					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-					+ "				<img\r\n"
-					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png\"\r\n"
-					+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
-					+ "			</a> <a href=\"#\"\r\n"
-					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-					+ "				<img\r\n"
-					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg\"\r\n"
-					+ "				alt=\"\" style=\"width: 37px; height: 37px;\">\r\n"
-					+ "			</a> <a href=\"#\"\r\n"
-					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-					+ "				<img\r\n"
-					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png\"\r\n"
-					+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
-					+ "			</a> <a href=\"#\"\r\n"
-					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-					+ "				<img\r\n"
-					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png\"\r\n"
-					+ "				alt=\"\" style=\"width: 42px; height: 42px;\">\r\n"
-					+ "			</a> <a href=\"#\"\r\n"
-					+ "				style=\"text-decoration: none; color: #000; text-align: center;\">\r\n"
-					+ "				<img\r\n"
-					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png\"\r\n"
-					+ "				alt=\"\" style=\"width: 39px; height: 37px;\">\r\n" + "			</a>\r\n"
-					+ "		</div>");
-			SendMail mail = new SendMail(userLoginEntity.getEmail(), "Successfully Registration", sb.toString(), true);
-			try {
-				restTemplate.postForEntity(RestTemplateConstant.MAIL_SEND.getLink(), mail, String.class);
-
-			} catch (Exception e) {
-				throw new CustomException(e.getMessage());
-			}
+			Context context = new Context();
+			context.setVariable("userName", userName);
+			context.setVariable("uri", uri);
+			String htmlContent = templateEngine.process("userRegistration.html", context);
+			EmailSenderThread emailSenderThread = new EmailSenderThread(userEmail, "Successfully Registration", htmlContent,
+					true, null, restTemplate);
+			emailSenderThread.start();
+//			sb.append("Hi " + userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName() + "" + ",\n\n"
+//					+ "Welcome to Divatt We are delighted to have you join us as a user.\n"
+//					+ "You can do active your account by clicking the button below.");
+//			sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
+//					+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">ACTIVE ACCOUNT</a></div><br><br>We will verify your details and come back to you soon.");
+//			sb.append("<div style=\"text-align: center;\">\r\n" + "			<a href=\"#\"\r\n"
+//					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
+//					+ "				<img\r\n"
+//					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png\"\r\n"
+//					+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
+//					+ "			</a> <a href=\"#\"\r\n"
+//					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
+//					+ "				<img\r\n"
+//					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg\"\r\n"
+//					+ "				alt=\"\" style=\"width: 37px; height: 37px;\">\r\n"
+//					+ "			</a> <a href=\"#\"\r\n"
+//					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
+//					+ "				<img\r\n"
+//					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png\"\r\n"
+//					+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
+//					+ "			</a> <a href=\"#\"\r\n"
+//					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
+//					+ "				<img\r\n"
+//					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png\"\r\n"
+//					+ "				alt=\"\" style=\"width: 42px; height: 42px;\">\r\n"
+//					+ "			</a> <a href=\"#\"\r\n"
+//					+ "				style=\"text-decoration: none; color: #000; text-align: center;\">\r\n"
+//					+ "				<img\r\n"
+//					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png\"\r\n"
+//					+ "				alt=\"\" style=\"width: 39px; height: 37px;\">\r\n" + "			</a>\r\n"
+//					+ "		</div>");
+//			SendMail mail = new SendMail(userLoginEntity.getEmail(), "Successfully Registration", sb.toString(), true);
+//			try {
+//				restTemplate.postForEntity(RestTemplateConstant.MAIL_SEND.getLink(), mail, String.class);
+//
+//			} catch (Exception e) {
+//				throw new CustomException(e.getMessage());
+//			}
 			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 					MessageConstant.REGISTERED_SUCESSFULLY.getMessage(), 200));
 		} catch (Exception e) {

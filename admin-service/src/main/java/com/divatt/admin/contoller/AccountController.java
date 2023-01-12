@@ -15,7 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +31,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 
+import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
@@ -36,6 +43,10 @@ import com.divatt.admin.helper.JwtUtil;
 import com.divatt.admin.repo.LoginRepository;
 import com.divatt.admin.services.AccountService;
 import com.divatt.admin.utility.AccountExcelExporter;
+import com.divatt.admin.utility.CommonUtility;
+import com.divatt.admin.utility.DesignerAccountExcelExporter;
+
+import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("/account")
@@ -60,6 +71,12 @@ public class AccountController {
 
 	@Autowired
 	private LoginRepository loginRepository;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	@Autowired
+	private CommonUtility commonUtility;
 	
 	
 	@PostMapping("/add")
@@ -193,7 +210,8 @@ public class AccountController {
 	}
 
 	@GetMapping("/excelReport")
-	public void excelReport(HttpServletResponse response, @RequestParam(defaultValue = "") String designerReturn,
+	public void excelReport(@RequestHeader("Authorization") String token,@RequestParam(defaultValue = "") String userType,
+			HttpServletResponse response, @RequestParam(defaultValue = "") String designerReturn,
 			@RequestParam(defaultValue = "") String serviceCharge, @RequestParam(defaultValue = "") String govtCharge,
 			@RequestParam(defaultValue = "") String userOrder, @RequestParam(defaultValue = "") String ReturnStatus,
 			@RequestParam(defaultValue = "") String settlement, @RequestParam(defaultValue = "0") int year,
@@ -207,27 +225,38 @@ public class AccountController {
 		}
 
 		try {
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/excelReport", "Success", HttpStatus.OK);
+			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			final Optional<LoginEntity> findByEmail = loginRepository.findByEmail(extractUsername);
+			
+			if(findByEmail.orElse(null) != null && !token.substring(7).isEmpty()) {
+					
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/excelReport", "Success", HttpStatus.OK);
+				}
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/excelReport", "Success", HttpStatus.OK);
+				}
+				response.setContentType("application/octet-stream");
+				DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+				String currentDateTime = dateFormatter.format(new Date());
+	
+				String headerKey = "Content-Disposition";
+				String headerValue = "attachment; filename=Divatt_payments_report_" + currentDateTime + ".xlsx";
+				response.setHeader(headerKey, headerValue);
+	
+				List<AccountEntity> listUsers = accountService.excelReportService(designerReturn, serviceCharge, govtCharge,
+						userOrder, ReturnStatus, settlement, year, month, designerId);
+				AccountExcelExporter excelExporter = new AccountExcelExporter(listUsers);
+				excelExporter.export(response);
+				
+			}else {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/excelReport","Unauthorized", HttpStatus.UNAUTHORIZED);
+				}
 			}
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/account/excelReport", "Success", HttpStatus.OK);
-			}
-			response.setContentType("application/octet-stream");
-			DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-			String currentDateTime = dateFormatter.format(new Date());
-
-			String headerKey = "Content-Disposition";
-			String headerValue = "attachment; filename=Divatt_account_report_" + currentDateTime + ".xlsx";
-			response.setHeader(headerKey, headerValue);
-
-			List<AccountEntity> listUsers = accountService.excelReportService(designerReturn, serviceCharge, govtCharge,
-					userOrder, ReturnStatus, settlement, year, month, designerId);
-			AccountExcelExporter excelExporter = new AccountExcelExporter(listUsers);
-			excelExporter.export(response);
-
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
@@ -235,7 +264,63 @@ public class AccountController {
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
+	}
+	
+	@GetMapping("/excelReportDesigner")
+	public void excelReportDesiger(@RequestHeader("Authorization") String token,
+			HttpServletResponse response, @RequestParam(defaultValue = "") String designerReturn,
+			@RequestParam(defaultValue = "") String serviceCharge, @RequestParam(defaultValue = "") String govtCharge,
+			@RequestParam(defaultValue = "") String userOrder, @RequestParam(defaultValue = "") String ReturnStatus,
+			@RequestParam(defaultValue = "") String settlement, @RequestParam(defaultValue = "0") int year,
+			@RequestParam(defaultValue = "0") int month, @RequestParam(defaultValue = "") String designerId) {
 
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Inside - AccountController.excelReportDesiger()");
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Inside - AccountController.excelReportDesiger()");
+		}
+
+		try {
+			ResponseEntity<Object> designerDetails = commonUtility.getDesignerDetails(token);
+			
+			if(!designerDetails.equals(null)) {
+					
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/excelReportDesigner", "Success", HttpStatus.OK);
+				}
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/account/excelReportDesigner", "Success", HttpStatus.OK);
+				}
+				
+				response.setContentType("application/octet-stream");
+				DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+				String currentDateTime = dateFormatter.format(new Date());
+	
+				String headerKey = "Content-Disposition";
+				String headerValue = "attachment; filename=Divatt_payments_report_" + currentDateTime + ".xlsx";
+				response.setHeader(headerKey, headerValue);
+	
+				List<AccountEntity> listUsers = accountService.excelReportService(designerReturn, serviceCharge, govtCharge,
+						userOrder, ReturnStatus, settlement, year, month, designerId);
+				DesignerAccountExcelExporter excelExporter = new DesignerAccountExcelExporter(listUsers);
+				excelExporter.export(response);
+				
+			}else {
+					if (LOGGER.isErrorEnabled()) {
+						LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+								host + contextPath + "/account/excelReportDesigner","Unauthorized", HttpStatus.UNAUTHORIZED);
+					}
+			}
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/account/excelReportDesigner", e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
 	}
 
 	@GetMapping("/getDesignerInvoice/{orderId}/{designerId}")

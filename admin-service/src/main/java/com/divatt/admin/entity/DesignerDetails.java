@@ -3,6 +3,7 @@ package com.divatt.admin.entity;
 public class DesignerDetails {
 
 	public long designer_id;
+	public String uid;
 	public String designer_name;
 	public String display_name;
 	public String email;
@@ -20,29 +21,20 @@ public class DesignerDetails {
 		// TODO Auto-generated constructor stub
 	}
 
-	public DesignerDetails(long designer_id, String designer_name, String display_name, String email, String gst_in,
-			String pan, String mobile, String address, String city, String state, String pin, String country) {
-		super();
-		this.designer_id = designer_id;
-		this.designer_name = designer_name;
-		this.display_name = display_name;
-		this.email = email;
-		this.gst_in = gst_in;
-		this.pan = pan;
-		this.mobile = mobile;
-		this.address = address;
-		this.city = city;
-		this.state = state;
-		this.pin = pin;
-		this.country = country;
-	}
-
 	public long getDesigner_id() {
 		return designer_id;
 	}
 
 	public void setDesigner_id(long designer_id) {
 		this.designer_id = designer_id;
+	}
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
 	}
 
 	public String getDesigner_name() {
@@ -133,12 +125,5 @@ public class DesignerDetails {
 		this.country = country;
 	}
 
-	@Override
-	public String toString() {
-		return "DesignerDetails [designer_id=" + designer_id + ", designer_name=" + designer_name + ", display_name="
-				+ display_name + ", email=" + email + ", gst_in=" + gst_in + ", pan=" + pan + ", mobile=" + mobile
-				+ ", address=" + address + ", city=" + city + ", state=" + state + ", pin=" + pin + ", country="
-				+ country + "]";
-	}
-
+	
 }

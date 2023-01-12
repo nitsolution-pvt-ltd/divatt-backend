@@ -59,6 +59,7 @@ public class AccountTemplateRepo {
 				Criteria.where("designer_details.state").regex(keywords,constants),
 				Criteria.where("designer_details.pin").regex(keywords,constants),
 				Criteria.where("designer_details.country").regex(keywords,constants),
+				Criteria.where("designer_details.uid").regex(keywords,constants),
 				
 				Criteria.where("service_charge.date").regex(keywords,constants),
 				Criteria.where("service_charge.designer_invoice_id").regex(keywords,constants),
@@ -196,6 +197,7 @@ public class AccountTemplateRepo {
 		findOne.getDesigner_details().setCountry(findByRows.getDesigner_details().getCountry());
 		findOne.getDesigner_details().setPin(findByRows.getDesigner_details().getPin());
 		findOne.getDesigner_details().setState(findByRows.getDesigner_details().getState());
+		findOne.getDesigner_details().setUid(findByRows.getDesigner_details().getUid());
 
 		GovtCharge govtCharge = new GovtCharge();
 		ArrayList<GovtCharge> govtChargeList = new ArrayList<>();

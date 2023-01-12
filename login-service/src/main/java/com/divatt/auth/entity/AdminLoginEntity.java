@@ -33,10 +33,10 @@ public class AdminLoginEntity {
 	private String dob;
 
 	@Field(name = "is_active")
-	private boolean isActive;
+	private Boolean isActive;
 
 	@Field(name = "is_deleted")
-	private boolean isDeleted;
+	private Boolean isDeleted;
 
 	private String role;
 

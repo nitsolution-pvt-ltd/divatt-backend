@@ -212,7 +212,7 @@ public class AccountController {
 		try {
 			String extractUsername = config.extractUsername(token.substring(7));
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
-			if (!findByEmail.isEmpty()) {
+			if (findByEmail.isPresent()) {
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
 							interfaceId, host + contextPath + "/designerAccount/list", "Success", HttpStatus.OK);
@@ -223,7 +223,7 @@ public class AccountController {
 				}
 				return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword,
 						designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, sortBy, settlement, year,
-						month, token);
+						month, findByEmail.get().getdId().toString());
 			} else {
 				Map<String, Object> map = new HashMap<>();
 				map.put("reason", "Error");

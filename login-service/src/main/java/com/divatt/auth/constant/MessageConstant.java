@@ -11,7 +11,7 @@ public enum MessageConstant {
 	EMAIL_NOT_FOUND("Email not found"), NODATAFOUND("No data found"),
 	USERNAME_NOT_FOUND("Oops! No such user account found"), DATANOTSAVE("Data not save! try again"),
 	FORGET_PASSWORDBODY(
-			"We are sending you this email because you requested a password reset. You can change your Password by clicking the button below."),
+			"We are sending you this email because you are requested a password reset. You can change your Password by clicking the button below."),
 	RESET_DIVATT_PASSWORD("Reset Divatt Password"), SUCESS("SUCCESS"),
 	PASSWORD_CHANGED("Password changed successfully"), OLD_PASSWORD_NOT_VALID("Old password is not valid"),
 	TOKEN_NOT_VALID("Token not valid"), URL_NOT_VALID("This URL is not valid"),
