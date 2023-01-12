@@ -68,7 +68,8 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
     //@Query(value = "{ $or: [ { 'orderId' : {$regex:?0,$options:'i'} },{ 'mrp' : {$regex:?0,$options:'i'} },{ 'deliveryStatus' : {$regex:?0,$options:'i'} },{ 'orderStatus' : {$regex:?0,$options:'i'} },{ 'deliveryMode' : {$regex:?0,$options:'i'} } ],$and: [ {  'discount' : ?1}]}")
     @Query("{ 'userId' : ?0,}")
     Page<OrderDetailsEntity> findByUserIdAndKeyword(Integer userId,String keyword, Pageable pageable);
-    
+    @Query("{ 'orderId' : ?0}")
+	OrderDetailsEntity findByOrderIds(String orderId);	
     
     
 }

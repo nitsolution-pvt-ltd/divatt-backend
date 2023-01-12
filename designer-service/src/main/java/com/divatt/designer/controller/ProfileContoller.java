@@ -28,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -1029,10 +1030,31 @@ public class ProfileContoller {
 				designerLoginEntity.setIsDeleted(true);
 				designerLoginRepo.save(designerLoginEntity);
 				return new GlobalResponce("Success", "Designer is successfully deleted", 200);
-
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	@GetMapping("/getDesignerToken")
+	public ResponseEntity<?> getDesignerToken(@RequestHeader("Authorization") String token) {
+		Optional<DesignerLoginEntity> findByEmail = Optional.empty();
+		try {
+			if(!token.isEmpty() && token != "") {
+				findByEmail = designerLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7)));
+				
+				if(findByEmail.orElse(null) != null && findByEmail.orElse(null) != null ) {
+					Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo.findBydesignerId(findByEmail.get().getdId());
+					if(findBydesignerId.orElse(null) != null ) {
+						return new ResponseEntity<>(findByEmail,HttpStatus.OK);
+					}
+				}
+			}
+			return new ResponseEntity<>(findByEmail,HttpStatus.UNAUTHORIZED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	
 }

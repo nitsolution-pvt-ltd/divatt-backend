@@ -165,7 +165,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Autowired
 	private Gson gson;
-	
+
 	@Autowired
 	private CommonUtility commonUtility;
 
@@ -226,9 +226,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			return ResponseEntity.ok(new Json(order.toString()));
 
 		} catch (RazorpayException exe) {
-			return new ResponseEntity<>(new Json(exe.getLocalizedMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(new Json(exe.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -298,15 +298,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				filterCatDetails.setUserId(orderPaymentEntity.getUserId());
 				filterCatDetails.setCreatedOn(format);
 				userOrderPaymentRepo.save(filterCatDetails);
+				commonUtility.userOrder(orderPaymentEntity);
 				return ResponseEntity.ok(mapPayId);
 			} else
 				throw new CustomException(MessageConstant.ORDER_ID_EXIST.getMessage());
 		} catch (RazorpayException e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -366,9 +367,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			return ResponseEntity.ok(null);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(),ex.getStatusCode());
-		}catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -1312,26 +1313,26 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(refOrderId).and("productId").is(refProductId));
 			OrderSKUDetailsEntity skuDetailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
-			
-			if(skuDetailsEntity.getOrderId().equals(null) && skuDetailsEntity.getOrderId().toString() == "") {
+
+			if (skuDetailsEntity.getOrderId().equals(null) && skuDetailsEntity.getOrderId().toString() == "") {
 				throw new CustomException(MessageConstant.BAD_REQUEST.getMessage());
 			}
-			
+
 			List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(refOrderId);
 			List<OrderSKUDetailsEntity> findByOrderSKU = new ArrayList<>();
 			JSONObject getPaymentData = null;
-			
-			if(findByOrderIdList.size() >0 ) {
+
+			if (findByOrderIdList.size() > 0) {
 				getPaymentData = new JSONObject(gson.toJson(findByOrderIdList.get(0).getPaymentDetails()));
 				findByOrderSKU = orderSKUDetailsRepo.findByOrderId(refOrderId);
 			}
-			
+
 			if (orderSKUDetailsEntity.getOrderItemStatus().equals("cancelled")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
-				
+
 				Query query2 = new Query();
 				query.addCriteria(Criteria.where("orderId").is(refOrderId));
 				OrderDetailsEntity detailsEntity = mongoOperations.findOne(query2, OrderDetailsEntity.class);
@@ -1340,11 +1341,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
-				
+
 				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData, findByOrderIdList);
-				
-				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),MessageConstant.ORDER_CANCEL.getMessage(), 200);
-			
+				commonUtility.orderCancel(skuDetailsEntity);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_CANCEL.getMessage(), 200);
+
 			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("returnRequest")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
@@ -1367,9 +1369,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				detailsEntity.setTaxAmount(detailsEntity.getTaxAmount() - skuDetailsEntity.getTaxAmount());
 				detailsEntity.setMrp(detailsEntity.getMrp() - skuDetailsEntity.getMrp());
 				orderDetailsRepo.save(detailsEntity);
-				
+
 				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData, findByOrderIdList);
-				
+
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_APPROVED.getMessage(), 200);
 			} else {
@@ -2029,7 +2031,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										item.setOrderItemStatus(orderItemStatus);
 										orderSKUDetailsRepo.save(item);
 									} catch (Exception e) {
-										throw new CustomException("Please fill up the Required Fields");
+										throw new CustomException(
+												MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 									}
 								} else
 									throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
@@ -2056,7 +2059,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										item.setOrderItemStatus(orderItemStatus);
 										orderSKUDetailsRepo.save(item);
 									} catch (Exception e) {
-										throw new CustomException("Please fill up fields");
+										throw new CustomException(
+												MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 									}
 								} else
 									throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
@@ -2169,7 +2173,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						throw new CustomException(e.getMessage());
 					}
 				} else {
-					throw new CustomException("Invalid Token");
+					throw new CustomException(MessageConstant.INVALID_TOKEN.getMessage());
 				}
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
@@ -2263,7 +2267,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								item.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(item);
 							} catch (Exception e) {
-								throw new CustomException("Please fill up the Required Fields");
+								throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 							}
 						} else
 							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
@@ -2289,7 +2293,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								item.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(item);
 							} catch (Exception e) {
-								throw new CustomException("Please fill up fields");
+								throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 							}
 						} else
 							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
@@ -2631,7 +2635,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			for (String key : keyList) {
 
 				List<InvoiceUpdatedModel> invoiceUpdatedModels = responceData.get(key);
-				LOGGER.info("invoiceUpdatedModels"+invoiceUpdatedModels);
+				LOGGER.info("invoiceUpdatedModels" + invoiceUpdatedModels);
 				Double tCgst = 0.0;
 				Double tSgst = 0.0;
 				Double tDis = 0.0;
@@ -2653,21 +2657,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String designerName = null;
 				String taxableValue = null;
 
-				invoiceUpdatedModels.stream().forEach(entity->{
-					
-					//LOGGER.info("taxableValue"+taxAmount);
-					if(entity.getTotal().equals("0")) {
-						if(entity.getDiscount().equals("0")) {
-						entity.setTotal(entity.getMrp());
+				invoiceUpdatedModels.stream().forEach(entity -> {
+
+					// LOGGER.info("taxableValue"+taxAmount);
+					if (entity.getTotal().equals("0")) {
+						if (entity.getDiscount().equals("0")) {
+							entity.setTotal(entity.getMrp());
+						}
 					}
-					}
-					
+
 				});
 				for (InvoiceUpdatedModel element : invoiceUpdatedModels) {
 					String taxAmount = element.getTaxAmount();
 					String total2 = element.getTotal();
 
-					String taxValue=(Integer.parseInt(total2)-Integer.parseInt(taxAmount))+"";
+					String taxValue = (Integer.parseInt(total2) - Integer.parseInt(taxAmount)) + "";
 					element.setTaxableValue(taxValue);
 					element.setIgst(element.getIgst() == null ? "0" : element.getIgst());
 					tCgst = tCgst + Double.parseDouble(element.getCgst() == null ? "0" : element.getCgst());
@@ -2679,22 +2683,23 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					tGross = tGross
 							+ Double.parseDouble(element.getGrossAmount() == null ? "0" : element.getGrossAmount());
 					tTotal = tTotal + Double.parseDouble(element.getTotal() == null ? "0" : element.getTotal());
-					tMrp= tMrp + Double.parseDouble(element.getMrp() == null ? "0" : element.getMrp());
-					tTaxableValue = tTaxableValue + Double.parseDouble(element.getTaxableValue() == null ? "0" : element.getTaxableValue());
+					tMrp = tMrp + Double.parseDouble(element.getMrp() == null ? "0" : element.getMrp());
+					tTaxableValue = tTaxableValue
+							+ Double.parseDouble(element.getTaxableValue() == null ? "0" : element.getTaxableValue());
 					totalCgst = String.valueOf(tCgst);
 					totalSgst = String.valueOf(tSgst);
 					totalDiscount = String.valueOf(tDis);
 					totalQunatuty = String.valueOf(tQty);
 					totalIgst = String.valueOf(tIgst);
 					totalGross = String.valueOf(tGross);
-					total = String.valueOf(tTotal);	
+					total = String.valueOf(tTotal);
 					taxableValue = String.valueOf(tTaxableValue);
 //					orderInvoiceRepo.findByInvoiceId(element.getInvoiceId()).forEach(e -> {
 //						DesignerProfileEntity forEntity = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink()+e.getProductDetails().getDesignerId(), DesignerProfileEntity.class).getBody();
 //						displayName = forEntity.getDesignerProfile().getDisplayName();
 //					});
 					String invoiceId = element.getInvoiceId();
-			    	String modifiedInvoiceId=invoiceId.substring(10,invoiceId.length());
+					String modifiedInvoiceId = invoiceId.substring(10, invoiceId.length());
 					List<OrderInvoiceEntity> findByInvoiceId = this.orderInvoiceRepo.findByInvoiceId(modifiedInvoiceId);
 					for (OrderInvoiceEntity e : findByInvoiceId) {
 						DesignerProfileEntity forEntity = restTemplate.getForEntity(
@@ -2704,7 +2709,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						designerName = forEntity.getDesignerName();
 					}
 				}
-				LOGGER.info("invoiceUpdatedModels"+invoiceUpdatedModels);
+				LOGGER.info("invoiceUpdatedModels" + invoiceUpdatedModels);
 				Map<String, Object> data = new HashMap<>();
 				data.put("data", invoiceUpdatedModels);
 				data.put("totalCgst", totalCgst);

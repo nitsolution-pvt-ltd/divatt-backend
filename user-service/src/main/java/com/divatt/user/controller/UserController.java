@@ -857,7 +857,7 @@ public class UserController {
 	}
 
 	@GetMapping("/followedDesigner/{userEmail}")
-	public List<Object> followedDesigner(@PathVariable String userEmail) {
+	public List<org.json.simple.JSONObject> followedDesigner(@PathVariable String userEmail) {
 		try {
 			LOGGER.info("inside controller");
 			return this.userService.getListDesignerData(userEmail);

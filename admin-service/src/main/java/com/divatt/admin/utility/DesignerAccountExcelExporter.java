@@ -13,13 +13,13 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import com.divatt.admin.entity.AccountEntity;
 
-public class AccountExcelExporter {
+public class DesignerAccountExcelExporter {
 	private XSSFWorkbook workbook;
 	private XSSFSheet sheet;
 	private List<AccountEntity> listAccount;
 
 
-	public AccountExcelExporter(List<AccountEntity> listAccount) {
+	public DesignerAccountExcelExporter(List<AccountEntity> listAccount) {
 		this.listAccount = listAccount;
 		workbook = new XSSFWorkbook();
 	}

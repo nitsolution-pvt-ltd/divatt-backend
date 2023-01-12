@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 
@@ -87,7 +88,7 @@ public interface UserService {
     public String complaintMail(String token, Integer productId);
 
     
-    public List<Object> getListDesignerData(String userEmail);
+    public List<JSONObject> getListDesignerData(String userEmail);
 
 
 
