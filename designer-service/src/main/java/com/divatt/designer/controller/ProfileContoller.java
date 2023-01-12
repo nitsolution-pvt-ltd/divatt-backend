@@ -1044,6 +1044,7 @@ public class ProfileContoller {
 				
 				if(findByEmail.orElse(null) != null && findByEmail.orElse(null) != null ) {
 					Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo.findBydesignerId(findByEmail.get().getdId());
+					findByEmail.get().setDesignerProfileEntity(findBydesignerId.get());
 					if(findBydesignerId.orElse(null) != null ) {
 						return new ResponseEntity<>(findByEmail,HttpStatus.OK);
 					}
