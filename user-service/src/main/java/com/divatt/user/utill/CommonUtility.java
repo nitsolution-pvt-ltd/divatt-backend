@@ -33,7 +33,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
@@ -42,18 +41,15 @@ import org.thymeleaf.context.Context;
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
 import com.divatt.user.designerProductEntity.DesignerProfileEntity;
-import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 import com.divatt.user.exception.CustomException;
-import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
 import com.divatt.user.serviceDTO.OrderPlacedDTO;
-import com.divatt.user.services.SequenceGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -98,9 +94,6 @@ public class CommonUtility {
 
 	@Autowired
 	private RestTemplate restTemplate;
-
-	@Autowired
-	private JwtUtil jwtUtil;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtility.class);
 
@@ -427,6 +420,59 @@ public class CommonUtility {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+
+	public void orderCancel(OrderSKUDetailsEntity skuDetailsEntity) {
+		try {
+			Long userId = skuDetailsEntity.getUserId();
+			Query query = new Query();
+			query.addCriteria(Criteria.where("_id").is(userId));
+			UserLoginEntity user = mongoOperations.findOne(query, UserLoginEntity.class);
+			DesignerProfileEntity body = restTemplate
+					.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + skuDetailsEntity.getDesignerId(),
+							DesignerProfileEntity.class)
+					.getBody();
+			String designerName = body.getDesignerName();
+			String designerEmail = body.getDesignerProfile().getEmail();
+			String email = user.getEmail();
+			String userName = user.getFirstName() + " " + user.getLastName();
+			String images = skuDetailsEntity.getImages();
+			String productName = skuDetailsEntity.getProductName();
+			String size = skuDetailsEntity.getSize();
+			String orderId = skuDetailsEntity.getOrderId();
+			Long salesPrice = skuDetailsEntity.getSalesPrice();
+			Object object = skuDetailsEntity.getOrderStatusDetails().getCancelFromUser().get("comment");
+			Object object2 = skuDetailsEntity.getOrderStatusDetails().getCancelFromUser().get("reason");
+
+			Map<String, Object> data = new HashMap<>();
+			data.put("userName", userName);
+			data.put("designerName", designerName);
+			data.put("ProductImages", images);
+			data.put("ProductName", productName);
+			data.put("email", email);
+			data.put("ProductSize", size);
+			data.put("OrderId", orderId);
+			data.put("comment", object);
+			data.put("reason", object2);
+			if (salesPrice == 0 || salesPrice == null) {
+				Long mrp = skuDetailsEntity.getMrp();
+				data.put("SalePrice", mrp);
+			} else {
+				data.put("SalePrice", salesPrice);
+			}
+			Context context = new Context();
+			context.setVariables(data);
+			String htmlContent = templateEngine.process("ordercancelUser.html", context);
+			EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Order Cancelled", htmlContent, true,
+					null, restTemplate);
+			emailSenderThread.start();
+			String htmlContent1 = templateEngine.process("ordercancelDesigner.html", context);
+			EmailSenderThread emailSenderThread1 = new EmailSenderThread(designerEmail, "Order Cancelled by User", htmlContent1,
+					true, null, restTemplate);
+			emailSenderThread1.start();
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 
 }
