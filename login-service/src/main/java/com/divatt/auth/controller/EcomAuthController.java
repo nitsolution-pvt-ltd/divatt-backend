@@ -405,20 +405,23 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			} else {
 //			if (findByUserName.isPresent()) 
 				try {
+					if(findByUserNameDesigner.isPresent()) {
 					if (findByUserNameDesigner.get().getIsDeleted() == true) {
 						throw new CustomException(MessageConstant.PROFILE_DELETED.getMessage());
 					}
-				} catch (Exception e) {
-					if (findByUserNameUser.get().getIsDeleted().equals(true)) {
-						throw new CustomException(MessageConstant.PROFILE_DELETED.getMessage());
+					}else if(findByUserNameUser.isPresent()) {
+						if (findByUserNameUser.get().getIsDeleted().equals(true)) {
+							throw new CustomException(MessageConstant.PROFILE_DELETED.getMessage());
+						}	
 					}
+				} catch (Exception e1) {
+						throw new CustomException(e1.getMessage());
 				}
 				PasswordResetEntity loginResetEntity = new PasswordResetEntity();
 				Object id = null;
 				try {
 					id = findByUserName.get().getUid();
-					loginResetEntity.setUser_type(findByUserName.get().getRole());
-
+					loginResetEntity.setUser_type(findByUserName.get().getRoleName());
 				} catch (Exception e) {
 					try {
 						id = findByUserNameDesigner.get().getUid();
@@ -427,9 +430,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 						id = findByUserNameUser.get().getuId();
 						loginResetEntity.setUser_type("USER");
 					}
-
 				}
-
 				loginResetEntity.setUser_id(id);
 				loginResetEntity.setPrtoken(uuid.toString() + "/" + format);
 				loginResetEntity.setStatus("ACTIVE");
@@ -446,31 +447,39 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					throw new CustomException(MessageConstant.DATANOTSAVE.getMessage());
 				} else {
 					// ** SEND MAIL IF DETAILS SAVE IN DATABASE **//
-					if (save.getUser_type().equals("ADMIN")) {
-						LOGGER.info(findByUserName.get().getEmail() + "Inside Email");
+					if (save.getUser_type().equals("SADMIN")) {
+						String firstName = findByUserName.get().getFirstName();
+						String lastName = findByUserName.get().getLastName();
+						String adminName = firstName + " " + lastName;
+						String adminEmail = findByUserName.get().getEmail();
 						URI uri = URI
 								.create(RestTemplateConstant.ADMIN_RESET_PASSWORD_LINK.getLink() + forgotPasswordLink);
-						sb.append("Hi " + findByUserName.get().getFirstName() + "" + ",\n\n"
-								+ MessageConstant.FORGET_PASSWORDBODY.getMessage());
-						sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
-								+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">CHANGE PASSWORD</a></div><br><br>We will verify your details and come back to you soon.");
-						SendMail mail = new SendMail(findByUserName.get().getEmail(),
-								MessageConstant.RESET_DIVATT_PASSWORD.getMessage(), sb.toString(), false);
-						LOGGER.info(findByUserName.get().getEmail() + "Inside Email");
-						try {
-							ResponseEntity<String> response = restTemplate
-									.postForEntity(RestTemplateConstant.SEND_EMAIL.getLink(), mail, String.class);
-						} catch (Exception e) {
-							System.out.println(e.getMessage());
-						}
+						Context context= new Context();
+						context.setVariable("adminName", adminName);
+						context.setVariable("uri", uri);
+						String htmlContent = templateEngine.process("adminForgetMail.html", context);
+						EmailSenderThread emailSenderThread = new EmailSenderThread(adminEmail, MessageConstant.RESET_DIVATT_PASSWORD.getMessage(), htmlContent,
+								true, null, restTemplate);
+						emailSenderThread.start();
+//						sb.append("Hi " + findByUserName.get().getFirstName() + "" + ",\n\n"
+//								+ MessageConstant.FORGET_PASSWORDBODY.getMessage());
+//						sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
+//								+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">CHANGE PASSWORD</a></div><br><br>We will verify your details and come back to you soon.");
+//						SendMail mail = new SendMail(findByUserName.get().getEmail(),
+//								MessageConstant.RESET_DIVATT_PASSWORD.getMessage(), sb.toString(), false);
+//						LOGGER.info(findByUserName.get().getEmail() + "Inside Email");
+//						try {
+//							ResponseEntity<String> response = restTemplate
+//									.postForEntity(RestTemplateConstant.SEND_EMAIL.getLink(), mail, String.class);
+//						} catch (Exception e) {
+//							System.out.println(e.getMessage());
+//						}
 						return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
 								MessageConstant.MAIL_SENT_SUCESS.getMessage(), 200);
 					} else if (save.getUser_type().equals("DESIGNER")) {
 						DesignerProfileEntity designerLogin = restTemplate.getForEntity(
 								"https://localhost:8083/dev/designer/" + findByUserNameDesigner.get().getUid(),
 								DesignerProfileEntity.class).getBody();
-						LOGGER.info(designerLogin.getDesignerProfile().getFirstName1() + " "
-								+ designerLogin.getDesignerProfile().getLastName1() + "Inside json");
 						String firstName = designerLogin.getDesignerProfile().getFirstName1();
 						String lastName = designerLogin.getDesignerProfile().getLastName1();
 						String designerName = firstName + " " + lastName;
@@ -527,7 +536,6 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 //						} catch (Exception e) {
 //							System.out.println(e.getMessage());
 //						}
-						LOGGER.info(MessageConstant.MAIL_SENT_SUCESS.getMessage() + "inside Msg");
 						return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
 								MessageConstant.MAIL_SENT_SUCESS.getMessage(), 200);
 					}
