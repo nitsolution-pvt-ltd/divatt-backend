@@ -60,7 +60,6 @@ public class CustomFunction {
 			filterProductEntity.setAge(productData.getAge());
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
-			// filterProductEntity.setComment(productData);
 			filterProductEntity.setCreatedBy(productData.getCreatedBy());
 			filterProductEntity.setCreatedOn(new Date());
 			filterProductEntity.setDesignerName(productData.getDesignerName());
@@ -88,8 +87,6 @@ public class CustomFunction {
 			filterProductEntity.setAdminStatus("Pending");
 			filterProductEntity.setHsnData(productData.getHsnData());
 			return filterProductEntity;
-			// filterProductEntity.setUpdatedBy(productData.getUpdatedBy());
-			// filterProductEntity.setUpdatedOn();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -97,15 +94,12 @@ public class CustomFunction {
 
 	public ProductMasterEntity updateFunction(ProductMasterEntity productData, Integer productId) {
 		try {
-			System.out.println(productData);
 			ProductMasterEntity productEntity = productRepo.findById(productId).get();
-			// System.out.println(productEntity);
 			ProductMasterEntity filterProductEntity = new ProductMasterEntity();
 			filterProductEntity.setProductId(productId);
 			filterProductEntity.setSKQCode(productRepo.findById(productId).get().getSKQCode());
 			filterProductEntity.setAge(productData.getAge());
 			filterProductEntity.setDesignerName(productEntity.getDesignerName());
-			// filterProductEntity.setApprovedBy(productData.getApprovedBy());
 			filterProductEntity.setComments(productData.getComments());
 			filterProductEntity.setCategoryId(productData.getCategoryId());
 			filterProductEntity.setCod(productData.getCod());
@@ -250,7 +244,6 @@ public class CustomFunction {
 			updateMasterEntity.setProductStage(productMasterEntity2.getProductStage());
 			updateMasterEntity.setProductStageDetails(productStageDetails);
 
-			LOGGER.info(updateMasterEntity.toString());
 			return updateMasterEntity;
 
 		} catch (Exception e) {
@@ -344,6 +337,7 @@ public class CustomFunction {
 			designerProfileEntity.setProfileStatus(designerLoginEntity.getProfileStatus());
 			designerProfileEntity.setSocialProfile(body.getSocialProfile());
 			designerProfileEntity.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
+			designerProfileEntity.setUid(designerLoginEntity.getUid());
 			designerProfile.setDesignerCategory(designerLoginEntity.getDesignerCategory());
 			designerProfile.setDisplayName(designerLoginEntity.getDisplayName());
 			designerProfile.setAltMobileNo(body.getDesignerProfile().getAltMobileNo());
@@ -367,7 +361,6 @@ public class CustomFunction {
 			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
 					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
 					|| designerLoginEntity.getProfileStatus().equals("SAVED"))) {
-				LOGGER.info("Status <><><><><> !!!!! = {}", designerLoginEntity.getProfileStatus());
 				designerProfile.setDigitalSignature(
 						designerLoginEntity.getDesignerProfileEntity().getDesignerProfile().getDigitalSignature());
 			} else {
@@ -384,6 +377,8 @@ public class CustomFunction {
 			designerProfile.setProfilePic(body.getDesignerProfile().getProfilePic());
 			designerProfile.setPinCode(body.getDesignerProfile().getPinCode());
 			designerProfile.setState(body.getDesignerProfile().getState());
+			designerProfile.setUid(body.getDesignerProfile().getUid());
+			
 			designerProfileEntity.setDesignerProfile(designerProfile);
 			designerProfileEntity.setBoutiqueProfile(boutiqueProfile);
 

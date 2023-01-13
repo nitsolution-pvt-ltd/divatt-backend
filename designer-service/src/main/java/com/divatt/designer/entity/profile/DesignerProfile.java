@@ -75,6 +75,9 @@ public class DesignerProfile {
 
 	@Field(name = "pin_code")
 	private String pinCode;
+	
+	@Field(name = "uid")
+	private String uid;
 
 	public DesignerProfile() {
 		super();
@@ -86,7 +89,7 @@ public class DesignerProfile {
 			@NotNull String mobileNo, String altMobileNo, String digitalSignature, String country, String state,
 			String city, @NotNull String dob, @NotNull String gender,
 			@NotNull(message = "User profile picture must not be null") String profilePic, String designerCategory,
-			String pinCode) {
+			String pinCode, String uid) {
 		super();
 		this.email = email;
 		this.password = password;
@@ -106,6 +109,17 @@ public class DesignerProfile {
 		this.profilePic = profilePic;
 		this.designerCategory = designerCategory;
 		this.pinCode = pinCode;
+		this.uid = uid;
+	}
+
+	@Override
+	public String toString() {
+		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
+				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
+				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
+				+ ", digitalSignature=" + digitalSignature + ", country=" + country + ", state=" + state + ", city="
+				+ city + ", dob=" + dob + ", gender=" + gender + ", profilePic=" + profilePic + ", designerCategory="
+				+ designerCategory + ", pinCode=" + pinCode + ", uid=" + uid + "]";
 	}
 
 	public String getEmail() {
@@ -252,14 +266,14 @@ public class DesignerProfile {
 		this.pinCode = pinCode;
 	}
 
-	@Override
-	public String toString() {
-		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
-				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
-				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
-				+ ", digitalSignature=" + digitalSignature + ", country=" + country + ", state=" + state + ", city="
-				+ city + ", dob=" + dob + ", gender=" + gender + ", profilePic=" + profilePic + ", designerCategory="
-				+ designerCategory + ", pinCode=" + pinCode + "]";
+	public String getUid() {
+		return uid;
 	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+
+	
 
 }
