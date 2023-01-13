@@ -230,12 +230,9 @@ public class ProfileContoller {
 			    List<DesignerLoginEntity> designerLoginData = mongoOperations.find(query, DesignerLoginEntity.class);
 				
 				String randomId = this.getRandomString();
-				Long dUid=1L; 
+				Long dUid=10L; 
 				if (designerLoginData.size() >0) {
 					dUid=(designerLoginData.get(0).getdId())+1;
-				}else {
-					dUid=10L;
-					
 				}
 				String uid=randomId+dUid;
 				ResponseEntity<String> forEntity = restTemplate
