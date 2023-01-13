@@ -225,7 +225,12 @@ public class ProfileContoller {
 
 				Optional<DesignerLoginEntity> designerLoginData = designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
 				String randomId = this.getRandomString();
-				Long dUid=(designerLoginData.get().getdId()+1);
+				Long dUid=1L;
+				if (designerLoginData.orElse(null) == null) {
+					dUid=10L;
+				}else {
+					dUid=(designerLoginData.get().getdId()+1);
+				}
 				String uid=randomId+dUid;
 				ResponseEntity<String> forEntity = restTemplate
 						.getForEntity(RestTemplateConstant.PRESENT_DESIGNER.getMessage()
