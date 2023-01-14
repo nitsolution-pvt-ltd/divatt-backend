@@ -20,6 +20,8 @@ import javax.validation.Valid;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +87,7 @@ import com.divatt.user.utill.EmailSenderThread;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
@@ -1700,58 +1703,138 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			String designerEmail = jwtconfig.extractUsername(token.substring(7));
 			LOGGER.info(designerEmail);
-			String designerId = restTemplate
+//			String designerId = restTemplate
+//					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail,
+//							org.json.simple.JSONObject.class)
+//					.getBody().get("designerId").toString();
+			org.json.simple.JSONObject designerDetails = restTemplate
 					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail,
 							org.json.simple.JSONObject.class)
-					.getBody().get("designerId").toString();
-//			designerId=;
-//			LOGGER.info(designerId);
-			// return null;
+					.getBody();
+			String designerId = designerDetails.get("designerId").toString();
+			  ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			  String json = ow.writeValueAsString(designerDetails);			  
+			  String firstName;
+			  String lastName;
+			  JSONParser parser = new JSONParser();
+			  try {
+				  org.json.simple.JSONObject json1 = (org.json.simple.JSONObject) parser.parse(json);
+				  org.json.simple.JSONObject json2 = (org.json.simple.JSONObject) json1.get("designerProfile");			     
+				  firstName = json2.get("firstName1").toString();
+				  lastName =  json2.get("lastName1").toString();
+			  } catch (ParseException e) {
+				  throw new RuntimeException(e); 
+			  }			
 			List<OrderSKUDetailsEntity> orderDetails = orderSKUDetailsRepo.findAll().stream()
 					.filter(e -> e.getDesignerId() == Long.parseLong(designerId))
 					.filter(e -> e.getOrderId().equals(orderId))
 					.filter(e -> e.getProductId() == Integer.parseInt(productId)).collect(Collectors.toList());
 			LOGGER.info(orderDetails + "");
 			String orderItemStatus = orderDetails.get(0).getOrderItemStatus();
-			LOGGER.info("orderItemStatus" + orderItemStatus);
 			orderDetails.get(0).setStatus(orderItemStatus);
-			String status = orderDetails.get(0).getStatus();
-			LOGGER.info("status" + status);
+			//String status = orderDetails.get(0).getStatus();
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
-			if (!orderDetails.get(0).getOrderItemStatus().equals("New")) {
-				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-				jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
-				jsonObject.put("cancelationTime", format);
-				OrderStatusDetails orderStatusDetails = orderDetails.get(0).getOrderStatusDetails();
-				try {
-					orderStatusDetails.setCancelOrderDetails(jsonObject);
-					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-					orderSKUDetailsRepo.saveAll(orderDetails);
-				} catch (Exception e) {
-					orderStatusDetails.setCancelOrderDetails(jsonObject);
-					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-					orderSKUDetailsRepo.saveAll(orderDetails);
+			if(orderDetails.get(0).getOrderItemStatus().equals("cancelled")) {
+				throw new CustomException(MessageConstant.PRODUCT_ALREADY_CANCEL.getMessage());
+			} else if (!orderDetails.get(0).getOrderItemStatus().equals("New") && !orderDetails.get(0).getOrderItemStatus().equals("Delivered")) {				
+				if(orderDetails.size() > 0) {
+					OrderStatusDetails orderStatusDetails = orderDetails.get(0).getOrderStatusDetails();
+					org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+					if(cancelationRequestDTO.getOrderStatus().equals("Request for cancelation")) {						
+						jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
+						jsonObject.put("cancelationTime", format);
+					    orderStatusDetails.setCancelOrderDetails(jsonObject);
+					    orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+					    orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+					    orderSKUDetailsRepo.save(orderDetails.get(0));
+					}else {
+					throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
+					}
+				}else {
+					throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 				}
-			} else {
-				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-				jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
-				jsonObject.put("cancelationTime", format);
+//				try {
+//					orderStatusDetails.setCancelOrderDetails(jsonObject);
+//					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+//					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+//					 orderSKUDetailsRepo.saveAll(orderDetails);
+//				} catch (Exception e) {
+//					orderStatusDetails.setCancelOrderDetails(jsonObject);
+//					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+//					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+//					 orderSKUDetailsRepo.saveAll(orderDetails);
+//				}
+			} else if (!orderDetails.get(0).getOrderItemStatus().equals("Delivered")) {	
 				OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-				try {
-					orderStatusDetails.setCancelOrderDetails(jsonObject);
-					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-					orderSKUDetailsRepo.saveAll(orderDetails);
-				} catch (Exception e) {
-					orderStatusDetails.setCancelOrderDetails(jsonObject);
-					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-					orderSKUDetailsRepo.saveAll(orderDetails);
+				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+				if(cancelationRequestDTO.getOrderStatus().equals("Request for cancelation")) {
+					jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
+					jsonObject.put("cancelationTime", format);
+				    orderStatusDetails.setCancelOrderDetails(jsonObject);
+				    orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+				    orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+				    orderSKUDetailsRepo.save(orderDetails.get(0));
+				}else {					
+					throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 				}
+//				try {
+//					orderStatusDetails.setCancelOrderDetails(jsonObject);
+//					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+//					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+//					orderSKUDetailsRepo.saveAll(orderDetails);
+//				} catch (Exception e) {
+//					orderStatusDetails.setCancelOrderDetails(jsonObject);
+//					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+//					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+//					orderSKUDetailsRepo.saveAll(orderDetails);
+//				}
+			} else {
+				throw new CustomException(MessageConstant.PRODUCT_ALREADY_DELIVERED.getMessage());
+			}
+			try {
+				org.json.simple.JSONObject body = restTemplate.getForEntity(
+						RestTemplateConstant.ADMIN_ROLE_NAME.getLink() + MessageConstant.ADMIN_ROLES.getMessage(),
+						org.json.simple.JSONObject.class).getBody();
+				String adminMail = body.get("email").toString();
+				String designerName = firstName + " " + lastName;
+				//String adminMail = "krishnendusamanta761@gmail.com";
+				String adminFirstName = body.get("firstName").toString();
+				String adminLastName = body.get("lastName").toString();
+				String adminName = adminFirstName + " " + adminLastName;
+				String orderId2 = orderDetails.get(0).getOrderId();
+				Long userId = orderDetails.get(0).getUserId();
+				int productId2 = orderDetails.get(0).getProductId();
+				String productName = orderDetails.get(0).getProductName();
+				String displayName = orderDetails.get(0).getDisplayName();
+				String productImage = orderDetails.get(0).getImages();
+				Long salesPrice = orderDetails.get(0).getSalesPrice();
+				Long mrp = orderDetails.get(0).getMrp();
+				String productSize = orderDetails.get(0).getSize();
+				Map<String, Object> data = new HashMap<>();
+				data.put("designerName", designerName);
+				data.put("adminName", adminName);
+				data.put("orderId", orderId2);
+				data.put("userId", userId);
+				data.put("productId2", productId2);
+				data.put("productName", productName);
+				data.put("displayName", displayName);
+				data.put("productImage", productImage);
+				data.put("productSize", productSize);
+				if (salesPrice == 0 || salesPrice == null) {
+					data.put("salesPrice", mrp);
+				} else {
+					data.put("salesPrice", salesPrice);
+				}
+				Context context = new Context();
+				context.setVariables(data);
+				String htmlContent = templateEngine.process("orderCancelRequestToAdmin.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(adminMail, "Request for Cancel Order",
+						htmlContent, true, null, restTemplate);
+				emailSenderThread.start();
+			} catch (Exception ex) {
+				throw new CustomException(ex.getMessage());
 			}
 			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 					MessageConstant.CANCELATION_REQUEST.getMessage(), 200);
