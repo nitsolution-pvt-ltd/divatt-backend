@@ -1,10 +1,13 @@
 package com.divatt.designer.helper;
 
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -50,6 +53,18 @@ public class CustomFunction {
 
 	RestTemplate restTemplate = new RestTemplate();
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomFunction.class);
+	
+	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
+	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
+	private static final Pattern EDGESDHASHES = Pattern.compile("(^-|-$)");
+
+	public String toSlug(String input) {
+	    String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
+	    String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
+	    String slug = NONLATIN.matcher(normalized).replaceAll("");
+	    slug = EDGESDHASHES.matcher(slug).replaceAll("");
+	    return slug.toLowerCase(Locale.ENGLISH);
+	}
 
 	public ProductMasterEntity filterDataEntity(ProductMasterEntity productData) {
 
@@ -183,39 +198,38 @@ public class CustomFunction {
 		}
 	}
 
-	public ProductMasterEntity2 updateProductData(ProductMasterEntity2 productMasterEntity2, Integer productId) {
+	public ProductMasterEntity2 updateProductData(ProductMasterEntity2 updateMasterEntity, Integer productId) {
 		try {
 
-			LOGGER.info("inside updateproductdata");
 			ProductMasterEntity2 masterEntity2 = productRepo2.findById(productId).get();
-			LOGGER.info("inside updateproductdata master" + masterEntity2);
-			ProductMasterEntity2 updateMasterEntity = new ProductMasterEntity2();
+			
+//			ProductMasterEntity2 updateMasterEntity = new ProductMasterEntity2();
 			ProductStageDetails productStageDetails = new ProductStageDetails();
 			updateMasterEntity.setProductId(productId);
 			updateMasterEntity.setSku(masterEntity2.getSku());
-			updateMasterEntity.setDesignerId(productMasterEntity2.getDesignerId());
-			updateMasterEntity.setCategoryId(productMasterEntity2.getCategoryId());
-			updateMasterEntity.setSubCategoryId(productMasterEntity2.getSubCategoryId());
-			updateMasterEntity.setPurchaseMinQuantity(productMasterEntity2.getPurchaseMinQuantity());
-			updateMasterEntity.setPurchaseMaxQuantity(productMasterEntity2.getPurchaseMaxQuantity());
-			updateMasterEntity.setHsnCode(productMasterEntity2.getHsnCode());
-			updateMasterEntity.setProductDetails(productMasterEntity2.getProductDetails());
-			updateMasterEntity.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
-			updateMasterEntity.setWithCustomization(productMasterEntity2.getWithCustomization());
-			updateMasterEntity.setWithDesignCustomization(productMasterEntity2.getWithDesignCustomization());
-			updateMasterEntity.setWithGiftWrap(productMasterEntity2.getWithGiftWrap());
-			updateMasterEntity.setReturnAcceptable(productMasterEntity2.getReturnAcceptable());
-			updateMasterEntity.setCancelAcceptable(productMasterEntity2.getCancelAcceptable());
-			updateMasterEntity.setCod(productMasterEntity2.getCod());
-			updateMasterEntity.setPriceType(productMasterEntity2.getPriceType());
-			updateMasterEntity.setColour(productMasterEntity2.getColour());
-			updateMasterEntity.setSizes(productMasterEntity2.getSizes());
-			updateMasterEntity.setSoh(productMasterEntity2.getSoh());
-			updateMasterEntity.setOos(productMasterEntity2.getOos());
-			updateMasterEntity.setNotify(productMasterEntity2.getNotify());
-			updateMasterEntity.setPriceCode(productMasterEntity2.getPriceCode());
-			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
-			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
+//			updateMasterEntity.setDesignerId(productMasterEntity2.getDesignerId());
+//			updateMasterEntity.setCategoryId(productMasterEntity2.getCategoryId());
+//			updateMasterEntity.setSubCategoryId(productMasterEntity2.getSubCategoryId());
+//			updateMasterEntity.setPurchaseMinQuantity(productMasterEntity2.getPurchaseMinQuantity());
+//			updateMasterEntity.setPurchaseMaxQuantity(productMasterEntity2.getPurchaseMaxQuantity());
+//			updateMasterEntity.setHsnCode(productMasterEntity2.getHsnCode());
+//			updateMasterEntity.setProductDetails(productMasterEntity2.getProductDetails());
+//			updateMasterEntity.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
+//			updateMasterEntity.setWithCustomization(productMasterEntity2.getWithCustomization());
+//			updateMasterEntity.setWithDesignCustomization(productMasterEntity2.getWithDesignCustomization());
+//			updateMasterEntity.setWithGiftWrap(productMasterEntity2.getWithGiftWrap());
+//			updateMasterEntity.setReturnAcceptable(productMasterEntity2.getReturnAcceptable());
+//			updateMasterEntity.setCancelAcceptable(productMasterEntity2.getCancelAcceptable());
+//			updateMasterEntity.setCod(productMasterEntity2.getCod());
+//			updateMasterEntity.setPriceType(productMasterEntity2.getPriceType());
+//			updateMasterEntity.setColour(productMasterEntity2.getColour());
+//			updateMasterEntity.setSizes(productMasterEntity2.getSizes());
+//			updateMasterEntity.setSoh(productMasterEntity2.getSoh());
+//			updateMasterEntity.setOos(productMasterEntity2.getOos());
+//			updateMasterEntity.setNotify(productMasterEntity2.getNotify());
+//			updateMasterEntity.setPriceCode(productMasterEntity2.getPriceCode());
+//			updateMasterEntity.setMrp(productMasterEntity2.getMrp());
+//			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
 			if (masterEntity2.getAdminStatus().equals("Pending")) {
 				updateMasterEntity.setAdminStatus("Pending");
 			} else if (masterEntity2.getAdminStatus().equals("Approved")) {
@@ -224,24 +238,24 @@ public class CustomFunction {
 				updateMasterEntity.setAdminStatus("Pending");
 			}
 
-			updateMasterEntity.setWeightUnit(productMasterEntity2.getWeightUnit());
-			updateMasterEntity.setImages(productMasterEntity2.getImages());
-			updateMasterEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
-			updateMasterEntity.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
-			updateMasterEntity.setProductWeight(productMasterEntity2.getProductWeight());
-			updateMasterEntity.setShipmentTime(productMasterEntity2.getShipmentTime());
+//			updateMasterEntity.setWeightUnit(productMasterEntity2.getWeightUnit());
+//			updateMasterEntity.setImages(productMasterEntity2.getImages());
+//			updateMasterEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
+//			updateMasterEntity.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
+//			updateMasterEntity.setProductWeight(productMasterEntity2.getProductWeight());
+//			updateMasterEntity.setShipmentTime(productMasterEntity2.getShipmentTime());
 //			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
-			updateMasterEntity.setIsActive(true);
-			updateMasterEntity.setIsDeleted(false);
+//			updateMasterEntity.setIsActive(true);
+//			updateMasterEntity.setIsDeleted(false);
 
 			// Product stage
-			productStageDetails.setSubmittedBy(productMasterEntity2.getProductStageDetails().getSubmittedBy());
-			productStageDetails.setSubmittedOn(productMasterEntity2.getProductStageDetails().getSubmittedOn());
-			productStageDetails.setApprovedBy(productMasterEntity2.getProductStageDetails().getApprovedBy());
-			productStageDetails.setApprovedOn(productMasterEntity2.getProductStageDetails().getApprovedOn());
-			productStageDetails.setComment(productMasterEntity2.getProductStageDetails().getComment());
+			productStageDetails.setSubmittedBy(updateMasterEntity.getProductStageDetails().getSubmittedBy());
+			productStageDetails.setSubmittedOn(updateMasterEntity.getProductStageDetails().getSubmittedOn());
+			productStageDetails.setApprovedBy(updateMasterEntity.getProductStageDetails().getApprovedBy());
+			productStageDetails.setApprovedOn(updateMasterEntity.getProductStageDetails().getApprovedOn());
+			productStageDetails.setComment(updateMasterEntity.getProductStageDetails().getComment());
 
-			updateMasterEntity.setProductStage(productMasterEntity2.getProductStage());
+			updateMasterEntity.setProductStage(updateMasterEntity.getProductStage());
 			updateMasterEntity.setProductStageDetails(productStageDetails);
 
 			return updateMasterEntity;
@@ -251,56 +265,59 @@ public class CustomFunction {
 		}
 	}
 
-	public ProductMasterEntity2 addProductMasterData(ProductMasterEntity2 productMasterEntity2) {
-
+	public ProductMasterEntity2 addProductMasterData(ProductMasterEntity2 filterProductEntity) {
+		
 		try {
-			ProductMasterEntity2 filterProductEntity = new ProductMasterEntity2();
+			String slug = this.toSlug(filterProductEntity.getProductDetails().getProductName());
+			String alphaNumericString = CustomRandomString.getAlphaNumericString(10);
+//			ProductMasterEntity2 filterProductEntity = new ProductMasterEntity2();
 			ProductStageDetails productStageDetails = new ProductStageDetails();
 			filterProductEntity.setProductId(sequenceGenarator.getNextSequence(ProductMasterEntity2.SEQUENCE_NAME));
-			filterProductEntity.setSku(CustomRandomString.getAlphaNumericString(10));
-			filterProductEntity.setDesignerId(productMasterEntity2.getDesignerId());
-			filterProductEntity.setCategoryId(productMasterEntity2.getCategoryId());
-			filterProductEntity.setSubCategoryId(productMasterEntity2.getSubCategoryId());
-			filterProductEntity.setPurchaseMinQuantity(productMasterEntity2.getPurchaseMinQuantity());
-			filterProductEntity.setPurchaseMaxQuantity(productMasterEntity2.getPurchaseMaxQuantity());
-			filterProductEntity.setHsnCode(productMasterEntity2.getHsnCode());
-			filterProductEntity.setProductDetails(productMasterEntity2.getProductDetails());
-			filterProductEntity.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
-			filterProductEntity.setWithCustomization(productMasterEntity2.getWithCustomization());
-			filterProductEntity.setWithDesignCustomization(productMasterEntity2.getWithDesignCustomization());
-			filterProductEntity.setWithGiftWrap(productMasterEntity2.getWithGiftWrap());
-			filterProductEntity.setReturnAcceptable(productMasterEntity2.getReturnAcceptable());
-			filterProductEntity.setCancelAcceptable(productMasterEntity2.getCancelAcceptable());
-			filterProductEntity.setCod(productMasterEntity2.getCod());
-			filterProductEntity.setPriceType(productMasterEntity2.getPriceType());
-			filterProductEntity.setColour(productMasterEntity2.getColour());
-			filterProductEntity.setSizes(productMasterEntity2.getSizes());
-			filterProductEntity.setSoh(productMasterEntity2.getSoh());
-			filterProductEntity.setOos(productMasterEntity2.getOos());
-			filterProductEntity.setNotify(productMasterEntity2.getNotify());
-			filterProductEntity.setPriceCode(productMasterEntity2.getPriceCode());
-			filterProductEntity.setMrp(productMasterEntity2.getMrp());
-			filterProductEntity.setDeal(productMasterEntity2.getDeal());
-			filterProductEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
-			filterProductEntity.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
-			filterProductEntity.setProductWeight(productMasterEntity2.getProductWeight());
-			filterProductEntity.setShipmentTime(productMasterEntity2.getShipmentTime());
-			filterProductEntity.setImages(productMasterEntity2.getImages());
-			filterProductEntity.setWeightUnit(productMasterEntity2.getWeightUnit());
+			filterProductEntity.setSku(alphaNumericString);
+//			filterProductEntity.setDesignerId(filterProductEntity.getDesignerId());
+//			filterProductEntity.setCategoryId(filterProductEntity.getCategoryId());
+//			filterProductEntity.setSubCategoryId(productMasterEntity2.getSubCategoryId());
+//			filterProductEntity.setPurchaseMinQuantity(productMasterEntity2.getPurchaseMinQuantity());
+//			filterProductEntity.setPurchaseMaxQuantity(productMasterEntity2.getPurchaseMaxQuantity());
+//			filterProductEntity.setHsnCode(productMasterEntity2.getHsnCode());
+//			filterProductEntity.setProductDetails(productMasterEntity2.getProductDetails());
+//			filterProductEntity.setDesignCustomizationFeatures(productMasterEntity2.getDesignCustomizationFeatures());
+//			filterProductEntity.setWithCustomization(productMasterEntity2.getWithCustomization());
+//			filterProductEntity.setWithDesignCustomization(productMasterEntity2.getWithDesignCustomization());
+//			filterProductEntity.setWithGiftWrap(productMasterEntity2.getWithGiftWrap());
+//			filterProductEntity.setReturnAcceptable(productMasterEntity2.getReturnAcceptable());
+//			filterProductEntity.setCancelAcceptable(productMasterEntity2.getCancelAcceptable());
+//			filterProductEntity.setCod(productMasterEntity2.getCod());
+//			filterProductEntity.setPriceType(productMasterEntity2.getPriceType());
+//			filterProductEntity.setColour(productMasterEntity2.getColour());
+//			filterProductEntity.setSizes(productMasterEntity2.getSizes());
+//			filterProductEntity.setSoh(productMasterEntity2.getSoh());
+//			filterProductEntity.setOos(productMasterEntity2.getOos());
+//			filterProductEntity.setNotify(productMasterEntity2.getNotify());
+//			filterProductEntity.setPriceCode(productMasterEntity2.getPriceCode());
+//			filterProductEntity.setMrp(productMasterEntity2.getMrp());
+//			filterProductEntity.setDeal(productMasterEntity2.getDeal());
+//			filterProductEntity.setGiftWrapAmount(productMasterEntity2.getGiftWrapAmount());
+//			filterProductEntity.setExtraSpecifications(productMasterEntity2.getExtraSpecifications());
+//			filterProductEntity.setProductWeight(productMasterEntity2.getProductWeight());
+//			filterProductEntity.setShipmentTime(productMasterEntity2.getShipmentTime());
+//			filterProductEntity.setImages(productMasterEntity2.getImages());
+//			filterProductEntity.setWeightUnit(productMasterEntity2.getWeightUnit());
 			filterProductEntity.setIsActive(true);
 			filterProductEntity.setIsDeleted(false);
 			filterProductEntity.setCreatedOn(new Date());
-			filterProductEntity.setCreatedBy(productMasterEntity2.getCreatedBy());
-			filterProductEntity.setUpdatedOn(productMasterEntity2.getUpdatedOn());
-			filterProductEntity.setUpdatedBy(productMasterEntity2.getUpdatedBy());
+//			filterProductEntity.setCreatedBy(productMasterEntity2.getCreatedBy());
+//			filterProductEntity.setUpdatedOn(productMasterEntity2.getUpdatedOn());
+//			filterProductEntity.setUpdatedBy(productMasterEntity2.getUpdatedBy());
 			filterProductEntity.setAdminStatus("Pending");
+			filterProductEntity.setSlug(slug+"-itm"+alphaNumericString);
 
 			// Product stage
-			productStageDetails.setSubmittedBy(productMasterEntity2.getProductStageDetails().getSubmittedBy());
+			productStageDetails.setSubmittedBy(filterProductEntity.getProductStageDetails().getSubmittedBy());
 			productStageDetails.setSubmittedOn(new Date());
-			productStageDetails.setApprovedBy(productMasterEntity2.getProductStageDetails().getApprovedBy());
-			productStageDetails.setApprovedOn(productMasterEntity2.getProductStageDetails().getApprovedOn());
-			productStageDetails.setComment(productMasterEntity2.getProductStageDetails().getComment());
+			productStageDetails.setApprovedBy(filterProductEntity.getProductStageDetails().getApprovedBy());
+			productStageDetails.setApprovedOn(filterProductEntity.getProductStageDetails().getApprovedOn());
+			productStageDetails.setComment(filterProductEntity.getProductStageDetails().getComment());
 
 			filterProductEntity.setProductStage("new");
 			filterProductEntity.setProductStageDetails(productStageDetails);

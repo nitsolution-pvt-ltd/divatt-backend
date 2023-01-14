@@ -905,11 +905,10 @@ public class ProfileContoller {
 			@PathVariable String status) {
 		try {
 			LOGGER.info("Inside changeDesignerStatus");
-			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
-					.findByEmail(jwtConfig.extractUsername(token.substring(7)));
-			DesignerLoginEntity designerProfileEntity = new DesignerLoginEntity();
-			Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo
-					.findBydesignerId(findByEmail.get().getdId());
+			
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7)));
+			DesignerLoginEntity designerLoginEntity = findByEmail.get();
+			Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo.findBydesignerId(findByEmail.get().getdId());
 
 			if (findBydesignerId.orElse(null) != null) {
 				DesignerProfileEntity designerProfileEntity2 = findBydesignerId.get();
@@ -917,23 +916,8 @@ public class ProfileContoller {
 				designerProfileRepo.save(designerProfileEntity2);
 			}
 			if (findByEmail.isPresent()) {
-				designerProfileEntity.setdId(findByEmail.get().getdId());
-				designerProfileEntity.setAdminComment(findByEmail.get().getAdminComment());
-				designerProfileEntity.setAuthToken(findByEmail.get().getAuthToken());
-				designerProfileEntity.setAccountStatus(findByEmail.get().getAccountStatus());
-				designerProfileEntity.setIsDeleted(findByEmail.get().getIsDeleted());
-				designerProfileEntity.setDesignerCurrentStatus(findByEmail.get().getDesignerCurrentStatus());
-				designerProfileEntity.setProfileStatus(findByEmail.get().getProfileStatus());
-				designerProfileEntity.setIsProfileCompleted(findByEmail.get().getIsProfileCompleted());
-				designerProfileEntity.setIsDeleted(findByEmail.get().getIsDeleted());
-				designerProfileEntity.setCategories(findByEmail.get().getCategories());
-				designerProfileEntity.setDesignerCategory(findByEmail.get().getDesignerCategory());
-				designerProfileEntity.setDisplayName(findByEmail.get().getDisplayName());
-				designerProfileEntity.setEmail(findByEmail.get().getEmail());
-				designerProfileEntity.setPassword(findByEmail.get().getPassword());
-				designerProfileEntity.setDesignerCurrentStatus(status);
-				designerLoginRepo.save(designerProfileEntity);
-
+				designerLoginEntity.setDesignerCurrentStatus(status);
+				designerLoginRepo.save(designerLoginEntity);
 			} else {
 				throw new CustomException(MessageConstant.USER_NOT_FOUND.getMessage());
 			}

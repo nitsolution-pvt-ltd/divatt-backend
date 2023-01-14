@@ -82,9 +82,10 @@ public class ProductServiceImp2 implements ProductService2 {
 	@Override
 	public GlobalResponce addProductData(ProductMasterEntity2 productMasterEntity2) {
 		try {
-			LOGGER.info("Inside-ProductServiceImp2.addProductMasterData()");
+			LOGGER.info("Inside-ProductServiceImp2.addProductData()");
+			
 			ProductMasterEntity2 entity2 = productRepo2.save(customFunction.addProductMasterData(productMasterEntity2));
-			productMasterEntity2.getProductDetails().getProductName();
+			
 			List<UserProfileInfo> userInfoList = new ArrayList<UserProfileInfo>();
 			List<Long> userId = new ArrayList<Long>();
 
@@ -92,11 +93,14 @@ public class ProductServiceImp2 implements ProductService2 {
 					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + entity2.getDesignerId(), String.class);
 			String data = forEntity.getBody();
 			JSONArray jsonArray = new JSONArray(data);
+			
 			String designerImageData = designerProfileRepo.findBydesignerId(entity2.getDesignerId().longValue()).get()
 					.getDesignerProfile().getProfilePic();
+		
 			jsonArray.forEach(array -> {
 				ObjectMapper objectMapper = new ObjectMapper();
 				UserProfile readValue;
+				
 				try {
 					readValue = objectMapper.readValue(array.toString(), UserProfile.class);
 					ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(
@@ -108,20 +112,19 @@ public class ProductServiceImp2 implements ProductService2 {
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
-
 			});
+			
 			userId.forEach(user -> {
 				restTemplate.getForEntity(RestTemplateConstant.INFO_USER.getMessage() + user, UserProfileInfo.class);
 
 			});
+			
 			Integer productId = entity2.getProductId();
 			ProductMasterEntity2 productMasterEntity = productRepo2.findById(productId).get();
-			LOGGER.info(productMasterEntity + "inside");
-			DesignerProfileEntity designerProfile = designerProfileRepo
-					.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
+			DesignerProfileEntity designerProfile = designerProfileRepo.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
 			ImageEntity[] images = productMasterEntity.getImages();
 			String image1 = images[0].getLarge();
-			System.out.println(images[0].getLarge());
+
 			Map<String, Object> data2 = new HashMap<String, Object>();
 			userInfoList.forEach(user -> {
 				EmailEntity emailEntity = new EmailEntity();
@@ -142,7 +145,6 @@ public class ProductServiceImp2 implements ProductService2 {
 				emailEntity.setProductId(productMasterEntity.getProductId().toString());
 				emailEntity.setDesignerImage(designerImageData);
 				emailEntity.setUserName(user.getFirstName());
-				System.out.println(user.getEmail());
 				data2.put("data", emailEntity);
 				Context context = new Context();
 				context.setVariables(data2);
@@ -165,15 +167,13 @@ public class ProductServiceImp2 implements ProductService2 {
 			LOGGER.info("Inside-ProductServiceImp2.updateProduct()");
 			if (productRepo2.existsById(productId)) {
 
-				LOGGER.info("inside if");
 				productRepo2.save(customFunction.updateProductData(productMasterEntity2, productId));
 				try {
 					LoginEntity forEntity = restTemplate.getForEntity(RestTemplateConstant.ADMIN_ROLE_NAME.getMessage()
 							+ MessageConstant.ADMIN_ROLES.getMessage(), LoginEntity.class).getBody();
 					String email2 = forEntity.getEmail();
 					Integer designerId = productMasterEntity2.getDesignerId();
-					DesignerProfileEntity findBydesignerId = designerProfileRepo
-							.findBydesignerId(designerId.longValue()).get();
+					DesignerProfileEntity findBydesignerId = designerProfileRepo.findBydesignerId(designerId.longValue()).get();
 					String email = findBydesignerId.getDesignerProfile().getEmail();
 					String designerName = findBydesignerId.getDesignerName();
 					Context context = new Context();
