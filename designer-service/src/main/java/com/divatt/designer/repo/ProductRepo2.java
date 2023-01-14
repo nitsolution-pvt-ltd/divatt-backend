@@ -48,6 +48,7 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
 	Page<ProductMasterEntity2> findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(Boolean isDeleted,
 			Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
 
+	/***Pending and rejected data Search***/
 	@Query(value = "{ $or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2, 'adminStatus' : ?3 }]}")
 	Page<ProductMasterEntity2> listDesignerProductsearchByAdminStatus(String keyword, Boolean isDeleted,
 			Integer designerId, String adminStatus, Pageable pagingSort);
@@ -85,4 +86,16 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
 	@Query(value = "{$or: [ { 'filter.soh==filter.notify' : {$regex:?0,$options:'i'} }, { 'filter.soh<=filter.notify' : {$regex:?0,$options:'i'} } } ]}")
 	Page<ProductMasterEntity2> findProduct(List<ProductMasterEntity2> filter, Pageable pagingSort);
 
+	/***Live data Search***/
+	@Query(value = "{$or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ]"
+			+ "$and: [{'is_deleted': ?1,'designerId':?2,'adminStatus':?3,'is_active':?4}] }")
+	Page<ProductMasterEntity2> searckLiveByKeyword(String keyword, Boolean isDeleted, Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
+	
+	/***Low stock data Search***/
+	@Query(value = "{$or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ]"
+			+ "$and: [{'is_deleted': ?1,'designerId':?2,'adminStatus':?3,'is_active':?4}] }")
+	Page<ProductMasterEntity2> searckLSByKeyword(String keyword, Boolean isDeleted, Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
+	
+	
+	
 }

@@ -3,6 +3,7 @@ package com.divatt.designer.entity.profile;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -57,6 +58,7 @@ public class DesignerProfileEntity {
 	
 	private Measurement womenChartData;
 	
+	@Indexed(unique = true)
 	private String uid;
 
 	public DesignerProfileEntity() {

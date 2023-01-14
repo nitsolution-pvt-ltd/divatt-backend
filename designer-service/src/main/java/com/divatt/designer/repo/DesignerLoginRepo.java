@@ -89,4 +89,5 @@ public interface DesignerLoginRepo extends MongoRepository<DesignerLoginEntity, 
 			Boolean isProfileCompleted, String profileStatus, String accountStatus, Pageable pagingSort);
 
 	Page<DesignerLoginEntity> findBydIdIn(List<Long> collect, Pageable pagingSort);
+
 }
