@@ -161,7 +161,7 @@ public class ProductServiceImp2 implements ProductService2 {
 		}
 	}
 
-	@Override
+	@Override 
 	public GlobalResponce updateProduct(ProductMasterEntity2 productMasterEntity2, Integer productId) {
 		try {
 			LOGGER.info("Inside-ProductServiceImp2.updateProduct()");
@@ -722,13 +722,13 @@ public class ProductServiceImp2 implements ProductService2 {
 			live = productRepo2
 					.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved", true).stream()
 					.filter(e -> e.getSoh() > 0).collect(Collectors.toList()).size();
-			LOGGER.info("Behind live " + live);
+			
 			pending = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId,
 					isActive, "Pending");
-			LOGGER.info("Behind Pending " + pending);
+			
 			reject = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId,
 					isActive, "Rejected");
-			LOGGER.info("Behind Reject " + reject);
+			
 			oos = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, false,
 					"Approved");
 
@@ -761,7 +761,7 @@ public class ProductServiceImp2 implements ProductService2 {
 					List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
 							: filter.subList(startOfPage, endOfPage);
 					findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filter.size());
-					// findAll = new PageImpl<>(filter, pagingSort, filter.size());
+
 				} else if (adminStatus.equals("oos")) {
 					findAll = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId,
 							"Approved", false, pagingSort);
@@ -769,7 +769,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			} else {
 				if (adminStatus.equals("live")) {
 					List<ProductMasterEntity2> collect = productRepo2
-							.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(isDeleted, designerId, "Approved",
+							.searckLiveByKeyword(keyword, isDeleted, designerId, "Approved",
 									isActive, pagingSort)
 							.stream().filter(e -> e.getSoh() > 0).collect(Collectors.toList());
 					findAll = new PageImpl<>(collect, pagingSort, collect.size());
@@ -780,17 +780,18 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
 							"Reject", pagingSort);
 				} else if (adminStatus.equals("ls")) {
+					
 					List<ProductMasterEntity2> data = productRepo2
-							.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved", true);
-					List<ProductMasterEntity2> filter = data.stream()
+							.searckLSByKeyword(keyword, false, designerId, "Approved", true, pagingSort)
+							.stream()
 							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
 							.collect(Collectors.toList());
 					int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
-					int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filter.size());
+					int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), data.size());
 
 					List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
-							: filter.subList(startOfPage, endOfPage);
-					findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filter.size());
+							: data.subList(startOfPage, endOfPage);
+					findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, data.size());
 				} else if (adminStatus.equals("oos")) {
 					findAll = productRepo2.listDesignerProductsearchByAdminStatusForOos(keyword, isDeleted, designerId,
 							"Approved", false, pagingSort);
@@ -820,9 +821,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			} else {
 				return response;
 			}
-		} catch (
-
-		Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
