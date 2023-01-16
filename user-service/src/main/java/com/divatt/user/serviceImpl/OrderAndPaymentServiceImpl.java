@@ -1377,6 +1377,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_APPROVED.getMessage(), 200);
+			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("Rejected")) {
+				skuDetailsEntity.setId(skuDetailsEntity.getId());
+				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
+				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
+				orderSKUDetailsRepo.save(skuDetailsEntity);
+
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_REFUND_REJECTED.getMessage(), 200);
 			} else {
 				throw new CustomException(MessageConstant.BAD_REQUEST.getMessage());
 			}

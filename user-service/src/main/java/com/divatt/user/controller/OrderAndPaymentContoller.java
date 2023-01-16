@@ -675,7 +675,7 @@ public class OrderAndPaymentContoller {
 
 	}
 
-	@PutMapping("/cancelOrder/{orderId}/{productId}")
+	@PutMapping("/orderStatusUpdate/{orderId}/{productId}")
 	public GlobalResponse orderStatusUpdate(@RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity,
 			@PathVariable String orderId, @PathVariable Integer productId) {
 		try {

@@ -35,6 +35,7 @@ public enum MessageConstant {
 	ORDER_CREATED(" Your order created successfully. "), PDF_GENERATED("PDF generated successfully"),
 	ORDER_DELIVERED("Order Already delivered"), ORDER_CANCEL("Order cancelled successfully"),
 	ORDER_REFUND_REQUEST("Refund request submitted successfully"), ORDER_REFUND_APPROVED("Refund successfully"),
+	ORDER_REFUND_REJECTED("Refund request rejected"),
 	ORDER_ID_EXIST("OrderId Already Exist"), PAYMENT_NOT_FOUND("Payment not found!"),
 	ORDER_NOT_FOUND("Order not found"), ORDER_STATUS_UPDATED("Order status updated"),
 	TRACKING_UPDATED("Tracking updated successfully"),
