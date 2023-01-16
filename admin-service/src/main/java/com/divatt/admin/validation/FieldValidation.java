@@ -1,4 +1,4 @@
-package com.divatt.category.validation;
+package com.divatt.admin.validation;
 
 import java.util.Date;
 import java.util.regex.Pattern;
