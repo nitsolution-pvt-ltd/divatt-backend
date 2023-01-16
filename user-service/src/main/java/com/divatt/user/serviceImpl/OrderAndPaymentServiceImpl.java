@@ -797,9 +797,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
 			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType, String startDate,
 			String endDate) {
-		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
-		LOGGER.info("Designer id = {}", designerId);
-//		String orderItemStatusValue = null;
+		LOGGER.info("Inside - OrderAndPaymentService.getDesigerOrders()");
 		try {
 
 			int CountData = (int) orderDetailsRepo.count();
@@ -828,13 +826,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
 			if (keyword != null || !"".equals(keyword)) {
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
-				LOGGER.info("SKU data is = {}", OrderSKUDetailsData);
 			}
 			List<Object> productId = new ArrayList<>();
 
 			if (!orderItemStatus.isEmpty() && !orderItemStatus.equals("Orders")) {
-
-				LOGGER.info("SKU DATA IS ={}", OrderSKUDetailsData);
 
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
 
@@ -867,10 +862,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							}
 						}).map(c -> c.getOrderId()).collect(Collectors.toList());
 
-				LOGGER.info("Order id = {}", OrderId1);
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
-
-				LOGGER.info("Data for find ALL in if = {}", findAll.getContent());
 
 			} else {
 				List<String> OrderId = OrderSKUDetailsData.stream().filter(
@@ -902,11 +894,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							}
 						}).map(c -> c.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
-				LOGGER.info("Data for find ALL in else = {}", findAll.getContent());
 			}
 
 			List<OrderDetailsEntity> content = findAll.getContent();
-			LOGGER.info("Content data is = {}", content);
 			content.forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
 				String productIdFilter = null;
@@ -920,7 +910,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
 						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
-				LOGGER.info("value for SKU = {}", OrderSKUDetailsRow);
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
 				String writeValueAsString = null;
@@ -958,7 +947,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			});
 
-			LOGGER.info(productId.toString() + "inside ProductId");
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
@@ -982,10 +970,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered").size());
 			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRefund").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId, "Active").size());
-			response.put("cancelRequest",
-					orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
+			response.put("cancelRequest", orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
 			response.put("Orders", orderSKUDetailsRepo.findByDesignerId(designerId).size());
 			response.put("Canceled", orderSKUDetailsRepo.findByOrderTotal(designerId, "cancelled").size());
+			response.put("returnRequest", orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRequest").size());
+			response.put("rejected", orderSKUDetailsRepo.findByOrderTotal(designerId, "Rejected").size());
+			response.put("requestCancelation", orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
 
 			return response;
 		} catch (Exception e) {
