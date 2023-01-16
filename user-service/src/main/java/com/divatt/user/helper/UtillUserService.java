@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.divatt.user.dto.InvoiceUpdatedModel;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
-import com.divatt.user.serviceDTO.InvoiceUpdatedModel;
 
 @Service
 public class UtillUserService {

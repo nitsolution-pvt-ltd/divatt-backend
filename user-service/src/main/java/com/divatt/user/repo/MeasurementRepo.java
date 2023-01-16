@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.divatt.user.entity.measurement.MeasurementEntity;
+import com.divatt.user.entity.MeasurementEntity;
 
 public interface MeasurementRepo extends MongoRepository<MeasurementEntity, Integer>{
 

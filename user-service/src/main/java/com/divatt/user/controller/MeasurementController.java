@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.divatt.user.entity.measurement.MeasurementEntity;
+import com.divatt.user.entity.MeasurementEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.MeasurementService;

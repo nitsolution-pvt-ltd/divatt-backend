@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.divatt.admin.entity.GlobalResponse;
-import com.divatt.admin.entity.hsnCode.HsnEntity;
+import com.divatt.admin.entity.HsnEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.services.HsnService;
 
