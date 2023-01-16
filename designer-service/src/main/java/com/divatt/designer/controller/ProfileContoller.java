@@ -930,20 +930,16 @@ public class ProfileContoller {
 				MessageConstant.DESIGNER_STATUS_CHANGE.getMessage(), 200);
 	}
 
-	@SuppressWarnings("unused")
 	@PostMapping("/profilePicUpdate")
 	public GlobalResponce imageUpload(@RequestBody ProfileImage profileimage) {
 		try {
 			Long designerId = profileimage.getDesignerId();
-			String image = profileimage.getImage();
-			LOGGER.info(image);
-			LOGGER.info(designerId.toString());
 
 			if (designerId != null) {
 				DesignerProfileEntity findBydesignerId = designerProfileRepo.findBydesignerId(designerId).get();
-				LOGGER.info(findBydesignerId + "Inside findBydesignerId");
 				DesignerProfileEntity designerProfileEntity = new DesignerProfileEntity();
 				DesignerProfile designerProfile = new DesignerProfile();
+				
 				designerProfileEntity.setDesignerId(profileimage.getDesignerId());
 				designerProfileEntity.setBoutiqueProfile(findBydesignerId.getBoutiqueProfile());
 				designerProfileEntity.setDesignerPersonalInfoEntity(findBydesignerId.getDesignerPersonalInfoEntity());
@@ -960,6 +956,8 @@ public class ProfileContoller {
 				designerProfileEntity.setProfileStatus(findBydesignerId.getProfileStatus());
 				designerProfileEntity.setDesignerCurrentStatus(findBydesignerId.getDesignerCurrentStatus());
 				designerProfileEntity.setIsProfileCompleted(findBydesignerId.getIsProfileCompleted());
+				designerProfileEntity.setUid(findBydesignerId.getUid());
+				
 				designerProfile.setAltMobileNo(findBydesignerId.getDesignerProfile().getAltMobileNo());
 				designerProfile.setCity(findBydesignerId.getDesignerProfile().getCity());
 				designerProfile.setCountry(findBydesignerId.getDesignerProfile().getCountry());
@@ -977,12 +975,12 @@ public class ProfileContoller {
 				designerProfile.setPassword(findBydesignerId.getDesignerProfile().getPassword());
 				designerProfile.setPinCode(findBydesignerId.getDesignerProfile().getPinCode());
 				designerProfile.setProfilePic(profileimage.getImage());
-				LOGGER.info(profileimage.getImage());
 				designerProfile.setState(findBydesignerId.getDesignerProfile().getState());
+				designerProfile.setUid(findBydesignerId.getDesignerProfile().getUid());
+				
 				designerProfileEntity.setDesignerProfile(designerProfile);
 
 				designerProfileRepo.save(designerProfileEntity);
-				LOGGER.info(designerProfileEntity + "inside profileentity");
 
 				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.PROFILE_IMAGE_UPDATED.getMessage(), 200);
