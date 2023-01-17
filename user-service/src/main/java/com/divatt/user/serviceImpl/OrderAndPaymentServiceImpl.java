@@ -2544,7 +2544,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	public Map<String, Object> getOrdersItemstatus(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy, String token, String orderItemStatus) {
-		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
+		LOGGER.info("Inside - OrderAndPaymentService.getOrdersItemstatus()");
 		try {
 			int CountData = (int) orderSKUDetailsRepo.count();
 			Pageable pagingSort = null;
@@ -2568,10 +2568,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				findAll = orderSKUDetailsRepo.Searching(keyword, pagingSort);
 			}
 
-			LOGGER.info(findAll.getContent() + "Inside Findall");
 			List<OrderSKUDetailsEntity> orderSKUDetails = new ArrayList<>();
 			orderSKUDetails = this.orderSKUDetailsRepo.findAll();
-			LOGGER.info("inside orderSKUDetails" + orderSKUDetails.size());
 
 			List<Object> productId = new ArrayList<>();
 
@@ -2625,8 +2623,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("requestForCancelation",
-					orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
+			response.put("requestForCancelation", orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
 			response.put("New", orderSKUDetailsRepo.findByOrderItemStatus("New").size());
 			response.put("Packed", orderSKUDetailsRepo.findByOrderItemStatus("Packed").size());
 			response.put("Shipped", orderSKUDetailsRepo.findByOrderItemStatus("Shipped").size());
@@ -2638,6 +2635,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
 			response.put("returnRequest", orderSKUDetailsRepo.findByOrderItemStatus("returnRequest").size());
 			response.put("returnRefund", orderSKUDetailsRepo.findByOrderItemStatus("returnRefund").size());
+			response.put("rejected", orderSKUDetailsRepo.findByOrderItemStatus("Rejected").size());
 			return response;
 
 		} catch (Exception e) {

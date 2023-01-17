@@ -958,10 +958,9 @@ public class OrderAndPaymentContoller {
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy,
 			@RequestParam(defaultValue = "All") String orderItemStatus) {
-		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
+		LOGGER.info("Inside - OrderAndPaymentContoller.skuList()For Admin side listing");
 
 		try {
-			LOGGER.info("skuList form controller {}", orderItemStatus);
 			return orderAndPaymentService.getOrdersItemstatus(page, limit, sort, sortName, keyword, sortBy, token,
 					orderItemStatus);
 		} catch (Exception e) {
