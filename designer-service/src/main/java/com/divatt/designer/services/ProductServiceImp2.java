@@ -1037,15 +1037,27 @@ public class ProductServiceImp2 implements ProductService2 {
 		}
 	}
 
-	public List<ProductMasterEntity2> productSearching(String searchBy, String designerId, String categoryId,
-			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
-			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey,
-			String sortDateType, String sortPrice, String labelType) {
+	public Map<String, Object> productSearching(Integer page, Integer limit, String sort,
+			String sortName, Optional<String> sortBy, String searchBy, String designerId,
+			String categoryId, String subCategoryId, String colour, Boolean cod, Boolean customization,
+			String priceType, Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap,
+			String searchKey, String sortDateType, String sortPrice, String labelType) {
 
 		try {
 			LOGGER.info("Inside ProductServiceImpl.productSearching()");
-
-			List<ProductMasterEntity2> findall = new ArrayList<>();
+			int CountData = (int) productRepo2.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+			Page<ProductMasterEntity2> findAll = null;
+			
+			List<ProductMasterEntity2> productMasterData = new ArrayList<>();
 			List<DesignerProfileEntity> findByDesignerByCurrentStatus = designerProfileRepo
 					.findByDesignerCurrentStatus("Online");
 
@@ -1058,13 +1070,30 @@ public class ProductServiceImp2 implements ProductService2 {
 						findProduct = productRepo2.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerId(false,
 								"Approved", true, designerRow.getDesignerId());
 					}
-					findall.addAll(findProduct);
+					productMasterData.addAll(findProduct);
 				}
 			});
 
-			return customFunction.filterProduct(findall, searchBy, designerId, categoryId, subCategoryId, colour, cod,
-					customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType,
-					sortPrice, labelType);
+			List<ProductMasterEntity2> filterProduct = customFunction.filterProduct(productMasterData, searchBy,
+					designerId, categoryId, subCategoryId, colour, cod, customization, priceType, returnStatus,
+					maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice, labelType);
+			int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+			int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filterProduct.size());
+			List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
+					: filterProduct.subList(startOfPage, endOfPage);
+			findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filterProduct.size());
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}	
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());			
+			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

@@ -244,20 +244,23 @@ public class ProductController2 {
 	}
 
 	@GetMapping("/searching")
-	public List<ProductMasterEntity2> productSearching(@RequestParam(defaultValue = "") String searchBy,
-			@RequestParam(defaultValue = "") String designerId, @RequestParam(defaultValue = "") String categoryId,
-			@RequestParam(defaultValue = "") String subCategoryId, @RequestParam(defaultValue = "") String colour,
-			@RequestParam(defaultValue = "") Boolean cod, @RequestParam(defaultValue = "") Boolean customization,
-			@RequestParam(defaultValue = "") String priceType, @RequestParam(defaultValue = "") Boolean returnStatus,
-			@RequestParam(defaultValue = "-1") String maxPrice, @RequestParam(defaultValue = "-1") String minPrice,
-			@RequestParam(defaultValue = "") String size, @RequestParam(defaultValue = "") Boolean giftWrap,
-			@RequestParam(defaultValue = "") String searchKey, @RequestParam(defaultValue = "") String sortDateType,
-			@RequestParam(defaultValue = "") String sortPrice, @RequestParam(defaultValue = "") String labelType) {
+	public Map<String, Object> productSearching(@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam Optional<String> sortBy,
+			@RequestParam(defaultValue = "") String searchBy, @RequestParam(defaultValue = "") String designerId,
+			@RequestParam(defaultValue = "") String categoryId, @RequestParam(defaultValue = "") String subCategoryId,
+			@RequestParam(defaultValue = "") String colour, @RequestParam(defaultValue = "") Boolean cod,
+			@RequestParam(defaultValue = "") Boolean customization, @RequestParam(defaultValue = "") String priceType,
+			@RequestParam(defaultValue = "") Boolean returnStatus, @RequestParam(defaultValue = "-1") String maxPrice,
+			@RequestParam(defaultValue = "-1") String minPrice, @RequestParam(defaultValue = "") String size,
+			@RequestParam(defaultValue = "") Boolean giftWrap, @RequestParam(defaultValue = "") String searchKey,
+			@RequestParam(defaultValue = "") String sortDateType, @RequestParam(defaultValue = "") String sortPrice,
+			@RequestParam(defaultValue = "") String labelType) {
 		try {
 			LOGGER.info("Inside- ProductController.productSearching()");
-			return this.productService2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour, cod,
-					customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType,
-					sortPrice, labelType);
+			return this.productService2.productSearching(page, limit, sort, sortName, sortBy, searchBy, designerId,
+					categoryId, subCategoryId, colour, cod, customization, priceType, returnStatus, maxPrice, minPrice,
+					size, giftWrap, searchKey, sortDateType, sortPrice, labelType);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
