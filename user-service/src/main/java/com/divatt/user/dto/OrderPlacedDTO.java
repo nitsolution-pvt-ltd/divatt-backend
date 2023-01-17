@@ -4,6 +4,8 @@ public class OrderPlacedDTO {
 
 	private String userName;
 
+	private String designerId;
+
 	private String orderId;
 
 	private String billAddress1;
@@ -44,17 +46,23 @@ public class OrderPlacedDTO {
 
 	private String displayName;
 
+	private String giftWrapAmount;
+
+	private String totalGiftWrapAmount;
+
 	public OrderPlacedDTO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public OrderPlacedDTO(String userName, String orderId, String billAddress1, String billCity, String billAddress2,
-			String billState, String billPostalCode, String shippingAddress, String orderDate, String images,
-			String productName, String units, String size, String mrp, String taxAmount, String total,
-			String grandTotal, String totalMrp, String totalTax, String discount, String displayName) {
+	public OrderPlacedDTO(String userName, String designerId, String orderId, String billAddress1, String billCity,
+			String billAddress2, String billState, String billPostalCode, String shippingAddress, String orderDate,
+			String images, String productName, String units, String size, String mrp, String taxAmount, String total,
+			String grandTotal, String totalMrp, String totalTax, String discount, String displayName,
+			String giftWrapAmount, String totalGiftWrapAmount) {
 		super();
 		this.userName = userName;
+		this.designerId = designerId;
 		this.orderId = orderId;
 		this.billAddress1 = billAddress1;
 		this.billCity = billCity;
@@ -75,6 +83,8 @@ public class OrderPlacedDTO {
 		this.totalTax = totalTax;
 		this.discount = discount;
 		this.displayName = displayName;
+		this.giftWrapAmount = giftWrapAmount;
+		this.totalGiftWrapAmount = totalGiftWrapAmount;
 	}
 
 	public String getUserName() {
@@ -83,6 +93,14 @@ public class OrderPlacedDTO {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public String getDesignerId() {
+		return designerId;
+	}
+
+	public void setDesignerId(String designerId) {
+		this.designerId = designerId;
 	}
 
 	public String getOrderId() {
@@ -245,14 +263,32 @@ public class OrderPlacedDTO {
 		this.displayName = displayName;
 	}
 
+	public String getGiftWrapAmount() {
+		return giftWrapAmount;
+	}
+
+	public void setGiftWrapAmount(String giftWrapAmount) {
+		this.giftWrapAmount = giftWrapAmount;
+	}
+
+	public String getTotalGiftWrapAmount() {
+		return totalGiftWrapAmount;
+	}
+
+	public void setTotalGiftWrapAmount(String totalGiftWrapAmount) {
+		this.totalGiftWrapAmount = totalGiftWrapAmount;
+	}
+
 	@Override
 	public String toString() {
-		return "OrderPlacedDTO [userName=" + userName + ", orderId=" + orderId + ", billAddress1=" + billAddress1
-				+ ", billCity=" + billCity + ", billAddress2=" + billAddress2 + ", billState=" + billState
-				+ ", billPostalCode=" + billPostalCode + ", shippingAddress=" + shippingAddress + ", orderDate="
-				+ orderDate + ", images=" + images + ", productName=" + productName + ", units=" + units + ", size="
-				+ size + ", mrp=" + mrp + ", taxAmount=" + taxAmount + ", total=" + total + ", grandTotal=" + grandTotal
-				+ ", totalMrp=" + totalMrp + ", totalTax=" + totalTax + ", discount=" + discount + ", displayName="
-				+ displayName + "]";
+		return "OrderPlacedDTO [userName=" + userName + ", designerId=" + designerId + ", orderId=" + orderId
+				+ ", billAddress1=" + billAddress1 + ", billCity=" + billCity + ", billAddress2=" + billAddress2
+				+ ", billState=" + billState + ", billPostalCode=" + billPostalCode + ", shippingAddress="
+				+ shippingAddress + ", orderDate=" + orderDate + ", images=" + images + ", productName=" + productName
+				+ ", units=" + units + ", size=" + size + ", mrp=" + mrp + ", taxAmount=" + taxAmount + ", total="
+				+ total + ", grandTotal=" + grandTotal + ", totalMrp=" + totalMrp + ", totalTax=" + totalTax
+				+ ", discount=" + discount + ", displayName=" + displayName + ", giftWrapAmount=" + giftWrapAmount
+				+ ", totalGiftWrapAmount=" + totalGiftWrapAmount + "]";
 	}
+
 }
