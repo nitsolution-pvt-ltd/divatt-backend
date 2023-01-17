@@ -5,8 +5,8 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.divatt.user.entity.order.OrderDetailsEntity;
+import com.divatt.user.entity.order.OrderPaymentEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
-import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 
 public class OrderAndPaymentGlobalEntity {
 	

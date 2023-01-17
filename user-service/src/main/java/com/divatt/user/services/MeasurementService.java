@@ -2,7 +2,7 @@ package com.divatt.user.services;
 
 import java.util.List;
 
-import com.divatt.user.entity.measurement.MeasurementEntity;
+import com.divatt.user.entity.MeasurementEntity;
 import com.divatt.user.response.GlobalResponse;
 
 public interface MeasurementService {

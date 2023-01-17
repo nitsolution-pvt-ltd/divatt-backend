@@ -7,7 +7,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import com.divatt.admin.entity.GlobalResponse;
-import com.divatt.admin.entity.category.SubCategoryEntity;
+import com.divatt.admin.entity.SubCategoryEntity;
 
 public interface SubCategoryService {
 

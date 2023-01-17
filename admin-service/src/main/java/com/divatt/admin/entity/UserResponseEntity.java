@@ -1,8 +1,5 @@
 package com.divatt.admin.entity;
 
-import com.divatt.admin.entity.category.CategoryEntity;
-import com.divatt.admin.entity.category.SubCategoryEntity;
-
 public class UserResponseEntity {
 
 	private CategoryEntity categoryEntity;

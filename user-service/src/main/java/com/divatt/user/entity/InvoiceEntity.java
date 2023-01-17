@@ -3,7 +3,7 @@ package com.divatt.user.entity;
 import org.springframework.stereotype.Service;
 
 import com.divatt.user.entity.order.OrderDetailsEntity;
-import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
+import com.divatt.user.entity.order.OrderPaymentEntity;
 @Service
 public class InvoiceEntity {
 

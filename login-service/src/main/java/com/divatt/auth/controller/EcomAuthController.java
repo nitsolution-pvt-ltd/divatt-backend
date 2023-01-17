@@ -116,8 +116,6 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 	@PostMapping("/add")
 	public String entity(@RequestBody() UserLoginEntity userEntity) {
 
-		System.out.println("hi");
-		// this.restTemplate.setRequestFactory(null);
 		this.restTemplate.postForEntity(RestTemplateConstant.USER_LOGIN_ADD.getLink(), userEntity,
 				UserLoginEntity.class);
 		return "Add";
@@ -130,7 +128,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		if (loginEntity.getType().equals("USER")) {
 			UserLoginEntity entity = new UserLoginEntity();
 			if (userLoginRepo.findByEmail(loginEntity.getEmail()).isEmpty()) {
-                LOGGER.info(loginEntity.getEmail() + "inside email");
+               
 				try {
 					String s = loginEntity.getName().trim();
 					String str[] = s.split(" ");
@@ -140,7 +138,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					entity.setEmail(loginEntity.getEmail());
 					entity.setPassword(loginEntity.getPassword());
 					entity.setProfilePic(loginEntity.getProfilePic());
-					entity.setMobileNo("9784563210");
+					entity.setMobileNo("");
 					entity.setSocialType(loginEntity.getSocialType());
 					entity.setSocialId(loginEntity.getSocialId());
 					entity.setDob("14/09/2022");
@@ -264,6 +262,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 					designerLoginEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
 					designerLoginEntity.setProductCount(designerLoginEntity.getProductCount());
 					designerLoginEntity.setFollwerCount(designerLoginEntity.getFollwerCount());
+					designerLoginEntity.setUniqueId(designerLoginEntity.getUniqueId());
 					designerLoginRepo.save(designerLoginEntity);
 					LoginDesignerData loginDesignerData = new LoginDesignerData(findByUserNameDesigner.get().getUid(),
 							findByUserNameDesigner.get().getEmail().trim(), findByUserNameDesigner.get().getPassword().trim(),

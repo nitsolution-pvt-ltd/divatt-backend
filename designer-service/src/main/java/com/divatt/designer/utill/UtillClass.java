@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.divatt.designer.dto.SearchingFilterDTO;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.exception.CustomException;
-import com.divatt.designer.requestDTO.SearchingFilterDTO;
 
 public class UtillClass {
 	

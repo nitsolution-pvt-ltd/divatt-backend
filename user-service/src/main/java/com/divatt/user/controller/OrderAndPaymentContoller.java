@@ -71,23 +71,23 @@ import org.thymeleaf.context.Context;
 
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
-import com.divatt.user.designerProductEntity.DesignerProfileEntity;
+import com.divatt.user.dto.CancelationRequestApproveAndRejectDTO;
+import com.divatt.user.dto.CancelationRequestDTO;
+import com.divatt.user.dto.OrderPlacedDTO;
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
+import com.divatt.user.entity.order.OrderPaymentEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
-import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
+import com.divatt.user.entity.product.DesignerProfileEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
-import com.divatt.user.serviceDTO.CancelationRequestApproveAndRejectDTO;
-import com.divatt.user.serviceDTO.CancelationRequestDTO;
-import com.divatt.user.serviceDTO.OrderPlacedDTO;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.utill.CommonUtility;
@@ -675,7 +675,7 @@ public class OrderAndPaymentContoller {
 
 	}
 
-	@PutMapping("/cancelOrder/{orderId}/{productId}")
+	@PutMapping("/orderStatusUpdate/{orderId}/{productId}")
 	public GlobalResponse orderStatusUpdate(@RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity,
 			@PathVariable String orderId, @PathVariable Integer productId) {
 		try {
@@ -958,10 +958,9 @@ public class OrderAndPaymentContoller {
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy,
 			@RequestParam(defaultValue = "All") String orderItemStatus) {
-		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
+		LOGGER.info("Inside - OrderAndPaymentContoller.skuList()For Admin side listing");
 
 		try {
-			LOGGER.info("skuList form controller {}", orderItemStatus);
 			return orderAndPaymentService.getOrdersItemstatus(page, limit, sort, sortName, keyword, sortBy, token,
 					orderItemStatus);
 		} catch (Exception e) {

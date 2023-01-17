@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.divatt.user.config.JWTConfig;
 import com.divatt.user.constant.MessageConstant;
-import com.divatt.user.entity.measurement.MeasurementEntity;
+import com.divatt.user.entity.MeasurementEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.MeasurementRepo;
 import com.divatt.user.repo.UserLoginRepo;

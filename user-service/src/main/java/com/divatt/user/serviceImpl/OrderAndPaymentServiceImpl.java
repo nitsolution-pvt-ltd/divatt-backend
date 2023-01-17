@@ -52,7 +52,11 @@ import org.thymeleaf.context.Context;
 import com.divatt.user.config.JWTConfig;
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
-import com.divatt.user.designerProductEntity.DesignerProfileEntity;
+import com.divatt.user.dto.CancelEmailJSON;
+import com.divatt.user.dto.CancelationRequestApproveAndRejectDTO;
+import com.divatt.user.dto.CancelationRequestDTO;
+import com.divatt.user.dto.DesignerRequestDTO;
+import com.divatt.user.dto.InvoiceUpdatedModel;
 import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.InvoiceEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
@@ -61,9 +65,10 @@ import com.divatt.user.entity.ProductInvoice;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.HsnData;
 import com.divatt.user.entity.order.OrderDetailsEntity;
+import com.divatt.user.entity.order.OrderPaymentEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.order.OrderStatusDetails;
-import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
+import com.divatt.user.entity.product.DesignerProfileEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.ListResponseDTO;
 import com.divatt.user.helper.PDFRunner;
@@ -73,13 +78,8 @@ import com.divatt.user.repo.OrderInvoiceRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.OrderTrackingRepo;
 import com.divatt.user.repo.UserLoginRepo;
-import com.divatt.user.repo.orderPaymenRepo.UserOrderPaymentRepo;
+import com.divatt.user.repo.UserOrderPaymentRepo;
 import com.divatt.user.response.GlobalResponse;
-import com.divatt.user.serviceDTO.CancelEmailJSON;
-import com.divatt.user.serviceDTO.CancelationRequestApproveAndRejectDTO;
-import com.divatt.user.serviceDTO.CancelationRequestDTO;
-import com.divatt.user.serviceDTO.DesignerRequestDTO;
-import com.divatt.user.serviceDTO.InvoiceUpdatedModel;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.utill.CommonUtility;
@@ -797,9 +797,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
 			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType, String startDate,
 			String endDate) {
-		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
-		LOGGER.info("Designer id = {}", designerId);
-//		String orderItemStatusValue = null;
+		LOGGER.info("Inside - OrderAndPaymentService.getDesigerOrders()");
 		try {
 
 			int CountData = (int) orderDetailsRepo.count();
@@ -828,13 +826,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
 			if (keyword != null || !"".equals(keyword)) {
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
-				LOGGER.info("SKU data is = {}", OrderSKUDetailsData);
 			}
 			List<Object> productId = new ArrayList<>();
 
 			if (!orderItemStatus.isEmpty() && !orderItemStatus.equals("Orders")) {
-
-				LOGGER.info("SKU DATA IS ={}", OrderSKUDetailsData);
 
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
 
@@ -867,10 +862,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							}
 						}).map(c -> c.getOrderId()).collect(Collectors.toList());
 
-				LOGGER.info("Order id = {}", OrderId1);
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId1, pagingSort);
-
-				LOGGER.info("Data for find ALL in if = {}", findAll.getContent());
 
 			} else {
 				List<String> OrderId = OrderSKUDetailsData.stream().filter(
@@ -902,11 +894,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							}
 						}).map(c -> c.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(OrderId, pagingSort);
-				LOGGER.info("Data for find ALL in else = {}", findAll.getContent());
 			}
 
 			List<OrderDetailsEntity> content = findAll.getContent();
-			LOGGER.info("Content data is = {}", content);
 			content.forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
 				String productIdFilter = null;
@@ -920,7 +910,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
 						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
-				LOGGER.info("value for SKU = {}", OrderSKUDetailsRow);
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
 				String writeValueAsString = null;
@@ -958,7 +947,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			});
 
-			LOGGER.info(productId.toString() + "inside ProductId");
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
@@ -982,10 +970,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered").size());
 			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRefund").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId, "Active").size());
-			response.put("cancelRequest",
-					orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
+			response.put("cancelRequest", orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
 			response.put("Orders", orderSKUDetailsRepo.findByDesignerId(designerId).size());
 			response.put("Canceled", orderSKUDetailsRepo.findByOrderTotal(designerId, "cancelled").size());
+			response.put("returnRequest", orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRequest").size());
+			response.put("rejected", orderSKUDetailsRepo.findByOrderTotal(designerId, "Rejected").size());
+			response.put("requestCancelation", orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
 
 			return response;
 		} catch (Exception e) {
@@ -1377,6 +1367,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_APPROVED.getMessage(), 200);
+			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("Rejected")) {
+				skuDetailsEntity.setId(skuDetailsEntity.getId());
+				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
+				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
+				orderSKUDetailsRepo.save(skuDetailsEntity);
+
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_REFUND_REJECTED.getMessage(), 200);
 			} else {
 				throw new CustomException(MessageConstant.BAD_REQUEST.getMessage());
 			}
@@ -2545,7 +2543,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	public Map<String, Object> getOrdersItemstatus(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy, String token, String orderItemStatus) {
-		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
+		LOGGER.info("Inside - OrderAndPaymentService.getOrdersItemstatus()");
 		try {
 			int CountData = (int) orderSKUDetailsRepo.count();
 			Pageable pagingSort = null;
@@ -2569,10 +2567,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				findAll = orderSKUDetailsRepo.Searching(keyword, pagingSort);
 			}
 
-			LOGGER.info(findAll.getContent() + "Inside Findall");
 			List<OrderSKUDetailsEntity> orderSKUDetails = new ArrayList<>();
 			orderSKUDetails = this.orderSKUDetailsRepo.findAll();
-			LOGGER.info("inside orderSKUDetails" + orderSKUDetails.size());
 
 			List<Object> productId = new ArrayList<>();
 
@@ -2626,8 +2622,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("requestForCancelation",
-					orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
+			response.put("requestForCancelation", orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
 			response.put("New", orderSKUDetailsRepo.findByOrderItemStatus("New").size());
 			response.put("Packed", orderSKUDetailsRepo.findByOrderItemStatus("Packed").size());
 			response.put("Shipped", orderSKUDetailsRepo.findByOrderItemStatus("Shipped").size());
@@ -2639,6 +2634,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
 			response.put("returnRequest", orderSKUDetailsRepo.findByOrderItemStatus("returnRequest").size());
 			response.put("returnRefund", orderSKUDetailsRepo.findByOrderItemStatus("returnRefund").size());
+			response.put("rejected", orderSKUDetailsRepo.findByOrderItemStatus("Rejected").size());
 			return response;
 
 		} catch (Exception e) {
