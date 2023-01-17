@@ -101,7 +101,6 @@ import com.razorpay.Order;
 import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
-import com.razorpay.Refund;
 
 import springfox.documentation.spring.web.json.Json;
 
@@ -132,9 +131,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Autowired
 	private MongoOperations mongoOperations;
-
-//	@Autowired
-//	private MeasurementRepo measurementRepo;
 
 	@Autowired
 	private Environment env;
@@ -173,7 +169,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	private CommonUtility commonUtility;
 
 	protected String getRandomString() {
-//		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		/*** String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"; ***/
 		String SALTCHARS = MessageConstant.RANDOM_STRING.getMessage();
 		StringBuilder salt = new StringBuilder();
 		Random rnd = new Random();
@@ -187,7 +183,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	protected String getRandomStringInt() {
 		String SALTCHARS = MessageConstant.RANDOM_STRING_INT.getMessage();
-//		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		/*** String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; ***/
 		StringBuilder salt = new StringBuilder();
 		Random rnd = new Random();
 		while (salt.length() < 16) {
@@ -199,7 +195,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	protected String getRandomNumber() {
-//		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		/*** String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"; ***/
 		String SALTCHARS = MessageConstant.RANDOM_INT.getMessage();
 		StringBuilder salt = new StringBuilder();
 		Random rnd = new Random();
@@ -212,12 +208,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> postRazorpayOrderCreateService(OrderDetailsEntity orderDetailsEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.postRazorpayOrderCreateService()");
 
 		try {
-			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
-					env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),env.getProperty("secretKey"));
 			JSONObject options = new JSONObject();
 
 			options.put("amount", orderDetailsEntity.getTotalAmount());
@@ -225,7 +221,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			options.put("receipt", "RC" + getRandomString());
 
 			final Order order = razorpayClient.Orders.create(options);
-
 			return ResponseEntity.ok(new Json(order.toString()));
 
 		} catch (RazorpayException exe) {
@@ -233,16 +228,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
 	}
-
+	
+	@Override
 	public ResponseEntity<?> postOrderPaymentService(OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderPaymentService()");
 
 		try {
 
-			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
-					env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
 			LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentService()");
 
 			String paymentIdFilter = null;
@@ -252,12 +246,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} catch (JsonProcessingException e1) {
 				e1.printStackTrace();
 			}
-			LOGGER.info("Payment ID FILTER data = {}", paymentIdFilter);
 			JsonNode OrderPayJson = new JsonNode(paymentIdFilter);
 
-			Payment payment = razorpayClient.Payments
-					.fetch(OrderPayJson.getObject().get("razorpay_payment_id").toString());
-			LOGGER.info(OrderPayJson.getObject().get("razorpay_payment_id").toString() + "Inside Json");
+			Payment payment = razorpayClient.Payments.fetch(OrderPayJson.getObject().get("razorpay_payment_id").toString());
 
 			String payStatus = "FAILED";
 			if (payment.get("error_code").equals(null) && payment.get("status").equals("captured")) {
@@ -267,29 +258,27 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					&& !payment.get("error_step").equals(null) && payment.get("status").equals("failed")) {
 				payStatus = "FAILED";
 			}
-			LOGGER.info("Payment STATUS = {}", payStatus);
+			
 			List<OrderDetailsEntity> findOrderRow = orderDetailsRepo.findByOrderId(orderPaymentEntity.getOrderId());
-//			LOGGER.info("FInd by order id");
-			LOGGER.info("Get order id from client end = {}", orderPaymentEntity.getOrderId());
 			if (findOrderRow.size() <= 0) {
 				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
 			Map<String, Object> map = null;
 			try {
-				map = obj.readValue(payment.toString(), new TypeReference<Map<String, Object>>() {
-				});
+				map = obj.readValue(payment.toString(), new TypeReference<Map<String, Object>>() {});
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
 			Map<String, String> mapPayId = new HashMap<>();
 			mapPayId.put("OrderId", orderPaymentEntity.getOrderId());
 			mapPayId.put("TransactionId", OrderPayJson.getObject().get("razorpay_payment_id").toString());
-			LOGGER.info(OrderPayJson.getObject().get("razorpay_payment_id").toString() + "Inside Json");
-			Optional<OrderPaymentEntity> findByOrderId = userOrderPaymentRepo
-					.findByOrderId(orderPaymentEntity.getOrderId());
+			
+			Optional<OrderPaymentEntity> findByOrderId = userOrderPaymentRepo.findByOrderId(orderPaymentEntity.getOrderId());
+			
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date date = new Date();
 			String format = formatter.format(date);
+			
 			if (!findByOrderId.isPresent()) {
 				OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 				filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
@@ -315,6 +304,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> postOrderSKUService(OrderSKUDetailsEntity orderSKUDetailsEntityRow) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderSKUService()");
 
@@ -377,6 +367,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
+	@Override
 	public Map<String, Object> getOrderPaymentService(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrderPaymentService()");
@@ -399,7 +390,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				findAll = userOrderPaymentRepo.findAll(pagingSort);
 			} else {
 				findAll = userOrderPaymentRepo.Search(keyword, pagingSort);
-
 			}
 
 			int totalPage = findAll.getTotalPages() - 1;
@@ -425,6 +415,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public Map<String, Object> getOrders(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy, String token, String orderStatus) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrders()");
@@ -490,13 +481,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String OrderSKUD = null;
 				try {
 					if (!orderStatus.isEmpty() && !orderStatus.equals("All")) {
-						OrderSKUD = obj.writeValueAsString(
-								orderSKUDetailsRepo.findByOrderIdAndOrderItemStatus(e.getOrderId(), orderStatus));
-						LOGGER.info("Order SKU DATA <><><><><> {}", OrderSKUD);
+						OrderSKUD = obj.writeValueAsString(orderSKUDetailsRepo.findByOrderIdAndOrderItemStatus(e.getOrderId(), orderStatus));
 					} else {
 						OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
 					}
-					// OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
 				} catch (JsonProcessingException e2) {
 					e2.printStackTrace();
 				}
@@ -508,10 +496,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				objects.put("paymentData", payRow);
 				objects.put("OrderSKUDetails", OrderSKUDJson.getArray());
 				productId.add(objects);
-//				LOGGER.info("Payment data <><><><><><><><><>{}",payRow);
-//				LOGGER.info("Order SKUDetails data <><><><><><><><><>{}",OrderSKUDJson.getArray());
 			});
-			LOGGER.info("<><><><><><><><><><>!!!!!!!! = {}", productId.size());
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
@@ -523,8 +508,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("requestForCancelation",
-					orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
+			response.put("requestForCancelation",orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
 			response.put("New", orderSKUDetailsRepo.findByOrderItemStatus("New").size());
 			response.put("Packed", orderSKUDetailsRepo.findByOrderItemStatus("Packed").size());
 			response.put("Shipped", orderSKUDetailsRepo.findByOrderItemStatus("Shipped").size());
@@ -534,22 +518,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Cancelled", orderSKUDetailsRepo.findByOrderItemStatus("cancelled").size());
 			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderStatus).size());
 
-//			if (productId.size() <= 0) {
-//				Map<String, Integer> orderCount = getOrderCount(0, true);
-//				response.put("orderCount", orderCount);
-//				response.put("Error", "Order not found");
-//				return response;
-//			} else {
-//				LOGGER.info("USERNAME IN ELSE <><><><><><><><><> !!!! = {}",
-//						jwtconfig.extractUsername(token.substring(7)));
-//				if (!restTemplate.getForEntity(
-//						"https://localhost:8080/dev/auth/info/ADMIN/" + jwtconfig.extractUsername(token.substring(7)),
-//						Object.class).toString().isBlank()) {
-//					Map<String, Integer> orderCount = getOrderCount(0, true);
-//					response.put("orderCount", orderCount);
-//					return response;
-//				}
-//			}
 			return response;
 
 		} catch (Exception e) {
@@ -557,11 +525,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> getOrderDetailsService(String orderId) {
 		try {
 
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
-			LOGGER.info(findById + " Inside FindBYid");
 			if (findById.size() <= 0) {
 				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
@@ -570,58 +538,41 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			findById.forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
-				LOGGER.info("Data for order id: " + e.toString());
 				String productIdFilter = null;
 				try {
 					productIdFilter = obj.writeValueAsString(e);
-					LOGGER.info(productIdFilter + "Inside ProductIdfilter");
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
-				LOGGER.info(e.getOrderId() + "Inside OrderId");
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
-				LOGGER.info(OrderPaymentRow + " Inside PaymentRow");
-				LOGGER.info(" Inside OrderSku" + OrderSKUDetailsRow);
 				OrderSKUDetailsRow.forEach(D -> {
-					LOGGER.info("Data in for each method" + D.getProductId());
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
-					LOGGER.info("Top of try catch");
-
-					// "https://localhost:8083/dev/designerProducts/productList/"
 					try {
-						LOGGER.info(D.getProductId() + " inside productid");
 						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
 								RestTemplateConstant.DESIGNER_PRODUCT.getLink() + D.getProductId(),
 								org.json.simple.JSONObject.class);
-						LOGGER.info("Dta after rest call = {} ", productById);
-//						LOGGER.info("Inside rest call" + productById.getBody().get("hsnData"));
 						D.setHsn(productById.getBody().get("hsnData"));
-						LOGGER.info(productById.getBody().get("withGiftWrap") + "Inside gift wrap");
 						productIdFilters = objs.writeValueAsString(D);
 						Integer i = (int) (long) D.getUserId();
-						LOGGER.info(i + "Inside i");
-						LOGGER.info(D.getDesignerId() + "Inside DesignerId");
-						LOGGER.info(D.getProductId() + "Inside ProductId");
+						
 						List<OrderTrackingEntity> findByIdTracking = this.orderTrackingRepo
-								.findByOrderIdAndUserIdAndDesignerIdAndProductId(orderId, i, D.getDesignerId(),
-										D.getProductId());
-						LOGGER.info(findByIdTracking + "Inside Tracking");
+								.findByOrderIdAndUserIdAndDesignerIdAndProductId(orderId, i, D.getDesignerId(),D.getProductId());
 						JsonNode cartJNs = new JsonNode(productIdFilters);
 
 						JSONObject objectss = cartJNs.getObject();
-						LOGGER.info(objectss + "Inside objectss");
 						objectss.put("customization", productById.getBody().get("customization"));
 						objectss.put("withGiftWrap", productById.getBody().get("giftWrap"));
 						String orderId2 = D.getOrderId();
+						
 						List<OrderInvoiceEntity> invoiceId = getInvoiceByOrder(orderId2);
+						
 						if (invoiceId.size() > 0) {
 							invoiceId.forEach(invoice -> {
 								objectss.put("invoiceId", invoice.getInvoiceId());
 							});
-							LOGGER.info(objectss + "Inside objectss");
 						} else {
 							objectss.put("invoiceId", JSONObject.NULL);
 						}
@@ -634,11 +585,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							}
 
 							JsonNode TrackingJson = new JsonNode(writeValueAsStringd);
-
-							LOGGER.info(TrackingJson + "Inside TrackingJson");
 							objectss.put("TrackingData", TrackingJson.getObject());
-							LOGGER.info(TrackingJson.getObject() + "Inside Trackingjson 33");
-
 						}
 						productIds.add(objectss);
 					} catch (JsonProcessingException e2) {
@@ -661,11 +608,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				JsonNode cartJN = new JsonNode(productIdFilter);
 				JSONObject objects = cartJN.getObject();
 				objects.put("paymentData", payJson);
-				LOGGER.info(productIds.get(0).toString());
 				objects.put("OrderSKUDetails", productIds);
-
 				productId.add(objects);
-
 			});
 			return ResponseEntity.ok(new Json(productId.get(0).toString()));
 		} catch (HttpStatusCodeException ex) {
@@ -685,6 +629,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public Map<String, Object> getUserOrderDetailsService(Integer userId, int page, int limit, String sort,
 			String sortName, String keyword, Optional<String> sortBy, String token) {
 
@@ -706,13 +651,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				findAll = orderDetailsRepo.findByUserId(userId, pagingSort);
 
 			} else {
-				// findAll = orderDetailsRepo.findByUserId(Long.parseLong(userId.toString()),
-				// sort, pagingSort);
 				findAll = orderDetailsRepo.findByUserIdAndKeyword(userId, keyword, pagingSort);
 			}
-			LOGGER.info("findAll<><><><>" + findAll.getContent());
-			// List<OrderDetailsEntity> findById =
-			// this.orderDetailsRepo.findByUserIdOrderByIdDesc(userId);
 			List<OrderDetailsEntity> findById = findAll.getContent();
 			if (findById.size() <= 0) {
 				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
@@ -721,7 +661,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			findById.forEach(e -> {
 				ObjectMapper obj = new ObjectMapper();
-
 				String productIdFilter = null;
 				try {
 					productIdFilter = obj.writeValueAsString(e);
@@ -731,14 +670,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 
-				// get HSN for product
-
 				OrderSKUDetailsRow.forEach(order -> {
 					try {
 						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(
 								RestTemplateConstant.DESIGNER_PRODUCT.getLink() + order.getProductId(),
 								org.json.simple.JSONObject.class);
-						LOGGER.info(getProductByID.getBody().get("hsnData").toString());
 						order.setHsn(getProductByID.getBody().get("hsnData"));
 					} catch (Exception e2) {
 						e2.printStackTrace();
@@ -746,7 +682,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				});
 
 				String writeValueAsString = null;
-
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
 				JsonNode paymentJson = null;
@@ -780,7 +715,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			if (totalPage < 0) {
 				totalPage = 0;
 			}
-			// return ResponseEntity.ok(new Json(productId.toString()));
 			Map<String, Object> response = new HashMap<>();
 			response.put("data", new Json(productId.toString()));
 			response.put("currentPage", findAll.getNumber());
@@ -794,6 +728,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
 			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType, String startDate,
 			String endDate) {
@@ -824,6 +759,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			Page<OrderDetailsEntity> findAll = null;
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
+			
 			if (keyword != null || !"".equals(keyword)) {
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
 			}
@@ -908,8 +844,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 
-				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
-						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
+				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
 				String writeValueAsString = null;
@@ -927,8 +862,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				try {
 					if (!orderItemStatus.isEmpty() && !orderItemStatus.equals("Orders")) {
 						OrderSKUD = obj.writeValueAsString(
-								orderSKUDetailsRepo.findByOrderIdAndDesignerIdAndorderItemStatus(e.getOrderId(),
-										designerId, orderItemStatus));
+								orderSKUDetailsRepo.findByOrderIdAndDesignerIdAndorderItemStatus(e.getOrderId(), designerId, orderItemStatus));
 					} else if (!orderItemStatus.isEmpty() && orderItemStatus.equals("Orders")) {
 						OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
 					} else {
@@ -983,6 +917,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public GlobalResponse invoiceGenarator(String orderId) {
 		try {
 			Query query = new Query();
@@ -1004,6 +939,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public OrderDetailsEntity getOrderDetails(String orderId) {
 		try {
 			Query query = new Query();
@@ -1015,6 +951,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public Map<String, Object> getProductDetails(String orderId, int page, int limit, String sort, String sortName,
 			String keyword, Optional<String> sortBy) {
 		try {
@@ -1063,6 +1000,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public GlobalResponse orderUpdateService(OrderSKUDetailsEntity orderSKUDetailsEntity, String orderId) {
 		try {
 			Query query = new Query();
@@ -1117,14 +1055,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	public ResponseEntity<?> postOrderHandleDetailsService(org.json.simple.JSONObject object) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderHandleDetailsService ");
 		try {
 
 			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) object.get("entity"));
 
-			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
-					env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
 
 			List<OrderDetailsEntity> OrderRow = orderDetailsRepo
 					.findByRazorpayOrderId(PayEntity.get("order_id").toString());
@@ -1196,14 +1134,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> postOrderTrackingService(OrderTrackingEntity orderTrackingEntity) {
 
 		try {
-
-			orderTrackingRepo.findByTrackingIds(orderTrackingEntity.getTrackingId());
-
-//			if (OrderTrackingRow.size() <= 0){
-
 			OrderTrackingEntity filterCatDetails = new OrderTrackingEntity();
 
 			filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderTrackingEntity.SEQUENCE_NAME));
@@ -1225,16 +1159,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 					MessageConstant.TRACKING_UPDATED.getMessage(), 200));
-
-//			} else {
-//				throw new CustomException("Something went to wrong! from order related");
-//			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
 
+	@Override
 	public ResponseEntity<?> putOrderTrackingService(OrderTrackingEntity orderTrackingEntity, String trackingId) {
 
 		try {
@@ -1273,6 +1204,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> getOrderTrackingDetailsService(String orderId, int userId, int designerId) {
 		try {
 			Map<String, Object> map = new HashMap<>();
@@ -1300,6 +1232,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public GlobalResponse orderStatusUpdateService(OrderSKUDetailsEntity orderSKUDetailsEntity, String refOrderId,
 			Integer refProductId) {
 		try {
@@ -1384,12 +1317,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	@SuppressWarnings("all")
+	@Override
 	public ResponseEntity<?> getOrderServiceByInvoiceId(String invoiceId) {
 		try {
 			Query query = new Query();
 			Query query2 = new Query();
 			Map<String, Object> data = new HashMap<String, Object>();
 			List<Integer> desiredDesingerIdList = new ArrayList<Integer>();
+			
 			query.addCriteria(Criteria.where("invoiceId").is(invoiceId));
 			OrderDetailsEntity orderDetailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
 			BillingAddressEntity billAddressData = new BillingAddressEntity();
@@ -1401,16 +1336,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			billAddressData.setPostalCode(orderDetailsEntity.getBillingAddress().getPostalCode());
 			billAddressData.setMobile(orderDetailsEntity.getBillingAddress().getMobile());
 			query2.addCriteria(Criteria.where("orderId").is(orderDetailsEntity.getOrderId()));
+			
 			List<OrderSKUDetailsEntity> orderSKUDetails = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
+			
 			String body = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_IDLIST.getLink(), String.class)
 					.getBody();
+			
 			JSONArray jsonArray = new JSONArray(body);
 			ObjectMapper mapper = new ObjectMapper();
+			
 			for (int i = 0; i < jsonArray.length(); i++) {
 				org.json.simple.JSONObject designerLoginEntity = mapper.readValue(jsonArray.get(i).toString(),
 						org.json.simple.JSONObject.class);
 				desiredDesingerIdList.add(Integer.parseInt(designerLoginEntity.get("dId").toString()));
 			}
+			
 			int totalTax = 0;
 			int totalAmount = 0;
 			int totalGrossAmount = 0;
@@ -1428,6 +1368,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						invoice.setWithTaxAmount(a.getSalesPrice().intValue());
 						invoice.setProductSize(a.getSize());
 						productList.add(invoice);
+						
 						totalTax = totalTax + a.getTaxAmount().intValue();
 						totalAmount = totalAmount + a.getSalesPrice().intValue();
 						totalGrossAmount = totalGrossAmount + a.getMrp().intValue();
@@ -1466,18 +1407,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public Map<String, Object> getOrderInvoiceId(String invoiceId) {
 		try {
 			Query query = new Query();
 			Query query2 = new Query();
 			List<Object> resObjects = new ArrayList<Object>();
 			Map<String, Object> response = new HashMap<String, Object>();
+			
 			query.addCriteria(Criteria.where("invoice_id").is(invoiceId));
 			OrderDetailsEntity detailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
 			response.put("OrderDetails", detailsEntity);
-			System.out.println(detailsEntity.getOrderId());
 			query2.addCriteria(Criteria.where("orderId").is(detailsEntity.getOrderId()));
+			
 			List<OrderSKUDetailsEntity> orderList = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
+			
 			for (int i = 0; i < orderList.size(); i++) {
 				ResponseEntity<Object> designerData = restTemplate.getForEntity(
 						RestTemplateConstant.DESIGNER_BYID.getLink() + orderList.get(i).getDesignerId(), Object.class);
@@ -1494,12 +1438,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> postOrderInvoiceService(OrderInvoiceEntity orderInvoiceEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderInvoiceService()");
-		OrderInvoiceEntity saveData = null;
+
 		try {
-			List<OrderInvoiceEntity> findByCategoryName = orderInvoiceRepo
-					.findByInvoiceId(orderInvoiceEntity.getInvoiceId());
+			List<OrderInvoiceEntity> findByCategoryName = orderInvoiceRepo.findByInvoiceId(orderInvoiceEntity.getInvoiceId());
+		
 			if (findByCategoryName.size() > 0) {
 				throw new CustomException(MessageConstant.INVOICE_EXIST.getMessage());
 			} else {
@@ -1508,20 +1453,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String InvNumber = String.format("%014d", OrderLastRow.getId());
 				orderInvoiceEntity.setId(sequenceGenerator.getNextSequence(OrderInvoiceEntity.SEQUENCE_NAME));
 				orderInvoiceEntity.setInvoiceId("IV" + InvNumber);
-				saveData = orderInvoiceRepo.save(orderInvoiceEntity);
+				orderInvoiceRepo.save(orderInvoiceEntity);
 			}
-			org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-			jsonObject.put("reason", MessageConstant.SUCCESS.getMessage());
-			jsonObject.put("message", MessageConstant.INVOICE_ADDED.getMessage());
-			jsonObject.put("invoiceId", orderInvoiceEntity.getInvoiceId());
-			jsonObject.put("status", 200);
-			return ResponseEntity.ok(jsonObject);
+			Map<String,Object> map = new HashMap<>();
+			map.put("reason", MessageConstant.SUCCESS.getMessage());
+			map.put("message", MessageConstant.INVOICE_ADDED.getMessage());
+			map.put("invoiceId", orderInvoiceEntity.getInvoiceId());
+			map.put("status", 200);
+			return ResponseEntity.ok(map);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 
 	}
 
+	@Override
 	public ResponseEntity<?> putOrderInvoiceService(@PathVariable String invoiceId,
 			@Valid OrderInvoiceEntity orderInvoiceEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.putOrderInvoiceService()");
@@ -1547,6 +1493,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public Map<String, Object> getOrderInvoiceService(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrderInvoiceService()");
@@ -1591,19 +1538,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 
 	}
-
+	
+	@Override
 	public Map<String, Integer> getOrderCount(int designerId, Boolean adminstatus) {
 
 		try {
 			Map<String, Integer> countResponse = new HashMap<String, Integer>();
 			List<String> orderIdList = new ArrayList<String>();
+			
 			if (adminstatus) {
-//				List<OrderDetailsEntity> findByDesignerId = orderDetailsRepo.findAll();
-//				findByDesignerId.stream().forEach(e -> {
-//					if (!orderIdList.contains(e.getOrderId())) {
-//						orderIdList.add(e.getOrderId());
-//					}
-//				});
 				List<OrderDetailsEntity> getOrderDetailsData = orderDetailsRepo.findAll();
 				getOrderDetailsData.stream().forEach(e -> {
 					countResponse.put(e.getOrderStatus(), 0);
@@ -1644,7 +1587,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
+	
+	@Override
 	public OrderSKUDetailsEntity getOrderDetailsService(String orderId, String productId) {
 		try {
 			Query query = new Query();
@@ -1654,7 +1598,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
+	
+	@Override
 	public OrderSKUDetailsEntity getorderDetails(String orderId) {
 		try {
 			Query query = new Query();
@@ -1700,15 +1645,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			CancelationRequestDTO cancelationRequestDTO) {
 		try {
 			String designerEmail = jwtconfig.extractUsername(token.substring(7));
-			LOGGER.info(designerEmail);
-//			String designerId = restTemplate
-//					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail,
-//							org.json.simple.JSONObject.class)
-//					.getBody().get("designerId").toString();
+
 			org.json.simple.JSONObject designerDetails = restTemplate
 					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail,
 							org.json.simple.JSONObject.class)
 					.getBody();
+			  
 			String designerId = designerDetails.get("designerId").toString();
 			  ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			  String json = ow.writeValueAsString(designerDetails);			  
@@ -1727,13 +1669,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					.filter(e -> e.getDesignerId() == Long.parseLong(designerId))
 					.filter(e -> e.getOrderId().equals(orderId))
 					.filter(e -> e.getProductId() == Integer.parseInt(productId)).collect(Collectors.toList());
-			LOGGER.info(orderDetails + "");
 			String orderItemStatus = orderDetails.get(0).getOrderItemStatus();
 			orderDetails.get(0).setStatus(orderItemStatus);
-			//String status = orderDetails.get(0).getStatus();
+
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
+			
 			if(orderDetails.get(0).getOrderItemStatus().equals("cancelled")) {
 				throw new CustomException(MessageConstant.PRODUCT_ALREADY_CANCEL.getMessage());
 			} else if (!orderDetails.get(0).getOrderItemStatus().equals("New") && !orderDetails.get(0).getOrderItemStatus().equals("Delivered")) {				
@@ -1753,17 +1695,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}else {
 					throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 				}
-//				try {
-//					orderStatusDetails.setCancelOrderDetails(jsonObject);
-//					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-//					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-//					 orderSKUDetailsRepo.saveAll(orderDetails);
-//				} catch (Exception e) {
-//					orderStatusDetails.setCancelOrderDetails(jsonObject);
-//					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-//					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-//					 orderSKUDetailsRepo.saveAll(orderDetails);
-//				}
+
 			} else if (!orderDetails.get(0).getOrderItemStatus().equals("Delivered")) {	
 				OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
@@ -1777,17 +1709,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}else {					
 					throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 				}
-//				try {
-//					orderStatusDetails.setCancelOrderDetails(jsonObject);
-//					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-//					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-//					orderSKUDetailsRepo.saveAll(orderDetails);
-//				} catch (Exception e) {
-//					orderStatusDetails.setCancelOrderDetails(jsonObject);
-//					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-//					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-//					orderSKUDetailsRepo.saveAll(orderDetails);
-//				}
 			} else {
 				throw new CustomException(MessageConstant.PRODUCT_ALREADY_DELIVERED.getMessage());
 			}
@@ -1809,6 +1730,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Long salesPrice = orderDetails.get(0).getSalesPrice();
 				Long mrp = orderDetails.get(0).getMrp();
 				String productSize = orderDetails.get(0).getSize();
+			
 				Map<String, Object> data = new HashMap<>();
 				data.put("designerName", designerName);
 				data.put("adminName", adminName);
@@ -1819,6 +1741,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				data.put("displayName", displayName);
 				data.put("productImage", productImage);
 				data.put("productSize", productSize);
+				
 				if (salesPrice == 0 || salesPrice == null) {
 					data.put("salesPrice", mrp);
 				} else {
@@ -1848,13 +1771,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderSKUDetailsEntity> orderDetails = orderSKUDetailsRepo
 					.findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatus(Integer.parseInt(productId),
 							Integer.parseInt(designerId), orderId, "Request for cancelation");
-			LOGGER.info(orderDetails.size() + "");
-//					.stream()
-//					.filter(e->e.getDesignerId() == Long.parseLong(designerId))
-//					.filter(e->e.getOrderId().equals(orderId))
-//					.filter(e->e.getProductId()==Integer.parseInt(productId))
-//					.filter(e->e.getOrderItemStatus().equals("Request for cancelation"))
-//					.collect(Collectors.toList());
+
 			String username = userloginRepo.findById(orderDetails.get(0).getUserId()).get().getFirstName();
 			String userEmail = userloginRepo.findById(orderDetails.get(0).getUserId()).get().getEmail();
 			DesignerRequestDTO designerResponse = restTemplate
@@ -1865,11 +1782,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
+			
 			if (cancelationRequestApproveAndRejectDTO.getOrderStatus().equals("cancelled")) {
 
-				// org.json.simple.JSONObject data2= new org.json.simple.JSONObject();
 				Map<String, Object> data = new HashMap<String, Object>();
-				// Map<String, Object> data1= new HashMap<String, Object>();
 				CancelEmailJSON cancelEmailJSON = new CancelEmailJSON();
 				cancelEmailJSON.setOrderId(orderDetails.get(0).getOrderId());
 				cancelEmailJSON.setProductImages(orderDetails.get(0).getImages());
@@ -1880,13 +1796,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				cancelEmailJSON.setDesignerName(designerName);
 				cancelEmailJSON.setComment(cancelationRequestApproveAndRejectDTO.getComment());
 				orderDetails.get(0).setOrderItemStatus("cancelled");
-				// OrderStatusDetails details= new OrderStatusDetails();
+
 				OrderStatusDetails details = orderDetails.get(0).getOrderStatusDetails();
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 				jsonObject.put("cancellationTime", format);
 				jsonObject.put("adminCancellationComment", cancelationRequestApproveAndRejectDTO.getComment());
+				
 				try {
-
 					details.setCancelRequestDetails(jsonObject);
 					orderDetails.get(0).setOrderStatusDetails(details);
 					orderSKUDetailsRepo.save(orderDetails.get(0));
@@ -1895,13 +1811,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					orderDetails.get(0).setOrderStatusDetails(details);
 					orderSKUDetailsRepo.save(orderDetails.get(0));
 				}
-				LOGGER.info(cancelEmailJSON + "");
 				data.put("data2", cancelEmailJSON);
-				// data1.put("designerName", designerName);
 				Context context = new Context();
 				context.setVariables(data);
-				// context.setVariables(data1);
 				String htmlContent = templateEngine.process("ordercancel.html", context);
+				
 				EmailSenderThread emailSenderThread = new EmailSenderThread(userEmail,
 						MessageConstant.ORDER_CANCEL_FROM_DESIGNER.getMessage(), htmlContent, true, null, restTemplate);
 				emailSenderThread.start();
@@ -1909,14 +1823,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						MessageConstant.ORDER_CANCEL.getMessage(), 200);
 			} else {
 				Map<String, Object> data = new HashMap<String, Object>();
-//				List<OrderSKUDetailsEntity> sKUdetailsData = orderSKUDetailsRepo
-//						.findByProductIdAndDesignerIdAndOrderId(Integer.parseInt(productId),
-//								Integer.parseInt(designerId), orderId);
-				String orderItemStatus = orderDetails.get(0).getOrderItemStatus();
-				LOGGER.info("orderItemStatus" + orderItemStatus);
-//				sKUdetailsData.get(0).setStatus(orderItemStatus);
+				
 				String status = orderDetails.get(0).getStatus();
-				LOGGER.info("status" + status);
 				CancelEmailJSON cancelEmailJSON = new CancelEmailJSON();
 				cancelEmailJSON.setOrderId(orderDetails.get(0).getOrderId());
 				cancelEmailJSON.setProductImages(orderDetails.get(0).getImages());
@@ -1928,12 +1836,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				cancelEmailJSON.setComment(cancelationRequestApproveAndRejectDTO.getComment());
 				orderDetails.get(0).setOrderItemStatus(status);
 				OrderStatusDetails details = orderDetails.get(0).getOrderStatusDetails();
+				
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 				jsonObject.put("rejectionTime", format);
 				jsonObject.put("adminRejectionComment", cancelationRequestApproveAndRejectDTO.getComment());
 
 				try {
-
 					details.setCancelRequestDetails(jsonObject);
 					orderDetails.get(0).setOrderStatusDetails(details);
 					orderSKUDetailsRepo.save(orderDetails.get(0));
@@ -1943,13 +1851,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					orderSKUDetailsRepo.save(orderDetails.get(0));
 				}
 				orderSKUDetailsRepo.save(orderDetails.get(0));
-				// LOGGER.info(cancelEmailJSON+"");
 				data.put("data2", cancelEmailJSON);
-				// data1.put("designerName", designerName);
 				Context context = new Context();
 				context.setVariables(data);
-				// context.setVariables(data1);
-				LOGGER.info(designerEmail);
+				
 				String htmlContent = templateEngine.process("ordercancelRejected.html", context);
 				EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail,
 						MessageConstant.ORDER_CANCELATION_REJECTED.getMessage(), htmlContent, true, null, restTemplate);
@@ -1993,7 +1898,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						String itemStatus = item.getOrderItemStatus();
 						if (LOGGER.isInfoEnabled()) {
 							LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
-									interfaceId, host + contextPath + "/userOrder/itemStatusChange", gson.toJson(item),
+									interfaceId, host + contextPath + "/userOrder/itemStatusChange", "Success",
 									HttpStatus.OK);
 						}
 						if (LOGGER.isDebugEnabled()) {
@@ -2291,6 +2196,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
+			
 			if (!itemStatus.equals("New")) {
 				if (itemStatus.equals(orderItemStatus)) {
 					throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
@@ -2299,8 +2205,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						if (itemStatus.equals("Orders")) {
 							org.json.simple.JSONObject jsonObject2 = new org.json.simple.JSONObject();
 							String string = statusChange.get("PackedDTO").toString();
-							org.json.simple.JSONObject fromJson = gson.fromJson(string,
-									org.json.simple.JSONObject.class);
+							org.json.simple.JSONObject fromJson = gson.fromJson(string, org.json.simple.JSONObject.class);
+							
 							if (fromJson.containsKey("packedCovered") || fromJson.containsKey("packingVideo")) {
 								jsonObject2.put("packedCovered", fromJson.get("packedCovered"));
 								jsonObject2.put("packingVideo", fromJson.get("packingVideo"));
@@ -2492,7 +2398,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	public GlobalResponse adminCancelation(String orderId, String productId, String token,
 			CancelationRequestDTO cancelationRequestDTO) {
 		try {
-//			String extractUsername = jwtconfig.extractUsername(token.substring(7));
 			OrderSKUDetailsEntity findByProductIdAndOrderId = this.orderSKUDetailsRepo
 					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 			String orderItemStatus = findByProductIdAndOrderId.getOrderItemStatus();
@@ -2541,6 +2446,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	@Override
 	public Map<String, Object> getOrdersItemstatus(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy, String token, String orderItemStatus) {
 		LOGGER.info("Inside - OrderAndPaymentService.getOrdersItemstatus()");
@@ -2566,9 +2472,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} else {
 				findAll = orderSKUDetailsRepo.Searching(keyword, pagingSort);
 			}
-
-			List<OrderSKUDetailsEntity> orderSKUDetails = new ArrayList<>();
-			orderSKUDetails = this.orderSKUDetailsRepo.findAll();
 
 			List<Object> productId = new ArrayList<>();
 
@@ -2665,12 +2568,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(orderId));
+			
 			List<OrderInvoiceEntity> invoiceDataList = mongoOperations.find(query, OrderInvoiceEntity.class);
 			List<String> keyList = new ArrayList<>();
-			// LOGGER.info(invoiceDataList+"");
-			LOGGER.info("Invoice Details data <><><><><> = {}", invoiceDataList);
 			Map<String, List<InvoiceUpdatedModel>> responceData = new HashMap<>();
 			List<String> invoiceIdList = new ArrayList<>();
+			
 			for (OrderInvoiceEntity invoiceEntity : invoiceDataList) {
 				String gstNo = invoiceEntity.getDesignerDetails().getGSTIN();
 				try {
@@ -2684,16 +2587,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					OrderSKUDetailsEntity detailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
 					invoiceIdList.add(invoiceEntity.getInvoiceId());
 					productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity, detailsEntity));
-//			List<OrderInvoiceEntity> invoiceDataList = mongoOperations.find(query, OrderInvoiceEntity.class);
-//			List<String> keyList = new ArrayList<>();
-//			 LOGGER.info(invoiceDataList+"");
-//			Map<String, List<InvoiceUpdatedModel>> responceData = new HashMap<>();
-//			for (OrderInvoiceEntity invoiceEntity : invoiceDataList) {
-//				String gstNo = invoiceEntity.getDesignerDetails().getGSTIN();
-//				try {
-//					List<InvoiceUpdatedModel> productDetailsList = responceData.get(gstNo);
-//					productDetailsList.add(UtillUserService.invoiceMapperRestMap(invoiceEntity,detailsEntity));
-//					responceData.put(gstNo, productDetailsList);
 				} catch (Exception e) {
 					List<InvoiceUpdatedModel> productList = new ArrayList<>();
 					keyList.add(gstNo);
@@ -2707,13 +2600,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					responceData.put(gstNo, productList);
 				}
 			}
-
-			// mrpList.stream().collect(Collectors.summingInt(Integer::intValue));
 			StringBuilder invoiceData = new StringBuilder();
 			for (String key : keyList) {
 
 				List<InvoiceUpdatedModel> invoiceUpdatedModels = responceData.get(key);
-				LOGGER.info("invoiceUpdatedModels" + invoiceUpdatedModels);
 				Double tCgst = 0.0;
 				Double tSgst = 0.0;
 				Double tDis = 0.0;
@@ -2737,7 +2627,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				invoiceUpdatedModels.stream().forEach(entity -> {
 
-					// LOGGER.info("taxableValue"+taxAmount);
 					if (entity.getTotal().equals("0")) {
 						if (entity.getDiscount().equals("0")) {
 							entity.setTotal(entity.getMrp());
@@ -2754,16 +2643,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					element.setIgst(element.getIgst() == null ? "0" : element.getIgst());
 					tCgst = tCgst + Double.parseDouble(element.getCgst() == null ? "0" : element.getCgst());
 					tSgst = tSgst + Double.parseDouble(element.getSgst() == null ? "0" : element.getSgst());
-					tDis = tDis + Double.parseDouble(
-							Optional.ofNullable(element.getDiscount()).isEmpty() ? "0" : element.getDiscount());
+					tDis = tDis + Double.parseDouble(Optional.ofNullable(element.getDiscount()).isEmpty() ? "0" : element.getDiscount());
 					tQty = tQty + Integer.parseInt(element.getQty() == null ? "0" : element.getQty());
 					tIgst = tIgst + Double.parseDouble(element.getIgst() == null ? "0" : element.getIgst());
-					tGross = tGross
-							+ Double.parseDouble(element.getGrossAmount() == null ? "0" : element.getGrossAmount());
+					tGross = tGross + Double.parseDouble(element.getGrossAmount() == null ? "0" : element.getGrossAmount());
 					tTotal = tTotal + Double.parseDouble(element.getTotal() == null ? "0" : element.getTotal());
 					tMrp = tMrp + Double.parseDouble(element.getMrp() == null ? "0" : element.getMrp());
-					tTaxableValue = tTaxableValue
-							+ Double.parseDouble(element.getTaxableValue() == null ? "0" : element.getTaxableValue());
+					tTaxableValue = tTaxableValue + Double.parseDouble(element.getTaxableValue() == null ? "0" : element.getTaxableValue());
 					totalCgst = String.valueOf(tCgst);
 					totalSgst = String.valueOf(tSgst);
 					totalDiscount = String.valueOf(tDis);
@@ -2772,13 +2658,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					totalGross = String.valueOf(tGross);
 					total = String.valueOf(tTotal);
 					taxableValue = String.valueOf(tTaxableValue);
-//					orderInvoiceRepo.findByInvoiceId(element.getInvoiceId()).forEach(e -> {
-//						DesignerProfileEntity forEntity = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink()+e.getProductDetails().getDesignerId(), DesignerProfileEntity.class).getBody();
-//						displayName = forEntity.getDesignerProfile().getDisplayName();
-//					});
 					String invoiceId = element.getInvoiceId();
 					String modifiedInvoiceId = invoiceId.substring(10, invoiceId.length());
+					
 					List<OrderInvoiceEntity> findByInvoiceId = this.orderInvoiceRepo.findByInvoiceId(modifiedInvoiceId);
+					
 					for (OrderInvoiceEntity e : findByInvoiceId) {
 						DesignerProfileEntity forEntity = restTemplate.getForEntity(
 								RestTemplateConstant.DESIGNER_BYID.getLink() + e.getProductDetails().getDesignerId(),
@@ -2787,7 +2671,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						designerName = forEntity.getDesignerName();
 					}
 				}
-				LOGGER.info("invoiceUpdatedModels" + invoiceUpdatedModels);
+
 				Map<String, Object> data = new HashMap<>();
 				data.put("data", invoiceUpdatedModels);
 				data.put("totalCgst", totalCgst);
@@ -2802,21 +2686,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				data.put("totalTaxableValue", taxableValue);
 				Context context = new Context();
 				context.setVariables(data);
-				LOGGER.info("!!!@@@@ = {}", data);
 				String htmlContent = templateEngine.process("new_invoice_User_test1.html", context);
 				invoiceData.append(htmlContent);
 			}
 
-			// return invoiceData.toString();
-			// return responceData;
-			// Context context = new Context();
-			// String htmlContent = templateEngine.process("new_invoice_User.html",
-			// context);
-			// String htmlContent = templateEngine.process("new_invoice_User_test.html",
-			// context);
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			ConverterProperties converterProperties = new ConverterProperties();
-			// converterProperties.setBaseUri("https://localhost:8082");
 			HtmlConverter.convertToPdf(invoiceData.toString(), target, converterProperties);
 
 			HttpHeaders headers = new HttpHeaders();
@@ -2864,6 +2739,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		return baos;
 	}
 
+	@Override
 	public ResponseEntity<?> getTransactionsService(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy) {
 

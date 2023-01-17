@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -51,7 +49,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,23 +62,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import com.divatt.user.constant.MessageConstant;
-import com.divatt.user.constant.RestTemplateConstant;
 import com.divatt.user.dto.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.dto.CancelationRequestDTO;
-import com.divatt.user.dto.OrderPlacedDTO;
 import com.divatt.user.entity.OrderAndPaymentGlobalEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
 import com.divatt.user.entity.OrderTrackingEntity;
-import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderPaymentEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
-import com.divatt.user.entity.product.DesignerProfileEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.helper.ListResponseDTO;
@@ -90,7 +80,6 @@ import com.divatt.user.repo.UserLoginRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.OrderAndPaymentService;
 import com.divatt.user.services.SequenceGenerator;
-import com.divatt.user.utill.CommonUtility;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -106,10 +95,7 @@ public class OrderAndPaymentContoller {
 	JavaMailSender mailSender;
 
 	@Autowired
-	private JwtUtil JwtUtil;
-
-	@Autowired
-	private RestTemplate restTemplate;
+	private JwtUtil jwtUtil;
 
 	@Autowired
 	private OrderDetailsRepo orderDetailsRepo;
@@ -125,15 +111,6 @@ public class OrderAndPaymentContoller {
 
 	@Autowired
 	private MongoOperations mongoOperations;
-
-//	@Autowired
-//	private OrderSKUDetailsRepo orderSKUDetailsRepo;
-
-	@Autowired
-	private CommonUtility commonUtility;
-
-	@Autowired
-	private TemplateEngine templateEngine;
 
 	@Value("${spring.profiles.active}")
 	private String contextPath;
@@ -152,7 +129,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postRazorpayOrderCreate()");
 
 		try {
-			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			String extractUsername =jwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
 				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(), HttpStatus.UNAUTHORIZED);
 			}
@@ -170,7 +147,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentDetails()");
 
 		try {
-			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			String extractUsername =jwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
 				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(), HttpStatus.UNAUTHORIZED);
 			}
@@ -190,7 +167,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderSKUDetails()");
 
 		try {
-			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			String extractUsername =jwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
 				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(), HttpStatus.UNAUTHORIZED);
 			}
@@ -210,8 +187,7 @@ public class OrderAndPaymentContoller {
 
 		try {
 
-			org.json.simple.JSONObject paymentE = new org.json.simple.JSONObject(
-					(Map) orderHandleDetails.get("payload"));
+			org.json.simple.JSONObject paymentE = new org.json.simple.JSONObject((Map) orderHandleDetails.get("payload"));
 			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) paymentE.get("payment"));
 
 			return orderAndPaymentService.postOrderHandleDetailsService(PayEntity);
@@ -220,7 +196,6 @@ public class OrderAndPaymentContoller {
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
 	}
 
 	@RequestMapping(value = { "/payment/list" }, method = RequestMethod.GET)
@@ -239,147 +214,43 @@ public class OrderAndPaymentContoller {
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<?> addOrder(@RequestHeader("Authorization") String token,
-			@RequestBody OrderAndPaymentGlobalEntity orderAndPaymentGlobalEntity) {
+	public ResponseEntity<?> addOrder(@RequestHeader("Authorization") String token, @RequestBody OrderAndPaymentGlobalEntity orderAndPaymentGlobalEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.addOrder()");
 
-		LOGGER.info(orderAndPaymentGlobalEntity + "Inside main");
 		try {
-			LOGGER.info("Data for add order = {}", orderAndPaymentGlobalEntity);
 			Map<String, Object> map = new HashMap<>();
-//			List<OrderPlacedDTO> orders = new ArrayList<>();
-//			List<OrderPlacedDTO> ordersdata = new ArrayList<>();
-//			Map<String, Object> data = new HashMap<>();
-			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			String extractUsername =jwtUtil.extractUsername(token.substring(7));
 
 			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
 
 				OrderDetailsEntity orderDetailsEntity = orderAndPaymentGlobalEntity.getOrderDetailsEntity();
-
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
 				Date date = new Date();
 				String format = formatter.format(date);
 				String formatDate = formatter.format(date);
 
-				orderAndPaymentGlobalEntity.getOrderDetailsEntity()
-						.setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
+				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setId(sequenceGenerator.getNextSequence(OrderDetailsEntity.SEQUENCE_NAME));
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderId("OR" + System.currentTimeMillis());
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setOrderDate(formatDate);
 				orderAndPaymentGlobalEntity.getOrderDetailsEntity().setCreatedOn(format);
 				orderDetailsEntity.setNetPrice(orderAndPaymentGlobalEntity.getOrderDetailsEntity().getNetPrice());
-				OrderDetailsEntity OrderData = orderDetailsRepo
-						.save(orderAndPaymentGlobalEntity.getOrderDetailsEntity());
+				LOGGER.info("Store data into tbl_order_details");
+				OrderDetailsEntity OrderData = orderDetailsRepo.save(orderAndPaymentGlobalEntity.getOrderDetailsEntity());
 
-				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity
-						.getOrderSKUDetailsEntity();
+				List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderAndPaymentGlobalEntity.getOrderSKUDetailsEntity();
 
-//				final DecimalFormat df = new DecimalFormat("0.00");
-//				Double mrp = 0.00;
-//				Double taxAmount = 0.00;
-//				Double total = 0.00;
-//				Double grandTotal = 0.00;
-//				Double totalMrp = 0.00;
-//				Double totalTax = 0.00;
-//
-//				String tmrp = null;
-//				String ttaxAmount = null;
-//				String ttotal = null;
-//				String ttotalMrp = null;
-//				String tgrandTotal = null;
-//				String ttotalTax = null;
-//
-//				String designerEmail = null;
-//				String displayName = null;
-//				String designerName = null;
-//				String tgrossGrandTotal = null;
-//
-//				ordersdata.add(commonUtility.placedOrder(orderAndPaymentGlobalEntity));
 				for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
 
-					orderSKUDetailsEntityRow
-							.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
+					orderSKUDetailsEntityRow.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
-					
+					LOGGER.info("Store data into tbl_order_sku_details");
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
-
-//					int designerId = orderSKUDetailsEntityRow.getDesignerId();
-//					orders.add(commonUtility.skuOrders(orderSKUDetailsEntityRow));
-//					taxAmount = taxAmount
-//							+ Double.parseDouble(orderSKUDetailsEntityRow.getTaxAmount() + "" == null ? "0"
-//									: orderSKUDetailsEntityRow.getTaxAmount() + "");
-//					if (orderSKUDetailsEntityRow.getSalesPrice() == 0) {
-//						String mrp2 = orderSKUDetailsEntityRow.getMrp() + "";
-//						mrp = mrp + Double.parseDouble(mrp2 == null ? "0" : mrp2);
-//						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
-//						grandTotal = grandTotal + Double.parseDouble(orderSKUDetailsEntityRow.getMrp() == null ? "0"
-//								: orderSKUDetailsEntityRow.getMrp().toString());
-//					} else {
-//						String salesPrice = orderSKUDetailsEntityRow.getSalesPrice() + "";
-//						totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
-//						grandTotal = grandTotal + Double.parseDouble(salesPrice == null ? "0" : salesPrice);
-//					}
-//					Double grossGrandTotal = 0.00;
-//					for (OrderPlacedDTO order : orders) {
-//						grossGrandTotal = grossGrandTotal + Double.parseDouble(order.getTotal());
-//					}
-//					totalTax = totalTax + Double.parseDouble(totalTax + "" == null ? "0" : totalTax + "");
-//					tmrp = String.valueOf(df.format(mrp));
-//					ttaxAmount = String.valueOf(taxAmount);
-//					ttotal = String.valueOf(total);
-//					ttotalMrp = String.valueOf(totalMrp);
-//					ttotalTax = String.valueOf(totalTax);
-//					tgrandTotal = String.valueOf(grandTotal);
-//					tgrossGrandTotal = String.valueOf(grossGrandTotal);
-//					try {
-//						DesignerProfileEntity forEntity = restTemplate
-//								.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
-//										DesignerProfileEntity.class)
-//								.getBody();
-//						designerEmail = forEntity.getDesignerProfile().getEmail();
-//						designerName = forEntity.getDesignerName();
-//						displayName = forEntity.getDesignerProfile().getDisplayName();
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
 				}
 				map.put("orderId", OrderData.getOrderId());
 				map.put("status", 200);
 				map.put("message", MessageConstant.ORDER_PLACED.getMessage());
-
-//				Query query = new Query();
-//				query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
-//				UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
-//
-//				String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
-//
-//				String orderId = orderDetailsEntity.getOrderId();
-//				data.put("displayName", displayName);
-//				data.put("orderId", orderId);
-//				data.put("userName", userName);
-//				data.put("data", orders);
-//				data.put("datas", ordersdata);
-//				data.put("tmrp", tmrp);
-//				data.put("ttotal", ttotal);
-//				data.put("ttaxAmount", ttaxAmount);
-//				data.put("ttotalMrp", ttotalMrp);
-//				data.put("ttotalTax", ttotalTax);
-//				data.put("tgrandTotal", tgrandTotal);
-//				data.put("tgrossGrandTotal", tgrossGrandTotal);
-//				Context context = new Context();
-//				context.setVariables(data);
-//				String htmlContent = templateEngine.process("orderPlaced.html", context);
-//				File createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-//
-//				this.sendEmailWithAttachment(extractUsername, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent,
-//						true, createPdfSupplier);
-//				this.sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
-//						htmlContent + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
-//								+ userLoginEntity.getLastName(),
-//						true, createPdfSupplier);
-//
-//				createPdfSupplier.delete();
 			}
 
 			return ResponseEntity.ok(map);
@@ -401,7 +272,6 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetails()For Admin side listing");
 
 		try {
-			LOGGER.info("Order Status form controller ={}", orderStatus);
 			return orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy, token, orderStatus);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -434,7 +304,7 @@ public class OrderAndPaymentContoller {
 		LOGGER.info("Inside - OrderAndPaymentContoller.getOrderDetailsByuserId()");
 
 		try {
-			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			String extractUsername =jwtUtil.extractUsername(token.substring(7));
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent())
 				throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 			return orderAndPaymentService.getUserOrderDetailsService(userId, page, limit, sort, sortName, keyword,
@@ -546,24 +416,6 @@ public class OrderAndPaymentContoller {
 			e.printStackTrace();
 		}
 		return baos;
-	}
-
-	private void sendEmailWithAttachment(String to, String subject, String body, Boolean enableHtml, File file) {
-
-		try {
-
-			MimeMessage message = mailSender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(message, true);
-			helper.setSubject(subject);
-			helper.setFrom("no-reply@nitsolution.in");
-			helper.setTo(to);
-			helper.setText(body, enableHtml);
-//			helper.addAttachment("order-summary", file);
-			mailSender.send(message);
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
-
 	}
 
 	@GetMapping("/orderProductDetails/{orderId}")
@@ -718,29 +570,6 @@ public class OrderAndPaymentContoller {
 		headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(arr, headers, HttpStatus.OK);
 		return response;
-	}
-
-	// @GetMapping("/getOrderList")
-	private List<OrderDetailsEntity> getOrderListAPI() {
-		try {
-			int flag = 0;
-			List<OrderDetailsEntity> sortingList = new ArrayList<OrderDetailsEntity>();
-			List<OrderDetailsEntity> orderDetailsList = orderDetailsRepo.findAll();
-			for (OrderDetailsEntity data : orderDetailsList) {
-				if (data.getOrderDate().equals("27/07/2022")) {
-					flag++;
-				}
-				if (data.getOrderDate().equals("01/08/2022")) {
-					flag = 0;
-				}
-				if (flag != 0) {
-					sortingList.add(data);
-				}
-			}
-			return sortingList;
-		} catch (Exception e) {
-			throw new CustomException(e.getMessage());
-		}
 	}
 
 	@GetMapping("/exelSheet")
