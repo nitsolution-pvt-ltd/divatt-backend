@@ -354,12 +354,17 @@ public class ProfileContoller {
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 
 			designerProfileRepo.save(customFunction.designerProfileEntity(designerLoginEntity));
+			
 			if (designerLoginEntity.getProfileStatus().equals("SUBMITTED")
 					|| designerLoginEntity.getProfileStatus().equals("COMPLETED")
 					|| designerLoginEntity.getProfileStatus().equals("SAVED")) {
 
+				Optional<DesignerPersonalInfoEntity> profileInfo = designerPersonalInfoRepo
+						.findByDesignerId(designerLoginEntity.getdId());
+				if(profileInfo.orElse(null) != null) {
 				DesignerPersonalInfoEntity infoEntity = designerPersonalInfoRepo
-						.findByDesignerId(designerLoginEntity.getdId()).get();
+							.findByDesignerId(designerLoginEntity.getdId()).get();
+
 				DesignerPersonalInfoEntity designerPersonalInfoEntity = new DesignerPersonalInfoEntity();
 				designerPersonalInfoEntity.setId(infoEntity.getId());
 				designerPersonalInfoEntity.setDesignerId(designerLoginEntity.getdId());
@@ -368,6 +373,7 @@ public class ProfileContoller {
 				designerPersonalInfoEntity.setDesignerDocuments(designerLoginEntity.getDesignerProfileEntity()
 						.getDesignerPersonalInfoEntity().getDesignerDocuments());
 				designerPersonalInfoRepo.save(designerPersonalInfoEntity);
+				}
 			}
 			// Old
 			designerLoginEntityDB.setProfileStatus(designerLoginEntity.getProfileStatus());
@@ -376,7 +382,9 @@ public class ProfileContoller {
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 			designerLoginEntityDB.setUid(designerLoginEntity.getUid());
-			Object string = getDesigner(designerLoginEntityDB.getdId()).getBody();
+			
+			Object string = this.getDesigner(designerLoginEntityDB.getdId()).getBody();
+			
 			String designerId = null;
 			ObjectMapper mapper = new ObjectMapper();
 			try {
@@ -384,6 +392,7 @@ public class ProfileContoller {
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
+			
 			JsonNode jsonNode = new JsonNode(designerId);
 			String string2 = jsonNode.getObject().get("designerName").toString();
 			String email = designerLoginEntityDB.getEmail();

@@ -341,6 +341,7 @@ public class CustomFunction {
 			DesignerProfileEntity designerProfileEntity = new DesignerProfileEntity();
 			DesignerProfile designerProfile = new DesignerProfile();
 			BoutiqueProfile boutiqueProfile = new BoutiqueProfile();
+			
 			designerProfileEntity.setId(body.getId());
 			designerProfileEntity.setAccountStatus(body.getAccountStatus());
 			designerProfileEntity.setBoutiqueProfile(body.getBoutiqueProfile());
@@ -358,6 +359,7 @@ public class CustomFunction {
 			designerProfileEntity.setSocialProfile(body.getSocialProfile());
 			designerProfileEntity.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 			designerProfileEntity.setUid(designerLoginEntity.getUid());
+		
 			designerProfile.setDesignerCategory(designerLoginEntity.getDesignerCategory());
 			designerProfile.setDisplayName(designerLoginEntity.getDisplayName());
 			designerProfile.setAltMobileNo(body.getDesignerProfile().getAltMobileNo());
