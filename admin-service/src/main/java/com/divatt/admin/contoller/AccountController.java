@@ -15,11 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,10 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
-
-import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
@@ -46,7 +38,6 @@ import com.divatt.admin.utility.AccountExcelExporter;
 import com.divatt.admin.utility.CommonUtility;
 import com.divatt.admin.utility.DesignerAccountExcelExporter;
 
-import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("/account")
@@ -67,13 +58,10 @@ public class AccountController {
 	private String interfaceId;
 	
 	@Autowired
-	private JwtUtil JwtUtil;
+	private JwtUtil jwtUtil;
 
 	@Autowired
 	private LoginRepository loginRepository;
-	
-	@Autowired
-	private RestTemplate restTemplate;
 	
 	@Autowired
 	private CommonUtility commonUtility;
@@ -225,7 +213,7 @@ public class AccountController {
 		}
 
 		try {
-			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			String extractUsername = jwtUtil.extractUsername(token.substring(7));
 			final Optional<LoginEntity> findByEmail = loginRepository.findByEmail(extractUsername);
 			
 			if(findByEmail.orElse(null) != null && !token.substring(7).isEmpty()) {
@@ -366,7 +354,7 @@ public class AccountController {
 		}
 
 		try {
-			String extractUsername = JwtUtil.extractUsername(token.substring(7));
+			String extractUsername = jwtUtil.extractUsername(token.substring(7));
 			final Optional<LoginEntity> findByEmail = loginRepository.findByEmail(extractUsername);
 			
 			if(findByEmail.orElse(null) == null) {

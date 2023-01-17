@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -50,7 +49,6 @@ import com.divatt.designer.constant.MessageConstant;
 import com.divatt.designer.constant.RestTemplateConstant;
 import com.divatt.designer.entity.LoginEntity;
 import com.divatt.designer.entity.Measurement;
-import com.divatt.designer.entity.SendMail;
 import com.divatt.designer.entity.UserDesignerEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
@@ -285,54 +283,7 @@ public class ProfileContoller {
 				EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail, "Successfully Registration", htmlContent,
 						true, null, restTemplate);
 				emailSenderThread.start();
-//				sb.append("Hi " + designerProfileEntity.getDesignerName() + "" + ",\n\n"
-//						+ "Welcome to Divatt We are delighted to have you join us as a designer.\n"
-//						+ "We are committed to providing our designer with a secure and safe platform to conduct business. Our website has been designed to make it easy for buyers to find the products they need and for designer to reach those buyers. We offer a wide range of tools and services to help you succeed, including payment processing, customer support, product listing, and promotions.\n\n"
-//						+ "We look forward to working with you to help you reach your business goals. Please feel free to contact us with any questions or concerns. You can do active your account by clicking the button below.");
-//				sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
-//						+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">ACTIVE ACCOUNT</a></div><br><br>We will verify your details and come back to you soon.");
-////				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
-////						"Successfully Registration",
-////						"Welcome " + designerProfileEntity.getDesignerName() + "" + ",\n   "
-////								+ ",\n                           "
-////								+ " you have been register successfully. Please active your account by clicking the bellow link "
-////								+ URI.create("https://65.1.190.195:8083/dev/designer/redirect/" + Base64.getEncoder()
-////										.encodeToString(designerLoginEntity.getEmail().toString().getBytes()))
-////								+ " . We will verify your details and come back to you soon.",
-////						false);
-//				sb.append("<div style=\"text-align: center;\">\r\n" + "			<a href=\"#\"\r\n"
-//						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-//						+ "				<img\r\n"
-//						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png\"\r\n"
-//						+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
-//						+ "			</a> <a href=\"#\"\r\n"
-//						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-//						+ "				<img\r\n"
-//						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg\"\r\n"
-//						+ "				alt=\"\" style=\"width: 37px; height: 37px;\">\r\n"
-//						+ "			</a> <a href=\"#\"\r\n"
-//						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-//						+ "				<img\r\n"
-//						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png\"\r\n"
-//						+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
-//						+ "			</a> <a href=\"#\"\r\n"
-//						+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-//						+ "				<img\r\n"
-//						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png\"\r\n"
-//						+ "				alt=\"\" style=\"width: 42px; height: 42px;\">\r\n"
-//						+ "			</a> <a href=\"#\"\r\n"
-//						+ "				style=\"text-decoration: none; color: #000; text-align: center;\">\r\n"
-//						+ "				<img\r\n"
-//						+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png\"\r\n"
-//						+ "				alt=\"\" style=\"width: 39px; height: 37px;\">\r\n" + "			</a>\r\n"
-//						+ "		</div>");
-//				SendMail mail = new SendMail(designerProfileEntity.getDesignerProfile().getEmail(),
-//						"Successfully Registration",htmlContent, true);
-//				try {
-//					restTemplate.postForEntity(RestTemplateConstant.AUTH_SEND_MAIL.getMessage(), mail, String.class);
-//				} catch (Exception e) {
-//					System.out.println(e.getMessage());
-//				}
+
 				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.REGISTERED.getMessage(), 200));
 			} else {
@@ -495,7 +446,7 @@ public class ProfileContoller {
 			designerLoginEntityDB.setProfileStatus(designerProfileEntity.getProfileStatus());
 			designerLoginEntityDB.setIsProfileCompleted(designerProfileEntity.getIsProfileCompleted());
 			designerLoginEntityDB.setUid(designerProfileEntity.getUid());
-			DesignerLoginEntity save = designerLoginRepo.save(designerLoginEntityDB);
+			designerLoginRepo.save(designerLoginEntityDB);
 			try {
 				LoginEntity forEntity = restTemplate.getForEntity(
 						RestTemplateConstant.ADMIN_ROLE_NAME.getMessage() + MessageConstant.ADMIN_ROLES.getMessage(),
@@ -541,7 +492,7 @@ public class ProfileContoller {
 	public void method(HttpServletResponse httpServletResponse, @PathVariable("email") String email) {
 		Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
 				.findByEmail(new String(Base64.getDecoder().decode(email)));
-		LOGGER.info("Get data by mail id = {}", findByEmail);
+		
 		if (findByEmail.isPresent()) {
 			DesignerLoginEntity designerLoginEntity = findByEmail.get();
 			if (designerLoginEntity.getAccountStatus().equals("INACTIVE"))
@@ -577,14 +528,11 @@ public class ProfileContoller {
 						if (obj.getdId() == nextInt && !lst.contains(nextInt)) {
 							lst.add(nextInt);
 							designerLoginEntity.add(obj);
-
 						}
 						if (designerLoginEntity.size() > 14)
 							flag = false;
 					}
-
 				}
-
 			}
 
 			Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
@@ -594,9 +542,8 @@ public class ProfileContoller {
 					e.setDesignerProfileEntity(
 							designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
 				} catch (Exception o) {
-
+					o.printStackTrace();
 				}
-
 				return e;
 			});
 			return ResponseEntity.ok(map);
@@ -720,25 +667,20 @@ public class ProfileContoller {
 		try {
 			List<DesignerLoginEntity> designerProfileList = designerLoginRepo
 					.findByIsDeletedAndisProfileCompletedAndAccountStatus(false, true, "ACTIVE");
-			LOGGER.info("designerProfileList" + designerProfileList);
+
 			List<Long> list = new ArrayList<>();
 			List<DesignerProfileEntity> designerProfileData = new ArrayList<>();
-			LOGGER.info("designerProfileList.size()" + designerProfileList.size());
+
 			for (DesignerLoginEntity entity : designerProfileList) {
-				LOGGER.info("designerProfileList.size()" + designerProfileList.size());
 				list.add(entity.getdId());
-				LOGGER.info("list" + list);
 				designerProfileData = this.designerProfileRepo.findByDesignerIdIn(list);
-				LOGGER.info("designerProfileData" + designerProfileData);
 				entity.setDesignerCategory(designerProfileData.get(0).getDesignerProfile().getDesignerCategory());
 			}
 			for (int i = 0; i < designerProfileData.size(); i++) {
 				designerProfileList.get(i)
 						.setDesignerCategory(designerProfileData.get(i).getDesignerProfile().getDesignerCategory());
 			}
-			LOGGER.info("designerProfileList" + designerProfileList.size());
-			LOGGER.info("designerProfileData" + designerProfileData.size());
-			// org.json.simple.JSONObject response = new org.json.simple.JSONObject();
+
 			List<Object> designercategories = new ArrayList<Object>();
 			for (int i = 0; i < designerProfileList.size(); i++) {
 				if (designerProfileList.get(i).getDesignerCategory() != null) {
@@ -748,7 +690,6 @@ public class ProfileContoller {
 						designercategories.add(jsonObject);
 					}
 				}
-
 			}
 			return designercategories;
 		} catch (Exception e) {
@@ -813,12 +754,11 @@ public class ProfileContoller {
 					});
 					return designerData;
 				}
-
 			} else {
 				List<DesignerLoginEntity> designerData = designerLoginRepo
 						.findByIsDeletedAndAndIsProfileCompletedAndAccountStatusAndDesignerCurrentStatus(false, true,
 								"ACTIVE", "Online");
-				System.out.println("designerData " + designerData.size());
+
 				designerData.forEach(designerRow -> {
 					Query query2 = new Query();
 					query2.addCriteria(Criteria.where("designerId").is(designerRow.getdId())
