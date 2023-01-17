@@ -114,6 +114,8 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private OrderDetailsRepo detailsRepo;
 
+	
+	@Override
 	public GlobalResponse postWishlistService(ArrayList<WishlistEntity> wishlistEntity) {
 
 		LOGGER.info("Inside - UserServiceImpl.postWishlistService()");
@@ -149,6 +151,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public GlobalResponse deleteWishlistService(Integer productId, Integer userId) {
 		try {
 			Optional<WishlistEntity> findByProductRow = wishlistRepo.findByProductIdAndUserId(productId, userId);
@@ -166,6 +169,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public Map<String, Object> getWishlistDetails(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy) {
 		LOGGER.info("Inside - UserServiceImpl.getWishlistDetails()");
@@ -214,6 +218,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> getUserWishlistDetails(Integer userId, Integer page, Integer limit) {
 		LOGGER.info("Inside - UserServiceImpl.getUserWishlistDetails()");
 		try {
@@ -246,6 +251,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public GlobalResponse postCartDetailsService(List<UserCartEntity> userCartEntity) {
 		LOGGER.info("Inside - UserServiceImpl.postCartDetailsService()");
 
@@ -284,6 +290,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> putCartDetailsService(UserCartEntity userCartEntity) {
 		LOGGER.info("Inside - UserServiceImpl.putCartDetailsService()");
 
@@ -325,6 +332,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public GlobalResponse deleteCartService(Integer pId) {
 		LOGGER.info("Inside - UserServiceImpl.deleteCartService()");
 		try {
@@ -343,6 +351,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> getUserCartDetailsService(Integer userId, Integer page, Integer limit) {
 		LOGGER.info("Inside - UserServiceImpl.getUserCartDetailsService()");
 		try {
@@ -424,6 +433,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	public GlobalResponse postProductCommentService(ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserServiceImpl.postWishlistService()");
 
@@ -456,6 +466,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	public GlobalResponse putProductCommentService(ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserServiceImpl.putProductCommentService()");
 
@@ -487,6 +498,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	public GlobalResponse putProductCommentStatusService(ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserServiceImpl.putProductCommentStatusService()");
 
@@ -524,6 +536,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	public GlobalResponse deleteProductCommentService(Integer Id) {
 		try {
 			Optional<ProductCommentEntity> findByProductRow = productCommentRepo.findById(Id);
@@ -541,6 +554,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> getProductUser() {
 		try {
 			String body = restTemplate.getForEntity(RestTemplateConstant.PRODUCT_LIST_USER.getLink(), String.class)
@@ -554,6 +568,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> postfollowDesignerService(@Valid UserDesignerEntity userDesignerEntity) {
 		try {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
@@ -584,6 +599,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> getDesignerDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
@@ -598,6 +614,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> productDetails(Integer productId, String userId) {
 		try {
 			LOGGER.info("Inside - UserServiceImpl.productDetails()");
@@ -646,6 +663,8 @@ public class UserServiceImpl implements UserService {
 		}
 
 	}
+	
+	@Override
 	public ResponseEntity<?> productDetailsAdmin(Integer productId, String userId) {
 		try {
 			LOGGER.info("Inside - UserServiceImpl.productDetails()");
@@ -695,6 +714,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> getDesignerUser() {
 		try {
 
@@ -709,6 +729,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> getDesignerProfileDetailsService(Integer designerId, Long userId) {
 		try {
 
@@ -743,6 +764,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> getPerDesignerProductListService(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, String keyword, Optional<String> sortBy, Integer designerId) {
 		try {
@@ -756,6 +778,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public GlobalResponse multipleDelete(Integer userId) {
 		try {
 			List<UserCartEntity> allData = userCartRepo.findByUserId(userId);
@@ -771,6 +794,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public List<Integer> viewProductService(String orderId) {
 		try {
 			Query query = new Query();
@@ -782,6 +806,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public Map<String, Object> getUserListService(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
@@ -829,6 +854,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public List<UserDesignerEntity> followedUserListService(Integer designerIdvalue) {
 		try {
 			Query query = new Query();
@@ -840,6 +866,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public UserLoginEntity getUserById(Long userId) {
 		try {
 			UserLoginEntity userDetails = userLoginRepo.findById(userId).get();
@@ -849,6 +876,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public GlobalResponse getCountFollowers(Long designerId) {
 		try {
 			Long countByDesignerId = userDesignerRepo.countByDesignerId(designerId);
@@ -858,6 +886,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public UserLoginEntity getUserDetailsService(String token) {
 		try {
 			String userName = jwtUtil.extractUsername(token);
@@ -868,6 +897,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public Map<String, Object> getUserStatus() {
 		try {
 			LOGGER.info("Inside - UserServiceImpl.getUserStatus()");
@@ -887,6 +917,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public List<StateEntity> getStateDataService() {
 
 		try {
@@ -924,6 +955,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public String complaintMail(String token, Integer productId) {
 
 		Context context = new Context();
@@ -1069,7 +1101,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 	}
-
+	@Override
 	public List<OrderSKUDetailsEntity> findByorderID(String orderId) {
 		try {
 			return this.orderSKUDetailsRepo.findByOrderId(orderId);
