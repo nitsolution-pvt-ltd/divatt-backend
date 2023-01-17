@@ -95,6 +95,11 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
 	@Query(value = "{$or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ]"
 			+ "$and: [{'is_deleted': ?1,'designerId':?2,'adminStatus':?3,'is_active':?4}] }")
 	Page<ProductMasterEntity2> searckLSByKeyword(String keyword, Boolean isDeleted, Integer designerId, String adminStatus, Boolean isActive, Pageable pagingSort);
+
+	List<ProductMasterEntity2> findByCategoryId(Integer categoryId);
+	@Query(value = "{$or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ] }")
+	Page<ProductMasterEntity2> findByIsDeletedAndSearch(String keyword, Boolean isDeleted, Pageable pagingSort);
+
 	
 	
 	

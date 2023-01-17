@@ -181,4 +181,12 @@ public class CategoryController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	@GetMapping("/getAllCategoryDetails")
+	public List<CategoryEntity> getAllCategoryDetails(){
+		try {
+			return this.categoryService.getAllCategoryDetails();
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

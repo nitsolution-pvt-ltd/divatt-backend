@@ -1799,7 +1799,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						org.json.simple.JSONObject.class).getBody();
 				String adminMail = body.get("email").toString();
 				String designerName = firstName + " " + lastName;
-				//String adminMail = "krishnendusamanta761@gmail.com";
 				String adminFirstName = body.get("firstName").toString();
 				String adminLastName = body.get("lastName").toString();
 				String adminName = adminFirstName + " " + adminLastName;

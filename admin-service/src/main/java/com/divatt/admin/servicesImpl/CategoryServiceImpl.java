@@ -372,4 +372,12 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	public List<CategoryEntity> getAllCategoryDetails(){
+		try {
+			List<CategoryEntity> categoryData = this.categoryRepo.findAll();
+			return categoryData;
+		}catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

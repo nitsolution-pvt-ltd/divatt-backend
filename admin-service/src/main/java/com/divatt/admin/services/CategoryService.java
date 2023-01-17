@@ -40,4 +40,6 @@ public interface CategoryService {
 
 	UserResponseEntity viewByCategoryName(String categoryName, String subCategoryName);
 
+	List<CategoryEntity> getAllCategoryDetails();
+
 }

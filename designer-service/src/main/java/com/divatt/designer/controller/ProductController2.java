@@ -257,7 +257,7 @@ public class ProductController2 {
 			LOGGER.info("Inside- ProductController.productSearching()");
 			return this.productService2.productSearching(searchBy, designerId, categoryId, subCategoryId, colour, cod,
 					customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType,
-					sortPrice,labelType);
+					sortPrice, labelType);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -272,7 +272,7 @@ public class ProductController2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/productAdmin/{productId}")
 	public ProductMasterEntity2 getProductsAdmin(@PathVariable Integer productId) {
 		try {
@@ -283,5 +283,26 @@ public class ProductController2 {
 		}
 	}
 
-
+	@GetMapping("/getBannerDetails/{categoryName}")
+	public Map<String, Object> getBannerDetails(@PathVariable String categoryName,
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer limit,
+			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
+			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy,
+			@RequestParam(defaultValue = "") String searchBy, @RequestParam(defaultValue = "") String designerId,
+			@RequestParam(defaultValue = "") String categoryId, @RequestParam(defaultValue = "") String subCategoryId,
+			@RequestParam(defaultValue = "") String colour, @RequestParam(defaultValue = "") Boolean cod,
+			@RequestParam(defaultValue = "") Boolean customization, @RequestParam(defaultValue = "") String priceType,
+			@RequestParam(defaultValue = "") Boolean returnStatus, @RequestParam(defaultValue = "-1") String maxPrice,
+			@RequestParam(defaultValue = "-1") String minPrice, @RequestParam(defaultValue = "") String size,
+			@RequestParam(defaultValue = "") Boolean giftWrap, @RequestParam(defaultValue = "") String searchKey,
+			@RequestParam(defaultValue = "") String sortDateType, @RequestParam(defaultValue = "") String sortPrice,
+			@RequestParam(defaultValue = "") String labelType) {
+		try {
+			return this.productService2.getBannerDetails(categoryName, page, limit, sort, sortName, keyword, sortBy,
+					searchBy, designerId, categoryId, subCategoryId, colour, cod, customization, priceType,
+					returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice, labelType);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
 }

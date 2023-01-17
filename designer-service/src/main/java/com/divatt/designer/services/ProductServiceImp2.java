@@ -1,6 +1,7 @@
 package com.divatt.designer.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,9 @@ import com.divatt.designer.response.GlobalResponce;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mashape.unirest.http.JsonNode;
+
+import springfox.documentation.spring.web.json.Json;
 
 @Service
 public class ProductServiceImp2 implements ProductService2 {
@@ -83,9 +88,9 @@ public class ProductServiceImp2 implements ProductService2 {
 	public GlobalResponce addProductData(ProductMasterEntity2 productMasterEntity2) {
 		try {
 			LOGGER.info("Inside-ProductServiceImp2.addProductData()");
-			
+
 			ProductMasterEntity2 entity2 = productRepo2.save(customFunction.addProductMasterData(productMasterEntity2));
-			
+
 			List<UserProfileInfo> userInfoList = new ArrayList<UserProfileInfo>();
 			List<Long> userId = new ArrayList<Long>();
 
@@ -93,14 +98,14 @@ public class ProductServiceImp2 implements ProductService2 {
 					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + entity2.getDesignerId(), String.class);
 			String data = forEntity.getBody();
 			JSONArray jsonArray = new JSONArray(data);
-			
+
 			String designerImageData = designerProfileRepo.findBydesignerId(entity2.getDesignerId().longValue()).get()
 					.getDesignerProfile().getProfilePic();
-		
+
 			jsonArray.forEach(array -> {
 				ObjectMapper objectMapper = new ObjectMapper();
 				UserProfile readValue;
-				
+
 				try {
 					readValue = objectMapper.readValue(array.toString(), UserProfile.class);
 					ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(
@@ -113,15 +118,16 @@ public class ProductServiceImp2 implements ProductService2 {
 					e.printStackTrace();
 				}
 			});
-			
+
 			userId.forEach(user -> {
 				restTemplate.getForEntity(RestTemplateConstant.INFO_USER.getMessage() + user, UserProfileInfo.class);
 
 			});
-			
+
 			Integer productId = entity2.getProductId();
 			ProductMasterEntity2 productMasterEntity = productRepo2.findById(productId).get();
-			DesignerProfileEntity designerProfile = designerProfileRepo.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
+			DesignerProfileEntity designerProfile = designerProfileRepo
+					.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
 			ImageEntity[] images = productMasterEntity.getImages();
 			String image1 = images[0].getLarge();
 
@@ -161,7 +167,7 @@ public class ProductServiceImp2 implements ProductService2 {
 		}
 	}
 
-	@Override 
+	@Override
 	public GlobalResponce updateProduct(ProductMasterEntity2 productMasterEntity2, Integer productId) {
 		try {
 			LOGGER.info("Inside-ProductServiceImp2.updateProduct()");
@@ -173,7 +179,8 @@ public class ProductServiceImp2 implements ProductService2 {
 							+ MessageConstant.ADMIN_ROLES.getMessage(), LoginEntity.class).getBody();
 					String email2 = forEntity.getEmail();
 					Integer designerId = productMasterEntity2.getDesignerId();
-					DesignerProfileEntity findBydesignerId = designerProfileRepo.findBydesignerId(designerId.longValue()).get();
+					DesignerProfileEntity findBydesignerId = designerProfileRepo
+							.findBydesignerId(designerId.longValue()).get();
 					String email = findBydesignerId.getDesignerProfile().getEmail();
 					String designerName = findBydesignerId.getDesignerName();
 					Context context = new Context();
@@ -722,13 +729,13 @@ public class ProductServiceImp2 implements ProductService2 {
 			live = productRepo2
 					.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(false, designerId, "Approved", true).stream()
 					.filter(e -> e.getSoh() > 0).collect(Collectors.toList()).size();
-			
+
 			pending = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId,
 					isActive, "Pending");
-			
+
 			reject = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId,
 					isActive, "Rejected");
-			
+
 			oos = productRepo2.countByIsDeletedAndDesignerIdAndIsActiveAndAdminStatus(isDeleted, designerId, false,
 					"Approved");
 
@@ -769,8 +776,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			} else {
 				if (adminStatus.equals("live")) {
 					List<ProductMasterEntity2> collect = productRepo2
-							.searckLiveByKeyword(keyword, isDeleted, designerId, "Approved",
-									isActive, pagingSort)
+							.searckLiveByKeyword(keyword, isDeleted, designerId, "Approved", isActive, pagingSort)
 							.stream().filter(e -> e.getSoh() > 0).collect(Collectors.toList());
 					findAll = new PageImpl<>(collect, pagingSort, collect.size());
 				} else if (adminStatus.equals("pending")) {
@@ -780,10 +786,9 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.listDesignerProductsearchByAdminStatus(keyword, isDeleted, designerId,
 							"Reject", pagingSort);
 				} else if (adminStatus.equals("ls")) {
-					
+
 					List<ProductMasterEntity2> data = productRepo2
-							.searckLSByKeyword(keyword, false, designerId, "Approved", true, pagingSort)
-							.stream()
+							.searckLSByKeyword(keyword, false, designerId, "Approved", true, pagingSort).stream()
 							.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
 							.collect(Collectors.toList());
 					int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
@@ -1070,29 +1075,33 @@ public class ProductServiceImp2 implements ProductService2 {
 		try {
 
 			List<ProductMasterEntity2> findall = new ArrayList<>();
-			List<DesignerProfileEntity> findByDesignerByCurrentStatus = designerProfileRepo.findByDesignerCurrentStatus("Online");
+			List<DesignerProfileEntity> findByDesignerByCurrentStatus = designerProfileRepo
+					.findByDesignerCurrentStatus("Online");
 			findByDesignerByCurrentStatus.forEach(designerRow -> {
 				if (designerRow.getDesignerCurrentStatus().equals("Online")) {
-					List<ProductMasterEntity2> findProduct = productRepo2.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerIdAndProductId(false,
-							"Approved", true, designerRow.getDesignerId(), productId);
+					List<ProductMasterEntity2> findProduct = productRepo2
+							.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerIdAndProductId(false, "Approved", true,
+									designerRow.getDesignerId(), productId);
 					findall.addAll(findProduct);
 				}
-			}); 
+			});
 			ProductMasterEntity2 productMasterEntity22 = new ProductMasterEntity2();
-			
+
 			if (findall.size() > 0) {
 				productMasterEntity22 = findall.get(0);
-				DesignerProfileEntity designerProfileEntity = designerProfileRepo.findBydesignerIdAndDesignerCurrentStatus(
-						productMasterEntity22.getDesignerId().longValue(), "Online").get();
-	
+				DesignerProfileEntity designerProfileEntity = designerProfileRepo
+						.findBydesignerIdAndDesignerCurrentStatus(productMasterEntity22.getDesignerId().longValue(),
+								"Online")
+						.get();
+
 				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
 						RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productMasterEntity22.getSubCategoryId(),
 						SubCategoryEntity.class);
-				
+
 				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
 						RestTemplateConstant.CATEGORY_VIEW.getMessage() + productMasterEntity22.getCategoryId(),
 						CategoryEntity.class);
-	
+
 				productMasterEntity22.setSubCategoryName(subCatagory.getBody().getCategoryName());
 				productMasterEntity22.setCategoryName(catagory.getBody().getCategoryName());
 				productMasterEntity22.setDesignerProfile(designerProfileEntity.getDesignerProfile());
@@ -1103,36 +1112,35 @@ public class ProductServiceImp2 implements ProductService2 {
 		}
 
 	}
-	
+
 	@Override
 	public ProductMasterEntity2 getProductsAdmin(Integer productId) {
 		try {
-			
+
 			List<ProductMasterEntity2> findall = new ArrayList<>();
 			List<DesignerProfileEntity> findByDesignerByCurrentStatus = designerProfileRepo.findAll();
-			
+
 			findByDesignerByCurrentStatus.forEach(designerRow -> {
-					List<ProductMasterEntity2> findProduct = new ArrayList<>();
-						findProduct = productRepo2
-								.findByIsDeletedAndIsActiveAndDesignerIdAndProductId(false, true,
-										designerRow.getDesignerId(),productId);
-					findall.addAll(findProduct);
+				List<ProductMasterEntity2> findProduct = new ArrayList<>();
+				findProduct = productRepo2.findByIsDeletedAndIsActiveAndDesignerIdAndProductId(false, true,
+						designerRow.getDesignerId(), productId);
+				findall.addAll(findProduct);
 			});
 			ProductMasterEntity2 productMasterEntity22 = new ProductMasterEntity2();
-			if(findall.size() > 0) {
-					
+			if (findall.size() > 0) {
+
 				productMasterEntity22 = findall.get(0);
 				DesignerProfileEntity designerProfileEntity = designerProfileRepo
 						.findBydesignerId(productMasterEntity22.getDesignerId().longValue()).get();
-				
+
 				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
 						RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productMasterEntity22.getSubCategoryId(),
 						SubCategoryEntity.class);
-	
+
 				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
 						RestTemplateConstant.CATEGORY_VIEW.getMessage() + productMasterEntity22.getCategoryId(),
 						CategoryEntity.class);
-	
+
 				productMasterEntity22.setSubCategoryName(subCatagory.getBody().getCategoryName());
 				productMasterEntity22.setCategoryName(catagory.getBody().getCategoryName());
 				productMasterEntity22.setDesignerProfile(designerProfileEntity.getDesignerProfile());
@@ -1142,6 +1150,89 @@ public class ProductServiceImp2 implements ProductService2 {
 			throw new CustomException(e.getMessage());
 		}
 
+	}
+
+	public Map<String, Object> getBannerDetails(String categoryName, Integer page, Integer limit, String sort, String sortName,
+			String keyword, Optional<String> sortBy,
+			String searchBy, String designerId, String categoryId,
+			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
+			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey,
+			String sortDateType, String sortPrice, String labelType) {
+		LOGGER.info("Inside - productServiceImpl2.getBannerDetails()");
+		try {
+			int CountData = (int) productRepo2.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+			Page<ProductMasterEntity2> findAll = null;
+			if (keyword.isEmpty()) {
+				findAll = productRepo2.findByIsDeleted(false, pagingSort);
+			} else {
+				findAll = productRepo2.findByIsDeletedAndSearch(keyword, false, pagingSort);
+			}			
+			List<Object> productId = new ArrayList<>();		
+			CategoryEntity[] categoryDetails = restTemplate
+					.getForEntity("https://localhost:8084/dev/category/getAllCategoryDetails", CategoryEntity[].class).getBody();
+			List<CategoryEntity> categoryList = Arrays.asList(categoryDetails);
+			
+			if(categoryList.size() > 0) {
+			    for(CategoryEntity category : categoryList) {
+			         if (category.getCategoryName().toLowerCase().equals(categoryName.toLowerCase())) {
+				     Integer categoryId1 = category.getId();
+				     List<ProductMasterEntity2> productByCategoryId = this.productRepo2.findByCategoryId(categoryId1);
+						List<ProductMasterEntity2> filterProduct = customFunction.filterProduct(productByCategoryId,
+								searchBy, designerId, categoryId, subCategoryId, colour, cod, customization, priceType,
+								returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice,
+								labelType);
+//				     productByCategoryId.forEach(e -> {
+//					 ObjectMapper obj = new ObjectMapper();
+//					 String productIdFilter = null;
+//					 try {
+//						productIdFilter = obj.writeValueAsString(e);
+//					 } catch (JsonProcessingException e1) {
+//						e1.printStackTrace();
+//					 }
+//					 JsonNode pJN = new JsonNode(productIdFilter);
+//					 JSONObject object = pJN.getObject();
+//					 productId.add(object);
+//				   });
+				     int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+						int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filterProduct.size());
+						List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
+								: filterProduct.subList(startOfPage, endOfPage);
+						findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filterProduct.size());
+					}
+			  } 
+			}else {
+				throw new CustomException("Category not found!");
+			}
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}	
+			Map<String, Object> response = new HashMap<>();
+//			if (!productId.isEmpty()) {
+//				response.put("data", new Json(productId.toString()));
+//			} else {
+//				response.put("data", productId);
+//			}
+	        //response.put("data", new Json(productId.toString()));
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());			
+			return response;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
 	}
 
 }
