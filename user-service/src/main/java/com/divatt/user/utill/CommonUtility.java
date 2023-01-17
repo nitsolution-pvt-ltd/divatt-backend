@@ -1,5 +1,7 @@
 package com.divatt.user.utill;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,8 +12,10 @@ import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.mail.internet.MimeMessage;
 
@@ -159,21 +163,47 @@ public class CommonUtility {
 
 	public OrderPlacedDTO skuOrders(OrderSKUDetailsEntity orderSKUDetailsEntity) {
 		OrderPlacedDTO dto = new OrderPlacedDTO();
+		dto.setDesignerId(orderSKUDetailsEntity.getDesignerId() + "");
 		dto.setImages(orderSKUDetailsEntity.getImages());
 		dto.setProductName(orderSKUDetailsEntity.getProductName());
 		dto.setTaxAmount(orderSKUDetailsEntity.getTaxAmount() + "");
-		dto.setMrp(orderSKUDetailsEntity.getMrp() + "");
-		if (orderSKUDetailsEntity.getSalesPrice() == 0) {
-			// dto.setMrp(orderSKUDetailsEntity.getMrp() + "");
-			dto.setTotal((orderSKUDetailsEntity.getMrp() - orderSKUDetailsEntity.getDiscount()) + "");
-		} else {
-			// dto.setMrp(orderSKUDetailsEntity.getSalesPrice() + "");
-			dto.setTotal(orderSKUDetailsEntity.getSalesPrice() + "");
-		}
+		// dto.setMrp(orderSKUDetailsEntity.getMrp() + "");
+		Long mrp = orderSKUDetailsEntity.getMrp();
+		Long salesPrice = orderSKUDetailsEntity.getSalesPrice();
+//		if (orderSKUDetailsEntity.getSalesPrice() == 0) {
+//			// dto.setMrp(orderSKUDetailsEntity.getMrp() + "");
+//			dto.setTotal((orderSKUDetailsEntity.getMrp() - orderSKUDetailsEntity.getDiscount()) + "");
+//		} else {
+//			// dto.setMrp(orderSKUDetailsEntity.getSalesPrice() + "");
+//			dto.setTotal(orderSKUDetailsEntity.getSalesPrice() + "");
+//		}
 		dto.setSize(orderSKUDetailsEntity.getSize());
 		dto.setDiscount(orderSKUDetailsEntity.getDiscount() + "");
 		dto.setUnits(orderSKUDetailsEntity.getUnits() + "");
 		dto.setDisplayName(orderSKUDetailsEntity.getDisplayName());
+		if (orderSKUDetailsEntity.getGiftwrapStatus()) {
+			dto.setGiftWrapAmount(orderSKUDetailsEntity.getGiftWrapAmount().toString());
+
+			if (salesPrice == 0) {
+				dto.setMrp((mrp - orderSKUDetailsEntity.getTaxAmount() - orderSKUDetailsEntity.getGiftWrapAmount()
+						+ orderSKUDetailsEntity.getDiscount()) + "");
+				dto.setTotal(mrp + "");
+			} else {
+				dto.setMrp((salesPrice - orderSKUDetailsEntity.getTaxAmount()
+						- orderSKUDetailsEntity.getGiftWrapAmount() + orderSKUDetailsEntity.getDiscount()) + "");
+				dto.setTotal(salesPrice + "");
+			}
+		} else {
+			dto.setGiftWrapAmount("0");
+			if (salesPrice == 0) {
+				dto.setMrp((mrp - orderSKUDetailsEntity.getTaxAmount() + orderSKUDetailsEntity.getDiscount()) + "");
+				dto.setTotal(mrp + "");
+			} else {
+				dto.setMrp(
+						(salesPrice - orderSKUDetailsEntity.getTaxAmount() + orderSKUDetailsEntity.getDiscount()) + "");
+				dto.setTotal(salesPrice + "");
+			}
+		}
 
 		return dto;
 	}
@@ -221,44 +251,49 @@ public class CommonUtility {
 	}
 
 	public void userOrder(OrderPaymentEntity orderPaymentEntity) {
+		try {
+			OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderIds(orderPaymentEntity.getOrderId());
+			List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderSKUDetailsRepo
+					.findByOrderId(orderPaymentEntity.getOrderId());
 
-		List<OrderPlacedDTO> orders = new ArrayList<>();
-		List<OrderPlacedDTO> ordersdata = new ArrayList<>();
-		Map<String, Object> data = new HashMap<>();
+			List<OrderPlacedDTO> orders = new ArrayList<>();
+			List<OrderPlacedDTO> ordersdata = new ArrayList<>();
+			Set<Integer> byDesigner = new HashSet<>();
+			Map<String, Object> data = new HashMap<>();
 
-		final DecimalFormat df = new DecimalFormat("0.00");
-		Double mrp = 0.00;
-		Double taxAmount = 0.00;
-		Double total = 0.00;
-		Double grandTotal = 0.00;
-		Double totalMrp = 0.00;
-		Double totalTax = 0.00;
-		Double discount = 0.00;
+			final DecimalFormat df = new DecimalFormat("0.00");
+			Double mrp = 0.00;
+			Double taxAmount = 0.00;
+			Double total = 0.00;
+			Double grandTotal = 0.00;
+			Double totalMrp = 0.00;
+			Double totalTax = 0.00;
+			Double discount = 0.00;
 
-		String tmrp = null;
-		String ttaxAmount = null;
-		String ttotal = null;
-		String ttotalMrp = null;
-		String tgrandTotal = null;
-		String ttotalTax = null;
-		String tDiscount = null;
+			String tmrp = null;
+			String ttaxAmount = null;
+			String ttotal = null;
+			String ttotalMrp = null;
+			String tgrandTotal = null;
+			String ttotalTax = null;
+			String tDiscount = null;
 
-		String designerEmail = null;
-		String displayName = null;
-		String designerName = null;
-		String tgrossGrandTotal = null;
+			String designerEmail = null;
+			// String displayName = null;
+			String designerName = null;
+			String tgrossGrandTotal = null;
+			String totalGiftWrapAmount = null;
+			String ttotalGiftWrapAmount = null;
+			Set<String> displayName = new HashSet<>();
 
-		OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderIds(orderPaymentEntity.getOrderId());
-		List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderSKUDetailsRepo
-				.findByOrderId(orderPaymentEntity.getOrderId());
+			ordersdata.add(placedOrder(orderDetailsEntity));
+			for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
 
-		ordersdata.add(placedOrder(orderDetailsEntity));
-		for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : orderSKUDetailsEntity) {
-
-			int designerId = orderSKUDetailsEntityRow.getDesignerId();
-			orders.add(skuOrders(orderSKUDetailsEntityRow));
-			taxAmount = taxAmount + Double.parseDouble(orderSKUDetailsEntityRow.getTaxAmount() + "" == null ? "0"
-					: orderSKUDetailsEntityRow.getTaxAmount() + "");
+				int designerId = orderSKUDetailsEntityRow.getDesignerId();
+				byDesigner.add(designerId);
+				orders.add(skuOrders(orderSKUDetailsEntityRow));
+				taxAmount = taxAmount + Double.parseDouble(orderSKUDetailsEntityRow.getTaxAmount() + "" == null ? "0"
+						: orderSKUDetailsEntityRow.getTaxAmount() + "");
 //			if (orderSKUDetailsEntityRow.getSalesPrice() == 0) {
 //				String mrp2 = orderSKUDetailsEntityRow.getMrp() + "";
 //				mrp = mrp + Double.parseDouble(mrp2 == null ? "0" : mrp2);
@@ -270,76 +305,104 @@ public class CommonUtility {
 //				totalMrp = totalMrp + Double.parseDouble(mrp + "" == null ? "0" : mrp + "");
 //				grandTotal = grandTotal + Double.parseDouble(salesPrice == null ? "0" : salesPrice);
 //			}
-			Double grossGrandTotal = 0.00;
-			Double tgrossandTotal = 0.00;
-			for (OrderPlacedDTO order : orders) {
-				grossGrandTotal = grossGrandTotal + Double.parseDouble(order.getMrp());
-				tgrossandTotal = tgrossandTotal + Double.parseDouble(order.getTotal());
+				Double grossGrandTotal = 0.00;
+				Double tgrossandTotal = 0.00;
+				Double GiftWrapAmount = 0.00;
+				for (OrderPlacedDTO order : orders) {
+					grossGrandTotal = grossGrandTotal + Double.parseDouble(order.getMrp());
+					tgrossandTotal = tgrossandTotal + Double.parseDouble(order.getTotal());
+				}
+
+				totalTax = totalTax + Double.parseDouble(totalTax + "" == null ? "0" : totalTax + "");
+				discount = discount + Double.parseDouble(orderSKUDetailsEntityRow.getDiscount() + "" == null ? "0"
+						: orderSKUDetailsEntityRow.getDiscount() + "");
+
+				if (orderSKUDetailsEntityRow.getGiftwrapStatus()) {
+					GiftWrapAmount = GiftWrapAmount
+							+ Double.parseDouble(orderSKUDetailsEntityRow.getGiftWrapAmount() + "" == null ? "0"
+									: orderSKUDetailsEntityRow.getGiftWrapAmount() + "");
+				} else {
+					GiftWrapAmount = GiftWrapAmount + Double.parseDouble("0" == null ? "0" : "0");
+				}
+
+				tmrp = String.valueOf(df.format(mrp));
+				ttaxAmount = String.valueOf(taxAmount);
+				ttotal = String.valueOf(total);
+				ttotalMrp = String.valueOf(totalMrp);
+				ttotalTax = String.valueOf(totalTax);
+				tgrandTotal = String.valueOf(tgrossandTotal);
+				tgrossGrandTotal = String.valueOf(grossGrandTotal);
+				tDiscount = String.valueOf(discount);
+				ttotalGiftWrapAmount = String.valueOf(GiftWrapAmount);
+				try {
+					DesignerProfileEntity forEntity = restTemplate
+							.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
+									DesignerProfileEntity.class)
+							.getBody();
+					designerEmail = forEntity.getDesignerProfile().getEmail();
+					designerName = forEntity.getDesignerName();
+					displayName.add(forEntity.getDesignerProfile().getDisplayName());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-			totalTax = totalTax + Double.parseDouble(totalTax + "" == null ? "0" : totalTax + "");
-			discount = discount + Double.parseDouble(orderSKUDetailsEntityRow.getDiscount() + "" == null ? "0"
-					: orderSKUDetailsEntityRow.getDiscount() + "");
-			tmrp = String.valueOf(df.format(mrp));
-			ttaxAmount = String.valueOf(taxAmount);
-			ttotal = String.valueOf(total);
-			ttotalMrp = String.valueOf(totalMrp);
-			ttotalTax = String.valueOf(totalTax);
-			tgrandTotal = String.valueOf(tgrossandTotal);
-			tgrossGrandTotal = String.valueOf(grossGrandTotal);
-			tDiscount = String.valueOf(discount);
+			LOGGER.info(displayName + "Inside DisplayName");
+			Query query = new Query();
+			query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
+			UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
+
+			String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
+			String email = userLoginEntity.getEmail();
+			String orderId = orderDetailsEntity.getOrderId();
+
+			// data.put("displayName", displayName);
+			data.put("orderId", orderId);
+			data.put("userName", userName);
+			data.put("data", orders);
+			data.put("datas", ordersdata);
+			data.put("tmrp", tmrp);
+			data.put("ttotal", ttotal);
+			data.put("ttaxAmount", orderDetailsEntity.getTaxAmount());
+			data.put("ttotalMrp", ttotalMrp);
+			data.put("ttotalTax", ttotalTax);
+			data.put("tgrandTotal", orderDetailsEntity.getTotalAmount());
+			data.put("tDiscount", orderDetailsEntity.getDiscount());
+			data.put("totalGiftWrapAmount", orderDetailsEntity.getGiftWrapAmount());
+
+			String dis = "";
+			data.put("tgrossGrandTotal", orderDetailsEntity.getNetPrice());
+			for (String displayName2 : displayName) {
+				dis = dis + displayName2 + " & ";
+
+			}
+			dis = dis.substring(0, dis.length() - 2) + dis.substring(dis.length() - 1);
+			data.put("displayName", dis);
+			Context context = new Context();
+			context.setVariables(data);
+			String htmlContent = templateEngine.process("orderPlaced.html", context);
+			// String htmlContent1 = templateEngine.process("orderPlacedDesigner.html",
+			// context);
+			File createPdfSupplier;
 			try {
-				DesignerProfileEntity forEntity = restTemplate
-						.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
-								DesignerProfileEntity.class)
-						.getBody();
-				designerEmail = forEntity.getDesignerProfile().getEmail();
-				designerName = forEntity.getDesignerName();
-				displayName = forEntity.getDesignerProfile().getDisplayName();
-			} catch (Exception e) {
+				createPdfSupplier = createPdfSupplier(orderDetailsEntity);
+
+				this.sendEmailWithAttachment(email, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true,
+						createPdfSupplier);
+//				this.sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
+//						htmlContent1 + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName()
+//								+ " " + userLoginEntity.getLastName(),
+//						true, createPdfSupplier);
+
+				createPdfSupplier.delete();
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			designerEmail(byDesigner, orderId, userName, ordersdata);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
 		}
-		Query query = new Query();
-		query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
-		UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
-
-		String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
-		String email = userLoginEntity.getEmail();
-		String orderId = orderDetailsEntity.getOrderId();
-		data.put("displayName", displayName);
-		data.put("orderId", orderId);
-		data.put("userName", userName);
-		data.put("data", orders);
-		data.put("datas", ordersdata);
-		data.put("tmrp", tmrp);
-		data.put("ttotal", ttotal);
-		data.put("ttaxAmount", ttaxAmount);
-		data.put("ttotalMrp", ttotalMrp);
-		data.put("ttotalTax", ttotalTax);
-		data.put("tgrandTotal", tgrandTotal);
-		data.put("tDiscount", tDiscount);
-		data.put("tgrossGrandTotal", tgrossGrandTotal);
-		Context context = new Context();
-		context.setVariables(data);
-		String htmlContent = templateEngine.process("orderPlaced.html", context);
-		String htmlContent1 = templateEngine.process("orderPlacedDesigner.html", context);
-		File createPdfSupplier;
-		try {
-			createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-
-			this.sendEmailWithAttachment(email, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true,
-					createPdfSupplier);
-			this.sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
-					htmlContent1 + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName() + " "
-							+ userLoginEntity.getLastName(),
-					true, createPdfSupplier);
-
-			createPdfSupplier.delete();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	File createPdfSupplier(@RequestBody OrderDetailsEntity orderDetailsEntity) throws IOException {
@@ -483,6 +546,112 @@ public class CommonUtility {
 			emailSenderThread1.start();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
+		}
+	}
+
+	public void designerEmail(Set<Integer> set, String orderId, String userName, List<OrderPlacedDTO> ordersdata) {
+		for (Integer value : set) {
+			List<OrderPlacedDTO> orders = new ArrayList<>();
+			Map<String, Object> data = new HashMap<>();
+
+			final DecimalFormat df = new DecimalFormat("0.00");
+			Double mrp = 0.00;
+			Double taxAmount = 0.00;
+			Double total = 0.00;
+			Double grandTotal = 0.00;
+			Double totalMrp = 0.00;
+			Double totalTax = 0.00;
+			Double discount = 0.00;
+			Double totalGiftWrapAmount = 0.00;
+
+			String tmrp = null;
+			String ttaxAmount = null;
+			String ttotal = null;
+			String ttotalMrp = null;
+			String tgrandTotal = null;
+			String ttotalTax = null;
+			String tDiscount = null;
+
+			String designerEmail = null;
+			// String displayName = null;
+			String designerName = null;
+			String tgrossGrandTotal = null;
+			// String totalGiftWrapAmount = null;
+			String ttotalGiftWrapAmount = null;
+			// Set<String> displayName = new HashSet<>();
+			String displayName = null;
+			List<OrderSKUDetailsEntity> findByOrderIdAndDesignerId = orderSKUDetailsRepo
+					.findByOrderIdAndDesignerId(orderId, value);
+			LOGGER.info("Value of findbyorderAndDesignerId", findByOrderIdAndDesignerId);
+			for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : findByOrderIdAndDesignerId) {
+
+				int designerId = orderSKUDetailsEntityRow.getDesignerId();
+				orders.add(skuOrders(orderSKUDetailsEntityRow));
+				taxAmount = taxAmount + Double.parseDouble(orderSKUDetailsEntityRow.getTaxAmount() + "" == null ? "0"
+						: orderSKUDetailsEntityRow.getTaxAmount() + "");
+				Double grossGrandTotal = 0.00;
+				Double tgrossandTotal = 0.00;
+				Double GiftWrapAmount = 0.00;
+				for (OrderPlacedDTO order : orders) {
+					grossGrandTotal = grossGrandTotal + Double.parseDouble(order.getMrp());
+					tgrossandTotal = tgrossandTotal + Double.parseDouble(order.getTotal());
+					tgrossGrandTotal=tgrossGrandTotal+order.getMrp()==null ? "0" :order.getMrp();
+					if (orderSKUDetailsEntityRow.getGiftwrapStatus()) {
+						totalGiftWrapAmount = totalGiftWrapAmount + Double
+								.parseDouble(order.getGiftWrapAmount() == null ? "0" : order.getGiftWrapAmount());
+						
+
+					} else {
+						totalGiftWrapAmount = totalGiftWrapAmount + Double.parseDouble("0" == null ? "0" : "0");
+					}
+				}
+
+				totalTax = totalTax + Double.parseDouble(totalTax + "" == null ? "0" : totalTax + "");
+				discount = discount + Double.parseDouble(orderSKUDetailsEntityRow.getDiscount() + "" == null ? "0"
+						: orderSKUDetailsEntityRow.getDiscount() + "");
+
+				tmrp = String.valueOf(df.format(mrp));
+				ttaxAmount = String.valueOf(taxAmount);
+				ttotal = String.valueOf(total);
+				ttotalMrp = String.valueOf(totalMrp);
+				ttotalTax = String.valueOf(totalTax);
+				tgrandTotal = String.valueOf(tgrossandTotal);
+				tgrossGrandTotal = String.valueOf(grossGrandTotal);
+				tDiscount = String.valueOf(discount);
+				ttotalGiftWrapAmount = String.valueOf(totalGiftWrapAmount);
+				try {
+					DesignerProfileEntity forEntity = restTemplate
+							.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
+									DesignerProfileEntity.class)
+							.getBody();
+					designerEmail = forEntity.getDesignerProfile().getEmail();
+					designerName = forEntity.getDesignerName();
+					displayName = forEntity.getDesignerProfile().getDisplayName();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			data.put("orderId", orderId);
+			data.put("userName", userName);
+			data.put("data", orders);
+			data.put("datas", ordersdata);
+			data.put("tmrp", tmrp);
+			data.put("ttotal", ttotal);
+			data.put("ttaxAmount", taxAmount);
+			data.put("ttotalMrp", ttotalMrp);
+			data.put("ttotalTax", ttotalTax);
+			data.put("tgrandTotal", tgrandTotal);
+			data.put("tDiscount", tDiscount);
+			data.put("totalGiftWrapAmount", totalGiftWrapAmount);
+			data.put("tgrossGrandTotal", tgrossGrandTotal);
+			data.put("displayName", displayName);
+			Context context = new Context();
+			context.setVariables(data);
+			String htmlContent = templateEngine.process("orderPlacedDesigner.html", context);
+			EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
+					MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true, null, restTemplate);
+			emailSenderThreadDesigner.start();
+
 		}
 	}
 
