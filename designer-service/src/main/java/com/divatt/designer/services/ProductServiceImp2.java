@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +51,7 @@ import com.divatt.designer.response.GlobalResponce;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mashape.unirest.http.JsonNode;
 
-import springfox.documentation.spring.web.json.Json;
 
 @Service
 public class ProductServiceImp2 implements ProductService2 {
@@ -66,9 +63,6 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	@Autowired
 	private SequenceGenerator sequenceGenarator;
-
-//	@Autowired
-//	private MongoOperations mongoOperations;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -268,24 +262,15 @@ public class ProductServiceImp2 implements ProductService2 {
 			}
 			if (list.size() > 0) {
 				ProductMasterEntity2 productMasterEntity2 = list.get(0);
-				LOGGER.info("Product data by product ID = {}", productMasterEntity2);
 				DesignerProfileEntity designerProfileEntity = designerProfileRepo
 						.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get();
 				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
 						RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productMasterEntity2.getSubCategoryId(),
 						SubCategoryEntity.class);
-				LOGGER.info("RestTemplateConstant.SUBCATEGORY_VIEW.getMessage()"
-						+ RestTemplateConstant.SUBCATEGORY_VIEW.getMessage());
+
 				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
 						RestTemplateConstant.CATEGORY_VIEW.getMessage() + productMasterEntity2.getCategoryId(),
 						CategoryEntity.class);
-//			LOGGER.info("RestTemplateConstant.CATEGORY_VIEW.getMessage()"+RestTemplateConstant.CATEGORY_VIEW.getMessage());
-//			LOGGER.info("MessageConstant.PRODUCT_NOT_FOUND.getMessage()"+MessageConstant.PRODUCT_NOT_FOUND.getMessage());
-//			LOGGER.info("MessageConstant.SUCCESS.getMessage()"+MessageConstant.SUCCESS.getMessage());
-//			LOGGER.info("MessageConstant.BAD_REQUEST.getMessage()"+MessageConstant.BAD_REQUEST.getMessage());
-//			LOGGER.info("MessageConstant.DELETED.getMessage()"+MessageConstant.DELETED.getMessage());
-//			LOGGER.info("RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage()"+RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage());
-//			LOGGER.info("RestTemplateConstant.USER_GET_USER_ID.getMessage()"+RestTemplateConstant.USER_GET_USER_ID.getMessage());
 
 				productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
 				productMasterEntity2.setCategoryName(catagory.getBody().getCategoryName());
@@ -321,15 +306,12 @@ public class ProductServiceImp2 implements ProductService2 {
 			Integer rejected = 0;
 
 			all = productRepo2.countByIsDeleted(isDeleted);
-			LOGGER.info("Behind all" + all);
 			pending = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Pending");
 			approved = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Approved");
 			rejected = productRepo2.countByIsDeletedAndAdminStatus(isDeleted, "Rejected");
 
-			LOGGER.info(adminStatus);
 			if (keyword.isEmpty()) {
 				if (adminStatus.equals("all")) {
-					LOGGER.info("Behind all");
 					findAll = productRepo2.findByIsDeleted(isDeleted, pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
@@ -343,7 +325,7 @@ public class ProductServiceImp2 implements ProductService2 {
 							DesignerProfileEntity forEntity = restTemplate.getForEntity(
 									RestTemplateConstant.DESIGNER_BY_ID.getMessage() + catagoryData.getDesignerId(),
 									DesignerProfileEntity.class).getBody();
-							LOGGER.info(forEntity + "Inside Forentity");
+
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
 							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
@@ -370,7 +352,6 @@ public class ProductServiceImp2 implements ProductService2 {
 						}
 					});
 				} else if (adminStatus.equals("pending")) {
-					LOGGER.info("Behind pending");
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Pending", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
@@ -384,7 +365,7 @@ public class ProductServiceImp2 implements ProductService2 {
 							DesignerProfileEntity forEntity = restTemplate.getForEntity(
 									RestTemplateConstant.DESIGNER_BY_ID.getMessage() + catagoryData.getDesignerId(),
 									DesignerProfileEntity.class).getBody();
-							LOGGER.info(forEntity + "Inside Forentity");
+
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
 							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
@@ -411,7 +392,6 @@ public class ProductServiceImp2 implements ProductService2 {
 						}
 					});
 				} else if (adminStatus.equals("approved")) {
-					LOGGER.info("Behind approved");
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Approved", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
@@ -425,7 +405,7 @@ public class ProductServiceImp2 implements ProductService2 {
 							DesignerProfileEntity forEntity = restTemplate.getForEntity(
 									RestTemplateConstant.DESIGNER_BY_ID.getMessage() + catagoryData.getDesignerId(),
 									DesignerProfileEntity.class).getBody();
-							LOGGER.info(forEntity + "Inside Forentity");
+
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
 							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
@@ -452,9 +432,7 @@ public class ProductServiceImp2 implements ProductService2 {
 						}
 					});
 				} else if (adminStatus.equals("rejected")) {
-					LOGGER.info("Behind rejected");
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Rejected", pagingSort);
-					LOGGER.info("inside findall getContent" + findAll.getContent());
 					findAll.getContent().forEach(catagoryData -> {
 						try {
 							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
@@ -467,7 +445,7 @@ public class ProductServiceImp2 implements ProductService2 {
 							DesignerProfileEntity forEntity = restTemplate.getForEntity(
 									RestTemplateConstant.DESIGNER_BY_ID.getMessage() + catagoryData.getDesignerId(),
 									DesignerProfileEntity.class).getBody();
-							LOGGER.info(forEntity + "Inside Forentity");
+
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
 							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
@@ -496,7 +474,6 @@ public class ProductServiceImp2 implements ProductService2 {
 				}
 			} else {
 				if (adminStatus.equals("all")) {
-					LOGGER.info("Behind into else all");
 					findAll = productRepo2.SearchAndfindByIsDeleted(keyword, isDeleted, pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
@@ -510,7 +487,7 @@ public class ProductServiceImp2 implements ProductService2 {
 							DesignerProfileEntity forEntity = restTemplate.getForEntity(
 									RestTemplateConstant.DESIGNER_BY_ID.getMessage() + catagoryData.getDesignerId(),
 									DesignerProfileEntity.class).getBody();
-							LOGGER.info(forEntity + "Inside Forentity");
+
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
 							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
@@ -537,9 +514,7 @@ public class ProductServiceImp2 implements ProductService2 {
 						}
 					});
 				} else if (adminStatus.equals("pending")) {
-					LOGGER.info("Behind into else pending");
-					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Pending",
-							pagingSort);
+					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Pending", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
 							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
@@ -552,7 +527,7 @@ public class ProductServiceImp2 implements ProductService2 {
 							DesignerProfileEntity forEntity = restTemplate.getForEntity(
 									RestTemplateConstant.DESIGNER_BY_ID.getMessage() + catagoryData.getDesignerId(),
 									DesignerProfileEntity.class).getBody();
-							LOGGER.info(forEntity + "Inside Forentity");
+
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
 							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
@@ -579,7 +554,6 @@ public class ProductServiceImp2 implements ProductService2 {
 						}
 					});
 				} else if (adminStatus.equals("approved")) {
-					LOGGER.info("Behind into else approved");
 					findAll = productRepo2.SearchAppAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Approved",
 							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
@@ -594,7 +568,7 @@ public class ProductServiceImp2 implements ProductService2 {
 							DesignerProfileEntity forEntity = restTemplate.getForEntity(
 									RestTemplateConstant.DESIGNER_BY_ID.getMessage() + catagoryData.getDesignerId(),
 									DesignerProfileEntity.class).getBody();
-							LOGGER.info(forEntity + "Inside Forentity");
+
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
 							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
@@ -621,7 +595,6 @@ public class ProductServiceImp2 implements ProductService2 {
 						}
 					});
 				} else if (adminStatus.equals("rejected")) {
-					LOGGER.info("Behind into else rejected");
 					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Rejected",
 							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
@@ -636,7 +609,6 @@ public class ProductServiceImp2 implements ProductService2 {
 							DesignerProfileEntity forEntity = restTemplate.getForEntity(
 									RestTemplateConstant.DESIGNER_BY_ID.getMessage() + catagoryData.getDesignerId(),
 									DesignerProfileEntity.class).getBody();
-							LOGGER.info(forEntity + "Inside Forentity");
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
 							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
@@ -964,7 +936,6 @@ public class ProductServiceImp2 implements ProductService2 {
 			if (productIdList.isEmpty()) {
 				Map<String, Object> response = new HashMap<>();
 				List<String> data = new ArrayList<String>();
-//				data.add("Wishlist empty");
 				response.put("data", data);
 				response.put("currentPage", 0);
 				response.put("total", 0);
@@ -981,7 +952,6 @@ public class ProductServiceImp2 implements ProductService2 {
 				Pageable pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 				Page<ProductMasterEntity2> findByProductIdIn = productRepo2.findByProductIdIn(productIdList,
 						pagingSort);
-//				List<ProductMasterEntity2> findByProductIdIn1 = new ArrayList<>();
 				findByProductIdIn.getContent().forEach(productData -> {
 					ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
 							RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productData.getSubCategoryId(),
@@ -1015,7 +985,6 @@ public class ProductServiceImp2 implements ProductService2 {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-//		return null;
 	}
 
 	@Override
@@ -1079,6 +1048,7 @@ public class ProductServiceImp2 implements ProductService2 {
 					maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice, labelType);
 			int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 			int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filterProduct.size());
+			
 			List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
 					: filterProduct.subList(startOfPage, endOfPage);
 			findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filterProduct.size());
@@ -1205,7 +1175,6 @@ public class ProductServiceImp2 implements ProductService2 {
 			} else {
 				findAll = productRepo2.findByIsDeletedAndSearch(keyword, false, pagingSort);
 			}			
-			List<Object> productId = new ArrayList<>();		
 			CategoryEntity[] categoryDetails = restTemplate
 					.getForEntity("https://localhost:8084/dev/category/getAllCategoryDetails", CategoryEntity[].class).getBody();
 			List<CategoryEntity> categoryList = Arrays.asList(categoryDetails);
@@ -1219,18 +1188,7 @@ public class ProductServiceImp2 implements ProductService2 {
 								searchBy, designerId, categoryId, subCategoryId, colour, cod, customization, priceType,
 								returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice,
 								labelType);
-//				     productByCategoryId.forEach(e -> {
-//					 ObjectMapper obj = new ObjectMapper();
-//					 String productIdFilter = null;
-//					 try {
-//						productIdFilter = obj.writeValueAsString(e);
-//					 } catch (JsonProcessingException e1) {
-//						e1.printStackTrace();
-//					 }
-//					 JsonNode pJN = new JsonNode(productIdFilter);
-//					 JSONObject object = pJN.getObject();
-//					 productId.add(object);
-//				   });
+
 				     int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 						int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filterProduct.size());
 						List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
@@ -1246,12 +1204,7 @@ public class ProductServiceImp2 implements ProductService2 {
 				totalPage = 0;
 			}	
 			Map<String, Object> response = new HashMap<>();
-//			if (!productId.isEmpty()) {
-//				response.put("data", new Json(productId.toString()));
-//			} else {
-//				response.put("data", productId);
-//			}
-	        //response.put("data", new Json(productId.toString()));
+
 			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
