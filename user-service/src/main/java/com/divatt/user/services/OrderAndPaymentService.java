@@ -29,7 +29,7 @@ public interface OrderAndPaymentService {
 
 	public ResponseEntity<?> postOrderPaymentService(OrderPaymentEntity orderPaymentEntity);
 
-	public ResponseEntity<?> postOrderSKUService(OrderSKUDetailsEntity orderSKUDetailsEntityRow);
+	public void postOrderSKUService(OrderSKUDetailsEntity orderSKUDetailsEntityRow);
 
 	public Map<String, Object> getOrderPaymentService(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy);

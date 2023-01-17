@@ -135,8 +135,16 @@ public class OrderAndPaymentContoller {
 			}
 			return orderAndPaymentService.postRazorpayOrderCreateService(orderDetailsEntity);
 		} catch (HttpStatusCodeException ex) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/razorpay/create", ex.getResponseBodyAsString(), ex.getStatusCode());
+			}
 			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/razorpay/create", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -151,31 +159,48 @@ public class OrderAndPaymentContoller {
 			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
 				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(), HttpStatus.UNAUTHORIZED);
 			}
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/payment/add", "Success", HttpStatus.OK);
+			}
 			return orderAndPaymentService.postOrderPaymentService(orderPaymentEntity);
 
 		} catch (HttpStatusCodeException ex) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/payment/add", ex.getResponseBodyAsString(), ex.getStatusCode());
+			}
 			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/payment/add", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
 
 	@PostMapping("/orderSKUDetails/add")
-	public ResponseEntity<?> postOrderSKUDetails(@RequestHeader("Authorization") String token,
+	public void postOrderSKUDetails(@RequestHeader("Authorization") String token,
 			@Valid @RequestBody OrderSKUDetailsEntity orderSKUDetailsEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderSKUDetails()");
 
 		try {
 			String extractUsername =jwtUtil.extractUsername(token.substring(7));
-			if (!userLoginRepo.findByEmail(extractUsername).isPresent()) {
-				return new ResponseEntity<>(MessageConstant.UNAUTHORIZED.getMessage(), HttpStatus.UNAUTHORIZED);
+			if (userLoginRepo.findByEmail(extractUsername).isPresent()) {
+				orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
 			}
-			return orderAndPaymentService.postOrderSKUService(orderSKUDetailsEntity);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/orderSKUDetails/add", ex.getResponseBodyAsString(), ex.getStatusCode());
+			}
 		} catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/orderSKUDetails/add", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		}
 
 	}
@@ -192,8 +217,16 @@ public class OrderAndPaymentContoller {
 
 			return orderAndPaymentService.postOrderHandleDetailsService(PayEntity);
 		} catch (HttpStatusCodeException ex) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/razorpay/handle", ex.getResponseBodyAsString(), ex.getStatusCode());
+			}
 			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/razorpay/handle", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -208,6 +241,10 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.getOrderPaymentService(page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/payment/list", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			throw new CustomException(e.getMessage());
 		}
 
@@ -252,12 +289,22 @@ public class OrderAndPaymentContoller {
 				map.put("status", 200);
 				map.put("message", MessageConstant.ORDER_PLACED.getMessage());
 			}
-
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Order Status","Order placed successfully");
+			}
 			return ResponseEntity.ok(map);
 
 		} catch (HttpStatusCodeException ex) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/add", ex.getResponseBodyAsString(), ex.getStatusCode());
+			}
 			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/add", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -274,6 +321,10 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.getOrders(page, limit, sort, sortName, keyword, sortBy, token, orderStatus);
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/list", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			throw new CustomException(e.getMessage());
 		}
 
@@ -310,6 +361,10 @@ public class OrderAndPaymentContoller {
 			return orderAndPaymentService.getUserOrderDetailsService(userId, page, limit, sort, sortName, keyword,
 					sortBy, token);
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/getUserOrder/"+userId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			throw new CustomException(e.getMessage());
 		}
 
@@ -321,6 +376,10 @@ public class OrderAndPaymentContoller {
 		try {
 			return this.orderAndPaymentService.orderUpdateService(orderSKUDetailsEntity, orderId);
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/updateOrder/"+orderId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -339,6 +398,10 @@ public class OrderAndPaymentContoller {
 			return orderAndPaymentService.getDesigerOrders(designerId, page, limit, sort, sortName, keyword, sortBy,
 					orderItemStatus, sortDateType, startDate, endDate);
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/list/"+designerId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			throw new CustomException(e.getMessage());
 		}
 
@@ -346,7 +409,6 @@ public class OrderAndPaymentContoller {
 
 	@PostMapping("/genpdf/order")
 	File createPdfSupplier(@RequestBody OrderDetailsEntity orderDetailsEntity) throws IOException {
-		System.out.println("ok");
 
 		/* first, get and initialize an engine */
 		VelocityEngine ve = new VelocityEngine();
@@ -427,6 +489,10 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.getProductDetails(orderId, page, limit, sort, sortName, keyword, sortBy);
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/orderProductDetails/"+orderId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -482,6 +548,7 @@ public class OrderAndPaymentContoller {
 		return orderAndPaymentService.getClassPathFile(filename, response);
 	}
 
+	
 	@PostMapping("/track/add")
 	public ResponseEntity<?> postOrderTracking(@Valid @RequestBody OrderTrackingEntity orderTrackingEntity) {
 		LOGGER.info("Inside - OrderAndPaymentContoller.postOrderTracking()");
@@ -489,8 +556,16 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.postOrderTrackingService(orderTrackingEntity);
 		} catch (HttpStatusCodeException ex) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/track/add", ex.getResponseBodyAsString(), ex.getStatusCode());
+			}
 			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/track/add", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -504,8 +579,16 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.putOrderTrackingService(orderTrackingEntity, trackingId);
 		} catch (HttpStatusCodeException ex) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/track/update/"+trackingId, ex.getResponseBodyAsString(), ex.getStatusCode());
+			}
 			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/track/update/"+trackingId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -520,8 +603,16 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.getOrderTrackingDetailsService(orderId, userId, designerId);
 		} catch (HttpStatusCodeException ex) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/track/getTracking/"+orderId, ex.getResponseBodyAsString(), ex.getStatusCode());
+			}
 			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/track/getTracking/"+orderId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -533,6 +624,10 @@ public class OrderAndPaymentContoller {
 		try {
 			return orderAndPaymentService.orderStatusUpdateService(orderSKUDetailsEntity, orderId, productId);
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/orderStatusUpdate/"+orderId+"/"+productId, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			throw new CustomException(e.getMessage());
 		}
 	}

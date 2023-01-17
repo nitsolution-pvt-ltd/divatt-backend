@@ -224,8 +224,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			return ResponseEntity.ok(new Json(order.toString()));
 
 		} catch (RazorpayException exe) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/razorpay/create", exe.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(new Json(exe.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/razorpay/create", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -249,7 +257,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			JsonNode OrderPayJson = new JsonNode(paymentIdFilter);
 
 			Payment payment = razorpayClient.Payments.fetch(OrderPayJson.getObject().get("razorpay_payment_id").toString());
-
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/payment/add", "Success", HttpStatus.OK);
+			}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/payment/add", gson.toJson(payment), HttpStatus.OK);
+			}
 			String payStatus = "FAILED";
 			if (payment.get("error_code").equals(null) && payment.get("status").equals("captured")) {
 				payStatus = "COMPLETED";
@@ -261,13 +276,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			
 			List<OrderDetailsEntity> findOrderRow = orderDetailsRepo.findByOrderId(orderPaymentEntity.getOrderId());
 			if (findOrderRow.size() <= 0) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/payment/add", "Order details not found", HttpStatus.NOT_FOUND);
+				}
 				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
+			
 			Map<String, Object> map = null;
 			try {
 				map = obj.readValue(payment.toString(), new TypeReference<Map<String, Object>>() {});
 			} catch (JsonProcessingException e) {
-				e.printStackTrace();
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/payment/add", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+				}
 			}
 			Map<String, String> mapPayId = new HashMap<>();
 			mapPayId.put("OrderId", orderPaymentEntity.getOrderId());
@@ -293,19 +316,35 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				commonUtility.userOrder(orderPaymentEntity);
 				return ResponseEntity.ok(mapPayId);
 			} else
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+							host + contextPath + "/payment/add", MessageConstant.ORDER_ID_EXIST.getMessage(), HttpStatus.NOT_FOUND);
+				}
 				throw new CustomException(MessageConstant.ORDER_ID_EXIST.getMessage());
 		} catch (RazorpayException e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/payment/add", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (HttpStatusCodeException ex) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/payment/add", ex.getResponseBodyAsString(), ex.getStatusCode());
+			}
 			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
 		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/payment/add", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
 
 	@Override
-	public ResponseEntity<?> postOrderSKUService(OrderSKUDetailsEntity orderSKUDetailsEntityRow) {
+	public void postOrderSKUService(OrderSKUDetailsEntity orderSKUDetailsEntityRow) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderSKUService()");
 
 		try {
@@ -358,11 +397,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
 			}
-			return ResponseEntity.ok(null);
 		} catch (HttpStatusCodeException ex) {
-			return new ResponseEntity<>(ex.getResponseBodyAsByteArray(), ex.getStatusCode());
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/orderSKUDetails/add", ex.getResponseBodyAsString(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		} catch (Exception e) {
-			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/orderSKUDetails/add", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		}
 
 	}
