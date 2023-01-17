@@ -222,10 +222,18 @@ public class ProfileContoller {
 					.findByBoutiqueName(designerProfileEntity.getBoutiqueProfile().getBoutiqueName());
 
 			if (!findByBoutiqueName.isPresent()) {
+				
+				Query query = new Query();
+			    query.limit(1);
+			    query.with(Sort.by(Sort.DEFAULT_DIRECTION.DESC, "dId"));
 
-				Optional<DesignerLoginEntity> designerLoginData = designerLoginRepo.findByEmail(designerProfileEntity.getDesignerProfile().getEmail());
+			    List<DesignerLoginEntity> designerLoginData = mongoOperations.find(query, DesignerLoginEntity.class);
+				
 				String randomId = this.getRandomString();
-				Long dUid=(designerLoginData.get().getdId()+1);
+				Long dUid=10L; 
+				if (designerLoginData.size() >0) {
+					dUid=(designerLoginData.get(0).getdId())+1;
+				}
 				String uid=randomId+dUid;
 				ResponseEntity<String> forEntity = restTemplate
 						.getForEntity(RestTemplateConstant.PRESENT_DESIGNER.getMessage()
@@ -325,7 +333,6 @@ public class ProfileContoller {
 //				} catch (Exception e) {
 //					System.out.println(e.getMessage());
 //				}
-
 				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.REGISTERED.getMessage(), 200));
 			} else {
@@ -368,6 +375,7 @@ public class ProfileContoller {
 			designerLoginEntityDB.setAccountStatus("ACTIVE");
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
+			designerLoginEntityDB.setUid(designerLoginEntity.getUid());
 			Object string = getDesigner(designerLoginEntityDB.getdId()).getBody();
 			String designerId = null;
 			ObjectMapper mapper = new ObjectMapper();
@@ -438,11 +446,6 @@ public class ProfileContoller {
 
 			designerPersonalInfoRepo.save(designerPersonalInfoEntity);
 
-			LOGGER.info(designerProfileEntity + "Inside DesignerProfileEntity");
-			// start designer measurement
-			LOGGER.info("Men Chart data is ={}", designerProfileEntity.getMenChartData());
-			LOGGER.info("Women Chart data is ={}", designerProfileEntity.getWomenChartData());
-
 			Measurement menChartData = designerProfileEntity.getMenChartData();
 			menChartData.set_id(sequenceGenarator.getNextSequence(Measurement.SEQUENCE_NAME));
 			menChartData.setCreatedOn(new Date());
@@ -451,13 +454,6 @@ public class ProfileContoller {
 			womenChartData.setCreatedOn(new Date());
 			measurementRepo.save(menChartData);
 			measurementRepo.save(womenChartData);
-//			Measurement save = measurementRepo.save(menChartData);
-//			
-//			LOGGER.info("After save the data in database for Men={}",save);
-//			
-//			Measurement save2 = measurementRepo.save(womenChartData);
-//			LOGGER.info("After save the data in database for Women={}",save2);
-			// End designer measurement
 		} catch (Exception e) {
 			throw new CustomException(MessageConstant.CHECK_FIELDS.getMessage());
 		}
@@ -475,6 +471,7 @@ public class ProfileContoller {
 			DesignerProfile designerProfile = designerProfileEntity.getDesignerProfile();
 			designerProfile.setEmail(findById.get().getEmail());
 			designerProfile.setPassword(findById.get().getPassword());
+			designerProfile.setUid(findById.get().getUid());
 			designerProfile.setProfilePic(designerProfileEntity.getDesignerProfile().getProfilePic());
 
 			DesignerProfileEntity designerProfileEntityDB = findBydesignerId.get();
@@ -482,15 +479,14 @@ public class ProfileContoller {
 			designerProfileEntityDB.setBoutiqueProfile(designerProfileEntity.getBoutiqueProfile());
 			designerProfileEntityDB.setDesignerProfile(designerProfile);
 			designerProfileEntityDB.setSocialProfile(designerProfileEntity.getSocialProfile());
-//			designerProfileEntityDB.setDesignerLevel(designerProfile.getDesignerCategory());
+			designerProfileEntityDB.setUid(designerProfileEntity.getUid());
 
 			designerProfileRepo.save(designerProfileEntityDB);
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setProfileStatus(designerProfileEntity.getProfileStatus());
 			designerLoginEntityDB.setIsProfileCompleted(designerProfileEntity.getIsProfileCompleted());
-			LOGGER.info("DATA FOR LOGIN ENTITY FOR DESIGNER = {}", designerLoginEntityDB);
+			designerLoginEntityDB.setUid(designerProfileEntity.getUid());
 			DesignerLoginEntity save = designerLoginRepo.save(designerLoginEntityDB);
-			LOGGER.info("AFTER SAVE DATA IN DATABASE = {}", save);
 			try {
 				LoginEntity forEntity = restTemplate.getForEntity(
 						RestTemplateConstant.ADMIN_ROLE_NAME.getMessage() + MessageConstant.ADMIN_ROLES.getMessage(),
@@ -909,11 +905,10 @@ public class ProfileContoller {
 			@PathVariable String status) {
 		try {
 			LOGGER.info("Inside changeDesignerStatus");
-			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo
-					.findByEmail(jwtConfig.extractUsername(token.substring(7)));
-			DesignerLoginEntity designerProfileEntity = new DesignerLoginEntity();
-			Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo
-					.findBydesignerId(findByEmail.get().getdId());
+			
+			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7)));
+			DesignerLoginEntity designerLoginEntity = findByEmail.get();
+			Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo.findBydesignerId(findByEmail.get().getdId());
 
 			if (findBydesignerId.orElse(null) != null) {
 				DesignerProfileEntity designerProfileEntity2 = findBydesignerId.get();
@@ -921,23 +916,8 @@ public class ProfileContoller {
 				designerProfileRepo.save(designerProfileEntity2);
 			}
 			if (findByEmail.isPresent()) {
-				designerProfileEntity.setdId(findByEmail.get().getdId());
-				designerProfileEntity.setAdminComment(findByEmail.get().getAdminComment());
-				designerProfileEntity.setAuthToken(findByEmail.get().getAuthToken());
-				designerProfileEntity.setAccountStatus(findByEmail.get().getAccountStatus());
-				designerProfileEntity.setIsDeleted(findByEmail.get().getIsDeleted());
-				designerProfileEntity.setDesignerCurrentStatus(findByEmail.get().getDesignerCurrentStatus());
-				designerProfileEntity.setProfileStatus(findByEmail.get().getProfileStatus());
-				designerProfileEntity.setIsProfileCompleted(findByEmail.get().getIsProfileCompleted());
-				designerProfileEntity.setIsDeleted(findByEmail.get().getIsDeleted());
-				designerProfileEntity.setCategories(findByEmail.get().getCategories());
-				designerProfileEntity.setDesignerCategory(findByEmail.get().getDesignerCategory());
-				designerProfileEntity.setDisplayName(findByEmail.get().getDisplayName());
-				designerProfileEntity.setEmail(findByEmail.get().getEmail());
-				designerProfileEntity.setPassword(findByEmail.get().getPassword());
-				designerProfileEntity.setDesignerCurrentStatus(status);
-				designerLoginRepo.save(designerProfileEntity);
-
+				designerLoginEntity.setDesignerCurrentStatus(status);
+				designerLoginRepo.save(designerLoginEntity);
 			} else {
 				throw new CustomException(MessageConstant.USER_NOT_FOUND.getMessage());
 			}
@@ -950,20 +930,16 @@ public class ProfileContoller {
 				MessageConstant.DESIGNER_STATUS_CHANGE.getMessage(), 200);
 	}
 
-	@SuppressWarnings("unused")
 	@PostMapping("/profilePicUpdate")
 	public GlobalResponce imageUpload(@RequestBody ProfileImage profileimage) {
 		try {
 			Long designerId = profileimage.getDesignerId();
-			String image = profileimage.getImage();
-			LOGGER.info(image);
-			LOGGER.info(designerId.toString());
 
 			if (designerId != null) {
 				DesignerProfileEntity findBydesignerId = designerProfileRepo.findBydesignerId(designerId).get();
-				LOGGER.info(findBydesignerId + "Inside findBydesignerId");
 				DesignerProfileEntity designerProfileEntity = new DesignerProfileEntity();
 				DesignerProfile designerProfile = new DesignerProfile();
+				
 				designerProfileEntity.setDesignerId(profileimage.getDesignerId());
 				designerProfileEntity.setBoutiqueProfile(findBydesignerId.getBoutiqueProfile());
 				designerProfileEntity.setDesignerPersonalInfoEntity(findBydesignerId.getDesignerPersonalInfoEntity());
@@ -980,6 +956,8 @@ public class ProfileContoller {
 				designerProfileEntity.setProfileStatus(findBydesignerId.getProfileStatus());
 				designerProfileEntity.setDesignerCurrentStatus(findBydesignerId.getDesignerCurrentStatus());
 				designerProfileEntity.setIsProfileCompleted(findBydesignerId.getIsProfileCompleted());
+				designerProfileEntity.setUid(findBydesignerId.getUid());
+				
 				designerProfile.setAltMobileNo(findBydesignerId.getDesignerProfile().getAltMobileNo());
 				designerProfile.setCity(findBydesignerId.getDesignerProfile().getCity());
 				designerProfile.setCountry(findBydesignerId.getDesignerProfile().getCountry());
@@ -997,12 +975,12 @@ public class ProfileContoller {
 				designerProfile.setPassword(findBydesignerId.getDesignerProfile().getPassword());
 				designerProfile.setPinCode(findBydesignerId.getDesignerProfile().getPinCode());
 				designerProfile.setProfilePic(profileimage.getImage());
-				LOGGER.info(profileimage.getImage());
 				designerProfile.setState(findBydesignerId.getDesignerProfile().getState());
+				designerProfile.setUid(findBydesignerId.getDesignerProfile().getUid());
+				
 				designerProfileEntity.setDesignerProfile(designerProfile);
 
 				designerProfileRepo.save(designerProfileEntity);
-				LOGGER.info(designerProfileEntity + "inside profileentity");
 
 				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.PROFILE_IMAGE_UPDATED.getMessage(), 200);

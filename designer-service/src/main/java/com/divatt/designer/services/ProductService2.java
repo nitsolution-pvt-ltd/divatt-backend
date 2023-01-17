@@ -39,13 +39,19 @@ public interface ProductService2 {
 
 	ResponseEntity<?> allCartProductData(List<Integer> productIdList);
 
-	List<ProductMasterEntity2> productSearching(String searchBy, String designerId, String categoryId,
-			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
-			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey, String sortDateType,
-			String sortPrice, String labelType);
+	Map<String, Object> productSearching(Integer page, Integer limit, String sort,
+			String sortName, Optional<String> sortBy, String searchBy, String designerId,
+			String categoryId, String subCategoryId, String colour, Boolean cod, Boolean customization,
+			String priceType, Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap,
+			String searchKey, String sortDateType, String sortPrice, String labelType);
 
 	public ProductMasterEntity2 getProducts(Integer productId);
 
 	public ProductMasterEntity2 getProductsAdmin(Integer productId);
+	public Map<String, Object> getBannerDetails(String categoryName,Integer page, Integer limit, String sort, String sortName, String keyword,
+			Optional<String> sortBy,String searchBy, String designerId, String categoryId,
+			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
+			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey,
+			String sortDateType, String sortPrice, String labelType);
 
 }

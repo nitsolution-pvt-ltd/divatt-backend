@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.divatt.admin.entity.hsnCode.HsnEntity;
+import com.divatt.admin.entity.HsnEntity;
 
 
 @Repository

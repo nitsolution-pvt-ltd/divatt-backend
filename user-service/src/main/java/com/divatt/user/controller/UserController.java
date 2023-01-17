@@ -48,20 +48,20 @@ import org.thymeleaf.context.Context;
 
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
+import com.divatt.user.entity.ProductCommentEntity;
 import com.divatt.user.entity.SendMail;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
+import com.divatt.user.entity.UserCartEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
-import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
-import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.WishlistEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
-import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.UserAddressRepo;
 import com.divatt.user.repo.UserLoginRepo;
-import com.divatt.user.repo.wishlist.WishlistRepo;
+import com.divatt.user.repo.WishlistRepo;
 import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
@@ -150,7 +150,7 @@ public class UserController {
 				int calObjOfCurDateInt = calObjOfCurDate.get(Calendar.DATE);
 
 				if (calObjOfCurDateInt % addedOnInt == 7) {
-					System.out.println("Hiii");
+					
 					Optional<UserLoginEntity> findById = userLoginRepo.findById((long) e.getUserId());
 					try {
 						ResponseEntity<String> forEntity = restTemplate.getForEntity(
@@ -160,13 +160,10 @@ public class UserController {
 						Map<String, Object> map = objectMapper.readValue(forEntity.getBody(), Map.class);
 						JSONObject js = new JSONObject(forEntity.getBody());
 						JSONObject jsonObjectOfPrise = new JSONObject(
-								new JSONObject(new JSONObject(js.get("price").toString()).toString()).get("indPrice")
-										.toString());
+								new JSONObject(new JSONObject(js.get("price").toString()).toString()).get("indPrice").toString());
 
 						JSONArray jsonArrayOfImage = new JSONArray(js.get("images").toString());
 						JSONObject jsonObjectOfImage = new JSONObject(jsonArrayOfImage.get(0).toString());
-
-						System.out.println(jsonObjectOfImage.get("name"));
 
 						JSONArray jsonArrayOfSOH = new JSONArray(js.get("standeredSOH").toString());
 						JSONObject jsonObjectOfSOH = new JSONObject(jsonArrayOfSOH.get(0).toString());
@@ -188,17 +185,14 @@ public class UserController {
 										+ "</tbody></table><table style='width:100%;margin-top: 50px;margin-bottom: 60px;'><tr><td style='text-align:center;font-weight: 600;color: #000;'><a href='http://65.1.190.195/divatt/wishlist' style='padding: 0.375rem 0.75rem;text-transform: uppercase;font-family: 'Lato', sans-serif;text-decoration: none; font-size: 1rem;cursor: pointer;height: 25px;display: block;width: fit-content; margin: auto;line-height: 1.5; border-radius: 0.25rem;color: rgb(255 255 255) !important;letter-spacing: 0.05em;border: 2px solid rgb(135 192 72) !important; background-image: linear-gradient(30deg, rgb(135 192 72) 50%, rgb(0 0 0 / 0%) 50%);background-size: 1000px; background-repeat: no-repeat;background-position: 0;-webkit-transition: background 300ms ease-in-out;transition: background 300ms ease-in-out;' target='_blank'>Complete your order now</a></td></tr></table>"
 										+ "<h1 style='font-family: 'Lato', sans-serif;text-transform: uppercase;font-size: 23px;font-weight: 800; margin-bottom: 22px;margin-top: 40px;letter-spacing: 1.6px;text-align: center;'>Follow US</h1><div style='text-align: center;'><a href='#' style='text-decoration: none;color: #000;text-align: center;margin-right: 10px;'><img src='https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png' alt='' style='width: 40px;height:40px;'></a><a href='#' style='text-decoration: none;color: #000;text-align: center;margin-right: 10px;'><img src='https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg' alt='' style='width: 37px;height:37px;'></a><a href='#' style='text-decoration: none;color: #000;text-align: center;margin-right: 10px;'><img src='https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png' alt='' style='width: 40px;height:40px;'></a><a href='#' style='text-decoration: none;color: #000;text-align: center;margin-right: 10px;'><img src='https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png' alt='' style='width: 42px;height:42px;'></a><a href='#' style='text-decoration: none;color: #000;text-align: center;'><img src='https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png' alt='' style='width: 39px;height:37px;'></a></div></div><script type='text/javascript' src='/LBKlAJ/lDsEbq/5P/c4gA/oVBSEXBP4/7cErfJDL3S/NCUhTw/fHU5/ZXVTawM'></script></body></html>",
 								true);
-
 					} catch (Exception Z) {
-						System.out.println(Z.getMessage());
+						Z.printStackTrace();
 					}
 				}
-
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-
 	}
 
 	public void sendEmail(String to, String subject, String body, Boolean enableHtml) {

@@ -11,14 +11,14 @@ import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 
+import com.divatt.user.entity.ProductCommentEntity;
 import com.divatt.user.entity.StateEntity;
+import com.divatt.user.entity.UserCartEntity;
 import com.divatt.user.entity.UserDesignerEntity;
 import com.divatt.user.entity.UserLoginEntity;
-import com.divatt.user.entity.PCommentEntity.ProductCommentEntity;
-import com.divatt.user.entity.cart.UserCartEntity;
+import com.divatt.user.entity.WishlistEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
-import com.divatt.user.entity.wishlist.WishlistEntity;
 import com.divatt.user.response.GlobalResponse;
 
 public interface UserService {

@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -60,7 +61,8 @@ public class DesignerLoginEntity {
 	private String designerCategory;
 	
 	private Boolean isProfileCompleted;
-	
+    
+	@Indexed(unique = true)
 	private String uid;
 	
 	

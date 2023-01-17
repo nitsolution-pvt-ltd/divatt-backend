@@ -8,10 +8,10 @@ import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 
+import com.divatt.admin.entity.CategoryEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.UserCategoryResponse;
 import com.divatt.admin.entity.UserResponseEntity;
-import com.divatt.admin.entity.category.CategoryEntity;
 
 public interface CategoryService {
 
@@ -39,5 +39,7 @@ public interface CategoryService {
 	List<UserCategoryResponse> viewByCategoryNameService();
 
 	UserResponseEntity viewByCategoryName(String categoryName, String subCategoryName);
+
+	List<CategoryEntity> getAllCategoryDetails();
 
 }

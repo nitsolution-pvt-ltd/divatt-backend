@@ -23,11 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.divatt.admin.constant.MessageConstant;
+import com.divatt.admin.entity.CategoryEntity;
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.SubCategoryEntity;
 import com.divatt.admin.entity.UserCategoryResponse;
 import com.divatt.admin.entity.UserResponseEntity;
-import com.divatt.admin.entity.category.CategoryEntity;
-import com.divatt.admin.entity.category.SubCategoryEntity;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.CategoryRepo;
 import com.divatt.admin.repo.SubCategoryRepo;
@@ -369,6 +369,14 @@ public class CategoryServiceImpl implements CategoryService {
 			responseEntity.setSubCategoryEntity(subCategoryEntity);
 			return responseEntity;
 		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	public List<CategoryEntity> getAllCategoryDetails(){
+		try {
+			List<CategoryEntity> categoryData = this.categoryRepo.findAll();
+			return categoryData;
+		}catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

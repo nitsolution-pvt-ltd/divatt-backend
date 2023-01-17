@@ -56,23 +56,23 @@ public class AccountExcelExporter {
 
 		createCell(row, 0, "Order Number", style);
 		createCell(row, 1, "Order Date", style);
-		createCell(row, 3, "Unique ID of Designer", style);
-		createCell(row, 4, "GSTIN of Designer", style);
-		createCell(row, 5, "Invoice Number", style);
-		createCell(row, 6, "Invoice Date", style);
-		createCell(row, 7, "Transaction Value", style);
-		createCell(row, 8, "CGST", style);
-		createCell(row, 9, "SGST", style);
-		createCell(row, 10, "IGST", style);
-		createCell(row, 11, "Gift Wrapping Charges", style);
-		createCell(row, 12, "Invoice Value", style);
-		createCell(row, 13, "Return Particulars of any merchandise", style);
-		createCell(row, 14, "Return Particulars", style);
-		createCell(row, 15, "TCS", style);
-		createCell(row, 16, "Service Fees Collected by Divatt", style);
-		createCell(row, 17, "GST on Service Fees", style);
-		createCell(row, 18, "Total Service Fees Component", style);
-		createCell(row, 19, "Total Recovery Divatt", style);
+		createCell(row, 2, "Unique ID of Designer", style);
+		createCell(row, 3, "GSTIN of Designer", style);
+		createCell(row, 4, "Invoice Number", style);
+		createCell(row, 5, "Invoice Date", style);
+		createCell(row, 6, "Transaction Value", style);
+		createCell(row, 7, "CGST", style);
+		createCell(row, 8, "SGST", style);
+		createCell(row, 9, "IGST", style);
+		createCell(row, 10, "Gift Wrapping Charges", style);
+		createCell(row, 11, "Invoice Value", style);
+		createCell(row, 12, "Return Particulars of any merchandise", style);
+		createCell(row, 13, "Return Particulars", style);
+		createCell(row, 14, "TCS", style);
+		createCell(row, 15, "Service Fees Collected by Divatt", style);
+		createCell(row, 16, "GST on Service Fees", style);
+		createCell(row, 17, "Total Service Fees Component", style);
+		createCell(row, 18, "Total Recovery Divatt", style);
 
 	}
 

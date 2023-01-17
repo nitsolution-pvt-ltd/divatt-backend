@@ -3,7 +3,6 @@ package com.divatt.admin.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.divatt.admin.entity.category.CategoryEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 

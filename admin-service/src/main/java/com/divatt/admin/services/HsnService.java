@@ -9,7 +9,7 @@ import javax.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.divatt.admin.entity.GlobalResponse;
-import com.divatt.admin.entity.hsnCode.HsnEntity;
+import com.divatt.admin.entity.HsnEntity;
 
 public interface HsnService {
 

@@ -9,7 +9,7 @@ import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 
 import com.divatt.admin.entity.GlobalResponse;
-import com.divatt.admin.entity.specification.SpecificationEntity;
+import com.divatt.admin.entity.product.SpecificationEntity;
 
 public interface SpecificationService {
 

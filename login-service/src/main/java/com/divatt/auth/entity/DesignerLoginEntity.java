@@ -15,8 +15,10 @@ public class DesignerLoginEntity {
 
 	@Id
 	private Object uid;
-
-	@Field(name = "email")
+	
+	@Field(name = "uid")
+	private String uniqueId;
+	
 	private String email;
 	@Field(name = "password")
 	private String password;
@@ -49,11 +51,13 @@ public class DesignerLoginEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public DesignerLoginEntity(Object uid, String email, String password, String authToken, Boolean isDeleted,
-			String adminComment, String profileStatus, String accountStatus, Json logins, String socialType,
-			String socialId, String name, Boolean isProfileCompleted,String designerCurrentStatus) {
+	public DesignerLoginEntity(Object uid, String uniqueId, String email, String password, String authToken,
+			Boolean isDeleted, String adminComment, String profileStatus, String accountStatus, Json logins,
+			String socialType, String socialId, String name, Boolean isProfileCompleted, String designerCurrentStatus,
+			Long productCount, Long follwerCount) {
 		super();
 		this.uid = uid;
+		this.uniqueId = uniqueId;
 		this.email = email;
 		this.password = password;
 		this.authToken = authToken;
@@ -67,6 +71,18 @@ public class DesignerLoginEntity {
 		this.name = name;
 		this.isProfileCompleted = isProfileCompleted;
 		this.designerCurrentStatus = designerCurrentStatus;
+		this.productCount = productCount;
+		this.follwerCount = follwerCount;
+	}
+
+	@Override
+	public String toString() {
+		return "DesignerLoginEntity [uid=" + uid + ", uniqueId=" + uniqueId + ", email=" + email + ", password="
+				+ password + ", authToken=" + authToken + ", isDeleted=" + isDeleted + ", adminComment=" + adminComment
+				+ ", profileStatus=" + profileStatus + ", accountStatus=" + accountStatus + ", logins=" + logins
+				+ ", socialType=" + socialType + ", socialId=" + socialId + ", name=" + name + ", isProfileCompleted="
+				+ isProfileCompleted + ", designerCurrentStatus=" + designerCurrentStatus + ", productCount="
+				+ productCount + ", follwerCount=" + follwerCount + "]";
 	}
 
 	public Object getUid() {
@@ -77,20 +93,12 @@ public class DesignerLoginEntity {
 		this.uid = uid;
 	}
 
-	public String getProfileStatus() {
-		return profileStatus;
+	public String getUniqueId() {
+		return uniqueId;
 	}
 
-	public void setProfileStatus(String profileStatus) {
-		this.profileStatus = profileStatus;
-	}
-
-	public String getAccountStatus() {
-		return accountStatus;
-	}
-
-	public void setAccountStatus(String accountStatus) {
-		this.accountStatus = accountStatus;
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 
 	public String getEmail() {
@@ -133,16 +141,28 @@ public class DesignerLoginEntity {
 		this.adminComment = adminComment;
 	}
 
+	public String getProfileStatus() {
+		return profileStatus;
+	}
+
+	public void setProfileStatus(String profileStatus) {
+		this.profileStatus = profileStatus;
+	}
+
+	public String getAccountStatus() {
+		return accountStatus;
+	}
+
+	public void setAccountStatus(String accountStatus) {
+		this.accountStatus = accountStatus;
+	}
+
 	public Json getLogins() {
 		return logins;
 	}
 
 	public void setLogins(Json logins) {
 		this.logins = logins;
-	}
-
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
 	}
 
 	public String getSocialType() {
@@ -201,12 +221,9 @@ public class DesignerLoginEntity {
 		this.follwerCount = follwerCount;
 	}
 
-	@Override
-	public String toString() {
-		return "DesignerLoginEntity [uid=" + uid + ", email=" + email + ", password=" + password + ", authToken="
-				+ authToken + ", isDeleted=" + isDeleted + ", adminComment=" + adminComment + ", profileStatus="
-				+ profileStatus + ", accountStatus=" + accountStatus + ", logins=" + logins + ", socialType="
-				+ socialType + ", socialId=" + socialId + ", name=" + name + ", isProfileCompleted="
-				+ isProfileCompleted + "designerCurrentStatus, " + designerCurrentStatus +"]";
+	public static String getSequenceName() {
+		return SEQUENCE_NAME;
 	}
+
+	
 }
