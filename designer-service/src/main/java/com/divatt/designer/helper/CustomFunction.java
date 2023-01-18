@@ -433,7 +433,7 @@ public class CustomFunction {
 			this.productMasterEntity2.setColour(productMasterEntity2.getColour());
 			this.productMasterEntity2.setSizes(productMasterEntity2.getSizes());
 			if (productMasterEntity2.getSoh() == 0) {
-				throw new CustomException("Product is already out of stock");
+				throw new CustomException(MessageConstant.PRODUCT_IS_OUT_OF_STOCK.getMessage());
 			} else {
 				this.productMasterEntity2.setSoh(productMasterEntity2.getSoh() - qty);
 				this.productMasterEntity2.setOos(productMasterEntity2.getOos() + qty);
@@ -493,7 +493,7 @@ public class CustomFunction {
 				.filter(product -> !subCategoryId.equals("") ? Arrays.asList(subCategoryId.split(",")).stream()
 						.anyMatch(subCategory -> subCategory.equals(product.getSubCategoryId().toString())) : true)
 				.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
-						.anyMatch(dId -> Integer.parseInt(dId) == product.getDesignerId()) : true)
+						.anyMatch(dId -> Integer.parseInt(dId) == product.getDesignerId()) : true).filter(e->e.getSoh()!=0)
 				.collect(Collectors.toList());
 
 		if (sortDateType.equalsIgnoreCase("new")) {

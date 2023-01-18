@@ -893,7 +893,8 @@ public class ProductServiceImp2 implements ProductService2 {
 			findByDesignerByCurrentStatus.forEach(designerRow -> {
 				List<ProductMasterEntity2> findProduct = productRepo2
 						.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerId(false, "Approved", true,
-								designerRow.getDesignerId());
+								designerRow.getDesignerId())
+						.stream().filter(e -> e.getSoh() != 0).collect(Collectors.toList());
 				findall.addAll(findProduct);
 			});
 
@@ -1006,11 +1007,11 @@ public class ProductServiceImp2 implements ProductService2 {
 		}
 	}
 
-	public Map<String, Object> productSearching(Integer page, Integer limit, String sort,
-			String sortName, Optional<String> sortBy, String searchBy, String designerId,
-			String categoryId, String subCategoryId, String colour, Boolean cod, Boolean customization,
-			String priceType, Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap,
-			String searchKey, String sortDateType, String sortPrice, String labelType) {
+	public Map<String, Object> productSearching(Integer page, Integer limit, String sort, String sortName,
+			Optional<String> sortBy, String searchBy, String designerId, String categoryId, String subCategoryId,
+			String colour, Boolean cod, Boolean customization, String priceType, Boolean returnStatus, String maxPrice,
+			String minPrice, String size, Boolean giftWrap, String searchKey, String sortDateType, String sortPrice,
+			String labelType) {
 
 		try {
 			LOGGER.info("Inside ProductServiceImpl.productSearching()");
@@ -1025,7 +1026,7 @@ public class ProductServiceImp2 implements ProductService2 {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
 			Page<ProductMasterEntity2> findAll = null;
-			
+
 			List<ProductMasterEntity2> productMasterData = new ArrayList<>();
 			List<DesignerProfileEntity> findByDesignerByCurrentStatus = designerProfileRepo
 					.findByDesignerCurrentStatus("Online");
@@ -1056,14 +1057,14 @@ public class ProductServiceImp2 implements ProductService2 {
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
-			}	
+			}
 			Map<String, Object> response = new HashMap<>();
 			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
-			response.put("perPageElement", findAll.getNumberOfElements());			
+			response.put("perPageElement", findAll.getNumberOfElements());
 			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1152,12 +1153,11 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	}
 
-	public Map<String, Object> getBannerDetails(String categoryName, Integer page, Integer limit, String sort, String sortName,
-			String keyword, Optional<String> sortBy,
-			String searchBy, String designerId, String categoryId,
-			String subCategoryId, String colour, Boolean cod, Boolean customization, String priceType,
-			Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap, String searchKey,
-			String sortDateType, String sortPrice, String labelType) {
+	public Map<String, Object> getBannerDetails(String categoryName, Integer page, Integer limit, String sort,
+			String sortName, String keyword, Optional<String> sortBy, String searchBy, String designerId,
+			String categoryId, String subCategoryId, String colour, Boolean cod, Boolean customization,
+			String priceType, Boolean returnStatus, String maxPrice, String minPrice, String size, Boolean giftWrap,
+			String searchKey, String sortDateType, String sortPrice, String labelType) {
 		LOGGER.info("Inside - productServiceImpl2.getBannerDetails()");
 		try {
 			int CountData = (int) productRepo2.count();
@@ -1175,20 +1175,24 @@ public class ProductServiceImp2 implements ProductService2 {
 				findAll = productRepo2.findByIsDeleted(false, pagingSort);
 			} else {
 				findAll = productRepo2.findByIsDeletedAndSearch(keyword, false, pagingSort);
+
 			}			
 			CategoryEntity[] categoryDetails = restTemplate
-					.getForEntity("https://localhost:8084/dev/category/getAllCategoryDetails", CategoryEntity[].class).getBody();
+					.getForEntity("https://localhost:8084/dev/category/getAllCategoryDetails", CategoryEntity[].class)
+					.getBody();
 			List<CategoryEntity> categoryList = Arrays.asList(categoryDetails);
-			
-			if(categoryList.size() > 0) {
-			    for(CategoryEntity category : categoryList) {
-			         if (category.getCategoryName().toLowerCase().equals(categoryName.toLowerCase())) {
-				     Integer categoryId1 = category.getId();
-				     List<ProductMasterEntity2> productByCategoryId = this.productRepo2.findByCategoryId(categoryId1);
+
+			if (categoryList.size() > 0) {
+				for (CategoryEntity category : categoryList) {
+					if (category.getCategoryName().toLowerCase().equals(categoryName.toLowerCase())) {
+						Integer categoryId1 = category.getId();
+						List<ProductMasterEntity2> productByCategoryId = this.productRepo2
+								.findByCategoryId(categoryId1);
 						List<ProductMasterEntity2> filterProduct = customFunction.filterProduct(productByCategoryId,
 								searchBy, designerId, categoryId, subCategoryId, colour, cod, customization, priceType,
 								returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice,
 								labelType);
+
 
 				     int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 						int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filterProduct.size());
@@ -1196,22 +1200,21 @@ public class ProductServiceImp2 implements ProductService2 {
 								: filterProduct.subList(startOfPage, endOfPage);
 						findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filterProduct.size());
 					}
-			  } 
-			}else {
+				}
+			} else {
 				throw new CustomException("Category not found!");
 			}
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
-			}	
+			}
 			Map<String, Object> response = new HashMap<>();
-
 			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
-			response.put("perPageElement", findAll.getNumberOfElements());			
+			response.put("perPageElement", findAll.getNumberOfElements());
 			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

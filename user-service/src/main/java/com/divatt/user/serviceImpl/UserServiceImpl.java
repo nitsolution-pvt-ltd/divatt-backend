@@ -305,7 +305,7 @@ public class UserServiceImpl implements UserService {
 					.getBody();
 			String soh = body.get("soh").toString();
 			if (Integer.parseInt(soh) < userCartEntity.getQty()) {
-				throw new CustomException("Product has no Stock");
+				throw new CustomException(MessageConstant.PRODUCT_OUT_STOCK.getMessage());
 			}
 
 			if (!findByCat.isPresent()) {
