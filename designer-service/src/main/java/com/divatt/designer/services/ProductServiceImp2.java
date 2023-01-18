@@ -1176,7 +1176,7 @@ public class ProductServiceImp2 implements ProductService2 {
 				findAll = productRepo2.findByIsDeletedAndSearch(keyword, false, pagingSort);
 			}			
 			CategoryEntity[] categoryDetails = restTemplate
-					.getForEntity("https://localhost:8084/dev/category/getAllCategoryDetails", CategoryEntity[].class).getBody();
+					.getForEntity(RestTemplateConstant.GET_ALL_CATEGORYDETAILS.getMessage(), CategoryEntity[].class).getBody();
 			List<CategoryEntity> categoryList = Arrays.asList(categoryDetails);
 			
 			if(categoryList.size() > 0) {

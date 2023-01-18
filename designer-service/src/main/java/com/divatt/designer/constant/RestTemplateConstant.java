@@ -30,6 +30,7 @@ public enum RestTemplateConstant {
 	ACCOUNT_LIST("https://localhost:8084/dev/account/list"),
 	ADMIN_ROLE_NAME("https://localhost:8084/dev/admin/profile/getRoleName/"),
 	USER_DESIGNER_DETAILS("https://localhost:8082/dev/user/getUserDesignerDetails/"),
+	GET_ALL_CATEGORYDETAILS("https://localhost:8084/dev/category/getAllCategoryDetails"),
 	DESIGNER_BY_ID("https://localhost:8083/dev/designer/");
 
 	// FOR PROD
@@ -55,7 +56,9 @@ public enum RestTemplateConstant {
 //	 DESIGNER("https://dev.divatt.com/designer/"),
 //	 USER_FOLLOWER_COUNT("https://localhost:9090/prod/user/followerCount/"),
 //	 USER_FOLLOWED_DESIGNER("https://localhost:9092/prod/user/followedDesigner/"),
-//	USER_DESIGNER_DETAILS("https://localhost:9092/dev/user/getUserDesignerDetails/");
+//	USER_DESIGNER_DETAILS("https://localhost:9092/prod/user/getUserDesignerDetails/"),
+//	GET_ALL_CATEGORYDETAILS("https://localhost:8084/prod/category/getAllCategoryDetails");
+
 
 	private String message;
 
