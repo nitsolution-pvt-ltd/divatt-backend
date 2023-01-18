@@ -73,9 +73,9 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
 
 	List<ProductMasterEntity2> findByProductIdIn(List<Integer> productIdList);
 
-//	@Query(value = "{ $or: [ { 'productDetails.productName' : {$regex:?0,$options:'i'} }, { 'productDetails.productDescription' : {$regex:?0,$options:'i'} },{ 'taxPercentage' : {$regex:?0,$options:'i'} },{ 'price.indPrice.mrp' : {$regex:?0,$options:'i'} },{ 'designerName' : {$regex:?0,$options:'i'} },{ 'price.usPrice.mrp' : {$regex:?0,$options:'i'} } ]}")
-	@Query(value = "{$or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ]}")
-	List<ProductMasterEntity2> findbySearchKey(String searchKey);
+	@Query(value = "{$or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ]"
+			+ "$and: [{'designerId':?1}]}")
+	List<ProductMasterEntity2> findbySearchKeyAndDesignerId(String searchKey, Long dID);
 
 	List<ProductMasterEntity2> findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(Boolean isDeleted,
 			Integer designerId, String adminStatus, Boolean isActive);

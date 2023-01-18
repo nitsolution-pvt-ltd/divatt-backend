@@ -1034,12 +1034,13 @@ public class ProductServiceImp2 implements ProductService2 {
 				if (designerRow.getDesignerCurrentStatus().equals("Online")) {
 					List<ProductMasterEntity2> findProduct = new ArrayList<>();
 					if (!searchKey.equals("")) {
-						findProduct = productRepo2.findbySearchKey(searchKey);
+						findProduct = productRepo2.findbySearchKeyAndDesignerId(searchKey,designerRow.getDesignerId());
 					} else {
 						findProduct = productRepo2.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerId(false,
 								"Approved", true, designerRow.getDesignerId());
 					}
 					productMasterData.addAll(findProduct);
+					
 				}
 			});
 
