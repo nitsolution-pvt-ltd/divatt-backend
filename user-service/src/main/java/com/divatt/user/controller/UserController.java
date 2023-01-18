@@ -40,7 +40,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -49,7 +48,6 @@ import org.thymeleaf.context.Context;
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
 import com.divatt.user.entity.ProductCommentEntity;
-import com.divatt.user.entity.SendMail;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserCartEntity;
@@ -108,9 +106,6 @@ public class UserController {
 	
 	@Autowired
 	private TemplateEngine templateEngine;
-
-//	@Autowired
-//	private OrderSKUDetailsRepo detailsRepo;
 
 	@Value("${mail.from}")
 	private String mail;
@@ -314,7 +309,7 @@ public class UserController {
 			String lastName = userLoginEntity.getLastName();
 			String userName = firstName + " " + lastName;
 			String userEmail = userLoginEntity.getEmail();
-			//StringBuilder sb = new StringBuilder();
+
 			URI uri = URI.create(RestTemplateConstant.USER_REDIRECT.getLink()
 					+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()));
 			Context context = new Context();
@@ -324,44 +319,7 @@ public class UserController {
 			EmailSenderThread emailSenderThread = new EmailSenderThread(userEmail, "Successfully Registration", htmlContent,
 					true, null, restTemplate);
 			emailSenderThread.start();
-//			sb.append("Hi " + userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName() + "" + ",\n\n"
-//					+ "Welcome to Divatt We are delighted to have you join us as a user.\n"
-//					+ "You can do active your account by clicking the button below.");
-//			sb.append("<br><br><br><div style=\"text-align:center\"><a href=\"" + uri
-//					+ "\" target=\"_bkank\" style=\"text-decoration: none;color: rgb(255 255 255);background-color: rgb(135 192 72);padding: 7px 2em 8px;margin-top: 30px;font-family: sans-serif;font-weight: 700;border-radius: 22px;font-size: 13px;text-transform: uppercase;letter-spacing: 0.8;\">ACTIVE ACCOUNT</a></div><br><br>We will verify your details and come back to you soon.");
-//			sb.append("<div style=\"text-align: center;\">\r\n" + "			<a href=\"#\"\r\n"
-//					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-//					+ "				<img\r\n"
-//					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png\"\r\n"
-//					+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
-//					+ "			</a> <a href=\"#\"\r\n"
-//					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-//					+ "				<img\r\n"
-//					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg\"\r\n"
-//					+ "				alt=\"\" style=\"width: 37px; height: 37px;\">\r\n"
-//					+ "			</a> <a href=\"#\"\r\n"
-//					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-//					+ "				<img\r\n"
-//					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png\"\r\n"
-//					+ "				alt=\"\" style=\"width: 40px; height: 40px;\">\r\n"
-//					+ "			</a> <a href=\"#\"\r\n"
-//					+ "				style=\"text-decoration: none; color: #000; text-align: center; margin-right: 10px;\">\r\n"
-//					+ "				<img\r\n"
-//					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png\"\r\n"
-//					+ "				alt=\"\" style=\"width: 42px; height: 42px;\">\r\n"
-//					+ "			</a> <a href=\"#\"\r\n"
-//					+ "				style=\"text-decoration: none; color: #000; text-align: center;\">\r\n"
-//					+ "				<img\r\n"
-//					+ "				src=\"https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png\"\r\n"
-//					+ "				alt=\"\" style=\"width: 39px; height: 37px;\">\r\n" + "			</a>\r\n"
-//					+ "		</div>");
-//			SendMail mail = new SendMail(userLoginEntity.getEmail(), "Successfully Registration", sb.toString(), true);
-//			try {
-//				restTemplate.postForEntity(RestTemplateConstant.MAIL_SEND.getLink(), mail, String.class);
-//
-//			} catch (Exception e) {
-//				throw new CustomException(e.getMessage());
-//			}
+
 			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 					MessageConstant.REGISTERED_SUCESSFULLY.getMessage(), 200));
 		} catch (Exception e) {
@@ -501,6 +459,7 @@ public class UserController {
 
 			if (!findById.isPresent())
 				throw new CustomException(MessageConstant.USER_NOT_FOUND.getMessage());
+			
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
@@ -509,12 +468,14 @@ public class UserController {
 			userLoginEntity.setLastName(userLoginEntityParam.getLastName());
 			userLoginEntity.setMobileNo(userLoginEntityParam.getMobileNo());
 			userLoginEntity.setDob(userLoginEntityParam.getDob());
+			
 			if (userLoginEntityParam.getProfilePic().isEmpty()) {
 				userLoginEntity.setProfilePic(findById.get().getProfilePic());
 				userLoginRepo.save(userLoginEntity);
 				return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.UPDATED_SUCCESSFULLY.getMessage(), 200));
 			}
+			
 			userLoginEntity.setProfilePic(userLoginEntityParam.getProfilePic());
 			userLoginRepo.save(userLoginEntity);
 			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
@@ -631,11 +592,10 @@ public class UserController {
 				throw new CustomException(MessageConstant.NO_ADDRESS_FOUND.getMessage());
 			return ResponseEntity.ok(findByUserId);
 		} catch (ExpiredJwtException e) {
-//			throw new CustomException(e.getMessage());
-			LOGGER.error("HttpStatusCodeException <><<>");
+			LOGGER.error("Error",e.getLocalizedMessage());
 			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.UNAUTHORIZED);
 		} catch (Exception e) {
-			LOGGER.error("Exception");
+			LOGGER.error("Exception",e.getLocalizedMessage());
 			throw new CustomException(e.getMessage());
 		}
 
@@ -651,6 +611,7 @@ public class UserController {
 			if (!findByEmail.isPresent())
 				throw new CustomException(MessageConstant.USER_NOT_FOUND.getMessage());
 			Optional<UserAddressEntity> findById = userAddressRepo.findById(id);
+		
 			if (!findById.isPresent() || (findById.get().getUserId() != findByEmail.get().getId()))
 				throw new CustomException(MessageConstant.NO_ADDRESS_FOUND.getMessage());
 			return ResponseEntity.ok(findById.get());
@@ -751,7 +712,9 @@ public class UserController {
 		Optional<UserAddressEntity> findById = userAddressRepo.findById(id);
 		if (!findById.isPresent())
 			throw new CustomException(MessageConstant.ID_NOT_FOUND.getMessage());
+		
 		List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(findById.get().getUserId());
+		
 		List<UserAddressEntity> list = findByUserId.stream().map(e -> {
 			if (e.getId() == id)
 				e.setPrimary(true);
@@ -759,6 +722,7 @@ public class UserController {
 				e.setPrimary(false);
 			return e;
 		}).collect(Collectors.toList());
+		
 		userAddressRepo.saveAll(list);
 		return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 				MessageConstant.ADDRESS_SET_PRIMARY.getMessage(), 200));

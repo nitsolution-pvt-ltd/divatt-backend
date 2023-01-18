@@ -37,7 +37,6 @@ import org.thymeleaf.context.Context;
 import com.divatt.user.constant.MessageConstant;
 import com.divatt.user.constant.RestTemplateConstant;
 import com.divatt.user.entity.ProductCommentEntity;
-import com.divatt.user.entity.ProductEntity;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
 import com.divatt.user.entity.UserCartEntity;
@@ -115,6 +114,8 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private OrderDetailsRepo detailsRepo;
 
+	
+	@Override
 	public GlobalResponse postWishlistService(ArrayList<WishlistEntity> wishlistEntity) {
 
 		LOGGER.info("Inside - UserServiceImpl.postWishlistService()");
@@ -150,6 +151,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public GlobalResponse deleteWishlistService(Integer productId, Integer userId) {
 		try {
 			Optional<WishlistEntity> findByProductRow = wishlistRepo.findByProductIdAndUserId(productId, userId);
@@ -167,6 +169,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public Map<String, Object> getWishlistDetails(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy) {
 		LOGGER.info("Inside - UserServiceImpl.getWishlistDetails()");
@@ -215,6 +218,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> getUserWishlistDetails(Integer userId, Integer page, Integer limit) {
 		LOGGER.info("Inside - UserServiceImpl.getUserWishlistDetails()");
 		try {
@@ -236,7 +240,6 @@ public class UserServiceImpl implements UserService {
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
-				LOGGER.info("ENTITY DATA = {}", entity);
 				response1 = restTemplate.postForEntity(RestTemplateConstant.WISHLIST_PRODUCTLIST.getLink(), entity,
 						String.class);
 
@@ -248,6 +251,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public GlobalResponse postCartDetailsService(List<UserCartEntity> userCartEntity) {
 		LOGGER.info("Inside - UserServiceImpl.postCartDetailsService()");
 
@@ -286,6 +290,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> putCartDetailsService(UserCartEntity userCartEntity) {
 		LOGGER.info("Inside - UserServiceImpl.putCartDetailsService()");
 
@@ -327,6 +332,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public GlobalResponse deleteCartService(Integer pId) {
 		LOGGER.info("Inside - UserServiceImpl.deleteCartService()");
 		try {
@@ -345,6 +351,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> getUserCartDetailsService(Integer userId, Integer page, Integer limit) {
 		LOGGER.info("Inside - UserServiceImpl.getUserCartDetailsService()");
 		try {
@@ -390,11 +397,9 @@ public class UserServiceImpl implements UserService {
 				object1.forEach(e -> {
 					JsonNode jn = new JsonNode(e.toString());
 					JSONObject object = jn.getObject();
-					LOGGER.info("Designer id is: " + object.get("designerId").toString());
 					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity(
 							RestTemplateConstant.DESIGNER_BYID.getLink() + object.get("designerId"),
 							org.json.simple.JSONObject.class);
-					LOGGER.info("get designer by id: " + getDesignerById.getBody().get("designerProfile").toString());
 					UserCartEntity cart = userCartRepo
 							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
 							.get(0);
@@ -428,6 +433,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	public GlobalResponse postProductCommentService(ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserServiceImpl.postWishlistService()");
 
@@ -460,6 +466,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	public GlobalResponse putProductCommentService(ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserServiceImpl.putProductCommentService()");
 
@@ -491,6 +498,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	public GlobalResponse putProductCommentStatusService(ProductCommentEntity<?> productCommentEntity) {
 		LOGGER.info("Inside - UserServiceImpl.putProductCommentStatusService()");
 
@@ -528,6 +536,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	public GlobalResponse deleteProductCommentService(Integer Id) {
 		try {
 			Optional<ProductCommentEntity> findByProductRow = productCommentRepo.findById(Id);
@@ -545,6 +554,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> getProductUser() {
 		try {
 			String body = restTemplate.getForEntity(RestTemplateConstant.PRODUCT_LIST_USER.getLink(), String.class)
@@ -558,28 +568,12 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> postfollowDesignerService(@Valid UserDesignerEntity userDesignerEntity) {
 		try {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
-			// userDesignerRepo.findByUserId(userDesignerEntity.getUserId()).ifPresentOrElse((e)
-			// -> {
-			// userDesignerEntity.setId(e.getId());
-			// }, () -> {
-			// userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
-			// });
-			//
-			// userDesignerEntity.setCreatedOn(date.toString());
-			// UserDesignerEntity save = userDesignerRepo.save(userDesignerEntity);
-			// if (save != null && save.getIsFollowing() == true)
-			// return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Follow successfully",
-			// 200));
-			// else if (save != null && save.getIsFollowing() == false)
-			// return ResponseEntity.ok(new GlobalResponse("SUCCESS", "Unfollow
-			// successfully", 200));
-			// else
-			// throw new CustomException("Something went wrong! try again later");
 
 			Query query = new Query();
 			query.addCriteria(Criteria.where("userId").is(userDesignerEntity.getUserId()));
@@ -587,7 +581,7 @@ public class UserServiceImpl implements UserService {
 			List<UserDesignerEntity> collect = followDesignerList.stream()
 					.filter(e -> e.getDesignerId().equals(userDesignerEntity.getDesignerId()))
 					.collect(Collectors.toList());
-			// LOGGER.info(collect+"");
+
 			if (collect.isEmpty()) {
 				userDesignerEntity.setId(sequenceGenerator.getNextSequence(UserDesignerEntity.SEQUENCE_NAME));
 				userDesignerEntity.setIsFollowing(true);
@@ -605,6 +599,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> getDesignerDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
@@ -619,6 +614,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> productDetails(Integer productId, String userId) {
 		try {
 			LOGGER.info("Inside - UserServiceImpl.productDetails()");
@@ -629,7 +625,6 @@ public class UserServiceImpl implements UserService {
 
 			if (!userId.equals("")) {
 				List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
-				LOGGER.info("Cart Data : = {}", cart);
 
 				if (!cart.isEmpty()) {
 
@@ -643,11 +638,13 @@ public class UserServiceImpl implements UserService {
 								RestTemplateConstant.CATEGORY_VIEW.getLink() + object.get("categoryId"),
 								org.json.simple.JSONObject.class);
 						Object categoryName = categoryById.getBody().get("categoryName");
+					
 						try {
 							writeValueAsString = obj.writeValueAsString(cart);
 						} catch (JsonProcessingException e1) {
 							e1.printStackTrace();
 						}
+						
 						JsonNode cartJN = new JsonNode(writeValueAsString);
 						JSONObject cartObject = cartJN.getObject();
 						object.put("cartData", cartObject);
@@ -666,6 +663,8 @@ public class UserServiceImpl implements UserService {
 		}
 
 	}
+	
+	@Override
 	public ResponseEntity<?> productDetailsAdmin(Integer productId, String userId) {
 		try {
 			LOGGER.info("Inside - UserServiceImpl.productDetails()");
@@ -676,7 +675,6 @@ public class UserServiceImpl implements UserService {
 
 			if (!userId.equals("")) {
 				List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
-				LOGGER.info("Cart Data : = {}", cart);
 
 				if (!cart.isEmpty()) {
 
@@ -690,11 +688,13 @@ public class UserServiceImpl implements UserService {
 								RestTemplateConstant.CATEGORY_VIEW.getLink() + object.get("categoryId"),
 								org.json.simple.JSONObject.class);
 						Object categoryName = categoryById.getBody().get("categoryName");
+						
 						try {
 							writeValueAsString = obj.writeValueAsString(cart);
 						} catch (JsonProcessingException e1) {
 							e1.printStackTrace();
 						}
+						
 						JsonNode cartJN = new JsonNode(writeValueAsString);
 						JSONObject cartObject = cartJN.getObject();
 						object.put("cartData", cartObject);
@@ -714,6 +714,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
 	public ResponseEntity<?> getDesignerUser() {
 		try {
 
@@ -728,6 +729,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> getDesignerProfileDetailsService(Integer designerId, Long userId) {
 		try {
 
@@ -735,27 +737,24 @@ public class UserServiceImpl implements UserService {
 					.getForEntity(RestTemplateConstant.DESIGNER_USER.getLink() + designerId, String.class).getBody();
 			JsonNode jn = new JsonNode(body);
 			JSONObject object = jn.getObject();
-			LOGGER.info("Data after service call = {}", object);
+			
 			object.put("follwerCount", userDesignerRepo
 					.findByDesignerIdAndIsFollowing(Long.parseLong(object.get("dId").toString()), true).size());
+			
 			if (userId != 0) {
 				Query query = new Query();
 				query.addCriteria(Criteria.where("designerId").is(designerId));
-				// List<UserDesignerEntity> userDesignerList = mongoOperations.find(query,
-				// UserDesignerEntity.class);
+
 				List<UserDesignerEntity> userDesignerList = this.userDesignerRepo
 						.findByDesignerIdAndUserId(designerId.longValue(), userId);
-				// List<UserDesignerEntity> findByUserId =
-				// userDesignerRepo.findByUserId(userId);
+
 				if (!userDesignerList.isEmpty()) {
 					object.put("isFollowing", userDesignerList.get(0).getIsFollowing());
 					object.put("rating", userDesignerList.get(0).getRaiting());
 				} else {
 					object.put("isFollowing", false);
 					object.put("rating", 0);
-
 				}
-
 			}
 
 			return ResponseEntity.ok(new Json(object.toString()));
@@ -765,6 +764,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public ResponseEntity<?> getPerDesignerProductListService(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, String keyword, Optional<String> sortBy, Integer designerId) {
 		try {
@@ -778,6 +778,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public GlobalResponse multipleDelete(Integer userId) {
 		try {
 			List<UserCartEntity> allData = userCartRepo.findByUserId(userId);
@@ -793,6 +794,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public List<Integer> viewProductService(String orderId) {
 		try {
 			Query query = new Query();
@@ -804,6 +806,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public Map<String, Object> getUserListService(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
@@ -851,6 +854,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public List<UserDesignerEntity> followedUserListService(Integer designerIdvalue) {
 		try {
 			Query query = new Query();
@@ -862,6 +866,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public UserLoginEntity getUserById(Long userId) {
 		try {
 			UserLoginEntity userDetails = userLoginRepo.findById(userId).get();
@@ -871,6 +876,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public GlobalResponse getCountFollowers(Long designerId) {
 		try {
 			Long countByDesignerId = userDesignerRepo.countByDesignerId(designerId);
@@ -880,6 +886,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public UserLoginEntity getUserDetailsService(String token) {
 		try {
 			String userName = jwtUtil.extractUsername(token);
@@ -890,6 +897,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public Map<String, Object> getUserStatus() {
 		try {
 			LOGGER.info("Inside - UserServiceImpl.getUserStatus()");
@@ -909,6 +917,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public List<StateEntity> getStateDataService() {
 
 		try {
@@ -920,17 +929,18 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@SuppressWarnings("all")
 	@Override
 	public List<org.json.simple.JSONObject> getListDesignerData(String userEmail) {
-		LOGGER.info("inside service");
+		LOGGER.info("inside - getListDesignerData");
 		try {
 			List<org.json.simple.JSONObject> designerList = new ArrayList<>();
 			Long userId = userLoginRepo.findByEmail(userEmail).get().getId();
-			LOGGER.info("userId<><><>!!!!" + userId);
+
 			Query query = new Query();
 			query.addCriteria(Criteria.where("userId").is(userId));
 			List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);
-			LOGGER.info("userDesignerList<><><><!!!!" + userDesignerList);
+
 			userDesignerList.stream().forEach(e -> {
 				designerList.add(restTemplate
 						.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), org.json.simple.JSONObject.class)
@@ -945,32 +955,23 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public String complaintMail(String token, Integer productId) {
 
 		Context context = new Context();
 		try {
 
-			LOGGER.info(jwtUtil.extractUsername(token.substring(7)));
-			LOGGER.info(token.substring(7));
-			Optional<UserAddressEntity> byUserEmail = addressRepo
-					.findByUserEmail(jwtUtil.extractUsername(token.substring(7)));
+			Optional<UserAddressEntity> byUserEmail = addressRepo.findByUserEmail(jwtUtil.extractUsername(token.substring(7)));
 			String fullName = byUserEmail.get().getFullName();
-			LOGGER.info(fullName);
 			String email = byUserEmail.get().getEmail();
-			LOGGER.info(email);
 			String mobile = byUserEmail.get().getMobile();
-			LOGGER.info(mobile);
 			Long id = byUserEmail.get().getUserId();
-			LOGGER.info(id.toString());
 
 			try {
 				UserLoginEntity entity = restTemplate.getForObject(RestTemplateConstant.USER_BY_ID.getLink() + id,
 						UserLoginEntity.class);
 
 				String dob = entity.getDob();
-				LOGGER.info(dob);
-
-				LOGGER.info(productId.toString());
 				context.setVariable("Username", fullName);
 				context.setVariable("Useremail", email);
 				context.setVariable("Usermobileno", mobile);
@@ -983,68 +984,34 @@ public class UserServiceImpl implements UserService {
 									ProductMasterEntity.class)
 							.getBody();
 
-					LOGGER.info(entity2.getDesignerName());
-
 					String productDescription = entity2.getProductDescription();
-					LOGGER.info(productDescription);
-					String productName = entity2.getProductName();
-					LOGGER.info(productName);
+
 					try {
 						Optional<OrderSKUDetailsEntity> findByProductId = orderSKUDetailsRepo
 								.findByProductId(productId);
 						Long mrp = findByProductId.get().getMrp();
 						String size = findByProductId.get().getSize();
 						Long units = findByProductId.get().getUnits();
-						// Double igst = findByProductId.get().getIgst();
-						// if(igst==null) {
-						// throw new CustomException("Igst is null");
-						// }else {
-						// Double cgst = findByProductId.get().getCgst();
-						// if(igst==null) {
-						// throw new CustomException("igst not found ");
-						// }else if(cgst==null) {
-						// throw new CustomException("cgst not found ");
-						// }else {
-						// context.setVariable("GST", cgst);
-						// }
-						LOGGER.info(mrp.toString());
-						LOGGER.info(units.toString());
-						LOGGER.info(size);
-						// LOGGER.info(igst.toString());
+
 						context.setVariable("Product", productId);
 						context.setVariable("Description", productDescription);
 						context.setVariable("MRP", mrp);
 						context.setVariable("Unit", units);
 						context.setVariable("Size", size);
-						// context.setVariable("igst", igst);
 					} catch (Exception e) {
 						throw new CustomException(e.getMessage());
 					}
 					try {
-						// ModelMapper mapper = new ModelMapper();
-						// DesignerProfile designerProfile = mapper.map(mapper, DesignerProfile.class);
-						LOGGER.info(entity2.getDesignerId().toString());
 						DesignerProfileEntity profile = restTemplate.getForObject(
 								RestTemplateConstant.DESIGNER_BYID.getLink() + entity2.getDesignerId(),
 								DesignerProfileEntity.class);
 
-						Long designerId = profile.getDesignerId();
-						LOGGER.info(designerId.toString());
-						// String designerName = profile.getDesignerName();
-						// String displayName = profile.getDesignerProfile().getDisplayName();
 						String name = profile.getDesignerName();
-						// assertEquals(designerProfileEntity.getDesignerProfile().getDisplayName(),
-						// designerProfile.getDisplayName());
 						String dob2 = profile.getDesignerProfile().getDob();
 						String email2 = profile.getDesignerProfile().getEmail();
 						String gender = profile.getDesignerProfile().getGender();
 						String mobileNo = profile.getDesignerProfile().getMobileNo();
-						LOGGER.info(profile.toString());
-						LOGGER.info(name);
-						LOGGER.info(dob2);
-						LOGGER.info(gender);
-						LOGGER.info(mobileNo);
-						LOGGER.info(email2);
+
 						context.setVariable("Designername", name);
 						context.setVariable("Designeremail", email2);
 						context.setVariable("Designermobileno", mobileNo);
@@ -1134,7 +1101,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 	}
-
+	@Override
 	public List<OrderSKUDetailsEntity> findByorderID(String orderId) {
 		try {
 			return this.orderSKUDetailsRepo.findByOrderId(orderId);
@@ -1148,7 +1115,6 @@ public class UserServiceImpl implements UserService {
 	public List<UserDesignerEntity> getUserDesignerDetails(String userEmail) {
 		try {
 			Long userId = userLoginRepo.findByEmail(userEmail).get().getId();
-			LOGGER.info("userId<><><>!!!!" + userId);
 			Query query = new Query();
 			query.addCriteria(Criteria.where("userId").is(userId));
 			List<UserDesignerEntity> userDesignerList = mongoOperations.find(query, UserDesignerEntity.class);

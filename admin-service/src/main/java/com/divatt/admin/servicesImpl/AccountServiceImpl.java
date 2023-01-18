@@ -95,17 +95,6 @@ public class AccountServiceImpl implements AccountService {
 
 		try {
 
-//			List<AccountEntity> findByRow = accountRepo.findByOrderIdAndInvoiceId(accountEntity.getOrder_details().get(0).getOrder_id(), accountEntity.getOrder_details().get(0).getInvoice_id());
-//
-//			if (findByRow.size() > 0) {
-//				if (LOGGER.isErrorEnabled()) {
-//					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
-//							interfaceId, host + contextPath + "/account/add", MessageConstant.ACCOUNT_NOT_FOUND.getMessage(),
-//							HttpStatus.BAD_REQUEST);
-//				}
-//				throw new CustomException(MessageConstant.ORDER_ALREADY_EXIST.getMessage());
-//			}
-
 			long currentTimeMillis = System.currentTimeMillis();
 
 			accountEntity.getService_charge().setDesigner_invoice_id("INV" + currentTimeMillis);

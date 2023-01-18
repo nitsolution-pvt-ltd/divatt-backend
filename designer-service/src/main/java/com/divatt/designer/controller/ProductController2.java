@@ -34,9 +34,7 @@ import com.divatt.designer.services.ProductService2;
 @RestController
 @RequestMapping("/designerProducts")
 public class ProductController2 {
-//	@Autowired
-//	private ProductServiceImp2 productServiceImp2;
-//	
+
 	@Autowired
 	private ProductService2 productService2;
 
@@ -48,7 +46,6 @@ public class ProductController2 {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController2.class);
 
-//	@Override
 	@PostMapping("/addProduct")
 	public GlobalResponce addProductData(@RequestBody ProductMasterEntity2 productMasterEntity2) {
 		LOGGER.info("Inside - designer -> ProductController2.addProductData()");
@@ -59,7 +56,6 @@ public class ProductController2 {
 		}
 	}
 
-//	@Override
 	@PutMapping("/updateProduct/{productId}")
 	public GlobalResponce updateProduct(@RequestBody ProductMasterEntity2 productMasterEntity2,
 			@PathVariable Integer productId) {
@@ -72,7 +68,6 @@ public class ProductController2 {
 
 	}
 
-//	@Override
 	@GetMapping("/productList")
 	public Map<String, Object> getAllProduct(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
@@ -88,7 +83,7 @@ public class ProductController2 {
 		}
 	}
 
-//	@Override
+
 	@GetMapping("/productList/{productId}")
 	public ProductMasterEntity2 getProduct(@RequestHeader("Authorization") String token,
 			@PathVariable Integer productId) {
@@ -106,7 +101,7 @@ public class ProductController2 {
 		}
 	}
 
-//	@Override
+
 	@GetMapping("/getProductDetailsallStatus")
 	public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "all") String adminStatus,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
@@ -122,7 +117,7 @@ public class ProductController2 {
 		}
 	}
 
-//	@Override
+
 	@GetMapping("/getDesignerProductByDesignerId/{designerId}")
 	public Map<String, Object> getDesignerProductByDesignerId(@PathVariable Integer designerId,
 			@RequestParam(defaultValue = "live") String adminStatus,
@@ -141,7 +136,7 @@ public class ProductController2 {
 		}
 	}
 
-//	@Override
+
 	@PutMapping("/delete/{productId}")
 	public GlobalResponce productDeleteByproductId(@PathVariable Integer productId) {
 		try {
@@ -152,7 +147,7 @@ public class ProductController2 {
 		}
 	}
 
-//	@Override
+
 	@PutMapping("/approvalUpdate/{productId}")
 	public GlobalResponce adminApprovalUpdate(@PathVariable Integer productId,
 			@RequestBody ProductMasterEntity2 entity2) {
@@ -165,7 +160,7 @@ public class ProductController2 {
 
 	}
 
-//	@Override
+
 	@PutMapping("/changeAdminStatus/{productId}")
 	public GlobalResponce changeAdminStatus(@PathVariable Integer productId) {
 		try {
@@ -176,7 +171,7 @@ public class ProductController2 {
 		}
 	}
 
-//	@Override
+
 	@GetMapping("/productListUser")
 	public ResponseEntity<?> productListUser() {
 		try {
@@ -186,7 +181,6 @@ public class ProductController2 {
 		}
 	}
 
-	// Wish list by $hantanuR
 	@PostMapping("/getWishlistProductList")
 	public Map<String, Object> allWishlistProductData(@RequestBody JSONObject productIdList,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
