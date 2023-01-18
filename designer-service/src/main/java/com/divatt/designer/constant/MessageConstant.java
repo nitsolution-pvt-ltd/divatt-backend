@@ -43,7 +43,8 @@ public enum MessageConstant {
     ACCOUNT_NOT_FOUND("Account data not found"),
     ADMIN_ROLES("SADMIN"),
     POP("pop"),
-    UNCHECKED("unchecked")
+    UNCHECKED("unchecked"),
+    PRODUCT_IS_OUT_OF_STOCK("Product is already out of stock")
     ;
 	private String message;
 

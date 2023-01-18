@@ -49,7 +49,7 @@
 						<div
 							style="font-size: 14px; text-transform: capitalize; margin-top: 17px; letter-spacing: 1.5px; font-weight: 600; color: #3d3c3c;">
 							Your Product has been <span th:text="${orderItemStatus}"></span>
-							sucessfully.
+							sucessfully. <br> <span th:text="${details}"></span>
 						</div>
 					</td>
 				</tr>
@@ -130,6 +130,10 @@
 						<div style="margin-top: 5px; text-align: right; color: #000">
 							Discount - &nbsp;<span th:text="${discount}"></span>
 						</div>
+						<div
+							style="margin-top: 5px; text-align: right; color: #000; min-width: 80px;">
+							GiftWrapAmount - &nbsp;<span th:text="${giftWrapAmount}"></span>
+						</div>
 					</td>
 				</tr>
 			</tbody>
@@ -145,7 +149,7 @@
 							<td>Total</td>
 							<td
 								style="text-align: right; font-weight: 600; padding-top: 4px;">
-								<span th:text="${mrp}+${taxAmount}">
+								<span th:text="${format3}"></span>
 							</td>
 						</tr>
 					</table>

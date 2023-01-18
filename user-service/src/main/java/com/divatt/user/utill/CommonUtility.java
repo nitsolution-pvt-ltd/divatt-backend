@@ -1,7 +1,5 @@
 package com.divatt.user.utill;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,8 +7,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +36,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -54,6 +57,8 @@ import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.UserOrderPaymentRepo;
+import com.divatt.user.response.GlobalResponse;
+import com.divatt.user.serviceImpl.UserServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -95,6 +100,9 @@ public class CommonUtility {
 
 	@Autowired
 	private TemplateEngine templateEngine;
+
+	@Autowired
+	private UserServiceImpl userServiceImpl;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -595,11 +603,10 @@ public class CommonUtility {
 				for (OrderPlacedDTO order : orders) {
 					grossGrandTotal = grossGrandTotal + Double.parseDouble(order.getMrp());
 					tgrossandTotal = tgrossandTotal + Double.parseDouble(order.getTotal());
-					tgrossGrandTotal=tgrossGrandTotal+order.getMrp()==null ? "0" :order.getMrp();
+					tgrossGrandTotal = tgrossGrandTotal + order.getMrp() == null ? "0" : order.getMrp();
 					if (orderSKUDetailsEntityRow.getGiftwrapStatus()) {
 						totalGiftWrapAmount = totalGiftWrapAmount + Double
 								.parseDouble(order.getGiftWrapAmount() == null ? "0" : order.getGiftWrapAmount());
-						
 
 					} else {
 						totalGiftWrapAmount = totalGiftWrapAmount + Double.parseDouble("0" == null ? "0" : "0");
@@ -652,6 +659,154 @@ public class CommonUtility {
 					MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true, null, restTemplate);
 			emailSenderThreadDesigner.start();
 
+		}
+	}
+
+	public void mailSend(OrderSKUDetailsEntity item, DesignerProfileEntity entity, String orderId, String productId,
+			String orderItemStatus, Map<String, Object> data) {
+		String itemStatus = item.getOrderItemStatus();
+		SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
+		String displayName = entity.getDesignerProfile().getDisplayName();
+		Date dates = new Date();
+		String format = formatter.format(dates);
+		Long userId = item.getUserId();
+		UserLoginEntity userById = userServiceImpl.getUserById(userId);
+		String email = userById.getEmail();
+		String firstName = userById.getFirstName();
+		String productName = item.getProductName();
+		Long salesPrice = item.getSalesPrice();
+		Long mrp;
+		if (salesPrice == 0 || salesPrice.equals(null)) {
+			mrp = item.getMrp();
+		} else {
+			mrp = salesPrice;
+		}
+		String size = item.getSize();
+		String images = item.getImages();
+		Long units = item.getUnits();
+		String email2 = entity.getDesignerProfile().getEmail();
+		String colour = item.getColour();
+		// String orderId = item.getOrderId();
+		List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
+
+		if (findByOrderIdList.size() > 0) {
+
+			String paymentMode = findByOrderIdList.get(0).getPaymentMode();
+			OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
+			System.out.println("orderDetailsEntity " + orderDetailsEntity.toString());
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			JSONParser parser = new JSONParser();
+			String replace = null;
+
+			try {
+				String json = ow.writeValueAsString(orderDetailsEntity.getShippingAddress());
+				org.json.simple.JSONObject json1 = (org.json.simple.JSONObject) parser.parse(json);
+				LOGGER.info("DATA#####**** = {}", json);
+				LOGGER.info("DATA#####**** = {}", json1.get("address2") == null);
+				if (json1.get("address2") != null) {
+					String address1 = json1.get("address1").toString();
+					String address2 = json1.get("address2").toString();
+					String country = json1.get("country").toString();
+					String state = json1.get("state").toString();
+					String city = json1.get("city").toString();
+					String postalCode = json1.get("postalCode").toString();
+					String landmark = json1.get("landmark").toString();
+					String mobile = json1.get("mobile").toString();
+					replace = (address1 + ", " + address2 + ", " + country + ", " + state + ", " + city + ", "
+							+ postalCode + ", " + landmark + ", " + mobile);
+				} else {
+					json1.remove("address2");
+					String address1 = json1.get("address1").toString();
+					String country = json1.get("country").toString();
+					String state = json1.get("state").toString();
+					String city = json1.get("city").toString();
+					String postalCode = json1.get("postalCode").toString();
+					String landmark = json1.get("landmark").toString();
+					String mobile = json1.get("mobile").toString();
+					replace = (address1 + ", " + country + ", " + state + ", " + city + ", " + postalCode + ", "
+							+ landmark + ", " + mobile);
+				}
+			} catch (JsonProcessingException | ParseException e) {
+				e.printStackTrace();
+			}
+
+			String orderDate = item.getCreatedOn();
+			Date parse;
+			try {
+				parse = formatter.parse(orderDate);
+
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(parse);
+				Date time = calendar.getTime();
+				DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+				DecimalFormat decimalFormat = new DecimalFormat("0.00");
+				String format1 = dateFormat2.format(time);
+				Double disc = orderDetailsEntity.getDiscount();
+				String discount = decimalFormat.format(disc);
+				Double taxAmount = orderDetailsEntity.getTaxAmount();
+				String format2 = decimalFormat.format(taxAmount);
+				Context context = new Context();
+				context.setVariable("firstName", firstName);
+				context.setVariable("productId", productId);
+				context.setVariable("productName", productName);
+				
+
+				context.setVariable("discount", discount);
+				context.setVariable("taxAmount", format2);
+				context.setVariable("size", size);
+				context.setVariable("displayName", displayName);
+				context.setVariable("paymentMode", paymentMode);
+				context.setVariable("shippingAddress", replace);
+				context.setVariable("orderDate", format1);
+				context.setVariable("orderId", orderId);
+				context.setVariable("quantity", units);
+				context.setVariable("colour", colour);
+				context.setVariable("format3", mrp);
+				if (item.getGiftwrapStatus()) {
+					context.setVariable("giftWrapAmount", item.getGiftWrapAmount());
+					double format3 = ((mrp-Double.parseDouble(format2) ) + Double.parseDouble(discount)
+							- item.getGiftWrapAmount());
+					context.setVariable("mrp", format3);
+				} else {
+					context.setVariable("giftWrapAmount", 0.00);
+					double format3 = (mrp-Double.parseDouble(format2)) + Double.parseDouble(discount);
+					context.setVariable("mrp", format3);
+				}
+				String string = data.toString();
+				String substring = string.substring(1, string.toString().length() - 1).replaceAll("=", " : ");
+				;
+				context.setVariable("details", substring);
+				if (orderItemStatus.equals("Orders")) {
+					context.setVariable("orderItemStatus", "Verified");
+
+				} else {
+					context.setVariable("orderItemStatus", orderItemStatus);
+				}
+				context.setVariable("orderId", orderId);
+				context.setVariable("productImage", images);
+				if (orderItemStatus.equals("Orders")) {
+					String htmlContent = templateEngine.process("statusChange.html", context);
+					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+							"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
+					String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
+					EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+							"Your Product Has been " + "Verified", htmlContentDesigner, true, null, restTemplate);
+					emailSenderThreadDesigner.start();
+					emailSenderThread.start();
+				} else {
+					String htmlContent = templateEngine.process("statusChange.html", context);
+					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+							"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
+					String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
+					EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+							"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null, restTemplate);
+					emailSenderThreadDesigner.start();
+					emailSenderThread.start();
+				}
+
+			} catch (java.text.ParseException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
