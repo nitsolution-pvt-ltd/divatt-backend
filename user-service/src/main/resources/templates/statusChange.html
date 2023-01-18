@@ -45,7 +45,7 @@
 						<div
 							style="font-size: 14px; text-transform: capitalize; margin-top: 17px; letter-spacing: 1.5px; font-weight: 600; color: #3d3c3c;">
 							Your order has been <span th:text="${orderItemStatus}"></span>
-							sucessfully.
+							sucessfully.<br> <span th:text="${details}"></span>
 						</div>
 					</td>
 				</tr>
@@ -128,6 +128,10 @@
 						<div
 							style="margin-top: 5px; text-align: right; color: #000; min-width: 80px;">
 							Discount - &nbsp;<span th:text="${discount}"></span>
+						</div>
+						<div
+							style="margin-top: 5px; text-align: right; color: #000; min-width: 80px;">
+							GiftWrapAmount - &nbsp;<span th:text="${giftWrapAmount}"></span>
 						</div>
 					</td>
 				</tr>

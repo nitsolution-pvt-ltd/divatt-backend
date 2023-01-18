@@ -213,7 +213,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		LOGGER.info("Inside - OrderAndPaymentService.postRazorpayOrderCreateService()");
 
 		try {
-			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
+					env.getProperty("secretKey"));
 			JSONObject options = new JSONObject();
 
 			options.put("amount", orderDetailsEntity.getTotalAmount());
@@ -226,25 +227,28 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		} catch (RazorpayException exe) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/razorpay/create", exe.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+						host + contextPath + "/razorpay/create", exe.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			return new ResponseEntity<>(new Json(exe.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/razorpay/create", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+						host + contextPath + "/razorpay/create", e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@Override
 	public ResponseEntity<?> postOrderPaymentService(OrderPaymentEntity orderPaymentEntity) {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderPaymentService()");
 
 		try {
 
-			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
+					env.getProperty("secretKey"));
 			LOGGER.info("Inside - OrderAndPaymentContoller.postOrderPaymentService()");
 
 			String paymentIdFilter = null;
@@ -256,7 +260,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			JsonNode OrderPayJson = new JsonNode(paymentIdFilter);
 
-			Payment payment = razorpayClient.Payments.fetch(OrderPayJson.getObject().get("razorpay_payment_id").toString());
+			Payment payment = razorpayClient.Payments
+					.fetch(OrderPayJson.getObject().get("razorpay_payment_id").toString());
 			if (LOGGER.isInfoEnabled()) {
 				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/payment/add", "Success", HttpStatus.OK);
@@ -273,35 +278,39 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					&& !payment.get("error_step").equals(null) && payment.get("status").equals("failed")) {
 				payStatus = "FAILED";
 			}
-			
+
 			List<OrderDetailsEntity> findOrderRow = orderDetailsRepo.findByOrderId(orderPaymentEntity.getOrderId());
 			if (findOrderRow.size() <= 0) {
 				if (LOGGER.isErrorEnabled()) {
-					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-							host + contextPath + "/payment/add", "Order details not found", HttpStatus.NOT_FOUND);
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/payment/add", "Order details not found",
+							HttpStatus.NOT_FOUND);
 				}
 				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
-			
+
 			Map<String, Object> map = null;
 			try {
-				map = obj.readValue(payment.toString(), new TypeReference<Map<String, Object>>() {});
+				map = obj.readValue(payment.toString(), new TypeReference<Map<String, Object>>() {
+				});
 			} catch (JsonProcessingException e) {
 				if (LOGGER.isErrorEnabled()) {
-					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-							host + contextPath + "/payment/add", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",
+							interfaceId, host + contextPath + "/payment/add", e.getLocalizedMessage(),
+							HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 			}
 			Map<String, String> mapPayId = new HashMap<>();
 			mapPayId.put("OrderId", orderPaymentEntity.getOrderId());
 			mapPayId.put("TransactionId", OrderPayJson.getObject().get("razorpay_payment_id").toString());
-			
-			Optional<OrderPaymentEntity> findByOrderId = userOrderPaymentRepo.findByOrderId(orderPaymentEntity.getOrderId());
-			
+
+			Optional<OrderPaymentEntity> findByOrderId = userOrderPaymentRepo
+					.findByOrderId(orderPaymentEntity.getOrderId());
+
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date date = new Date();
 			String format = formatter.format(date);
-			
+
 			if (!findByOrderId.isPresent()) {
 				OrderPaymentEntity filterCatDetails = new OrderPaymentEntity();
 				filterCatDetails.setId(sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME));
@@ -315,12 +324,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				userOrderPaymentRepo.save(filterCatDetails);
 				commonUtility.userOrder(orderPaymentEntity);
 				return ResponseEntity.ok(mapPayId);
-			} else
-				if (LOGGER.isErrorEnabled()) {
-					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-							host + contextPath + "/payment/add", MessageConstant.ORDER_ID_EXIST.getMessage(), HttpStatus.NOT_FOUND);
-				}
-				throw new CustomException(MessageConstant.ORDER_ID_EXIST.getMessage());
+			} else if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
+						host + contextPath + "/payment/add", MessageConstant.ORDER_ID_EXIST.getMessage(),
+						HttpStatus.NOT_FOUND);
+			}
+			throw new CustomException(MessageConstant.ORDER_ID_EXIST.getMessage());
 		} catch (RazorpayException e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
@@ -400,12 +409,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		} catch (HttpStatusCodeException ex) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/orderSKUDetails/add", ex.getResponseBodyAsString(), HttpStatus.INTERNAL_SERVER_ERROR);
+						host + contextPath + "/orderSKUDetails/add", ex.getResponseBodyAsString(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
-						host + contextPath + "/orderSKUDetails/add", e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+						host + contextPath + "/orderSKUDetails/add", e.getLocalizedMessage(),
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 
@@ -525,7 +536,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String OrderSKUD = null;
 				try {
 					if (!orderStatus.isEmpty() && !orderStatus.equals("All")) {
-						OrderSKUD = obj.writeValueAsString(orderSKUDetailsRepo.findByOrderIdAndOrderItemStatus(e.getOrderId(), orderStatus));
+						OrderSKUD = obj.writeValueAsString(
+								orderSKUDetailsRepo.findByOrderIdAndOrderItemStatus(e.getOrderId(), orderStatus));
 					} else {
 						OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
 					}
@@ -552,7 +564,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("requestForCancelation",orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
+			response.put("requestForCancelation",
+					orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
 			response.put("New", orderSKUDetailsRepo.findByOrderItemStatus("New").size());
 			response.put("Packed", orderSKUDetailsRepo.findByOrderItemStatus("Packed").size());
 			response.put("Shipped", orderSKUDetailsRepo.findByOrderItemStatus("Shipped").size());
@@ -601,18 +614,19 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						D.setHsn(productById.getBody().get("hsnData"));
 						productIdFilters = objs.writeValueAsString(D);
 						Integer i = (int) (long) D.getUserId();
-						
+
 						List<OrderTrackingEntity> findByIdTracking = this.orderTrackingRepo
-								.findByOrderIdAndUserIdAndDesignerIdAndProductId(orderId, i, D.getDesignerId(),D.getProductId());
+								.findByOrderIdAndUserIdAndDesignerIdAndProductId(orderId, i, D.getDesignerId(),
+										D.getProductId());
 						JsonNode cartJNs = new JsonNode(productIdFilters);
 
 						JSONObject objectss = cartJNs.getObject();
 						objectss.put("customization", productById.getBody().get("customization"));
 						objectss.put("withGiftWrap", productById.getBody().get("giftWrap"));
 						String orderId2 = D.getOrderId();
-						
+
 						List<OrderInvoiceEntity> invoiceId = getInvoiceByOrder(orderId2);
-						
+
 						if (invoiceId.size() > 0) {
 							invoiceId.forEach(invoice -> {
 								objectss.put("invoiceId", invoice.getInvoiceId());
@@ -803,7 +817,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 			Page<OrderDetailsEntity> findAll = null;
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
-			
+
 			if (keyword != null || !"".equals(keyword)) {
 				OrderSKUDetailsData = this.orderSKUDetailsRepo.findByDesignerId(designerId);
 			}
@@ -888,7 +902,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 
-				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
+				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo
+						.findByOrderIdAndDesignerId(e.getOrderId(), designerId);
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
 				String writeValueAsString = null;
@@ -906,7 +921,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				try {
 					if (!orderItemStatus.isEmpty() && !orderItemStatus.equals("Orders")) {
 						OrderSKUD = obj.writeValueAsString(
-								orderSKUDetailsRepo.findByOrderIdAndDesignerIdAndorderItemStatus(e.getOrderId(), designerId, orderItemStatus));
+								orderSKUDetailsRepo.findByOrderIdAndDesignerIdAndorderItemStatus(e.getOrderId(),
+										designerId, orderItemStatus));
 					} else if (!orderItemStatus.isEmpty() && orderItemStatus.equals("Orders")) {
 						OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
 					} else {
@@ -948,12 +964,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered").size());
 			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRefund").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId, "Active").size());
-			response.put("cancelRequest", orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
+			response.put("cancelRequest",
+					orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
 			response.put("Orders", orderSKUDetailsRepo.findByDesignerId(designerId).size());
 			response.put("Canceled", orderSKUDetailsRepo.findByOrderTotal(designerId, "cancelled").size());
 			response.put("returnRequest", orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRequest").size());
 			response.put("rejected", orderSKUDetailsRepo.findByOrderTotal(designerId, "Rejected").size());
-			response.put("requestCancelation", orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
+			response.put("requestCancelation",
+					orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
 
 			return response;
 		} catch (Exception e) {
@@ -1106,7 +1124,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			org.json.simple.JSONObject PayEntity = new org.json.simple.JSONObject((Map) object.get("entity"));
 
-			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"), env.getProperty("secretKey"));
+			final RazorpayClient razorpayClient = new RazorpayClient(env.getProperty("key"),
+					env.getProperty("secretKey"));
 
 			List<OrderDetailsEntity> OrderRow = orderDetailsRepo
 					.findByRazorpayOrderId(PayEntity.get("order_id").toString());
@@ -1368,7 +1387,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			Query query2 = new Query();
 			Map<String, Object> data = new HashMap<String, Object>();
 			List<Integer> desiredDesingerIdList = new ArrayList<Integer>();
-			
+
 			query.addCriteria(Criteria.where("invoiceId").is(invoiceId));
 			OrderDetailsEntity orderDetailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
 			BillingAddressEntity billAddressData = new BillingAddressEntity();
@@ -1380,21 +1399,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			billAddressData.setPostalCode(orderDetailsEntity.getBillingAddress().getPostalCode());
 			billAddressData.setMobile(orderDetailsEntity.getBillingAddress().getMobile());
 			query2.addCriteria(Criteria.where("orderId").is(orderDetailsEntity.getOrderId()));
-			
+
 			List<OrderSKUDetailsEntity> orderSKUDetails = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
-			
+
 			String body = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_IDLIST.getLink(), String.class)
 					.getBody();
-			
+
 			JSONArray jsonArray = new JSONArray(body);
 			ObjectMapper mapper = new ObjectMapper();
-			
+
 			for (int i = 0; i < jsonArray.length(); i++) {
 				org.json.simple.JSONObject designerLoginEntity = mapper.readValue(jsonArray.get(i).toString(),
 						org.json.simple.JSONObject.class);
 				desiredDesingerIdList.add(Integer.parseInt(designerLoginEntity.get("dId").toString()));
 			}
-			
+
 			int totalTax = 0;
 			int totalAmount = 0;
 			int totalGrossAmount = 0;
@@ -1412,7 +1431,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						invoice.setWithTaxAmount(a.getSalesPrice().intValue());
 						invoice.setProductSize(a.getSize());
 						productList.add(invoice);
-						
+
 						totalTax = totalTax + a.getTaxAmount().intValue();
 						totalAmount = totalAmount + a.getSalesPrice().intValue();
 						totalGrossAmount = totalGrossAmount + a.getMrp().intValue();
@@ -1458,14 +1477,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			Query query2 = new Query();
 			List<Object> resObjects = new ArrayList<Object>();
 			Map<String, Object> response = new HashMap<String, Object>();
-			
+
 			query.addCriteria(Criteria.where("invoice_id").is(invoiceId));
 			OrderDetailsEntity detailsEntity = mongoOperations.findOne(query, OrderDetailsEntity.class);
 			response.put("OrderDetails", detailsEntity);
 			query2.addCriteria(Criteria.where("orderId").is(detailsEntity.getOrderId()));
-			
+
 			List<OrderSKUDetailsEntity> orderList = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
-			
+
 			for (int i = 0; i < orderList.size(); i++) {
 				ResponseEntity<Object> designerData = restTemplate.getForEntity(
 						RestTemplateConstant.DESIGNER_BYID.getLink() + orderList.get(i).getDesignerId(), Object.class);
@@ -1487,8 +1506,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		LOGGER.info("Inside - OrderAndPaymentService.postOrderInvoiceService()");
 
 		try {
-			List<OrderInvoiceEntity> findByCategoryName = orderInvoiceRepo.findByInvoiceId(orderInvoiceEntity.getInvoiceId());
-		
+			List<OrderInvoiceEntity> findByCategoryName = orderInvoiceRepo
+					.findByInvoiceId(orderInvoiceEntity.getInvoiceId());
+
 			if (findByCategoryName.size() > 0) {
 				throw new CustomException(MessageConstant.INVOICE_EXIST.getMessage());
 			} else {
@@ -1499,7 +1519,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderInvoiceEntity.setInvoiceId("IV" + InvNumber);
 				orderInvoiceRepo.save(orderInvoiceEntity);
 			}
-			Map<String,Object> map = new HashMap<>();
+			Map<String, Object> map = new HashMap<>();
 			map.put("reason", MessageConstant.SUCCESS.getMessage());
 			map.put("message", MessageConstant.INVOICE_ADDED.getMessage());
 			map.put("invoiceId", orderInvoiceEntity.getInvoiceId());
@@ -1582,14 +1602,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 
 	}
-	
+
 	@Override
 	public Map<String, Integer> getOrderCount(int designerId, Boolean adminstatus) {
 
 		try {
 			Map<String, Integer> countResponse = new HashMap<String, Integer>();
 			List<String> orderIdList = new ArrayList<String>();
-			
+
 			if (adminstatus) {
 				List<OrderDetailsEntity> getOrderDetailsData = orderDetailsRepo.findAll();
 				getOrderDetailsData.stream().forEach(e -> {
@@ -1631,7 +1651,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@Override
 	public OrderSKUDetailsEntity getOrderDetailsService(String orderId, String productId) {
 		try {
@@ -1642,7 +1662,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@Override
 	public OrderSKUDetailsEntity getorderDetails(String orderId) {
 		try {
@@ -1694,21 +1714,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail,
 							org.json.simple.JSONObject.class)
 					.getBody();
-			  
+
 			String designerId = designerDetails.get("designerId").toString();
-			  ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-			  String json = ow.writeValueAsString(designerDetails);			  
-			  String firstName;
-			  String lastName;
-			  JSONParser parser = new JSONParser();
-			  try {
-				  org.json.simple.JSONObject json1 = (org.json.simple.JSONObject) parser.parse(json);
-				  org.json.simple.JSONObject json2 = (org.json.simple.JSONObject) json1.get("designerProfile");			     
-				  firstName = json2.get("firstName1").toString();
-				  lastName =  json2.get("lastName1").toString();
-			  } catch (ParseException e) {
-				  throw new RuntimeException(e); 
-			  }			
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			String json = ow.writeValueAsString(designerDetails);
+			String firstName;
+			String lastName;
+			JSONParser parser = new JSONParser();
+			try {
+				org.json.simple.JSONObject json1 = (org.json.simple.JSONObject) parser.parse(json);
+				org.json.simple.JSONObject json2 = (org.json.simple.JSONObject) json1.get("designerProfile");
+				firstName = json2.get("firstName1").toString();
+				lastName = json2.get("lastName1").toString();
+			} catch (ParseException e) {
+				throw new RuntimeException(e);
+			}
 			List<OrderSKUDetailsEntity> orderDetails = orderSKUDetailsRepo.findAll().stream()
 					.filter(e -> e.getDesignerId() == Long.parseLong(designerId))
 					.filter(e -> e.getOrderId().equals(orderId))
@@ -1719,38 +1739,39 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
-			
-			if(orderDetails.get(0).getOrderItemStatus().equals("cancelled")) {
+
+			if (orderDetails.get(0).getOrderItemStatus().equals("cancelled")) {
 				throw new CustomException(MessageConstant.PRODUCT_ALREADY_CANCEL.getMessage());
-			} else if (!orderDetails.get(0).getOrderItemStatus().equals("New") && !orderDetails.get(0).getOrderItemStatus().equals("Delivered")) {				
-				if(orderDetails.size() > 0) {
+			} else if (!orderDetails.get(0).getOrderItemStatus().equals("New")
+					&& !orderDetails.get(0).getOrderItemStatus().equals("Delivered")) {
+				if (orderDetails.size() > 0) {
 					OrderStatusDetails orderStatusDetails = orderDetails.get(0).getOrderStatusDetails();
 					org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-					if(cancelationRequestDTO.getOrderStatus().equals("Request for cancelation")) {						
+					if (cancelationRequestDTO.getOrderStatus().equals("Request for cancelation")) {
 						jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
 						jsonObject.put("cancelationTime", format);
-					    orderStatusDetails.setCancelOrderDetails(jsonObject);
-					    orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-					    orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-					    orderSKUDetailsRepo.save(orderDetails.get(0));
-					}else {
-					throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
+						orderStatusDetails.setCancelOrderDetails(jsonObject);
+						orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+						orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+						orderSKUDetailsRepo.save(orderDetails.get(0));
+					} else {
+						throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 					}
-				}else {
+				} else {
 					throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 				}
 
-			} else if (!orderDetails.get(0).getOrderItemStatus().equals("Delivered")) {	
+			} else if (!orderDetails.get(0).getOrderItemStatus().equals("Delivered")) {
 				OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-				if(cancelationRequestDTO.getOrderStatus().equals("Request for cancelation")) {
+				if (cancelationRequestDTO.getOrderStatus().equals("Request for cancelation")) {
 					jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
 					jsonObject.put("cancelationTime", format);
-				    orderStatusDetails.setCancelOrderDetails(jsonObject);
-				    orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
-				    orderDetails.get(0).setOrderItemStatus("Request for cancelation");
-				    orderSKUDetailsRepo.save(orderDetails.get(0));
-				}else {					
+					orderStatusDetails.setCancelOrderDetails(jsonObject);
+					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
+					orderDetails.get(0).setOrderItemStatus("Request for cancelation");
+					orderSKUDetailsRepo.save(orderDetails.get(0));
+				} else {
 					throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 				}
 			} else {
@@ -1774,7 +1795,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Long salesPrice = orderDetails.get(0).getSalesPrice();
 				Long mrp = orderDetails.get(0).getMrp();
 				String productSize = orderDetails.get(0).getSize();
-			
+
 				Map<String, Object> data = new HashMap<>();
 				data.put("designerName", designerName);
 				data.put("adminName", adminName);
@@ -1785,7 +1806,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				data.put("displayName", displayName);
 				data.put("productImage", productImage);
 				data.put("productSize", productSize);
-				
+
 				if (salesPrice == 0 || salesPrice == null) {
 					data.put("salesPrice", mrp);
 				} else {
@@ -1826,7 +1847,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
-			
+
 			if (cancelationRequestApproveAndRejectDTO.getOrderStatus().equals("cancelled")) {
 
 				Map<String, Object> data = new HashMap<String, Object>();
@@ -1845,7 +1866,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 				jsonObject.put("cancellationTime", format);
 				jsonObject.put("adminCancellationComment", cancelationRequestApproveAndRejectDTO.getComment());
-				
+
 				try {
 					details.setCancelRequestDetails(jsonObject);
 					orderDetails.get(0).setOrderStatusDetails(details);
@@ -1859,7 +1880,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Context context = new Context();
 				context.setVariables(data);
 				String htmlContent = templateEngine.process("ordercancel.html", context);
-				
+
 				EmailSenderThread emailSenderThread = new EmailSenderThread(userEmail,
 						MessageConstant.ORDER_CANCEL_FROM_DESIGNER.getMessage(), htmlContent, true, null, restTemplate);
 				emailSenderThread.start();
@@ -1867,7 +1888,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						MessageConstant.ORDER_CANCEL.getMessage(), 200);
 			} else {
 				Map<String, Object> data = new HashMap<String, Object>();
-				
+
 				String status = orderDetails.get(0).getStatus();
 				CancelEmailJSON cancelEmailJSON = new CancelEmailJSON();
 				cancelEmailJSON.setOrderId(orderDetails.get(0).getOrderId());
@@ -1880,7 +1901,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				cancelEmailJSON.setComment(cancelationRequestApproveAndRejectDTO.getComment());
 				orderDetails.get(0).setOrderItemStatus(status);
 				OrderStatusDetails details = orderDetails.get(0).getOrderStatusDetails();
-				
+
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 				jsonObject.put("rejectionTime", format);
 				jsonObject.put("adminRejectionComment", cancelationRequestApproveAndRejectDTO.getComment());
@@ -1898,7 +1919,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				data.put("data2", cancelEmailJSON);
 				Context context = new Context();
 				context.setVariables(data);
-				
+
 				String htmlContent = templateEngine.process("ordercancelRejected.html", context);
 				EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail,
 						MessageConstant.ORDER_CANCELATION_REJECTED.getMessage(), htmlContent, true, null, restTemplate);
@@ -1931,6 +1952,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.getBody();
 				String designerId = entity.getDesignerId().toString();
 				String displayName = entity.getDesignerProfile().getDisplayName();
+				Map<String, Object> map = new HashMap<>();
 				OrderSKUDetailsEntity item1 = orderSKUDetailsRepo
 						.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 				String designerId2 = item1.getDesignerId() + "";
@@ -1954,6 +1976,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								MessageConstant.DATE_FORMAT_TYPE.getMessage());
 						Date dates = new Date();
 						String format = formatter.format(dates);
+						Context context = new Context();
 						if (orderItemStatus.equals("Orders")) {
 							if (!itemStatus.equals(orderItemStatus)) {
 								if (itemStatus.equals("New")) {
@@ -1968,6 +1991,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject3.put("withDesignCustomization",
 												fromJson.get("withDesignCustomization"));
 										jsonObject3.put("ordersTime", format);
+										map.put("withCustomization", fromJson.get("withCustomization"));
+										map.put("withDesignCustomization", fromJson.get("withDesignCustomization"));
+										map.put("ordersTime", format);
 										item.setOrderItemStatus(orderItemStatus);
 										if (item.getOrderStatusDetails() != null) {
 											orderStatusDetails.setOrdersDetails(jsonObject3);
@@ -1981,6 +2007,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject3.put("withCustomization", false);
 										jsonObject3.put("withDesignCustomization", false);
 										jsonObject3.put("ordersTime", format);
+										map.put("withCustomization", fromJson.get("withCustomization"));
+										map.put("withDesignCustomization", fromJson.get("withDesignCustomization"));
+										map.put("ordersTime", format);
 										item.setOrderItemStatus(orderItemStatus);
 										if (item.getOrderStatusDetails() != null) {
 											orderStatusDetails.setOrdersDetails(jsonObject3);
@@ -2003,10 +2032,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 												interfaceId, host + contextPath + "/userOrder/itemStatusChange",
 												gson.toJson(item), HttpStatus.OK);
 									}
+									commonUtility.mailSend(item, entity, orderId, productId, orderItemStatus, map);
 								} else
 									throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 							} else
 								throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
+
 						} else if (orderItemStatus.equals("Packed")) {
 							if (!itemStatus.equals(orderItemStatus)) {
 								if (itemStatus.equals("Orders")) {
@@ -2018,6 +2049,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject2.put("packedCovered", fromJson.get("packedCovered"));
 										jsonObject2.put("packingVideo", fromJson.get("packingVideo"));
 										jsonObject2.put("orderPackedTime", format);
+										context.setVariables(jsonObject2);
+										map.put("packedCovered", fromJson.get("packedCovered"));
+										map.put("packingVideo", fromJson.get("packingVideo"));
+										map.put("orderPackedTime", format);
 										item.setOrderItemStatus(orderItemStatus);
 										orderStatusDetails.setPackedDetails(jsonObject2);
 										item.setOrderStatusDetails(orderStatusDetails);
@@ -2026,10 +2061,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject2.put("packedCovered", false);
 										jsonObject2.put("packingVideo", false);
 										jsonObject2.put("orderPackedTime", format);
+										context.setVariables(jsonObject2);
+										map.put("packedCovered", false);
+										map.put("packingVideo", false);
+										map.put("orderPackedTime", format);
 										item.setOrderItemStatus(orderItemStatus);
 										orderStatusDetails.setPackedDetails(jsonObject2);
 										orderSKUDetailsRepo.save(item);
 									}
+									commonUtility.mailSend(item, entity, orderId, productId, orderItemStatus, map);
 								} else
 									throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 							} else
@@ -2057,12 +2097,17 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject1.put("awbNumber", awbNumber);
 										jsonObject1.put("orderShippedTime", format);
 										orderStatusDetails.setShippedDetails(jsonObject1);
+										context.setVariables(jsonObject1);
+										map.put("courierName", courierName);
+										map.put("awbNumber", awbNumber);
+										map.put("orderShippedTime", format);
 										item.setOrderItemStatus(orderItemStatus);
 										orderSKUDetailsRepo.save(item);
 									} catch (Exception e) {
 										throw new CustomException(
 												MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 									}
+									commonUtility.mailSend(item, entity, orderId, productId, orderItemStatus, map);
 								} else
 									throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 							} else
@@ -2084,13 +2129,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										String format1 = dateFormat.format(date);
 
 										jsonObject4.put("deliveredDate", format1);
+										map.put("deliveredDate", format1);
 										orderStatusDetails.setDeliveryDetails(jsonObject4);
 										item.setOrderItemStatus(orderItemStatus);
+										context.setVariables(jsonObject4);
 										orderSKUDetailsRepo.save(item);
 									} catch (Exception e) {
 										throw new CustomException(
 												MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 									}
+									commonUtility.mailSend(item, entity, orderId, productId, orderItemStatus, map);
 								} else
 									throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 
@@ -2098,99 +2146,99 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 						}
 
-						Long userId = item.getUserId();
-						UserLoginEntity userById = userServiceImpl.getUserById(userId);
-						String email = userById.getEmail();
-						String firstName = userById.getFirstName();
-						String productName = item.getProductName();
-						Long salesPrice = item.getSalesPrice();
-						Long mrp;
-						if (salesPrice == 0 || salesPrice.equals(null)) {
-							mrp = item.getMrp();
-						} else {
-							mrp = salesPrice;
-						}
-						String size = item.getSize();
-						String images = item.getImages();
-						Long units = item.getUnits();
-						String email2 = entity.getDesignerProfile().getEmail();
-						String colour = item.getColour();
-						List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
-
-						if (findByOrderIdList.size() > 0) {
-
-							String paymentMode = findByOrderIdList.get(0).getPaymentMode();
-							OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
-							System.out.println("orderDetailsEntity " + orderDetailsEntity.toString());
-							Object shippingAddress = orderDetailsEntity.getShippingAddress();
-							String substring2 = shippingAddress.toString()
-									.substring(1, shippingAddress.toString().length() - 1).replaceAll("=", " : ");
-							String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
-									.replace("country : ", "").replace("state : ", "").replace("city : ", "")
-									.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
-									.replace("email : ", "").replace("mobile : ", "");
-							String orderDate = item.getCreatedOn();
-							Date parse = formatter.parse(orderDate);
-							Calendar calendar = Calendar.getInstance();
-							calendar.setTime(parse);
-							Date time = calendar.getTime();
-							DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
-							DecimalFormat decimalFormat = new DecimalFormat("0.00");
-							String format1 = dateFormat2.format(time);
-							Double disc = orderDetailsEntity.getDiscount();
-							String discount = decimalFormat.format(disc);
-							Double taxAmount = orderDetailsEntity.getTaxAmount();
-							String format2 = decimalFormat.format(taxAmount);
-							Context context = new Context();
-							context.setVariable("firstName", firstName);
-							context.setVariable("productId", productId);
-							context.setVariable("productName", productName);
-							context.setVariable("mrp", mrp);
-							double format3 = (Double.parseDouble(format2) + mrp) - Double.parseDouble(discount);
-							context.setVariable("format3", format3);
-							context.setVariable("discount", discount);
-							context.setVariable("taxAmount", format2);
-							context.setVariable("size", size);
-							context.setVariable("displayName", displayName);
-							context.setVariable("paymentMode", paymentMode);
-							context.setVariable("shippingAddress", replace);
-							context.setVariable("orderDate", format1);
-							context.setVariable("orderId", orderId);
-							context.setVariable("quantity", units);
-							context.setVariable("colour", colour);
-
-							if (orderItemStatus.equals("Orders")) {
-								context.setVariable("orderItemStatus", "Verified");
-							} else {
-								context.setVariable("orderItemStatus", orderItemStatus);
-							}
-							context.setVariable("orderId", orderId);
-							context.setVariable("productImage", images);
-							if (orderItemStatus.equals("Orders")) {
-								String htmlContent = templateEngine.process("statusChange.html", context);
-								EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-										"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
-								String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html",
-										context);
-								EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-										"Your Product Has been " + "Verified", htmlContentDesigner, true, null,
-										restTemplate);
-								emailSenderThreadDesigner.start();
-								emailSenderThread.start();
-							} else {
-								String htmlContent = templateEngine.process("statusChange.html", context);
-								EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-										"Your Order Has been " + orderItemStatus, htmlContent, true, null,
-										restTemplate);
-								String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html",
-										context);
-								EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-										"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null,
-										restTemplate);
-								emailSenderThreadDesigner.start();
-								emailSenderThread.start();
-							}
-						}
+//						Long userId = item.getUserId();
+//						UserLoginEntity userById = userServiceImpl.getUserById(userId);
+//						String email = userById.getEmail();
+//						String firstName = userById.getFirstName();
+//						String productName = item.getProductName();
+//						Long salesPrice = item.getSalesPrice();
+//						Long mrp;
+//						if (salesPrice == 0 || salesPrice.equals(null)) {
+//							mrp = item.getMrp();
+//						} else {
+//							mrp = salesPrice;
+//						}
+//						String size = item.getSize();
+//						String images = item.getImages();
+//						Long units = item.getUnits();
+//						String email2 = entity.getDesignerProfile().getEmail();
+//						String colour = item.getColour();
+//						List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
+//
+//						if (findByOrderIdList.size() > 0) {
+//
+//							String paymentMode = findByOrderIdList.get(0).getPaymentMode();
+//							OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
+//							System.out.println("orderDetailsEntity " + orderDetailsEntity.toString());
+//							Object shippingAddress = orderDetailsEntity.getShippingAddress();
+//							String substring2 = shippingAddress.toString()
+//									.substring(1, shippingAddress.toString().length() - 1).replaceAll("=", " : ");
+//							String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
+//									.replace("country : ", "").replace("state : ", "").replace("city : ", "")
+//									.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
+//									.replace("email : ", "").replace("mobile : ", "");
+//							String orderDate = item.getCreatedOn();
+//							Date parse = formatter.parse(orderDate);
+//							Calendar calendar = Calendar.getInstance();
+//							calendar.setTime(parse);
+//							Date time = calendar.getTime();
+//							DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+//							DecimalFormat decimalFormat = new DecimalFormat("0.00");
+//							String format1 = dateFormat2.format(time);
+//							Double disc = orderDetailsEntity.getDiscount();
+//							String discount = decimalFormat.format(disc);
+//							Double taxAmount = orderDetailsEntity.getTaxAmount();
+//							String format2 = decimalFormat.format(taxAmount);
+//							Context context = new Context();
+//							context.setVariable("firstName", firstName);
+//							context.setVariable("productId", productId);
+//							context.setVariable("productName", productName);
+//							context.setVariable("mrp", mrp);
+//							double format3 = (Double.parseDouble(format2) + mrp) - Double.parseDouble(discount);
+//							context.setVariable("format3", format3);
+//							context.setVariable("discount", discount);
+//							context.setVariable("taxAmount", format2);
+//							context.setVariable("size", size);
+//							context.setVariable("displayName", displayName);
+//							context.setVariable("paymentMode", paymentMode);
+//							context.setVariable("shippingAddress", replace);
+//							context.setVariable("orderDate", format1);
+//							context.setVariable("orderId", orderId);
+//							context.setVariable("quantity", units);
+//							context.setVariable("colour", colour);
+//
+//							if (orderItemStatus.equals("Orders")) {
+//								context.setVariable("orderItemStatus", "Verified");
+//							} else {
+//								context.setVariable("orderItemStatus", orderItemStatus);
+//							}
+//							context.setVariable("orderId", orderId);
+//							context.setVariable("productImage", images);
+//							if (orderItemStatus.equals("Orders")) {
+//								String htmlContent = templateEngine.process("statusChange.html", context);
+//								EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+//										"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
+//								String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html",
+//										context);
+//								EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+//										"Your Product Has been " + "Verified", htmlContentDesigner, true, null,
+//										restTemplate);
+//								emailSenderThreadDesigner.start();
+//								emailSenderThread.start();
+//							} else {
+//								String htmlContent = templateEngine.process("statusChange.html", context);
+//								EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+//										"Your Order Has been " + orderItemStatus, htmlContent, true, null,
+//										restTemplate);
+//								String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html",
+//										context);
+//								EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+//										"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null,
+//										restTemplate);
+//								emailSenderThreadDesigner.start();
+//								emailSenderThread.start();
+//							}
+//						}
 
 						return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 								MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus
@@ -2219,6 +2267,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 		try {
 			String extractUsername = jwtconfig.extractUsername(token.substring(7));
+			Map<String, Object> map = new HashMap<>();
 			try {
 				String adminEmail = restTemplate
 						.getForEntity(RestTemplateConstant.ADMIN_ROLE_NAME.getLink()
@@ -2240,7 +2289,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
-			
+
 			if (!itemStatus.equals("New")) {
 				if (itemStatus.equals(orderItemStatus)) {
 					throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
@@ -2249,12 +2298,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						if (itemStatus.equals("Orders")) {
 							org.json.simple.JSONObject jsonObject2 = new org.json.simple.JSONObject();
 							String string = statusChange.get("PackedDTO").toString();
-							org.json.simple.JSONObject fromJson = gson.fromJson(string, org.json.simple.JSONObject.class);
-							
+							org.json.simple.JSONObject fromJson = gson.fromJson(string,
+									org.json.simple.JSONObject.class);
+
 							if (fromJson.containsKey("packedCovered") || fromJson.containsKey("packingVideo")) {
 								jsonObject2.put("packedCovered", fromJson.get("packedCovered"));
 								jsonObject2.put("packingVideo", fromJson.get("packingVideo"));
 								jsonObject2.put("orderPackedTime", format);
+								map.put("packedCovered", fromJson.get("packedCovered"));
+								map.put("packingVideo", fromJson.get("packingVideo"));
+								map.put("orderPackedTime", format);
 								item.setOrderItemStatus(orderItemStatus);
 								orderStatusDetails.setPackedDetails(jsonObject2);
 								item.setOrderStatusDetails(orderStatusDetails);
@@ -2263,10 +2316,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								jsonObject2.put("packedCovered", false);
 								jsonObject2.put("packingVideo", false);
 								jsonObject2.put("orderPackedTime", format);
+								map.put("packedCovered", false);
+								map.put("packingVideo", false);
+								map.put("orderPackedTime", format);
 								item.setOrderItemStatus(orderItemStatus);
 								orderStatusDetails.setPackedDetails(jsonObject2);
 								orderSKUDetailsRepo.save(item);
 							}
+							commonUtility.mailSend(item, forEntity, orderId, productId, orderItemStatus, map);
 						} else
 							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 					} else
@@ -2293,9 +2350,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								jsonObject1.put("courierName", courierName);
 								jsonObject1.put("awbNumber", awbNumber);
 								jsonObject1.put("orderShippedTime", format);
+								map.put("courierName", courierName);
+								map.put("awbNumber", awbNumber);
+								map.put("orderShippedTime", format);
 								orderStatusDetails.setShippedDetails(jsonObject1);
 								item.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(item);
+								commonUtility.mailSend(item, forEntity, orderId, productId, orderItemStatus, map);
 							} catch (Exception e) {
 								throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 							}
@@ -2319,9 +2380,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								Date date = inputText.parse(deliveredDate);
 								String format1 = dateFormat.format(date);
 								jsonObject4.put("deliveredDate", format1);
+								map.put("deliveredDate", format1);
 								orderStatusDetails.setDeliveryDetails(jsonObject4);
 								item.setOrderItemStatus(orderItemStatus);
 								orderSKUDetailsRepo.save(item);
+								commonUtility.mailSend(item, forEntity, orderId, productId, orderItemStatus, map);
 							} catch (Exception e) {
 								throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 							}
@@ -2331,101 +2394,101 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					} else
 						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				}
-				Long userId = item.getUserId();
-				UserLoginEntity userById = userServiceImpl.getUserById(userId);
-				String email = userById.getEmail();
-				String firstName = userById.getFirstName();
-				String productName = item.getProductName();
-				Long salesPrice = item.getSalesPrice();
-				Long mrp;
-				if (salesPrice == 0 || salesPrice.equals(null)) {
-					mrp = item.getMrp();
-				} else {
-					mrp = salesPrice;
-				}
-				String size = item.getSize();
-				String images = item.getImages();
-				Long units = item.getUnits();
-				String colour = item.getColour();
-				String email2 = forEntity.getDesignerProfile().getEmail();
-				String displayName = forEntity.getDesignerProfile().getDisplayName();
-				String city = forEntity.getDesignerProfile().getCity();
-				String country = forEntity.getDesignerProfile().getCountry();
-				String state = forEntity.getDesignerProfile().getState();
-				List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
-
-				if (findByOrderIdList.size() > 0) {
-
-					String paymentMode = findByOrderIdList.get(0).getPaymentMode();
-					OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
-					Object shippingAddress = orderDetailsEntity.getShippingAddress();
-					String substring2 = shippingAddress.toString().substring(1, shippingAddress.toString().length() - 1)
-							.replaceAll("=", " : ");
-					String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
-							.replace("country : ", "").replace("state : ", "").replace("city : ", "")
-							.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
-							.replace("email : ", "").replace("mobile : ", "");
-					String orderDate = item.getCreatedOn();
-					Date parse = formatter.parse(orderDate);
-					Calendar calendar = Calendar.getInstance();
-					calendar.setTime(parse);
-					Date time = calendar.getTime();
-					DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
-					DecimalFormat decimalFormat = new DecimalFormat("0.00");
-					String format1 = dateFormat2.format(time);
-					Double disc = orderDetailsEntity.getDiscount();
-					String discount = decimalFormat.format(disc);
-					Double taxAmount = orderDetailsEntity.getTaxAmount();
-					String format2 = decimalFormat.format(taxAmount);
-					Context context = new Context();
-					context.setVariable("firstName", firstName);
-					context.setVariable("productId", productId);
-					context.setVariable("productName", productName);
-					context.setVariable("mrp", mrp);
-					double format3 = (Double.parseDouble(format2) + mrp) - Double.parseDouble(discount);
-					context.setVariable("format3", format3);
-					context.setVariable("discount", discount);
-					context.setVariable("taxAmount", format2);
-					context.setVariable("mrp", mrp);
-					context.setVariable("size", size);
-					context.setVariable("displayName", displayName);
-					context.setVariable("city", city);
-					context.setVariable("country", country);
-					context.setVariable("state", state);
-					context.setVariable("paymentMode", paymentMode);
-					context.setVariable("shippingAddress", replace);
-					context.setVariable("orderDate", format1);
-					context.setVariable("orderId", orderId);
-					context.setVariable("quantity", units);
-					context.setVariable("colour", colour);
-					if (orderItemStatus.equals("Orders")) {
-						context.setVariable("orderItemStatus", "Verified");
-					} else {
-						context.setVariable("orderItemStatus", orderItemStatus);
-					}
-					context.setVariable("orderId", orderId);
-					context.setVariable("productImage", images);
-					if (orderItemStatus.equals("Orders")) {
-						String htmlContent = templateEngine.process("statusChange.html", context);
-						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-								"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
-						String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
-						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-								"Your Product Has been " + "Verified", htmlContentDesigner, true, null, restTemplate);
-						emailSenderThreadDesigner.start();
-						emailSenderThread.start();
-					} else {
-						String htmlContent = templateEngine.process("statusChange.html", context);
-						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-								"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
-						String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
-						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-								"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null,
-								restTemplate);
-						emailSenderThreadDesigner.start();
-						emailSenderThread.start();
-					}
-				}
+//				Long userId = item.getUserId();
+//				UserLoginEntity userById = userServiceImpl.getUserById(userId);
+//				String email = userById.getEmail();
+//				String firstName = userById.getFirstName();
+//				String productName = item.getProductName();
+//				Long salesPrice = item.getSalesPrice();
+//				Long mrp;
+//				if (salesPrice == 0 || salesPrice.equals(null)) {
+//					mrp = item.getMrp();
+//				} else {
+//					mrp = salesPrice;
+//				}
+//				String size = item.getSize();
+//				String images = item.getImages();
+//				Long units = item.getUnits();
+//				String colour = item.getColour();
+//				String email2 = forEntity.getDesignerProfile().getEmail();
+//				String displayName = forEntity.getDesignerProfile().getDisplayName();
+//				String city = forEntity.getDesignerProfile().getCity();
+//				String country = forEntity.getDesignerProfile().getCountry();
+//				String state = forEntity.getDesignerProfile().getState();
+//				List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
+//
+//				if (findByOrderIdList.size() > 0) {
+//
+//					String paymentMode = findByOrderIdList.get(0).getPaymentMode();
+//					OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
+//					Object shippingAddress = orderDetailsEntity.getShippingAddress();
+//					String substring2 = shippingAddress.toString().substring(1, shippingAddress.toString().length() - 1)
+//							.replaceAll("=", " : ");
+//					String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
+//							.replace("country : ", "").replace("state : ", "").replace("city : ", "")
+//							.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
+//							.replace("email : ", "").replace("mobile : ", "");
+//					String orderDate = item.getCreatedOn();
+//					Date parse = formatter.parse(orderDate);
+//					Calendar calendar = Calendar.getInstance();
+//					calendar.setTime(parse);
+//					Date time = calendar.getTime();
+//					DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+//					DecimalFormat decimalFormat = new DecimalFormat("0.00");
+//					String format1 = dateFormat2.format(time);
+//					Double disc = orderDetailsEntity.getDiscount();
+//					String discount = decimalFormat.format(disc);
+//					Double taxAmount = orderDetailsEntity.getTaxAmount();
+//					String format2 = decimalFormat.format(taxAmount);
+//					Context context = new Context();
+//					context.setVariable("firstName", firstName);
+//					context.setVariable("productId", productId);
+//					context.setVariable("productName", productName);
+//					context.setVariable("mrp", mrp);
+//					double format3 = (Double.parseDouble(format2) + mrp) - Double.parseDouble(discount);
+//					context.setVariable("format3", format3);
+//					context.setVariable("discount", discount);
+//					context.setVariable("taxAmount", format2);
+//					context.setVariable("mrp", mrp);
+//					context.setVariable("size", size);
+//					context.setVariable("displayName", displayName);
+//					context.setVariable("city", city);
+//					context.setVariable("country", country);
+//					context.setVariable("state", state);
+//					context.setVariable("paymentMode", paymentMode);
+//					context.setVariable("shippingAddress", replace);
+//					context.setVariable("orderDate", format1);
+//					context.setVariable("orderId", orderId);
+//					context.setVariable("quantity", units);
+//					context.setVariable("colour", colour);
+//					if (orderItemStatus.equals("Orders")) {
+//						context.setVariable("orderItemStatus", "Verified");
+//					} else {
+//						context.setVariable("orderItemStatus", orderItemStatus);
+//					}
+//					context.setVariable("orderId", orderId);
+//					context.setVariable("productImage", images);
+//					if (orderItemStatus.equals("Orders")) {
+//						String htmlContent = templateEngine.process("statusChange.html", context);
+//						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+//								"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
+//						String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
+//						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+//								"Your Product Has been " + "Verified", htmlContentDesigner, true, null, restTemplate);
+//						emailSenderThreadDesigner.start();
+//						emailSenderThread.start();
+//					} else {
+//						String htmlContent = templateEngine.process("statusChange.html", context);
+//						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+//								"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
+//						String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
+//						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
+//								"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null,
+//								restTemplate);
+//						emailSenderThreadDesigner.start();
+//						emailSenderThread.start();
+//					}
+//				}
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage()
 								+ orderItemStatus + MessageConstant.SUCCESSFULLY.getMessage(),
@@ -2569,7 +2632,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("requestForCancelation", orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
+			response.put("requestForCancelation",
+					orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
 			response.put("New", orderSKUDetailsRepo.findByOrderItemStatus("New").size());
 			response.put("Packed", orderSKUDetailsRepo.findByOrderItemStatus("Packed").size());
 			response.put("Shipped", orderSKUDetailsRepo.findByOrderItemStatus("Shipped").size());
@@ -2612,12 +2676,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("orderId").is(orderId));
-			
+
 			List<OrderInvoiceEntity> invoiceDataList = mongoOperations.find(query, OrderInvoiceEntity.class);
 			List<String> keyList = new ArrayList<>();
 			Map<String, List<InvoiceUpdatedModel>> responceData = new HashMap<>();
 			List<String> invoiceIdList = new ArrayList<>();
-			
+
 			for (OrderInvoiceEntity invoiceEntity : invoiceDataList) {
 				String gstNo = invoiceEntity.getDesignerDetails().getGSTIN();
 				try {
@@ -2687,13 +2751,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					element.setIgst(element.getIgst() == null ? "0" : element.getIgst());
 					tCgst = tCgst + Double.parseDouble(element.getCgst() == null ? "0" : element.getCgst());
 					tSgst = tSgst + Double.parseDouble(element.getSgst() == null ? "0" : element.getSgst());
-					tDis = tDis + Double.parseDouble(Optional.ofNullable(element.getDiscount()).isEmpty() ? "0" : element.getDiscount());
+					tDis = tDis + Double.parseDouble(
+							Optional.ofNullable(element.getDiscount()).isEmpty() ? "0" : element.getDiscount());
 					tQty = tQty + Integer.parseInt(element.getQty() == null ? "0" : element.getQty());
 					tIgst = tIgst + Double.parseDouble(element.getIgst() == null ? "0" : element.getIgst());
-					tGross = tGross + Double.parseDouble(element.getGrossAmount() == null ? "0" : element.getGrossAmount());
+					tGross = tGross
+							+ Double.parseDouble(element.getGrossAmount() == null ? "0" : element.getGrossAmount());
 					tTotal = tTotal + Double.parseDouble(element.getTotal() == null ? "0" : element.getTotal());
 					tMrp = tMrp + Double.parseDouble(element.getMrp() == null ? "0" : element.getMrp());
-					tTaxableValue = tTaxableValue + Double.parseDouble(element.getTaxableValue() == null ? "0" : element.getTaxableValue());
+					tTaxableValue = tTaxableValue
+							+ Double.parseDouble(element.getTaxableValue() == null ? "0" : element.getTaxableValue());
 					totalCgst = String.valueOf(tCgst);
 					totalSgst = String.valueOf(tSgst);
 					totalDiscount = String.valueOf(tDis);
@@ -2704,9 +2771,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					taxableValue = String.valueOf(tTaxableValue);
 					String invoiceId = element.getInvoiceId();
 					String modifiedInvoiceId = invoiceId.substring(10, invoiceId.length());
-					
+
 					List<OrderInvoiceEntity> findByInvoiceId = this.orderInvoiceRepo.findByInvoiceId(modifiedInvoiceId);
-					
+
 					for (OrderInvoiceEntity e : findByInvoiceId) {
 						DesignerProfileEntity forEntity = restTemplate.getForEntity(
 								RestTemplateConstant.DESIGNER_BYID.getLink() + e.getProductDetails().getDesignerId(),
