@@ -1174,12 +1174,8 @@ public class ProductServiceImp2 implements ProductService2 {
 				findAll = productRepo2.findByIsDeleted(false, pagingSort);
 			} else {
 				findAll = productRepo2.findByIsDeletedAndSearch(keyword, false, pagingSort);
-<<<<<<< HEAD
-			}
-			List<Object> productId = new ArrayList<>();
-=======
+
 			}			
->>>>>>> 5fdc905e782dffb3fe397835f00fbe53de3f6fa2
 			CategoryEntity[] categoryDetails = restTemplate
 					.getForEntity("https://localhost:8084/dev/category/getAllCategoryDetails", CategoryEntity[].class)
 					.getBody();
@@ -1195,24 +1191,9 @@ public class ProductServiceImp2 implements ProductService2 {
 								searchBy, designerId, categoryId, subCategoryId, colour, cod, customization, priceType,
 								returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice,
 								labelType);
-<<<<<<< HEAD
-//				     productByCategoryId.forEach(e -> {
-//					 ObjectMapper obj = new ObjectMapper();
-//					 String productIdFilter = null;
-//					 try {
-//						productIdFilter = obj.writeValueAsString(e);
-//					 } catch (JsonProcessingException e1) {
-//						e1.printStackTrace();
-//					 }
-//					 JsonNode pJN = new JsonNode(productIdFilter);
-//					 JSONObject object = pJN.getObject();
-//					 productId.add(object);
-//				   });
-						int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
-=======
+
 
 				     int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
->>>>>>> 5fdc905e782dffb3fe397835f00fbe53de3f6fa2
 						int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filterProduct.size());
 						List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
 								: filterProduct.subList(startOfPage, endOfPage);
@@ -1227,16 +1208,6 @@ public class ProductServiceImp2 implements ProductService2 {
 				totalPage = 0;
 			}
 			Map<String, Object> response = new HashMap<>();
-<<<<<<< HEAD
-//			if (!productId.isEmpty()) {
-//				response.put("data", new Json(productId.toString()));
-//			} else {
-//				response.put("data", productId);
-//			}
-			// response.put("data", new Json(productId.toString()));
-=======
-
->>>>>>> 5fdc905e782dffb3fe397835f00fbe53de3f6fa2
 			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
 			response.put("total", findAll.getTotalElements());
