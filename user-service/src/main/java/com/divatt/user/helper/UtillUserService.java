@@ -28,36 +28,41 @@ public class UtillUserService {
 		
 		
 		InvoiceUpdatedModel invoiceUpdatedModel= new InvoiceUpdatedModel();
-		invoiceUpdatedModel.setBilledUserName(invoiceEntity.getUserDetails().getBilling_address().getFullName());
-		invoiceUpdatedModel.setBillingCity(invoiceEntity.getUserDetails().getBilling_address().getCity());
+		invoiceUpdatedModel.setBilledUserName(invoiceEntity.getUserDetails().getBilling_address().getFullName()+",");
+		invoiceUpdatedModel.setBillingCity(invoiceEntity.getUserDetails().getBilling_address().getCity()+",");
 		invoiceUpdatedModel.setBillingMobile(invoiceEntity.getUserDetails().getBilling_address().getMobile());
-		invoiceUpdatedModel.setBillingState(invoiceEntity.getUserDetails().getBilling_address().getState());
-		invoiceUpdatedModel.setBllingAddress(invoiceEntity.getUserDetails().getBilling_address().getAddress2());
-		invoiceUpdatedModel.setBillingCountry(invoiceEntity.getUserDetails().getBilling_address().getCountry());
-		invoiceUpdatedModel.setBillingPinCode(invoiceEntity.getUserDetails().getBilling_address().getPostalCode());
+		invoiceUpdatedModel.setBillingState(invoiceEntity.getUserDetails().getBilling_address().getState()+",");
+		invoiceUpdatedModel.setBllingAddress(invoiceEntity.getUserDetails().getBilling_address().getAddress2()+",");
+		invoiceUpdatedModel.setBillingCountry(invoiceEntity.getUserDetails().getBilling_address().getCountry()+",");
+		invoiceUpdatedModel.setBillingPinCode(invoiceEntity.getUserDetails().getBilling_address().getPostalCode()+",");
 		invoiceUpdatedModel.setShippingCountry(invoiceEntity.getUserDetails().getShipping_address().getCountry());
-		invoiceUpdatedModel.setShippingPincode(invoiceEntity.getUserDetails().getShipping_address().getPostalCode()+"");
+		invoiceUpdatedModel.setShippingPincode(invoiceEntity.getUserDetails().getShipping_address().getPostalCode()+",");
 		invoiceUpdatedModel.setSellerGSTNO(invoiceEntity.getDesignerDetails().getGSTIN());
 		invoiceUpdatedModel.setDiscount(invoiceEntity.getProductDetails().getDiscount()+"");
 		invoiceUpdatedModel.setGrossAmount(invoiceEntity.getProductDetails().getMrp()+"");
 		invoiceUpdatedModel.setInvoiceId("InvoiceId-"+invoiceEntity.getInvoiceId());
-		invoiceUpdatedModel.setOrderDate("Order DATE-"+invoiceEntity.getOrderDatetime());
-		invoiceUpdatedModel.setOrderId("OrderId-"+invoiceEntity.getOrderId());
+		invoiceUpdatedModel.setOrderDate("Order DATE-"+invoiceEntity.getOrderDatetime()+",");
+		invoiceUpdatedModel.setOrderId("OrderId-"+invoiceEntity.getOrderId()+",");
 		invoiceUpdatedModel.setPincode(invoiceEntity.getUserDetails().getBilling_address().getPostalCode());
 		invoiceUpdatedModel.setProductName(invoiceEntity.getProductDetails().getProductName());
 		invoiceUpdatedModel.setQty(invoiceEntity.getProductDetails().getUnits()+"");
-		invoiceUpdatedModel.setSellerAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2());
-		invoiceUpdatedModel.setSellerCity(invoiceEntity.getUserDetails().getShipping_address().getCity());
-		invoiceUpdatedModel.setSellerMobile(invoiceEntity.getDesignerDetails().getMobile());
+		invoiceUpdatedModel.setSellerAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2()+",");
+		invoiceUpdatedModel.setSellerCity(invoiceEntity.getUserDetails().getShipping_address().getCity()+",");
+		invoiceUpdatedModel.setSellerMobile(invoiceEntity.getDesignerDetails().getMobile()+",");
 //		invoiceUpdatedModel.setSellerName(restTemplate.getForEntity(
 //				RestTemplateConstant.DESIGNER_BYID.getLink() + invoiceEntity.getProductDetails().getDesignerId(),
 //				DesignerProfileEntity.class).getBody().getDesignerName());
-		invoiceUpdatedModel.setSellerAddress(invoiceEntity.getDesignerDetails().getAddress());
-		invoiceUpdatedModel.setShippingAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2());
-		invoiceUpdatedModel.setShippingUserName(invoiceEntity.getUserDetails().getShipping_address().getFullName());
-		invoiceUpdatedModel.setShippingCity(invoiceEntity.getUserDetails().getShipping_address().getCity());
-		invoiceUpdatedModel.setShippingPincode(invoiceEntity.getUserDetails().getBilling_address().getMobile());
-		invoiceUpdatedModel.setShippingState(invoiceEntity.getUserDetails().getShipping_address().getState());
+		invoiceUpdatedModel.setSellerAddress(invoiceEntity.getDesignerDetails().getAddress()+",");
+		String address2 = invoiceEntity.getUserDetails().getShipping_address().getAddress2();
+		if(!address2.isBlank()) {
+		invoiceUpdatedModel.setShippingAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2()+",");
+		}else {
+			invoiceUpdatedModel.setShippingAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2());
+		}
+		invoiceUpdatedModel.setShippingUserName(invoiceEntity.getUserDetails().getShipping_address().getFullName()+",");
+		invoiceUpdatedModel.setShippingCity(invoiceEntity.getUserDetails().getShipping_address().getCity()+",");
+		invoiceUpdatedModel.setShippingPincode(invoiceEntity.getUserDetails().getBilling_address().getMobile()+",");
+		invoiceUpdatedModel.setShippingState(invoiceEntity.getUserDetails().getShipping_address().getState()+",");
 		invoiceUpdatedModel.setTotal(invoiceEntity.getProductDetails().getSalesPrice()+"");
 		invoiceUpdatedModel.setDiscount(invoiceEntity.getProductDetails().getDiscount()+"");
 		invoiceUpdatedModel.setSgst((float)invoiceEntity.getProductDetails().getTaxAmount()/2+"");
