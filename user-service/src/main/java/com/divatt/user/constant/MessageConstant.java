@@ -32,7 +32,7 @@ public enum MessageConstant {
 
 	// ORDER & PAYMENT CONTROLLER
 
-	UNAUTHORIZED("Unauthorized"), ORDER_PLACED("Order placed successfully"), ORDER_SUMMARY("Order summary"),
+	UNAUTHORIZED("Unauthorized"), ORDER_PLACED("Order placed successfully"), ORDER_SUMMARY("Order successfully placed "),
 	ORDER_CREATED(" Your order created successfully. "), PDF_GENERATED("PDF generated successfully"),
 	ORDER_DELIVERED("Order Already delivered"), ORDER_CANCEL("Order cancelled successfully"),
 	ORDER_REFUND_REQUEST("Refund request submitted successfully"), ORDER_REFUND_APPROVED("Refund successfully"),
@@ -49,10 +49,10 @@ public enum MessageConstant {
 	ADMIN_CANNOT_CHANGE_STATUS_NOW("Admin Can't Change this Status Now"), ITEM_STATUS_CHANGE("Item Status Changed "),
 	TO(" to "), ORDER_CANCELATION_REJECTED("Order cancelation rejected"), RANDOM_STRING("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 	RANDOM_STRING_INT("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"), RANDOM_INT("1234567890"),
-	DATE_FORMAT_TYPE("dd/MM/yyyy HH:mm:ss"), DATA_TYPE_FORMAT("dd/MM/yyyy"),
+	DATE_FORMAT_TYPE("dd/MM/yyyy"), DATA_TYPE_FORMAT("dd/MM/yyyy"),
 	PRODUCT_ALREADY_DELIVERED("The Product is already Delivered"), PRODUCT_PLACED("Your product has been ordered by "),
 	ADMIN_ROLES("SADMIN"), PLEASE_FILL_UP_REQUIRED_FIELDS("Please fill up the Required Fields"),
-	INVALID_TOKEN("Invalid Token");
+	INVALID_TOKEN("Invalid Token"),ORDER_RECEIVED("Order received");
 
 	private String message;
 

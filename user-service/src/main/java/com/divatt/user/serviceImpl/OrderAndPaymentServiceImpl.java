@@ -1991,9 +1991,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject3.put("withDesignCustomization",
 												fromJson.get("withDesignCustomization"));
 										jsonObject3.put("ordersTime", format);
-										map.put("withCustomization", fromJson.get("withCustomization"));
-										map.put("withDesignCustomization", fromJson.get("withDesignCustomization"));
-										map.put("ordersTime", format);
+										map.put("on ", format + ", with Customization and with Design Customization.");
 										item.setOrderItemStatus(orderItemStatus);
 										if (item.getOrderStatusDetails() != null) {
 											orderStatusDetails.setOrdersDetails(jsonObject3);
@@ -2007,9 +2005,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject3.put("withCustomization", false);
 										jsonObject3.put("withDesignCustomization", false);
 										jsonObject3.put("ordersTime", format);
-										map.put("withCustomization", fromJson.get("withCustomization"));
-										map.put("withDesignCustomization", fromJson.get("withDesignCustomization"));
-										map.put("ordersTime", format);
+										map.put("with Customization", fromJson.get("withCustomization"));
+										map.put("with DesignCustomization", fromJson.get("withDesignCustomization"));
+										map.put("Orders Time", format);
 										item.setOrderItemStatus(orderItemStatus);
 										if (item.getOrderStatusDetails() != null) {
 											orderStatusDetails.setOrdersDetails(jsonObject3);
@@ -2050,9 +2048,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject2.put("packingVideo", fromJson.get("packingVideo"));
 										jsonObject2.put("orderPackedTime", format);
 										context.setVariables(jsonObject2);
-										map.put("packedCovered", fromJson.get("packedCovered"));
-										map.put("packingVideo", fromJson.get("packingVideo"));
-										map.put("orderPackedTime", format);
+										map.put("on  ", format
+												+ " with Divatt Cover. For security we recorded the packing video");
 										item.setOrderItemStatus(orderItemStatus);
 										orderStatusDetails.setPackedDetails(jsonObject2);
 										item.setOrderStatusDetails(orderStatusDetails);
@@ -2062,9 +2059,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject2.put("packingVideo", false);
 										jsonObject2.put("orderPackedTime", format);
 										context.setVariables(jsonObject2);
-										map.put("packedCovered", false);
-										map.put("packingVideo", false);
-										map.put("orderPackedTime", format);
+//										map.put("Packed Covered", false);
+//										map.put("Packing Video", false);
+//										map.put("Order Packed Time", format);
 										item.setOrderItemStatus(orderItemStatus);
 										orderStatusDetails.setPackedDetails(jsonObject2);
 										orderSKUDetailsRepo.save(item);
@@ -2098,9 +2095,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject1.put("orderShippedTime", format);
 										orderStatusDetails.setShippedDetails(jsonObject1);
 										context.setVariables(jsonObject1);
-										map.put("courierName", courierName);
-										map.put("awbNumber", awbNumber);
-										map.put("orderShippedTime", format);
+										map.put("on  ", format +" by "+  courierName + " Courier and the AWB number is :" + awbNumber);
 										item.setOrderItemStatus(orderItemStatus);
 										orderSKUDetailsRepo.save(item);
 									} catch (Exception e) {
@@ -2129,7 +2124,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										String format1 = dateFormat.format(date);
 
 										jsonObject4.put("deliveredDate", format1);
-										map.put("deliveredDate", format1);
+										map.put("Delivered Date", format1);
 										orderStatusDetails.setDeliveryDetails(jsonObject4);
 										item.setOrderItemStatus(orderItemStatus);
 										context.setVariables(jsonObject4);

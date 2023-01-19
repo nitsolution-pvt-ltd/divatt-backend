@@ -656,7 +656,7 @@ public class CommonUtility {
 			context.setVariables(data);
 			String htmlContent = templateEngine.process("orderPlacedDesigner.html", context);
 			EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
-					MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true, null, restTemplate);
+					MessageConstant.ORDER_RECEIVED.getMessage(), htmlContent, true, null, restTemplate);
 			emailSenderThreadDesigner.start();
 
 		}
@@ -749,7 +749,6 @@ public class CommonUtility {
 				context.setVariable("firstName", firstName);
 				context.setVariable("productId", productId);
 				context.setVariable("productName", productName);
-				
 
 				context.setVariable("discount", discount);
 				context.setVariable("taxAmount", format2);
@@ -764,17 +763,19 @@ public class CommonUtility {
 				context.setVariable("format3", mrp);
 				if (item.getGiftwrapStatus()) {
 					context.setVariable("giftWrapAmount", item.getGiftWrapAmount());
-					double format3 = ((mrp-Double.parseDouble(format2) ) + Double.parseDouble(discount)
+					double format3 = ((mrp - Double.parseDouble(format2)) + Double.parseDouble(discount)
 							- item.getGiftWrapAmount());
 					context.setVariable("mrp", format3);
 				} else {
 					context.setVariable("giftWrapAmount", 0.00);
-					double format3 = (mrp-Double.parseDouble(format2)) + Double.parseDouble(discount);
+					double format3 = (mrp - Double.parseDouble(format2)) + Double.parseDouble(discount);
 					context.setVariable("mrp", format3);
 				}
 				String string = data.toString();
-				String substring = string.substring(1, string.toString().length() - 1).replaceAll("=", " : ");
-				;
+				LOGGER.info(string);
+				String string2 = string.substring(1, string.toString().length() - 1).replaceAll("=", " : ");
+				String substring = string2.replace(",", ",\n");
+				LOGGER.info(substring);
 				context.setVariable("details", substring);
 				if (orderItemStatus.equals("Orders")) {
 					context.setVariable("orderItemStatus", "Verified");
@@ -799,7 +800,7 @@ public class CommonUtility {
 							"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
 					String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
 					EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-							"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null, restTemplate);
+							"Your Order Has been " + orderItemStatus, htmlContentDesigner, true, null, restTemplate);
 					emailSenderThreadDesigner.start();
 					emailSenderThread.start();
 				}

@@ -45,7 +45,7 @@
 
 			</thead>
 			<tbody>
-				<tr style="font-size: 20px;">
+				<tr th:each="data1 : ${data}">
 					<td colspan="5" style="padding: 20px 20px; text-align: center;">
 						<img
 						src="https://mercomindia.s3.ap-south-1.amazonaws.com/wp-content/uploads/2021/11/tick-mark.png"
@@ -57,8 +57,8 @@
 							style="font-size: 18px; text-transform: capitalize; margin-top: 12px; font-weight: 500; line-height: 30px;">
 
 
-							Payment is sucessfully processed and your order is on the way. <br>
-							OrderId : <span th:text="${orderId}"></span>
+							Your order for
+							<th:block th:text="${data1.productName}"></th:block> has been successfully placed.
 						</div>
 						<hr
 							style="border-left: 0; border-width: 3px; border-bottom: 0; border-color: rgb(0, 0, 0); margin-top: 38px;" />
@@ -186,7 +186,7 @@
 									Amount (Rs.)</td>
 								<td colspan="3"
 									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Gift
-									wrap  Amount (Rs.)</td>
+									wrap Amount (Rs.)</td>
 								<td colspan="3"
 									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Discount
 									(Rs.)</td>
