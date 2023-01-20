@@ -813,14 +813,10 @@ public class CommonUtility {
 	public void mailReturnRequest(OrderSKUDetailsEntity item, String orderId, Integer productId,
 			Map<String, Object> data) {
 		try {
-
-			Object comment = item.getOrderStatusDetails().getCancelFromUser().get("comment");
-			Object reason = item.getOrderStatusDetails().getCancelFromUser().get("reason");
 			Long userId = item.getUserId();
 			UserLoginEntity userById = userServiceImpl.getUserById(userId);
 			String email = userById.getEmail();
 			String firstName = userById.getFirstName();
-
 			DesignerProfileEntity designerDetails = restTemplate
 					.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + item.getDesignerId(),
 							DesignerProfileEntity.class)
@@ -828,7 +824,6 @@ public class CommonUtility {
 			String designerName = designerDetails.getDesignerName();
 			String designerEmail = designerDetails.getDesignerProfile().getEmail();
 			String displayName = designerDetails.getDesignerProfile().getDisplayName();
-
 			org.json.simple.JSONObject body = restTemplate.getForEntity(
 					RestTemplateConstant.ADMIN_ROLE_NAME.getLink() + MessageConstant.ADMIN_ROLES.getMessage(),
 					org.json.simple.JSONObject.class).getBody();
@@ -836,16 +831,10 @@ public class CommonUtility {
 			String adminFirstName = body.get("firstName").toString();
 			String adminLastName = body.get("lastName").toString();
 			String adminName = adminFirstName + " " + adminLastName;
-
 			String itemStatus = item.getOrderItemStatus();
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
-			// String displayName = designerDetails.getDesignerProfile().getDisplayName();
 			Date dates = new Date();
 			String format = formatter.format(dates);
-			// Long userId = item.getUserId();
-			// UserLoginEntity userById = userServiceImpl.getUserById(userId);
-			// String email = userById.getEmail();
-			// String firstName = userById.getFirstName();
 			String productName = item.getProductName();
 			Long salesPrice = item.getSalesPrice();
 			Long mrp;
@@ -857,24 +846,17 @@ public class CommonUtility {
 			String size = item.getSize();
 			String images = item.getImages();
 			Long units = item.getUnits();
-			// String email2 = entity.getDesignerProfile().getEmail();
 			String colour = item.getColour();
-			// String orderId = item.getOrderId();
 			List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
-
 			if (findByOrderIdList.size() > 0) {
-
 				String paymentMode = findByOrderIdList.get(0).getPaymentMode();
 				OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
 				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 				JSONParser parser = new JSONParser();
 				String replace = null;
-
 				try {
 					String json = ow.writeValueAsString(orderDetailsEntity.getShippingAddress());
 					org.json.simple.JSONObject json1 = (org.json.simple.JSONObject) parser.parse(json);
-					LOGGER.info("DATA#####**** = {}", json);
-					LOGGER.info("DATA#####**** = {}", json1.get("address2") == null);
 					if (json1.get("address2") != null) {
 						String address1 = json1.get("address1").toString();
 						String address2 = json1.get("address2").toString();
@@ -901,7 +883,6 @@ public class CommonUtility {
 				} catch (JsonProcessingException | ParseException e) {
 					e.printStackTrace();
 				}
-
 				String orderDate = item.getCreatedOn();
 				Date parse;
 				try {
@@ -946,16 +927,10 @@ public class CommonUtility {
 					}
 					String string = data.toString();
 					LOGGER.info(string);
-					String string2 = string.substring(1, string.toString().length() - 1).replaceAll("=", " : ");
+					String string2 = string.substring(1, string.toString().length() - 1).replaceAll("=", " ");
 					String substring = string2.replace(",", ",\n");
 					LOGGER.info(substring);
 					context.setVariable("details", substring);
-//					if (item.getOrderItemStatus().equals("Orders")) {
-//						context.setVariable("orderItemStatus", "Verified");
-//
-//					} else {
-//						context.setVariable("orderItemStatus", item.getOrderItemStatus());
-//					}
 					context.setVariable("orderId", orderId);
 					context.setVariable("productImage", images);
 					if (item.getOrderItemStatus().equals("returnRequest")) {
@@ -1002,15 +977,11 @@ public class CommonUtility {
 						emailSenderThread.start();
 						emailSenderThreadAdmin.start();
 					}
-
 				} catch (java.text.ParseException e) {
 					e.printStackTrace();
 				}
 			}
-
 		} catch (Exception e) {
-
 		}
 	}
-
 }
