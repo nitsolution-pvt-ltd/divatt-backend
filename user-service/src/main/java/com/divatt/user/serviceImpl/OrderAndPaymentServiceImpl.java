@@ -1299,6 +1299,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	public GlobalResponse orderStatusUpdateService(OrderSKUDetailsEntity orderSKUDetailsEntity, String refOrderId,
 			Integer refProductId) {
 		try {
+			Map<String, Object> map = new HashMap<>();
 			Query query = new Query();
 			query.addCriteria(Criteria.where("order_id").is(refOrderId).and("productId").is(refProductId));
 			OrderSKUDetailsEntity skuDetailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
@@ -1341,7 +1342,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
+				String comment = orderSKUDetailsEntity.getOrderStatusDetails().getReturnFromUser().get("comment")
+						.toString();
+				String reason = orderSKUDetailsEntity.getOrderStatusDetails().getReturnFromUser().get("reason")
+						.toString();
 
+				map.put("for", reason + " and " + comment);
+			//	commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId, map);
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_REQUEST.getMessage(), 200);
 			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("returnRefund")) {
@@ -1360,7 +1367,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderDetailsRepo.save(detailsEntity);
 
 				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData, findByOrderIdList);
-
+//				commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId, map);
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_APPROVED.getMessage(), 200);
 			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("Rejected")) {
@@ -1368,7 +1375,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
-
+//				commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId, map);
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_REJECTED.getMessage(), 200);
 			} else {
@@ -2095,7 +2102,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject1.put("orderShippedTime", format);
 										orderStatusDetails.setShippedDetails(jsonObject1);
 										context.setVariables(jsonObject1);
-										map.put("on  ", format +" by "+  courierName + " Courier and the AWB number is :" + awbNumber);
+										map.put("on  ", format + " by " + courierName
+												+ " Courier and the AWB number is :" + awbNumber);
 										item.setOrderItemStatus(orderItemStatus);
 										orderSKUDetailsRepo.save(item);
 									} catch (Exception e) {

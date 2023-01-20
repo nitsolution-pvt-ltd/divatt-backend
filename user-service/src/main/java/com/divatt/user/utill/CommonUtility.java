@@ -693,7 +693,6 @@ public class CommonUtility {
 
 			String paymentMode = findByOrderIdList.get(0).getPaymentMode();
 			OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
-			System.out.println("orderDetailsEntity " + orderDetailsEntity.toString());
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			JSONParser parser = new JSONParser();
 			String replace = null;
@@ -808,6 +807,209 @@ public class CommonUtility {
 			} catch (java.text.ParseException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public void mailReturnRequest(OrderSKUDetailsEntity item, String orderId, Integer productId,
+			Map<String, Object> data) {
+		try {
+
+			Object comment = item.getOrderStatusDetails().getCancelFromUser().get("comment");
+			Object reason = item.getOrderStatusDetails().getCancelFromUser().get("reason");
+			Long userId = item.getUserId();
+			UserLoginEntity userById = userServiceImpl.getUserById(userId);
+			String email = userById.getEmail();
+			String firstName = userById.getFirstName();
+
+			DesignerProfileEntity designerDetails = restTemplate
+					.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + item.getDesignerId(),
+							DesignerProfileEntity.class)
+					.getBody();
+			String designerName = designerDetails.getDesignerName();
+			String designerEmail = designerDetails.getDesignerProfile().getEmail();
+			String displayName = designerDetails.getDesignerProfile().getDisplayName();
+
+			org.json.simple.JSONObject body = restTemplate.getForEntity(
+					RestTemplateConstant.ADMIN_ROLE_NAME.getLink() + MessageConstant.ADMIN_ROLES.getMessage(),
+					org.json.simple.JSONObject.class).getBody();
+			String adminMail = body.get("email").toString();
+			String adminFirstName = body.get("firstName").toString();
+			String adminLastName = body.get("lastName").toString();
+			String adminName = adminFirstName + " " + adminLastName;
+
+			String itemStatus = item.getOrderItemStatus();
+			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
+			// String displayName = designerDetails.getDesignerProfile().getDisplayName();
+			Date dates = new Date();
+			String format = formatter.format(dates);
+			// Long userId = item.getUserId();
+			// UserLoginEntity userById = userServiceImpl.getUserById(userId);
+			// String email = userById.getEmail();
+			// String firstName = userById.getFirstName();
+			String productName = item.getProductName();
+			Long salesPrice = item.getSalesPrice();
+			Long mrp;
+			if (salesPrice == 0 || salesPrice.equals(null)) {
+				mrp = item.getMrp();
+			} else {
+				mrp = salesPrice;
+			}
+			String size = item.getSize();
+			String images = item.getImages();
+			Long units = item.getUnits();
+			// String email2 = entity.getDesignerProfile().getEmail();
+			String colour = item.getColour();
+			// String orderId = item.getOrderId();
+			List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
+
+			if (findByOrderIdList.size() > 0) {
+
+				String paymentMode = findByOrderIdList.get(0).getPaymentMode();
+				OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
+				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+				JSONParser parser = new JSONParser();
+				String replace = null;
+
+				try {
+					String json = ow.writeValueAsString(orderDetailsEntity.getShippingAddress());
+					org.json.simple.JSONObject json1 = (org.json.simple.JSONObject) parser.parse(json);
+					LOGGER.info("DATA#####**** = {}", json);
+					LOGGER.info("DATA#####**** = {}", json1.get("address2") == null);
+					if (json1.get("address2") != null) {
+						String address1 = json1.get("address1").toString();
+						String address2 = json1.get("address2").toString();
+						String country = json1.get("country").toString();
+						String state = json1.get("state").toString();
+						String city = json1.get("city").toString();
+						String postalCode = json1.get("postalCode").toString();
+						String landmark = json1.get("landmark").toString();
+						String mobile = json1.get("mobile").toString();
+						replace = (address1 + ", " + address2 + ", " + country + ", " + state + ", " + city + ", "
+								+ postalCode + ", " + landmark + ", " + mobile);
+					} else {
+						json1.remove("address2");
+						String address1 = json1.get("address1").toString();
+						String country = json1.get("country").toString();
+						String state = json1.get("state").toString();
+						String city = json1.get("city").toString();
+						String postalCode = json1.get("postalCode").toString();
+						String landmark = json1.get("landmark").toString();
+						String mobile = json1.get("mobile").toString();
+						replace = (address1 + ", " + country + ", " + state + ", " + city + ", " + postalCode + ", "
+								+ landmark + ", " + mobile);
+					}
+				} catch (JsonProcessingException | ParseException e) {
+					e.printStackTrace();
+				}
+
+				String orderDate = item.getCreatedOn();
+				Date parse;
+				try {
+					parse = formatter.parse(orderDate);
+
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(parse);
+					Date time = calendar.getTime();
+					DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+					DecimalFormat decimalFormat = new DecimalFormat("0.00");
+					String format1 = dateFormat2.format(time);
+					Double disc = orderDetailsEntity.getDiscount();
+					String discount = decimalFormat.format(disc);
+					Double taxAmount = orderDetailsEntity.getTaxAmount();
+					String format2 = decimalFormat.format(taxAmount);
+					Context context = new Context();
+					context.setVariable("firstName", firstName);
+					context.setVariable("productId", productId);
+					context.setVariable("productName", productName);
+					context.setVariable("designerName", designerName);
+					context.setVariable("adminName", adminName);
+					context.setVariable("discount", discount);
+					context.setVariable("taxAmount", format2);
+					context.setVariable("size", size);
+					context.setVariable("displayName", displayName);
+					context.setVariable("paymentMode", paymentMode);
+					context.setVariable("shippingAddress", replace);
+					context.setVariable("orderDate", format1);
+					context.setVariable("orderId", orderId);
+					context.setVariable("quantity", units);
+					context.setVariable("colour", colour);
+					context.setVariable("format3", mrp);
+					if (item.getGiftwrapStatus()) {
+						context.setVariable("giftWrapAmount", item.getGiftWrapAmount());
+						double format3 = ((mrp - Double.parseDouble(format2)) + Double.parseDouble(discount)
+								- item.getGiftWrapAmount());
+						context.setVariable("mrp", format3);
+					} else {
+						context.setVariable("giftWrapAmount", 0.00);
+						double format3 = (mrp - Double.parseDouble(format2)) + Double.parseDouble(discount);
+						context.setVariable("mrp", format3);
+					}
+					String string = data.toString();
+					LOGGER.info(string);
+					String string2 = string.substring(1, string.toString().length() - 1).replaceAll("=", " : ");
+					String substring = string2.replace(",", ",\n");
+					LOGGER.info(substring);
+					context.setVariable("details", substring);
+//					if (item.getOrderItemStatus().equals("Orders")) {
+//						context.setVariable("orderItemStatus", "Verified");
+//
+//					} else {
+//						context.setVariable("orderItemStatus", item.getOrderItemStatus());
+//					}
+					context.setVariable("orderId", orderId);
+					context.setVariable("productImage", images);
+					if (item.getOrderItemStatus().equals("returnRequest")) {
+						String htmlContent = templateEngine.process("orderStatusUpdateUser.html", context);
+						EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Return request for an item",
+								htmlContent, true, null, restTemplate);
+						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesigner.html", context);
+						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
+								"Received a return request for an item", htmlContentDesigner, true, null, restTemplate);
+						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdmin.html", context);
+						EmailSenderThread emailSenderThreadAdmin = new EmailSenderThread(adminMail,
+								"Received a return request for an item", htmlContentAdmin, true, null, restTemplate);
+						emailSenderThreadDesigner.start();
+						emailSenderThread.start();
+						emailSenderThreadAdmin.start();
+					} else if (item.getOrderItemStatus().equals("returnRefund")) {
+						String htmlContent = templateEngine.process("orderStatusUpdateUserAccepted.html", context);
+						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+								"Return request for an item has been accepted ", htmlContent, true, null, restTemplate);
+						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesignerAccepted.html", context);
+						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
+								"Received a return request for an item has been accepted", htmlContentDesigner, true,
+								null, restTemplate);
+						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdminAccepted.html", context);
+						EmailSenderThread emailSenderThreadAdmin = new EmailSenderThread(adminMail,
+								"Received a return request for an item has been accepted", htmlContentAdmin, true, null,
+								restTemplate);
+						emailSenderThreadDesigner.start();
+						emailSenderThread.start();
+						emailSenderThreadAdmin.start();
+					} else if (item.getOrderItemStatus().equals("Rejected")) {
+						String htmlContent = templateEngine.process("orderStatusUpdateUserRejected.html", context);
+						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+								"Return request for an item has been rejected ", htmlContent, true, null, restTemplate);
+						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesignerRejected.html", context);
+						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
+								"Received a return request for an item has been rejected", htmlContentDesigner, true,
+								null, restTemplate);
+						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdminRejected.html", context);
+						EmailSenderThread emailSenderThreadAdmin = new EmailSenderThread(adminMail,
+								"Received a return request for an item has been rejected", htmlContentAdmin, true, null,
+								restTemplate);
+						emailSenderThreadDesigner.start();
+						emailSenderThread.start();
+						emailSenderThreadAdmin.start();
+					}
+
+				} catch (java.text.ParseException e) {
+					e.printStackTrace();
+				}
+			}
+
+		} catch (Exception e) {
+
 		}
 	}
 
