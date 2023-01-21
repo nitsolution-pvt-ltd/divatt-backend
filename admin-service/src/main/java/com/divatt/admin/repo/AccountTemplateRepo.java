@@ -352,9 +352,17 @@ public class AccountTemplateRepo {
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
 
-			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
-							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
 							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
@@ -425,9 +433,17 @@ public class AccountTemplateRepo {
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
 
-			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
-							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
 					.match(new Criteria()
@@ -499,9 +515,17 @@ public class AccountTemplateRepo {
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
 
-			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
-							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
 					.match(new Criteria()
@@ -623,9 +647,17 @@ public class AccountTemplateRepo {
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
 
-			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
-							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
 					.match(new Criteria()
@@ -699,9 +731,17 @@ public class AccountTemplateRepo {
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
 
-			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
-							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
 					.match(new Criteria()
@@ -773,10 +813,18 @@ public class AccountTemplateRepo {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
-
-			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
-							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			} 
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
 					.match(new Criteria()
@@ -850,9 +898,17 @@ public class AccountTemplateRepo {
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
 
-			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
-					.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
 					.match(new Criteria()
@@ -944,9 +1000,17 @@ public class AccountTemplateRepo {
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
 
-			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
-							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
 					.match(new Criteria()
@@ -1021,9 +1085,17 @@ public class AccountTemplateRepo {
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
 
-			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
-							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
 					.match(new Criteria()
@@ -1110,10 +1182,10 @@ public class AccountTemplateRepo {
 						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim()))));
 			
 			} else if (settlement.equals("firstSettlement") && year != 0 && month != 0) {
-				filterByCondition = Aggregation.match(
-						new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString()).andOperator(
-								Criteria.where("filter_date").gte(yearMonth.atDay(1).toString()).andOperator(
-										Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+				filterByCondition = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
 			} else if (settlement.equals("secondSettlement") && year != 0 && month != 0) {
 				filterByCondition = Aggregation.match(new Criteria()
 						.andOperator(Criteria.where("filter_date").lte(today.toString())
