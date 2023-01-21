@@ -150,10 +150,14 @@ public class OrderSKUDetailsEntity {
 	
 	@Field(name = "displayName")
 	private String displayName;
+	
+	private UserInfo userInfo;
+	
+	private DesignerInfo designerInfo;
+	
 
 	public OrderSKUDetailsEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public OrderSKUDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
@@ -173,7 +177,7 @@ public class OrderSKUDetailsEntity {
 			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
 			Boolean giftwrapStatus, Boolean cancelAcceptable, JSONObject giftWrapObject, String userComment,
 			String shippingDate, String status, HsnData hsnData, JSONObject measurementObject, Long giftWrapAmount,
-			Boolean returnAcceptable, String displayName) {
+			Boolean returnAcceptable, String displayName, UserInfo userInfo, DesignerInfo designerInfo) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -217,6 +221,8 @@ public class OrderSKUDetailsEntity {
 		this.giftWrapAmount = giftWrapAmount;
 		this.returnAcceptable = returnAcceptable;
 		this.displayName = displayName;
+		this.userInfo = userInfo;
+		this.designerInfo = designerInfo;
 	}
 
 	@Override
@@ -234,7 +240,7 @@ public class OrderSKUDetailsEntity {
 				+ ", cancelAcceptable=" + cancelAcceptable + ", giftWrapObject=" + giftWrapObject + ", userComment="
 				+ userComment + ", shippingDate=" + shippingDate + ", status=" + status + ", hsnData=" + hsnData
 				+ ", measurementObject=" + measurementObject + ", giftWrapAmount=" + giftWrapAmount
-				+ ", returnAcceptable=" + returnAcceptable + ", displayName=" + displayName + "]";
+				+ ", returnAcceptable=" + returnAcceptable + ", displayName=" + displayName + ", userInfo=" + userInfo + ", designerInfo" + designerInfo +"]";
 	}
 
 	public Integer getId() {
@@ -571,6 +577,22 @@ public class OrderSKUDetailsEntity {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+	
+	public UserInfo getUserInfo() {
+		return userInfo;
+	}
+
+	public void setUserInfo(UserInfo userInfo) {
+		this.userInfo = userInfo;
+	}
+
+	public DesignerInfo getDesignerInfo() {
+		return designerInfo;
+	}
+
+	public void setDesignerInfo(DesignerInfo designerInfo) {
+		this.designerInfo = designerInfo;
 	}
 
 	public static String getSequenceName() {
