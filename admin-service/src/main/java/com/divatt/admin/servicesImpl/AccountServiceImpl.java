@@ -235,17 +235,17 @@ public class AccountServiceImpl implements AccountService {
 			}
 
 			Page<AccountEntity> findAll = null;
-			List<AccountMapEntity> getServiceFee = accountTemplateRepo.getServiceFee(settlement, year, month);
-			List<AccountMapEntity> getBasicAmount = accountTemplateRepo.getBasicAmount(settlement, year, month);
-			List<AccountMapEntity> getDesignerGstAmount = accountTemplateRepo.getDesignerGstAmount(settlement, year,month);
+			List<AccountMapEntity> getServiceFee = accountTemplateRepo.getServiceFee(designerId, settlement, year, month);
+			List<AccountMapEntity> getBasicAmount = accountTemplateRepo.getBasicAmount(designerId, settlement, year, month);
+			List<AccountMapEntity> getDesignerGstAmount = accountTemplateRepo.getDesignerGstAmount(designerId, settlement, year,month);
 //			List<AccountMapEntity> getGovtGstAmount = accountTemplateRepo.getGovtChargeAmount(settlement, year, month);
-			List<AccountMapEntity> getGstAmount = accountTemplateRepo.getGstAmount(settlement, year, month);
-			List<AccountMapEntity> getPayableAmount = accountTemplateRepo.getPayableAmount(settlement, year, month);
-			List<AccountMapEntity> getPendingAmount = accountTemplateRepo.getPendingAmount(settlement, year, month);
-			List<AccountMapEntity> getTotalTcs = accountTemplateRepo.getTcsAmount(settlement, year, month);
-			List<AccountMapEntity> getTotalAmount = accountTemplateRepo.getTotalAmount(settlement, year, month);
-			List<AccountMapEntity> getTotalServicGst = accountTemplateRepo.getServicGst(settlement, year, month);
-			List<AccountMapEntity> getGiftWrapAmount = accountTemplateRepo.getGiftWrapAmount(settlement, year, month);
+			List<AccountMapEntity> getGstAmount = accountTemplateRepo.getGstAmount(designerId, settlement, year, month);
+			List<AccountMapEntity> getPayableAmount = accountTemplateRepo.getPayableAmount(designerId, settlement, year, month);
+			List<AccountMapEntity> getPendingAmount = accountTemplateRepo.getPendingAmount(designerId, settlement, year, month);
+			List<AccountMapEntity> getTotalTcs = accountTemplateRepo.getTcsAmount(designerId, settlement, year, month);
+			List<AccountMapEntity> getTotalAmount = accountTemplateRepo.getTotalAmount(designerId, settlement, year, month);
+			List<AccountMapEntity> getTotalServicGst = accountTemplateRepo.getServicGst(designerId, settlement, year, month);
+			List<AccountMapEntity> getGiftWrapAmount = accountTemplateRepo.getGiftWrapAmount(designerId, settlement, year, month);
 			
 			if (keyword.isEmpty()) {
 				/***findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);***/

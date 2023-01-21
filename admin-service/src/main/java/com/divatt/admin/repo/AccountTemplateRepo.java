@@ -301,7 +301,7 @@ public class AccountTemplateRepo {
 
 	}
 
-	public List<AccountMapEntity> getServiceFee(String settlement, int year, int month) {
+	public List<AccountMapEntity> getServiceFee(String designerId, String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -320,7 +320,34 @@ public class AccountTemplateRepo {
 			startDate = yearMonth.atDay(1);
 			endDate = yearMonth.atEndOfMonth();
 		}
-		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+		
+		if (!designerId.isEmpty() && year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+			
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} 
+		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
+			match = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString())))));
+		} else if (!designerId.isEmpty()) {
+			match = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))));
+		} else if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
@@ -329,13 +356,11 @@ public class AccountTemplateRepo {
 							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
 		} else if (year != 0 && month != 0) {
-			match = Aggregation
-					.match(new Criteria()
+			match = Aggregation.match(new Criteria()
 							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
 							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
 		} else if (year != 0) {
-			match = Aggregation
-					.match(new Criteria()
+			match = Aggregation.match(new Criteria()
 							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
 							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
 		} else {
@@ -349,7 +374,7 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 	
-	public List<AccountMapEntity> getServicGst(String settlement, int year, int month) {
+	public List<AccountMapEntity> getServicGst(String designerId, String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -368,7 +393,34 @@ public class AccountTemplateRepo {
 			startDate = yearMonth.atDay(1);
 			endDate = yearMonth.atEndOfMonth();
 		}
-		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+		
+		if (!designerId.isEmpty() && year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+			
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} 
+		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
+			match = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString())))));
+		} else if (!designerId.isEmpty()) {
+			match = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))));
+		} else if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
@@ -397,7 +449,7 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 
-	public List<AccountMapEntity> getGstAmount(String settlement, int year, int month) {
+	public List<AccountMapEntity> getGstAmount(String designerId, String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -416,7 +468,33 @@ public class AccountTemplateRepo {
 			startDate = yearMonth.atDay(1);
 			endDate = yearMonth.atEndOfMonth();
 		}
-		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+		if (!designerId.isEmpty() && year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+			
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} 
+		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
+			match = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString())))));
+		} else if (!designerId.isEmpty()) {
+			match = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))));
+		} else if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
@@ -495,7 +573,7 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 
-	public List<AccountMapEntity> getDesignerGstAmount(String settlement, int year, int month) {
+	public List<AccountMapEntity> getDesignerGstAmount(String designerId, String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -514,7 +592,33 @@ public class AccountTemplateRepo {
 			startDate = yearMonth.atDay(1);
 			endDate = yearMonth.atEndOfMonth();
 		}
-		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+		if (!designerId.isEmpty() && year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+			
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} 
+		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
+			match = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString())))));
+		} else if (!designerId.isEmpty()) {
+			match = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))));
+		} else if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
@@ -545,7 +649,7 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 
-	public List<AccountMapEntity> getTcsAmount(String settlement, int year, int month) {
+	public List<AccountMapEntity> getTcsAmount(String designerId, String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -564,7 +668,33 @@ public class AccountTemplateRepo {
 			startDate = yearMonth.atDay(1);
 			endDate = yearMonth.atEndOfMonth();
 		}
-		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+		if (!designerId.isEmpty() && year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+			
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} 
+		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
+			match = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString())))));
+		} else if (!designerId.isEmpty()) {
+			match = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))));
+		} else if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
@@ -594,7 +724,7 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 
-	public List<AccountMapEntity> getTotalAmount(String settlement, int year, int month) {
+	public List<AccountMapEntity> getTotalAmount(String designerId, String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -613,7 +743,33 @@ public class AccountTemplateRepo {
 			startDate = yearMonth.atDay(1);
 			endDate = yearMonth.atEndOfMonth();
 		}
-		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+		if (!designerId.isEmpty() && year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+			
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} 
+		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
+			match = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString())))));
+		} else if (!designerId.isEmpty()) {
+			match = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))));
+		} else if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
@@ -644,7 +800,7 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 
-	public List<AccountMapEntity> getPayableAmount(String settlement, int year, int month) {
+	public List<AccountMapEntity> getPayableAmount(String designerId, String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -663,7 +819,33 @@ public class AccountTemplateRepo {
 			startDate = yearMonth.atDay(1);
 			endDate = yearMonth.atEndOfMonth();
 		}
-		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+		if (!designerId.isEmpty() && year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+			
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} 
+		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
+			match = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString())))));
+		} else if (!designerId.isEmpty()) {
+			match = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))));
+		} else if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
@@ -694,11 +876,15 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 
-	public List<AccountMapEntity> getPendingAmount(String settlement, int year, int month) {
+	public List<AccountMapEntity> getPendingAmount(String designerId, String settlement, int year, int month) {
 		
-		MatchOperation match = Aggregation.match(new Criteria().andOperator(
-				Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
-
+		MatchOperation match = Aggregation.match(new Criteria()
+				.andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))));
+		if (!designerId.isEmpty()) {
+			match = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("NOT RETURN"))
+					.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))));
+		} 
 		AggregationOperation unwind = Aggregation.unwind("designer_return_amount");
 		GroupOperation mapCondition = Aggregation.group().sum("designer_return_amount.net_payable_designer").as("pendingAmount");
 		Aggregation aggregations = Aggregation.newAggregation(match, unwind, mapCondition);
@@ -707,7 +893,7 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 
-	public List<AccountMapEntity> getBasicAmount(String settlement, int year, int month) {
+	public List<AccountMapEntity> getBasicAmount(String designerId, String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -726,7 +912,34 @@ public class AccountTemplateRepo {
 			startDate = yearMonth.atDay(1);
 			endDate = yearMonth.atEndOfMonth();
 		}
-		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+		
+		if (!designerId.isEmpty() && year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+			
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} 
+		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
+			match = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString())))));
+		} else if (!designerId.isEmpty()) {
+			match = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))));
+		} else if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
@@ -757,7 +970,7 @@ public class AccountTemplateRepo {
 		return results.getMappedResults();
 	}
 	
-	public List<AccountMapEntity> getGiftWrapAmount(String settlement, int year, int month) {
+	public List<AccountMapEntity> getGiftWrapAmount(String designerId, String settlement, int year, int month) {
 
 		LocalDate today = LocalDate.now();
 		int dayDivide = 0;
@@ -776,7 +989,34 @@ public class AccountTemplateRepo {
 			startDate = yearMonth.atDay(1);
 			endDate = yearMonth.atEndOfMonth();
 		}
-		if (year != 0 && month != 0 && !settlement.isEmpty()) {
+		
+		if (!designerId.isEmpty() && year != 0 && month != 0 && !settlement.isEmpty()) {
+			yearMonth = YearMonth.of(year, month);
+			lengthOfMonth = yearMonth.lengthOfMonth();
+			dayDivide = lengthOfMonth / 2;
+			
+			if (settlement.equals("firstSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} else if (settlement.equals("secondSettlement")) {
+				match = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+			} 
+		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
+			match = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))
+							.andOperator(Criteria.where("filter_date").lte(endDate.toString())))));
+		} else if (!designerId.isEmpty()) {
+			match = Aggregation.match(new Criteria()
+					.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))));
+		} else if (year != 0 && month != 0 && !settlement.isEmpty()) {
 			yearMonth = YearMonth.of(year, month);
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
