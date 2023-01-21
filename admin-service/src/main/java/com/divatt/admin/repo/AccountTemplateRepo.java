@@ -1082,31 +1082,57 @@ public class AccountTemplateRepo {
 			filterByCondition = Aggregation
 					.match(Criteria.where("designer_return_amount").elemMatch(Criteria.where("status").is("RETURN")));
 		} else {
-			if (settlement.equals("firstSettlement") && year != 0 && month != 0) {
+			if (!designerId.isEmpty() && year != 0 && month != 0 && !settlement.isEmpty()) {
+				yearMonth = YearMonth.of(year, month);
+				lengthOfMonth = yearMonth.lengthOfMonth();
+				dayDivide = lengthOfMonth / 2;
+				
+				if (!designerId.isEmpty() && settlement.equals("firstSettlement")) {
+					filterByCondition = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").lte(today.toString())
+							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+				} else if (!designerId.isEmpty() && settlement.equals("secondSettlement")) {
+					filterByCondition = Aggregation.match(new Criteria()
+							.andOperator(Criteria.where("filter_date").lte(today.toString())
+							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+				} 
+			} else if (!designerId.isEmpty() && year != 0 && month != 0) {
+				filterByCondition = Aggregation.match(new Criteria()
+								.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+								.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))
+								.andOperator(Criteria.where("filter_date").lte(endDate.toString())))));
+			} else if (!designerId.isEmpty()) {
+				filterByCondition = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))));
+			
+			} else if (settlement.equals("firstSettlement") && year != 0 && month != 0) {
 				filterByCondition = Aggregation.match(
 						new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString()).andOperator(
 								Criteria.where("filter_date").gte(yearMonth.atDay(1).toString()).andOperator(
 										Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
 			} else if (settlement.equals("secondSettlement") && year != 0 && month != 0) {
-				filterByCondition = Aggregation
-						.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
-								.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-										.andOperator(Criteria.where("filter_date")
-												.lte(yearMonth.atDay(lengthOfMonth).toString())))));
+				filterByCondition = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").lte(today.toString())
+						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
 			} else if (year != 0 && month != 0) {
-				filterByCondition = Aggregation
-						.match(new Criteria()
-								.andOperator(Criteria.where("filter_date").gte(startDate.toString())
-								.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
+				filterByCondition = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+						.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
 			} else if (year != 0) {
-				filterByCondition = Aggregation
-					.match(new Criteria()
-							.andOperator(Criteria.where("filter_date").gte(startDate.toString())
-							.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
+				filterByCondition = Aggregation.match(new Criteria()
+						.andOperator(Criteria.where("filter_date").gte(startDate.toString())
+						.andOperator(Criteria.where("filter_date").lte(endDate.toString()))));
 			}else {
 				filterByCondition = Aggregation.match(new Criteria());
 			}
 		}
+		
+		
 
 		if (designerReturn != "" && !designerReturn.isEmpty()) {
 			filterByCondition = Aggregation.match(Criteria.where("designer_return_amount")
@@ -1123,10 +1149,7 @@ public class AccountTemplateRepo {
 			filterByCondition = Aggregation.match(
 					Criteria.where("order_details").elemMatch(Criteria.where("order_status").is(userOrder.trim())));
 		}
-		if (designerId != "" && !designerId.isEmpty()) {
-			filterByCondition = Aggregation
-					.match(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())));
-		}
+
 		SortOperation sortByIdDesc = Aggregation.sort(pagingSort.getSort());
 
 		Aggregation aggregations = Aggregation.newAggregation(filterByCondition, sortByIdDesc);
