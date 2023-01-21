@@ -25,7 +25,7 @@
 						alt="" style="width: 100px;">
 
 						<div style="font-size: 22px; font-weight: 600; margin-top: 8px;">
-							X <br> <span th:text="${designerName}"></span>
+							X <br> <span th:text="${displayName}"></span>
 						</div>
 					</td>
 				</tr>
@@ -102,14 +102,11 @@
 									<tr>
 										<td style="color: #000; font-weight: 600;">
 											<div>
-												<span>Designer Name :</span> <span
-													th:text="${designerName}"></span>
+												<span>Boutique Name :</span> <span
+													th:text="${boutiqueName}"></span>
 											</div>
 											<div>
 												<span>GSTIN :</span> <span th:text="${data1.designerGst}"></span>
-											</div>
-											<div>
-												<span>PAN :</span> <span th:text="${data1.designerPan}"></span>
 											</div>
 											<div>
 												<span th:text="${data1.designerCity}"></span>, <span

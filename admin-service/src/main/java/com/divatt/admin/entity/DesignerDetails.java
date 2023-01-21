@@ -15,10 +15,31 @@ public class DesignerDetails {
 	public String state;
 	public String pin;
 	public String country;
+	private String boutiqueName;
 
 	public DesignerDetails() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public DesignerDetails(long designer_id, String uid, String designer_name, String display_name, String email,
+			String gst_in, String pan, String mobile, String address, String city, String state, String pin,
+			String country, String boutiqueName) {
+		super();
+		this.designer_id = designer_id;
+		this.uid = uid;
+		this.designer_name = designer_name;
+		this.display_name = display_name;
+		this.email = email;
+		this.gst_in = gst_in;
+		this.pan = pan;
+		this.mobile = mobile;
+		this.address = address;
+		this.city = city;
+		this.state = state;
+		this.pin = pin;
+		this.country = country;
+		this.boutiqueName = boutiqueName;
 	}
 
 	public long getDesigner_id() {
@@ -125,5 +146,20 @@ public class DesignerDetails {
 		this.country = country;
 	}
 
-	
+	public String getBoutiqueName() {
+		return boutiqueName;
+	}
+
+	public void setBoutiqueName(String boutiqueName) {
+		this.boutiqueName = boutiqueName;
+	}
+
+	@Override
+	public String toString() {
+		return "DesignerDetails [designer_id=" + designer_id + ", uid=" + uid + ", designer_name=" + designer_name
+				+ ", display_name=" + display_name + ", email=" + email + ", gst_in=" + gst_in + ", pan=" + pan
+				+ ", mobile=" + mobile + ", address=" + address + ", city=" + city + ", state=" + state + ", pin=" + pin
+				+ ", country=" + country + ", boutiqueName=" + boutiqueName + "]";
+	}
+
 }

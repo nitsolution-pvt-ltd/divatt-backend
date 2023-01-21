@@ -623,6 +623,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						JSONObject objectss = cartJNs.getObject();
 						objectss.put("customization", productById.getBody().get("customization"));
 						objectss.put("withGiftWrap", productById.getBody().get("giftWrap"));
+						objectss.put("designerProfile", productById.getBody().get("designerProfile"));
 						String orderId2 = D.getOrderId();
 
 						List<OrderInvoiceEntity> invoiceId = getInvoiceByOrder(orderId2);
@@ -1348,7 +1349,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.toString();
 
 				map.put("for", reason + " and " + comment);
-			//	commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId, map);
+				// commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId,
+				// map);
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_REQUEST.getMessage(), 200);
 			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("returnRefund")) {

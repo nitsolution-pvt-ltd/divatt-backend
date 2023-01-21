@@ -55,6 +55,7 @@ public class PaymentCharges {
 	private String totalTcs;
 	private String totalRate;
 	private String totalTcsRate;
+	private String boutiqueName;
 
 	public PaymentCharges() {
 		super();
@@ -67,7 +68,7 @@ public class PaymentCharges {
 			String designerCountry, String orderId, String orderDate, String invoiceId, String productName, String qty,
 			String fee, String discount, String cgst, String sgst, String igst, String total, String grandTotal,
 			String totalCgst, String totalSgst, String totalDiscount, String hsnCode, String tcs, String tcsRate,
-			String rate, String totalTcs, String totalRate, String totalTcsRate) {
+			String rate, String totalTcs, String totalRate, String totalTcsRate, String boutiqueName) {
 		super();
 		this.adminPan = adminPan;
 		this.adminGst = adminGst;
@@ -107,6 +108,7 @@ public class PaymentCharges {
 		this.totalTcs = totalTcs;
 		this.totalRate = totalRate;
 		this.totalTcsRate = totalTcsRate;
+		this.boutiqueName = boutiqueName;
 	}
 
 	public String getAdminPan() {
@@ -413,6 +415,14 @@ public class PaymentCharges {
 		this.totalTcsRate = totalTcsRate;
 	}
 
+	public String getBoutiqueName() {
+		return boutiqueName;
+	}
+
+	public void setBoutiqueName(String boutiqueName) {
+		this.boutiqueName = boutiqueName;
+	}
+
 	@Override
 	public String toString() {
 		return "PaymentCharges [adminPan=" + adminPan + ", adminGst=" + adminGst + ", adminCity=" + adminCity
@@ -426,7 +436,7 @@ public class PaymentCharges {
 				+ total + ", grandTotal=" + grandTotal + ", totalCgst=" + totalCgst + ", totalSgst=" + totalSgst
 				+ ", totalDiscount=" + totalDiscount + ", hsnCode=" + hsnCode + ", tcs=" + tcs + ", tcsRate=" + tcsRate
 				+ ", rate=" + rate + ", totalTcs=" + totalTcs + ", totalRate=" + totalRate + ", totalTcsRate="
-				+ totalTcsRate + "]";
+				+ totalTcsRate + ", boutiqueName=" + boutiqueName + "]";
 	}
 
 }

@@ -39,7 +39,7 @@ public class CommonUtility {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	
+
 	@Value("${spring.profiles.active}")
 	private String contextPath;
 
@@ -74,7 +74,8 @@ public class CommonUtility {
 			context.setVariable("pan", pan);
 			context.setVariable("email", email);
 			String htmlContent = templateEngine.process("adminAccountUpdate.html", context);
-			EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Account updated", htmlContent, true, null, restTemplate);
+			EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Account updated", htmlContent, true,
+					null, restTemplate);
 			emailSenderThread.start();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -100,6 +101,7 @@ public class CommonUtility {
 		charges.setDesignerGst(accountEntity.get(0).getDesigner_details().getGst_in());
 		charges.setDesignerName(accountEntity.get(0).getDesigner_details().getDesigner_name());
 		charges.setDisplayName(accountEntity.get(0).getDesigner_details().getDisplay_name());
+		charges.setBoutiqueName(accountEntity.get(0).getDesigner_details().getBoutiqueName());
 		return charges;
 	}
 
@@ -118,33 +120,32 @@ public class CommonUtility {
 		charges.setHsnCode(accountEntity.getOrder_details().get(0).getHsn_code());
 		return charges;
 	}
-	
 
 	public static double iNVValues(AccountEntity rowsAccount) {
-		
-		float iNVValuesAmount = 
-				rowsAccount.getOrder_details().get(0).getSales_price()
+
+		float iNVValuesAmount = rowsAccount.getOrder_details().get(0).getSales_price()
 				+ rowsAccount.getOrder_details().get(0).getHsn_cgst()
 				+ rowsAccount.getOrder_details().get(0).getHsn_sgst()
 				+ rowsAccount.getOrder_details().get(0).getHsn_igst()
 				+ rowsAccount.getOrder_details().get(0).getGiftWrapAmount();
-		
+
 		DecimalFormat df = new DecimalFormat("0.00");
 		return Double.valueOf(df.format(iNVValuesAmount));
 	}
 
 	public ResponseEntity<Object> getDesignerDetails(String token) {
-		
+
 		ResponseEntity<Object> getExchange = null;
-		HttpHeaders header= new HttpHeaders();
+		HttpHeaders header = new HttpHeaders();
 		header.setContentType(MediaType.APPLICATION_JSON);
 		header.set("Authorization", token);
 		HttpEntity<Object> httpEntity = new HttpEntity<>(header);
-		
+
 		try {
-			String urlParam="designer/getDesignerToken";
-			getExchange = restTemplate.exchange(RestTemplateConstant.DESIGNER_URL.getMessage()+urlParam,HttpMethod.GET, httpEntity,Object.class);
-			
+			String urlParam = "designer/getDesignerToken";
+			getExchange = restTemplate.exchange(RestTemplateConstant.DESIGNER_URL.getMessage() + urlParam,
+					HttpMethod.GET, httpEntity, Object.class);
+
 		} catch (HttpStatusCodeException ex) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
@@ -159,9 +160,7 @@ public class CommonUtility {
 			}
 		}
 		return getExchange;
-		
+
 	}
-	
-	
 
 }
