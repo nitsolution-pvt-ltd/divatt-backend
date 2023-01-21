@@ -1348,9 +1348,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String reason = orderSKUDetailsEntity.getOrderStatusDetails().getReturnFromUser().get("reason")
 						.toString();
 
-				map.put("for", reason + " and " + comment);
-				// commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId,
-				// map);
+				map.put(" for", reason + " and " + comment);
+				commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId, map);
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_REQUEST.getMessage(), 200);
 			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("returnRefund")) {
@@ -1369,7 +1368,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderDetailsRepo.save(detailsEntity);
 
 				commonUtility.orderRefund(findByOrderSKU, orderSKUDetailsEntity, getPaymentData, findByOrderIdList);
-//				commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId, map);
+				commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId, map);
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_APPROVED.getMessage(), 200);
 			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("Rejected")) {
@@ -1377,7 +1376,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
 				orderSKUDetailsRepo.save(skuDetailsEntity);
-//				commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId, map);
+				commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId, map);
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_REJECTED.getMessage(), 200);
 			} else {
