@@ -511,7 +511,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 	
 	public ResponseEntity<?> getTransactionsService(int page, int limit, String sort, String sortName,
-			Boolean isDeleted, String keyword, Optional<String> sortBy){
+			Boolean isDeleted, String keyword, String paymentStatus, Optional<String> sortBy){
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.getTransactionsService()");
@@ -527,7 +527,7 @@ public class AccountServiceImpl implements AccountService {
 			HttpEntity<Object> httpEntity = new HttpEntity<>(header);
 			
 			try {
-				String urlParam="userOrder/transactions?page="+page+"&limit="+limit+"&sort="+sort+"&sortName="+sortName+"&keyword="+keyword;
+				String urlParam="userOrder/transactions?page="+page+"&limit="+limit+"&sort="+sort+"&sortName="+sortName+"&keyword="+keyword+"&paymentStatus="+paymentStatus;
 				getExchange = restTemplate.exchange(RestTemplateConstant.USER_URL.getMessage()+urlParam,HttpMethod.GET, httpEntity,Object.class);
 				
 			} catch (HttpStatusCodeException ex) {

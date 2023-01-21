@@ -2856,7 +2856,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Override
 	public ResponseEntity<?> getTransactionsService(int page, int limit, String sort, String sortName, String keyword,
-			Optional<String> sortBy) {
+			String paymentStatus, Optional<String> sortBy) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - OrderAndPaymentContoller.getOrderPaymentService()");
@@ -2880,10 +2880,12 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			Page<OrderPaymentEntity> findAll = null;
 
-			if (keyword.isEmpty()) {
-				findAll = userOrderPaymentRepo.findAll(pagingSort);
-			} else {
+			if (!keyword.isEmpty()) {
 				findAll = userOrderPaymentRepo.Search(keyword, pagingSort);
+			}else if (!paymentStatus.isEmpty()) {
+				findAll = userOrderPaymentRepo.findByPaymentStatus(paymentStatus,pagingSort);
+			} else {
+				findAll = userOrderPaymentRepo.findAll(pagingSort);
 			}
 
 			if (findAll.getSize() <= 0) {

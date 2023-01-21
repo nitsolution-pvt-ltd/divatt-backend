@@ -344,7 +344,8 @@ public class AccountController {
 	public ResponseEntity<?> getTransactions(@RequestHeader("Authorization") String token, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "_id") String sortName,@RequestParam(defaultValue = "false") Boolean isDeleted, 
-			@RequestParam(defaultValue = "") String keyword, @RequestParam Optional<String> sortBy) {
+			@RequestParam(defaultValue = "") String keyword, @RequestParam(defaultValue = "") String paymentStatus,
+			@RequestParam Optional<String> sortBy) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.getTransactions()");
@@ -377,7 +378,7 @@ public class AccountController {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/account/transactions", "Success", HttpStatus.OK);
 			}
-			return this.accountService.getTransactionsService(page, limit, sort, sortName, isDeleted, keyword, sortBy);
+			return this.accountService.getTransactionsService(page, limit, sort, sortName, isDeleted, keyword, paymentStatus, sortBy);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,

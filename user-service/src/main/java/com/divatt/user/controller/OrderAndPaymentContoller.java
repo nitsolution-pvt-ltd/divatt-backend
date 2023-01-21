@@ -915,7 +915,7 @@ public class OrderAndPaymentContoller {
 	public ResponseEntity<?> getTransactions(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
 			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
-			@RequestParam Optional<String> sortBy) {
+			@RequestParam(defaultValue = "") String paymentStatus, @RequestParam Optional<String> sortBy) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - OrderAndPaymentContoller.getTransactions()");
@@ -933,7 +933,7 @@ public class OrderAndPaymentContoller {
 				LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/userOrder/transactions", "Success", HttpStatus.OK);
 			}
-			return orderAndPaymentService.getTransactionsService(page, limit, sort, sortName, keyword, sortBy);
+			return orderAndPaymentService.getTransactionsService(page, limit, sort, sortName, keyword, paymentStatus, sortBy);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
