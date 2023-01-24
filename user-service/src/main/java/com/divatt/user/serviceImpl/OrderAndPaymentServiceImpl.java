@@ -56,6 +56,8 @@ import com.divatt.user.dto.CancelEmailJSON;
 import com.divatt.user.dto.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.dto.CancelationRequestDTO;
 import com.divatt.user.dto.DesignerRequestDTO;
+import com.divatt.user.dto.ForceReturnOn;
+import com.divatt.user.dto.ForceReturnOnDTO;
 import com.divatt.user.dto.InvoiceUpdatedModel;
 import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.InvoiceEntity;
@@ -2397,102 +2399,33 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 					} else
 						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
+				} else if (orderItemStatus.equals("ForceReturnAdmin")) {
+					if (!itemStatus.equals(orderItemStatus)) {
+						if (itemStatus.equals("Delivered")) {
+							String string = statusChange.get("ForceReturnOnDTO").toString();
+							ForceReturnOnDTO fromJson = gson.fromJson(string, ForceReturnOnDTO.class);
+							try {
+								ForceReturnOnDTO forceReturnOnDTO = new ForceReturnOnDTO();
+								ForceReturnOn forceReturnOn = new ForceReturnOn();
+								forceReturnOn.setComments(fromJson.getForceReturnOn().getComments());
+								forceReturnOn.setDateTime(fromJson.getForceReturnOn().getDateTime());
+								forceReturnOn.setUpdatedBy(fromJson.getForceReturnOn().getUpdatedBy());
+								forceReturnOnDTO.setForceReturnOn(forceReturnOn);
+
+								orderStatusDetails.setForceReturnOnDTO(forceReturnOnDTO);
+								item.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(item);
+								commonUtility.mailSend(item, forEntity, orderId, productId, orderItemStatus, map);
+							} catch (Exception e) {
+								throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
+							}
+						} else
+							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
+
+					} else
+						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				}
-//				Long userId = item.getUserId();
-//				UserLoginEntity userById = userServiceImpl.getUserById(userId);
-//				String email = userById.getEmail();
-//				String firstName = userById.getFirstName();
-//				String productName = item.getProductName();
-//				Long salesPrice = item.getSalesPrice();
-//				Long mrp;
-//				if (salesPrice == 0 || salesPrice.equals(null)) {
-//					mrp = item.getMrp();
-//				} else {
-//					mrp = salesPrice;
-//				}
-//				String size = item.getSize();
-//				String images = item.getImages();
-//				Long units = item.getUnits();
-//				String colour = item.getColour();
-//				String email2 = forEntity.getDesignerProfile().getEmail();
-//				String displayName = forEntity.getDesignerProfile().getDisplayName();
-//				String city = forEntity.getDesignerProfile().getCity();
-//				String country = forEntity.getDesignerProfile().getCountry();
-//				String state = forEntity.getDesignerProfile().getState();
-//				List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
-//
-//				if (findByOrderIdList.size() > 0) {
-//
-//					String paymentMode = findByOrderIdList.get(0).getPaymentMode();
-//					OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
-//					Object shippingAddress = orderDetailsEntity.getShippingAddress();
-//					String substring2 = shippingAddress.toString().substring(1, shippingAddress.toString().length() - 1)
-//							.replaceAll("=", " : ");
-//					String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
-//							.replace("country : ", "").replace("state : ", "").replace("city : ", "")
-//							.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
-//							.replace("email : ", "").replace("mobile : ", "");
-//					String orderDate = item.getCreatedOn();
-//					Date parse = formatter.parse(orderDate);
-//					Calendar calendar = Calendar.getInstance();
-//					calendar.setTime(parse);
-//					Date time = calendar.getTime();
-//					DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
-//					DecimalFormat decimalFormat = new DecimalFormat("0.00");
-//					String format1 = dateFormat2.format(time);
-//					Double disc = orderDetailsEntity.getDiscount();
-//					String discount = decimalFormat.format(disc);
-//					Double taxAmount = orderDetailsEntity.getTaxAmount();
-//					String format2 = decimalFormat.format(taxAmount);
-//					Context context = new Context();
-//					context.setVariable("firstName", firstName);
-//					context.setVariable("productId", productId);
-//					context.setVariable("productName", productName);
-//					context.setVariable("mrp", mrp);
-//					double format3 = (Double.parseDouble(format2) + mrp) - Double.parseDouble(discount);
-//					context.setVariable("format3", format3);
-//					context.setVariable("discount", discount);
-//					context.setVariable("taxAmount", format2);
-//					context.setVariable("mrp", mrp);
-//					context.setVariable("size", size);
-//					context.setVariable("displayName", displayName);
-//					context.setVariable("city", city);
-//					context.setVariable("country", country);
-//					context.setVariable("state", state);
-//					context.setVariable("paymentMode", paymentMode);
-//					context.setVariable("shippingAddress", replace);
-//					context.setVariable("orderDate", format1);
-//					context.setVariable("orderId", orderId);
-//					context.setVariable("quantity", units);
-//					context.setVariable("colour", colour);
-//					if (orderItemStatus.equals("Orders")) {
-//						context.setVariable("orderItemStatus", "Verified");
-//					} else {
-//						context.setVariable("orderItemStatus", orderItemStatus);
-//					}
-//					context.setVariable("orderId", orderId);
-//					context.setVariable("productImage", images);
-//					if (orderItemStatus.equals("Orders")) {
-//						String htmlContent = templateEngine.process("statusChange.html", context);
-//						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-//								"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
-//						String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
-//						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-//								"Your Product Has been " + "Verified", htmlContentDesigner, true, null, restTemplate);
-//						emailSenderThreadDesigner.start();
-//						emailSenderThread.start();
-//					} else {
-//						String htmlContent = templateEngine.process("statusChange.html", context);
-//						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-//								"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
-//						String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
-//						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-//								"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null,
-//								restTemplate);
-//						emailSenderThreadDesigner.start();
-//						emailSenderThread.start();
-//					}
-//				}
+
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage()
 								+ orderItemStatus + MessageConstant.SUCCESSFULLY.getMessage(),

@@ -18,8 +18,8 @@ public enum RestTemplateConstant {
 	CATEGORY_VIEWBY_NAME("https://localhost:9095/dev/category/viewByName/"),
 
 	PRESENT_DESIGNER("https://localhost:8080/dev/auth/Present/DESIGNER/"),
-	DESIGNER_REDIRECT("https://65.1.190.195:8083/dev/designer/redirect/"),
-	AUTH_SEND_MAIL("https://65.1.190.195:8080/dev/auth/sendMail"), DESIGNER("https://dev.divatt.com/designer/"),
+	DESIGNER_REDIRECT("https://localhost:8083/dev/designer/redirect/"),
+	AUTH_SEND_MAIL("https://localhost:8080/dev/auth/sendMail"), DESIGNER("https://dev.divatt.com/designer/"),
 	USER_FOLLOWER_COUNT("https://localhost:9095/dev/user/followerCount/"),
 	USER_FOLLOWED_DESIGNER("https://localhost:8082/dev/user/followedDesigner/"),
 	ADMIN_EMAIL("developer.nitsolution@gmail.com"),

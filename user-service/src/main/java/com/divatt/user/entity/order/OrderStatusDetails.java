@@ -2,6 +2,8 @@ package com.divatt.user.entity.order;
 
 import org.json.simple.JSONObject;
 
+import com.divatt.user.dto.ForceReturnOnDTO;
+
 public class OrderStatusDetails {
 
 	private String command;
@@ -14,6 +16,7 @@ public class OrderStatusDetails {
 	private JSONObject cancelFromUser;
 	private JSONObject returnFromUser;
 	private JSONObject returnFromAdmin;
+	private ForceReturnOnDTO forceReturnOnDTO;
 
 	public OrderStatusDetails() {
 		super();
@@ -100,6 +103,13 @@ public class OrderStatusDetails {
 		this.returnFromAdmin = returnFromAdmin;
 	}
 
-	
+	public ForceReturnOnDTO getForceReturnOnDTO() {
+		return forceReturnOnDTO;
+	}
 
+	public void setForceReturnOnDTO(ForceReturnOnDTO forceReturnOnDTO) {
+		this.forceReturnOnDTO = forceReturnOnDTO;
+	}
+
+	
 }
