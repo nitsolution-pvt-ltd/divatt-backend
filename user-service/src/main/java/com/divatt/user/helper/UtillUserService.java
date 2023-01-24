@@ -13,7 +13,7 @@ import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 @Service
 public class UtillUserService {
 
-	@Autowired
+//	@Autowired
 //	private RestTemplate restTemplate;
 
 //	@Autowired private MongoOperations mongoOperations;

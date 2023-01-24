@@ -109,6 +109,9 @@ public class UserController {
 
 	@Value("${mail.from}")
 	private String mail;
+	
+	@Value("${rootURL}")
+	private String rootURL;
 
 	@PostMapping("/wishlist/add")
 	public GlobalResponse postWishlistDetails(@Valid @RequestBody ArrayList<WishlistEntity> wishlistEntity) {
@@ -489,6 +492,7 @@ public class UserController {
 	@GetMapping("/product/list")
 	public ResponseEntity<?> productListing() {
 		try {
+			System.out.println("rootURL "+rootURL);
 			return userService.getProductUser();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
