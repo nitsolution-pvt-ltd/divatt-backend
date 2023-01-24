@@ -40,7 +40,7 @@ logging:
         
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
-mail.from: no-reply@nitsolution.in
+mail.from: no-reply@divatt.com
 
 ---
 spring:
@@ -87,7 +87,7 @@ logging:
         
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
-mail.from: no-reply@nitsolution.in
+mail.from: no-reply@divatt.com
 
 ---
 spring:
@@ -133,4 +133,4 @@ logging:
         
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
-mail.from: no-reply@nitsolution.in
+mail.from: no-reply@divatt.com
