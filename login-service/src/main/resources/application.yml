@@ -4,12 +4,10 @@ spring:
      name: LoginService 
   data:
     mongodb:
-      authentication-database: admin
       database: divatt
-      host: 65.1.190.195
-      password: word_pass
+      host: localhost
       port: 27017
-      username: dbuser 
+      username: test
  
 server: 
   port: 8080
@@ -24,7 +22,7 @@ servers:
    - www.default1.com
 logging: 
       file: 
-        name: logs/default_logs.log
+        name: logs/auth_default_logs.log
       pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
         file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
@@ -71,7 +69,7 @@ servers:
    - www.dev1.com
 logging: 
       file: 
-        name: logs/dev_logs.log
+        name: logs/auth_dev_logs.log
       pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
         file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
@@ -117,7 +115,7 @@ servers:
    - www.prod1.com
 logging: 
       file: 
-        name: logs/prod_logs.log
+        name: logs/auth_prod_logs.log
       pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
         file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"

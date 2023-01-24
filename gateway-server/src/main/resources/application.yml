@@ -225,3 +225,121 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka
+      
+
+---      
+spring:
+  cloud:
+    gateway:
+      httpclient:
+        ssl:
+          useInsecureTrustManager: true
+      routes[0]:
+        uri: https://localhost:8080/default/auth
+        id: LoginService
+        predicates[0]: Path=/default/auth/**
+      routes[1]:
+        id: Admin
+        predicates[0]: Path=/default/category/**
+        uri: https://localhost:8084/default/category
+      routes[2]:
+        id: Admin
+        uri: https://localhost:8084/default/admin/profile
+        predicates[0]: Path=/default/admin/profile/**
+      routes[3]:
+        predicates[0]: Path=/default/admin/**
+        id: Admin
+        uri: https://localhost:8084/default/admin
+      routes[4]:
+        uri: https://localhost:8084/default/subcategory
+        id: Admin
+        predicates[0]: Path=/default/subcategory/**
+      routes[5]:
+        uri: https://localhost:8084/default/specification
+        id: Admin
+        predicates[0]: Path=/default/specification/**
+      routes[6]:
+        uri: https://localhost:8084/default/productMeasurement
+        id: Admin
+        predicates[0]: Path=/default/productMeasurement/**
+      routes[7]:
+        uri: https://localhost:8084/default/product
+        id: Admin
+        predicates[0]: Path=/default/product/**
+      routes[8]:
+        uri: https://localhost:8084/default/adminMData
+        id: Admin
+        predicates[0]: Path=/default/adminMData/**
+      routes[9]:
+        uri: https://localhost:8083/default/designerProduct
+        id: Designer
+        predicates[0]: Path=/default/designerProduct/**
+      routes[10]:
+        uri: https://localhost:8083/default/designer
+        id: Designer
+        predicates[0]: Path=/default/designer/**
+      routes[11]:
+        uri: https://localhost:8083/default/orderStatus
+        id: Designer
+        predicates[0]: Path=/default/orderStatus/**
+      routes[12]:
+        uri: https://localhost:8082/default/user
+        id: User
+        predicates[0]: Path=/default/user/**
+      routes[13]:
+        uri: https://localhost:8082/default/userOrder
+        id: User
+        predicates[0]: Path=/default/userOrder/**
+      routes[14]:
+        uri: https://localhost:8083/default/order
+        id: Designer
+        predicates[0]: Path=/default/order/**
+      routes[15]:
+        uri: https://localhost:8084/default/hsn
+        id: Admin
+        predicates[0]: Path=/default/hsn/**
+#      routes[16]:
+#        uri: https://localhost:8085/default/measurement
+#        id: Designer
+#        predicates[0]: Path=/default/measurement/**
+      routes[16]:
+        uri: https://localhost:8083/default/designerProducts
+        id: Designer
+        predicates[0]: Path=/default/designerProducts/**
+      routes[17]:
+        uri: https://localhost:8082/default/userMeasurement
+        id: User
+        predicates[0]: Path=/default/userMeasurement/**
+      routes[18]:
+        uri: https://localhost:8084/default/account
+        id: Admin
+        predicates[0]: Path=/default/account/**
+      routes[19]:
+        uri: https://localhost:8083/default/designerAccount
+        id: Designer
+        predicates[0]: Path=/default/designerAccount/**
+        
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowed-headers: '*'
+            allowedMethods: GET, POST, PUT, DELETE
+            max-age: '3600'
+            allowed-origins: '*'
+  profiles: default
+  application:
+    name: ApiGatway
+server:
+  port: 9095
+  ssl:
+    key-store: classpath:local-ssl.p12
+    key-store-type: PKCS12
+    key-alias: local_ssl
+    key-password: Divatt
+    key-store-password: Divatt
+    enabled: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
