@@ -33,7 +33,11 @@ public class SequenceGenerator {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("_id").is(seqName));
 		List<DatabaseSequence> find = mongoOperations.find(query, DatabaseSequence.class);
-		return find.get(0).getSeq();
+		long seq= 0L;
+		if(find.size() > 0) {
+		 seq = find.get(0).getSeq();
+		}
+		return seq;
 	}
 	
 	public long generateSequence(String seqName) {
