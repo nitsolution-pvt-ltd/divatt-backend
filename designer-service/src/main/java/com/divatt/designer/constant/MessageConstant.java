@@ -36,7 +36,7 @@ public enum MessageConstant {
     DESIGNER_STATUS_CHANGE("Designer current status Changed"),
     PROFILE_IMAGE_UPDATED("Profile Image Updated Sucessfully"),
     PROFILE_DELETE("Profile deleted Sucessfuly"),
-    
+    DESIGNER_NOT_FOUND("Designer not found"),
     ACCOUNT_ADDED_MESSAGE("Accoount added Sucessfully"),
     UNAUTHORIZED("Unauthorized"),
     ACCOUNT_UPDATED_MESSAGE("Account Updated Successfully"),
