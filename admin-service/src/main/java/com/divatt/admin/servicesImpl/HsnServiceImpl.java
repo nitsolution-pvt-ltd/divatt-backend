@@ -275,7 +275,7 @@ public class HsnServiceImpl implements HsnService {
 				return hsnList;
 			} else {
 				List<HsnEntity> descriptionFiltered = hsnList.stream()
-						.filter(e -> searchKeyword.equals(e.getDescription())).collect(Collectors.toList());
+						.filter(e -> e.getDescription().contains(searchKeyword.toLowerCase())).collect(Collectors.toList());
 				if (descriptionFiltered.isEmpty()) {
 					List<HsnEntity> hsnCodeFiltered = hsnList.stream()
 							.filter(e -> searchKeyword.equals(e.getHsnCode() + "")).collect(Collectors.toList());
