@@ -242,10 +242,6 @@ public class ProfileContoller {
 			    query.limit(1);
 			    query.with(Sort.by(Sort.DEFAULT_DIRECTION.DESC, "dId"));
 
-				Query query = new Query();
-				query.limit(1);
-				query.with(Sort.by(Sort.DEFAULT_DIRECTION.DESC, "dId"));
-
 				List<DesignerLoginEntity> designerLoginData = mongoOperations.find(query, DesignerLoginEntity.class);
 
 				String randomId = this.getRandomString();
