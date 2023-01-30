@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.bouncycastle.jcajce.provider.symmetric.DES;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -51,7 +52,7 @@ import org.thymeleaf.context.Context;
 
 import com.divatt.user.config.JWTConfig;
 import com.divatt.user.constant.MessageConstant;
-import com.divatt.user.constant.RestTemplateConstant;
+import com.divatt.user.constant.RestTemplateConstants;
 import com.divatt.user.dto.CancelEmailJSON;
 import com.divatt.user.dto.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.dto.CancelationRequestDTO;
@@ -148,9 +149,18 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Autowired
 	private JWTConfig jwtconfig;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
 
-	@Autowired
-	private UserServiceImpl userServiceImpl;
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
 
 	@Value("${spring.profiles.active}")
 	private String contextPath;
@@ -388,8 +398,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			orderSKUDetailsEntityRow.setOrderItemStatus("New");
 
 			try {
-				ResponseEntity<org.json.simple.JSONObject> forEntity = restTemplate.getForEntity(
-						RestTemplateConstant.DESIGNER_PRODUCT.getLink() + orderSKUDetailsEntityRow.getProductId(),
+				ResponseEntity<org.json.simple.JSONObject> forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
+						RestTemplateConstants.DESIGNER_PRODUCT + orderSKUDetailsEntityRow.getProductId(),
 						org.json.simple.JSONObject.class);
 				int shipmentTime = Integer.parseInt(forEntity.getBody().get("shipmentTime").toString());
 				Object productSku = forEntity.getBody().get("sku");
@@ -610,8 +620,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
 					try {
-						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(
-								RestTemplateConstant.DESIGNER_PRODUCT.getLink() + D.getProductId(),
+						ResponseEntity<org.json.simple.JSONObject> productById = restTemplate.getForEntity(DESIGNER_SERVICE+
+								RestTemplateConstants.DESIGNER_PRODUCT + D.getProductId(),
 								org.json.simple.JSONObject.class);
 						D.setHsn(productById.getBody().get("hsnData"));
 						productIdFilters = objs.writeValueAsString(D);
@@ -733,8 +743,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				OrderSKUDetailsRow.forEach(order -> {
 					try {
-						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(
-								RestTemplateConstant.DESIGNER_PRODUCT.getLink() + order.getProductId(),
+						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(DESIGNER_SERVICE+
+								RestTemplateConstants.DESIGNER_PRODUCT + order.getProductId(),
 								org.json.simple.JSONObject.class);
 						order.setHsn(getProductByID.getBody().get("hsnData"));
 					} catch (Exception e2) {
@@ -1412,7 +1422,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			List<OrderSKUDetailsEntity> orderSKUDetails = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
 
-			String body = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_IDLIST.getLink(), String.class)
+			String body = restTemplate.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_IDLIST, String.class)
 					.getBody();
 
 			JSONArray jsonArray = new JSONArray(body);
@@ -1496,8 +1506,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderSKUDetailsEntity> orderList = mongoOperations.find(query2, OrderSKUDetailsEntity.class);
 
 			for (int i = 0; i < orderList.size(); i++) {
-				ResponseEntity<Object> designerData = restTemplate.getForEntity(
-						RestTemplateConstant.DESIGNER_BYID.getLink() + orderList.get(i).getDesignerId(), Object.class);
+				ResponseEntity<Object> designerData = restTemplate.getForEntity(DESIGNER_SERVICE+
+						RestTemplateConstants.DESIGNER_BYID + orderList.get(i).getDesignerId(), Object.class);
 				org.json.simple.JSONObject object = new org.json.simple.JSONObject();
 				object.put("ProductData", orderList.get(i));
 				object.put("DesignerData", designerData.getBody());
@@ -1699,7 +1709,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			LOGGER.info(jwtconfig.extractUsername(token.substring(7)));
 			org.json.simple.JSONObject designerObject = restTemplate
-					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink()
+					.getForEntity(AUTH_SERVICE+RestTemplateConstants.DESIGNER_DETAILS
 							+ jwtconfig.extractUsername(token.substring(7)), org.json.simple.JSONObject.class)
 					.getBody();
 			Integer designerId = Integer.parseInt(designerObject.get("designerId").toString());
@@ -1721,7 +1731,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			String designerEmail = jwtconfig.extractUsername(token.substring(7));
 
 			org.json.simple.JSONObject designerDetails = restTemplate
-					.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail,
+					.getForEntity(AUTH_SERVICE+RestTemplateConstants.DESIGNER_DETAILS + designerEmail,
 							org.json.simple.JSONObject.class)
 					.getBody();
 
@@ -1788,8 +1798,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				throw new CustomException(MessageConstant.PRODUCT_ALREADY_DELIVERED.getMessage());
 			}
 			try {
-				org.json.simple.JSONObject body = restTemplate.getForEntity(
-						RestTemplateConstant.ADMIN_ROLE_NAME.getLink() + MessageConstant.ADMIN_ROLES.getMessage(),
+				org.json.simple.JSONObject body = restTemplate.getForEntity(ADMIN_SERVICE+
+						RestTemplateConstants.ADMIN_ROLE_NAME + MessageConstant.ADMIN_ROLES.getMessage(),
 						org.json.simple.JSONObject.class).getBody();
 				String adminMail = body.get("email").toString();
 				String designerName = firstName + " " + lastName;
@@ -1826,7 +1836,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				context.setVariables(data);
 				String htmlContent = templateEngine.process("orderCancelRequestToAdmin.html", context);
 				EmailSenderThread emailSenderThread = new EmailSenderThread(adminMail, "Request for Cancel Order",
-						htmlContent, true, null, restTemplate);
+						htmlContent, true, null, restTemplate, AUTH_SERVICE);
 				emailSenderThread.start();
 			} catch (Exception ex) {
 				throw new CustomException(ex.getMessage());
@@ -1850,7 +1860,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			String username = userloginRepo.findById(orderDetails.get(0).getUserId()).get().getFirstName();
 			String userEmail = userloginRepo.findById(orderDetails.get(0).getUserId()).get().getEmail();
 			DesignerRequestDTO designerResponse = restTemplate
-					.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId, DesignerRequestDTO.class)
+					.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_BYID + designerId, DesignerRequestDTO.class)
 					.getBody();
 			String designerName = designerResponse.getDesignerId().toString();
 			String designerEmail = designerResponse.getDesignerProfile().get("email").toString();
@@ -1892,7 +1902,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String htmlContent = templateEngine.process("ordercancel.html", context);
 
 				EmailSenderThread emailSenderThread = new EmailSenderThread(userEmail,
-						MessageConstant.ORDER_CANCEL_FROM_DESIGNER.getMessage(), htmlContent, true, null, restTemplate);
+						MessageConstant.ORDER_CANCEL_FROM_DESIGNER.getMessage(), htmlContent, true, null, restTemplate,AUTH_SERVICE);
 				emailSenderThread.start();
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_CANCEL.getMessage(), 200);
@@ -1932,7 +1942,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				String htmlContent = templateEngine.process("ordercancelRejected.html", context);
 				EmailSenderThread emailSenderThread = new EmailSenderThread(designerEmail,
-						MessageConstant.ORDER_CANCELATION_REJECTED.getMessage(), htmlContent, true, null, restTemplate);
+						MessageConstant.ORDER_CANCELATION_REJECTED.getMessage(), htmlContent, true, null, restTemplate,AUTH_SERVICE);
 				emailSenderThread.start();
 
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
@@ -1957,7 +1967,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			String designerEmail = jwtconfig.extractUsername(token.substring(7));
 			try {
 				DesignerProfileEntity entity = restTemplate
-						.getForEntity(RestTemplateConstant.DESIGNER_DETAILS.getLink() + designerEmail,
+						.getForEntity(AUTH_SERVICE+RestTemplateConstants.DESIGNER_DETAILS + designerEmail,
 								DesignerProfileEntity.class)
 						.getBody();
 				String designerId = entity.getDesignerId().toString();
@@ -2152,99 +2162,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 						}
 
-//						Long userId = item.getUserId();
-//						UserLoginEntity userById = userServiceImpl.getUserById(userId);
-//						String email = userById.getEmail();
-//						String firstName = userById.getFirstName();
-//						String productName = item.getProductName();
-//						Long salesPrice = item.getSalesPrice();
-//						Long mrp;
-//						if (salesPrice == 0 || salesPrice.equals(null)) {
-//							mrp = item.getMrp();
-//						} else {
-//							mrp = salesPrice;
-//						}
-//						String size = item.getSize();
-//						String images = item.getImages();
-//						Long units = item.getUnits();
-//						String email2 = entity.getDesignerProfile().getEmail();
-//						String colour = item.getColour();
-//						List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
-//
-//						if (findByOrderIdList.size() > 0) {
-//
-//							String paymentMode = findByOrderIdList.get(0).getPaymentMode();
-//							OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderId(orderId).get(0);
-//							System.out.println("orderDetailsEntity " + orderDetailsEntity.toString());
-//							Object shippingAddress = orderDetailsEntity.getShippingAddress();
-//							String substring2 = shippingAddress.toString()
-//									.substring(1, shippingAddress.toString().length() - 1).replaceAll("=", " : ");
-//							String replace = substring2.replace("address1 : ", "").replace("address2 : ", "")
-//									.replace("country : ", "").replace("state : ", "").replace("city : ", "")
-//									.replace("postalCode : ", "").replace("landmark : ", "").replace("fullName : ", "")
-//									.replace("email : ", "").replace("mobile : ", "");
-//							String orderDate = item.getCreatedOn();
-//							Date parse = formatter.parse(orderDate);
-//							Calendar calendar = Calendar.getInstance();
-//							calendar.setTime(parse);
-//							Date time = calendar.getTime();
-//							DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
-//							DecimalFormat decimalFormat = new DecimalFormat("0.00");
-//							String format1 = dateFormat2.format(time);
-//							Double disc = orderDetailsEntity.getDiscount();
-//							String discount = decimalFormat.format(disc);
-//							Double taxAmount = orderDetailsEntity.getTaxAmount();
-//							String format2 = decimalFormat.format(taxAmount);
-//							Context context = new Context();
-//							context.setVariable("firstName", firstName);
-//							context.setVariable("productId", productId);
-//							context.setVariable("productName", productName);
-//							context.setVariable("mrp", mrp);
-//							double format3 = (Double.parseDouble(format2) + mrp) - Double.parseDouble(discount);
-//							context.setVariable("format3", format3);
-//							context.setVariable("discount", discount);
-//							context.setVariable("taxAmount", format2);
-//							context.setVariable("size", size);
-//							context.setVariable("displayName", displayName);
-//							context.setVariable("paymentMode", paymentMode);
-//							context.setVariable("shippingAddress", replace);
-//							context.setVariable("orderDate", format1);
-//							context.setVariable("orderId", orderId);
-//							context.setVariable("quantity", units);
-//							context.setVariable("colour", colour);
-//
-//							if (orderItemStatus.equals("Orders")) {
-//								context.setVariable("orderItemStatus", "Verified");
-//							} else {
-//								context.setVariable("orderItemStatus", orderItemStatus);
-//							}
-//							context.setVariable("orderId", orderId);
-//							context.setVariable("productImage", images);
-//							if (orderItemStatus.equals("Orders")) {
-//								String htmlContent = templateEngine.process("statusChange.html", context);
-//								EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-//										"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
-//								String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html",
-//										context);
-//								EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-//										"Your Product Has been " + "Verified", htmlContentDesigner, true, null,
-//										restTemplate);
-//								emailSenderThreadDesigner.start();
-//								emailSenderThread.start();
-//							} else {
-//								String htmlContent = templateEngine.process("statusChange.html", context);
-//								EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-//										"Your Order Has been " + orderItemStatus, htmlContent, true, null,
-//										restTemplate);
-//								String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html",
-//										context);
-//								EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-//										"Your Product Has been " + orderItemStatus, htmlContentDesigner, true, null,
-//										restTemplate);
-//								emailSenderThreadDesigner.start();
-//								emailSenderThread.start();
-//							}
-//						}
 
 						return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 								MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus
@@ -2276,7 +2193,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			Map<String, Object> map = new HashMap<>();
 			try {
 				String adminEmail = restTemplate
-						.getForEntity(RestTemplateConstant.ADMIN_ROLE_NAME.getLink()
+						.getForEntity(ADMIN_SERVICE+RestTemplateConstants.ADMIN_ROLE_NAME
 								+ MessageConstant.ADMIN_ROLES.getMessage(), org.json.simple.JSONObject.class)
 						.getBody().get("email").toString();
 				if (!extractUsername.equals(adminEmail)) {
@@ -2290,8 +2207,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			OrderStatusDetails orderStatusDetails = item.getOrderStatusDetails();
 			String itemStatus = item.getOrderItemStatus();
 			int designerId = item.getDesignerId();
-			DesignerProfileEntity forEntity = restTemplate.getForEntity(
-					RestTemplateConstant.DESIGNER_BYID.getLink() + designerId, DesignerProfileEntity.class).getBody();
+			DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
+					RestTemplateConstants.DESIGNER_BYID + designerId, DesignerProfileEntity.class).getBody();
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
@@ -2528,8 +2445,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					e1.printStackTrace();
 				}
 				List<OrderInvoiceEntity> invoiceData = this.orderInvoiceRepo.findByOrder(e.getOrderId());
-				ResponseEntity<DesignerProfileEntity> forEntity = restTemplate.getForEntity(
-						RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), DesignerProfileEntity.class);
+				ResponseEntity<DesignerProfileEntity> forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
+						RestTemplateConstants.DESIGNER_BYID + e.getDesignerId(), DesignerProfileEntity.class);
 				String designerName = forEntity.getBody().getDesignerName();
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
 
@@ -2712,8 +2629,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					List<OrderInvoiceEntity> findByInvoiceId = this.orderInvoiceRepo.findByInvoiceId(modifiedInvoiceId);
 
 					for (OrderInvoiceEntity e : findByInvoiceId) {
-						DesignerProfileEntity forEntity = restTemplate.getForEntity(
-								RestTemplateConstant.DESIGNER_BYID.getLink() + e.getProductDetails().getDesignerId(),
+						DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
+								RestTemplateConstants.DESIGNER_BYID + e.getProductDetails().getDesignerId(),
 								DesignerProfileEntity.class).getBody();
 						displayName = forEntity.getDesignerProfile().getDisplayName();
 						designerName = forEntity.getDesignerName();

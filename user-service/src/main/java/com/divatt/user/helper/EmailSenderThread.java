@@ -1,17 +1,18 @@
-package com.divatt.user.utill;
+package com.divatt.user.helper;
 
 import java.io.File;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 
-import com.divatt.user.constant.RestTemplateConstants;
 import com.divatt.user.entity.SendMail;
 
 
 public class EmailSenderThread extends Thread{
 
+	@Value("${AUTH}")
 	String AUTH_SERVICE;
+	
 	RestTemplate mailLink;
 	String senderMailId;
 	String subject;
@@ -36,12 +37,14 @@ public class EmailSenderThread extends Thread{
 		sendMail.setFile(null);
 		sendMail.setSenderMailId(senderMailId);
 		sendMail.setSubject(subject);
-		mailLink.postForEntity(AUTH_SERVICE+RestTemplateConstants.MAIL_SEND, sendMail, String.class);
-		
+
+		mailLink.postForEntity(AUTH_SERVICE+"auth/sendMail", sendMail, String.class);
 	}
 	public EmailSenderThread()
 	{
+		
 		EmailSenderThread thread= new EmailSenderThread();
 		thread.start();
 	}
 }
+

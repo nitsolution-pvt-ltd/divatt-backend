@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.designer.constant.MessageConstant;
-import com.divatt.designer.constant.RestTemplateConstant;
+import com.divatt.designer.constant.RestTemplateConstants;
 import com.divatt.designer.entity.CategoryEntity;
 import com.divatt.designer.entity.EmailEntity;
 import com.divatt.designer.entity.ListProduct;
@@ -74,9 +75,6 @@ public class ProductServiceImpl implements ProductService{
 	@Autowired
 	private CustomFunction customFunction;
 
-//	@Autowired
-//	private DesignerLoginRepo designerLoginRepo;
-
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
 
@@ -88,6 +86,20 @@ public class ProductServiceImpl implements ProductService{
 
 	@Autowired
 	private ProductRepo2 productRepo2;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
+	
+	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
 
@@ -177,12 +189,12 @@ public class ProductServiceImpl implements ProductService{
 					List<ProductMasterEntity> productInfo = mongoOperations.find(query1, ProductMasterEntity.class);
 					if (productInfo.isEmpty()) {
 
-						restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getMessage() + productData.getCategoryId(),
+						restTemplate.getForEntity(ADMIN_SERVICE+
+								RestTemplateConstants.CATEGORY_VIEW + productData.getCategoryId(),
 								String.class);
 
-						restTemplate.getForEntity(
-								RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + productData.getSubCategoryId(),
+						restTemplate.getForEntity(ADMIN_SERVICE+
+								RestTemplateConstants.SUBCATEGORY_VIEW + productData.getSubCategoryId(),
 								String.class);
 						productRepo.save(customFunction.filterDataEntity(productData));
 
@@ -211,11 +223,11 @@ public class ProductServiceImpl implements ProductService{
 			if (productRepo.existsById(productId)) {
 				LOGGER.info("Inside - ProductService.productDetails()");
 				ProductMasterEntity masterEntity = productRepo.findById(productId).get();
-//				 RestTemplate restTemplate= new RestTemplate();
-				ResponseEntity<Object> categoryEntity = restTemplate.getForEntity(
-						RestTemplateConstant.CATEGORY_VIEW.getMessage() + masterEntity.getCategoryId(), Object.class);
-				ResponseEntity<Object> subCategoryEntity = restTemplate.getForEntity(
-						RestTemplateConstant.SUBCATEGORY_VIEW.getMessage() + masterEntity.getSubCategoryId(),
+
+				ResponseEntity<Object> categoryEntity = restTemplate.getForEntity(ADMIN_SERVICE+
+						RestTemplateConstants.CATEGORY_VIEW + masterEntity.getCategoryId(), Object.class);
+				ResponseEntity<Object> subCategoryEntity = restTemplate.getForEntity(ADMIN_SERVICE+
+						RestTemplateConstants.SUBCATEGORY_VIEW + masterEntity.getSubCategoryId(),
 						Object.class);
 				ProductEntity productData = customFunction.productFilter(masterEntity);
 				productData.setCategoryObject(categoryEntity.getBody());
@@ -886,8 +898,8 @@ public class ProductServiceImpl implements ProductService{
 			List<UserProfileInfo> userInfoList = new ArrayList<UserProfileInfo>();
 			List<Long> userId = new ArrayList<Long>();
 
-			ResponseEntity<String> forEntity = restTemplate.getForEntity(
-					RestTemplateConstant.USER_FOLLOWEDUSERLIST.getMessage() + productData.getDesignerId(),
+			ResponseEntity<String> forEntity = restTemplate.getForEntity(USER_SERVICE+
+					RestTemplateConstants.USER_FOLLOWEDUSERLIST + productData.getDesignerId(),
 					String.class);
 			String data = forEntity.getBody();
 			JSONArray jsonArray = new JSONArray(data);
@@ -896,13 +908,13 @@ public class ProductServiceImpl implements ProductService{
 			for (int i = 0; i < jsonArray.length(); i++) {
 				ObjectMapper objectMapper = new ObjectMapper();
 				UserProfile readValue = objectMapper.readValue(jsonArray.get(i).toString(), UserProfile.class);
-				ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(
-						RestTemplateConstant.USER_GET_USER_ID.getMessage() + readValue.getUserId(),
+				ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(USER_SERVICE+
+						RestTemplateConstants.USER_GET_USER_ID + readValue.getUserId(),
 						UserProfileInfo.class);
 				userInfoList.add(userInfo.getBody());
 			}
 			for (int i = 0; i < userId.size(); i++) {
-				restTemplate.getForEntity(RestTemplateConstant.INFO_USER.getMessage() + userId.get(i),
+				restTemplate.getForEntity(AUTH_SERVICE+RestTemplateConstants.INFO_USER + userId.get(i),
 						UserProfileInfo.class);
 
 			}
@@ -938,7 +950,7 @@ public class ProductServiceImpl implements ProductService{
 				context.setVariables(data2);
 				String htmlContent = templateEngine.process("emailTemplate", context);
 				EmailSenderThread emailSenderThread = new EmailSenderThread(userInfoList.get(i).getEmail(),
-						"New product Arrived", htmlContent, true, null, restTemplate);
+						"New product Arrived", htmlContent, true, null, restTemplate,AUTH_SERVICE);
 				emailSenderThread.start();
 			}
 			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
@@ -994,7 +1006,7 @@ public class ProductServiceImpl implements ProductService{
 
 	public List<ProductMasterEntity> productListCategorySubcategory(String categoryName, String subcategoryName) {
 		try {
-			restTemplate.getForEntity(RestTemplateConstant.DEV_CATEGORY.getMessage(), CategoryEntity.class);
+			restTemplate.getForEntity(ADMIN_SERVICE+RestTemplateConstants.DEV_CATEGORY, CategoryEntity.class);
 			return null;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1005,8 +1017,8 @@ public class ProductServiceImpl implements ProductService{
 			String subCategoryName) {
 		try {
 
-			ResponseEntity<UserResponseEntity> userResponseEntity = restTemplate.getForEntity(
-					RestTemplateConstant.CATEGORY_VIEWBY_NAME.getMessage() + categoryName + "/" + subCategoryName,
+			ResponseEntity<UserResponseEntity> userResponseEntity = restTemplate.getForEntity(ADMIN_SERVICE+
+					RestTemplateConstants.CATEGORY_VIEWBY_NAME + categoryName + "/" + subCategoryName,
 					UserResponseEntity.class);
 			int categoryIdvalue = userResponseEntity.getBody().getCategoryEntity().getId();
 			if (userResponseEntity.getBody().getSubCategoryEntity().getParentId().equals("0")) {
@@ -1141,7 +1153,7 @@ public class ProductServiceImpl implements ProductService{
 					context.setVariables(data3);
 					String htmlContent = templateEngine.process("lowStockEmailTemplate", context);
 					EmailSenderThread emailSenderThread = new EmailSenderThread(emails.get(i), "Product out of stock",
-							htmlContent, true, null, restTemplate);
+							htmlContent, true, null, restTemplate,AUTH_SERVICE);
 					emailSenderThread.start();
 				}
 			}

@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.admin.constant.MessageConstant;
-import com.divatt.admin.constant.RestTemplateConstant;
+import com.divatt.admin.constant.RestTemplateConstants;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.product.ProductEntity;
 import com.divatt.admin.entity.product.ProductEntity2;
@@ -30,25 +31,34 @@ import com.divatt.admin.services.ProductService;
 public class ProductServiceImpl implements ProductService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
-//	@Autowired
-//	private MongoTemplate mongoTemplate;
+
 	@Autowired
 	private ProductRepo productRepo;
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
 
 	
 	public GlobalResponse productApproval(int productId, int designerId, List<Object> commString,
 			String ApprovedBy, String adminStatus) {
 		try {
 			ResponseEntity<ProductEntity2> exchange = restTemplate.exchange(
-					RestTemplateConstant.DESIGNER_URL.getMessage()+"designerProducts/productAdmin/" + productId, HttpMethod.GET, null,
+					DESIGNER_SERVICE +"designerProducts/productAdmin/" + productId, HttpMethod.GET, null,
 					ProductEntity2.class);
-			System.out.println(
-					RestTemplateConstant.DESIGNER_URL.getMessage()+"designerProducts/productAdmin/" + productId);
+			
 			ProductEntity2 productdata = exchange.getBody();
-			LOGGER.info("Product data is = {}",productdata);
 			if (productdata.getDesignerId().equals(designerId)) {
 
 				productdata.getProductStageDetails().setApprovedBy(ApprovedBy);
@@ -58,16 +68,7 @@ public class ProductServiceImpl implements ProductService {
 				productdata.setAdminStatus(adminStatus);
 				productdata.setProductStage(adminStatus+" By Admin");
 
-//				String status = null;
-//				if (adminStatus.equals("Approved")) {
-//					status = "approved";
-//				} else if (adminStatus.equals("Rejected")) {
-//					status = "rejected";
-//				} else {
-//					status = "pending";
-//				}
-				LOGGER.info("Data for update = {}",productdata);
-				restTemplate.put(RestTemplateConstant.DESIGNER_PRODUCTS_APPROVAL_UPDATE.getMessage() + productId, productdata,
+				restTemplate.put(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_PRODUCTS_APPROVAL_UPDATE + productId, productdata,
 						String.class);
 
 				return new GlobalResponse(MessageConstant.STATUS_UPDATED.getMessage(), MessageConstant.PRODUCT_STATUS_UPDATED.getMessage(), 200);
@@ -81,8 +82,6 @@ public class ProductServiceImpl implements ProductService {
 
 	public List<JSONObject> getReportSheet(Date startDate, Date endDate) {
 		try {
-			// ResponseEntity<JSONObject>
-			// responseData=restTemplate.getForEntity("http://localhost:80", null)
 			return null;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

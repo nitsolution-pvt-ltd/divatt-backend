@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ import org.thymeleaf.context.Context;
 
 import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.constant.MessageConstant;
-import com.divatt.designer.constant.RestTemplateConstant;
+import com.divatt.designer.constant.RestTemplateConstants;
 import com.divatt.designer.entity.DesignerInvoiceReq;
 import com.divatt.designer.entity.DesignerIvoiceData;
 import com.divatt.designer.entity.DesignerProductList;
@@ -52,19 +53,28 @@ public class OrderServiceImpl implements OrderService {
 
 	@Autowired
 	private JWTConfig jwtConfig;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
 	public GlobalResponce changeStatus(String orderId, String statusKeyword) {
 		try {
-//				RestTemplate restTemplate= new RestTemplate();
 			ResponseEntity<OrderDetailsEntity> serviceResponse = restTemplate
-					.getForEntity(RestTemplateConstant.USERORDER_GET_ORDER.getMessage() + orderId, OrderDetailsEntity.class);
-			// System.out.println(serviceResponse.getBody());
+					.getForEntity(USER_SERVICE+RestTemplateConstants.USERORDER_GET_ORDER + orderId, OrderDetailsEntity.class);
 			OrderDetailsEntity updatedOrder = serviceResponse.getBody();
 			updatedOrder.setOrderStatus(statusKeyword);
-			System.out.println(updatedOrder);
-			restTemplate.put(RestTemplateConstant.USER_ORDER_UPDATE_ORDER.getMessage() + orderId, updatedOrder, String.class);
+			restTemplate.put(USER_SERVICE+RestTemplateConstants.USER_ORDER_UPDATE_ORDER + orderId, updatedOrder, String.class);
 			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), MessageConstant.ORDER_STATUS_UPDATED.getMessage(), 200);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -75,10 +85,10 @@ public class OrderServiceImpl implements OrderService {
 		try {
 			Map<String, Object> invoiceData = new HashMap<String, Object>();
 			ResponseEntity<DesignerInvoiceReq> orderDetailsData = restTemplate
-					.getForEntity(RestTemplateConstant.USERORDER_GET_ORDER.getMessage() + orderId, DesignerInvoiceReq.class);
+					.getForEntity(USER_SERVICE+RestTemplateConstants.USERORDER_GET_ORDER + orderId, DesignerInvoiceReq.class);
 			DesignerIvoiceData designerIvoiceData = new DesignerIvoiceData();
-			UserAddressEntity userAddressData = restTemplate.getForEntity(
-					RestTemplateConstant.GET_USER_ADDRESS.getMessage() + orderDetailsData.getBody().getUserId(),
+			UserAddressEntity userAddressData = restTemplate.getForEntity(USER_SERVICE+
+					RestTemplateConstants.GET_USER_ADDRESS + orderDetailsData.getBody().getUserId(),
 					UserAddressEntity.class).getBody();
 			Optional<DesignerProfileEntity> designerData = designerProfileRepo.findBydesignerId(
 					Long.valueOf(orderDetailsData.getBody().getOrderSKUDetails().get(0).getDesignerId()));
@@ -89,8 +99,8 @@ public class OrderServiceImpl implements OrderService {
 			designerIvoiceData.setMobile(designerData.get().getDesignerProfile().getMobileNo());
 			designerIvoiceData.setOrderDate(orderDetailsData.getBody().getOrderDate());
 			designerIvoiceData.setOrderId(orderId);
-			designerIvoiceData.setPANNo("PANST12558ER");
-			designerIvoiceData.setPostalCode("700036");
+			designerIvoiceData.setPANNo("");
+			designerIvoiceData.setPostalCode("");
 			int totalSalePrice = 0;
 			int totalMRP = 0;
 			int totalTax = 0;
@@ -126,7 +136,7 @@ public class OrderServiceImpl implements OrderService {
 			String htmlContent = templateEngine.process("invoiceUpdatedDesigner.html", context);
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			ConverterProperties converterProperties = new ConverterProperties();
-			converterProperties.setBaseUri(RestTemplateConstant.USER.getMessage());
+//			converterProperties.setBaseUri(RestTemplateConstants.USER);
 			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);
 			byte[] bytes = target.toByteArray();
 			HttpHeaders headers = new HttpHeaders();
@@ -140,7 +150,7 @@ public class OrderServiceImpl implements OrderService {
 	public String getUserPDFService(String orderId) {
 		try {
 			DesignerInvoiceReq orderDetailsData = restTemplate
-					.getForEntity(RestTemplateConstant.USER_ORDER_GET_ORDER.getMessage() + orderId, DesignerInvoiceReq.class)
+					.getForEntity(USER_SERVICE+RestTemplateConstants.USER_ORDER_GET_ORDER + orderId, DesignerInvoiceReq.class)
 					.getBody();
 			orderDetailsData.getBillingAddress();
 			Map<String, Object> userproductDetails = new HashMap<String, Object>();
@@ -224,7 +234,7 @@ public class OrderServiceImpl implements OrderService {
 					.map(e -> e.getDesignerId()).collect(Collectors.toList());
 			LOGGER.info(collect.get(0) + "");
 			return restTemplate
-					.getForEntity(RestTemplateConstant.USER_ORDER_DESIGNER_ORDER_COUNT.getMessage() + collect.get(0),
+					.getForEntity(USER_SERVICE+RestTemplateConstants.USER_ORDER_DESIGNER_ORDER_COUNT + collect.get(0),
 							Object.class)
 					.getBody();
 		} catch (Exception e) {
@@ -237,8 +247,8 @@ public class OrderServiceImpl implements OrderService {
 
 			LOGGER.info(orderId);
 
-			OrderSKUDetailsEntity serviceResponse = restTemplate.getForObject(
-					RestTemplateConstant.USER_ORDER_ORDER_DETAILS.getMessage() + orderId, OrderSKUDetailsEntity.class);
+			OrderSKUDetailsEntity serviceResponse = restTemplate.getForObject(USER_SERVICE+
+					RestTemplateConstants.USER_ORDER_ORDER_DETAILS + orderId, OrderSKUDetailsEntity.class);
 			String itemStatus = serviceResponse.getOrderItemStatus();
 
 			if (!serviceResponse.getOrderItemStatus().equals(status)) {
@@ -252,7 +262,7 @@ public class OrderServiceImpl implements OrderService {
 			}
 			LOGGER.info(serviceResponse.toString());
 
-			restTemplate.put(RestTemplateConstant.USER_ORDER_UPDATE_ORDER.getMessage() + orderId, serviceResponse,
+			restTemplate.put(USER_SERVICE+RestTemplateConstants.USER_ORDER_UPDATE_ORDER + orderId, serviceResponse,
 					OrderSKUDetailsEntity.class);
 
 			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),

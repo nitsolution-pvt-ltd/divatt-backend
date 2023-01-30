@@ -46,7 +46,7 @@ import org.thymeleaf.context.Context;
 
 
 import com.divatt.user.constant.MessageConstant;
-import com.divatt.user.constant.RestTemplateConstant;
+import com.divatt.user.constant.RestTemplateConstants;
 import com.divatt.user.entity.ProductCommentEntity;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
@@ -112,6 +112,21 @@ public class UserController {
 	
 	@Value("${rootURL}")
 	private String rootURL;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
+	
+	@Value("${redirectURL}")
+	private String redirectURL;
 
 	@PostMapping("/wishlist/add")
 	public GlobalResponse postWishlistDetails(@Valid @RequestBody ArrayList<WishlistEntity> wishlistEntity) {
@@ -151,8 +166,8 @@ public class UserController {
 					
 					Optional<UserLoginEntity> findById = userLoginRepo.findById((long) e.getUserId());
 					try {
-						ResponseEntity<String> forEntity = restTemplate.getForEntity(
-								RestTemplateConstant.DESIGNER_PRODUCT_VIEW.getLink() + e.getProductId(), String.class);
+						ResponseEntity<String> forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
+								RestTemplateConstants.DESIGNER_PRODUCT_VIEW + e.getProductId(), String.class);
 
 						ObjectMapper objectMapper = new ObjectMapper();
 						Map<String, Object> map = objectMapper.readValue(forEntity.getBody(), Map.class);
@@ -280,15 +295,15 @@ public class UserController {
 				throw new CustomException(MessageConstant.CHECK_FIELDS.getMessage());
 			}
 
-			ResponseEntity<String> response = restTemplate.getForEntity(
-					RestTemplateConstant.USER_LOGIN_PRESENT.getLink() + userLoginEntity.getEmail(), String.class);
+			ResponseEntity<String> response = restTemplate.getForEntity(AUTH_SERVICE+
+					RestTemplateConstants.USER_LOGIN_PRESENT + userLoginEntity.getEmail(), String.class);
 			JSONObject jsonObject = new JSONObject(response.getBody());
 			if ((boolean) jsonObject.get("isPresent") && jsonObject.get("role").equals("USER"))
 				throw new CustomException(MessageConstant.EMAIL_ALREADY_PRESENT.getMessage());
 
 			if ((boolean) jsonObject.get("isPresent") && jsonObject.get("role").equals("DESIGNER")) {
-				ResponseEntity<String> forEntity2 = restTemplate.getForEntity(
-						RestTemplateConstant.DESIGNER_DETAILS.getLink() + userLoginEntity.getEmail(), String.class);
+				ResponseEntity<String> forEntity2 = restTemplate.getForEntity(AUTH_SERVICE+
+						RestTemplateConstants.DESIGNER_DETAILS + userLoginEntity.getEmail(), String.class);
 				userLoginEntity.setUserExist(forEntity2.getBody());
 			}
 
@@ -313,14 +328,14 @@ public class UserController {
 			String userName = firstName + " " + lastName;
 			String userEmail = userLoginEntity.getEmail();
 
-			URI uri = URI.create(RestTemplateConstant.USER_REDIRECT.getLink()
+			URI uri = URI.create(redirectURL
 					+ Base64.getEncoder().encodeToString(userLoginEntity.getEmail().toString().getBytes()));
 			Context context = new Context();
 			context.setVariable("userName", userName);
 			context.setVariable("uri", uri);
 			String htmlContent = templateEngine.process("userRegistration.html", context);
 			EmailSenderThread emailSenderThread = new EmailSenderThread(userEmail, "Successfully Registration", htmlContent,
-					true, null, restTemplate);
+					true, null, restTemplate,AUTH_SERVICE);
 			emailSenderThread.start();
 
 			return ResponseEntity.ok(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
@@ -492,7 +507,6 @@ public class UserController {
 	@GetMapping("/product/list")
 	public ResponseEntity<?> productListing() {
 		try {
-			System.out.println("rootURL "+rootURL);
 			return userService.getProductUser();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

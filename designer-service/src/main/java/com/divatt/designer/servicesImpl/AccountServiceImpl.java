@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.constant.MessageConstant;
-import com.divatt.designer.constant.RestTemplateConstant;
+import com.divatt.designer.constant.RestTemplateConstants;
 import com.divatt.designer.entity.account.AccountEntity;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
@@ -39,6 +39,18 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private Gson gson;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
 
 	public ResponseEntity<?> postAccountDetails(@RequestBody AccountEntity accountEntity, String token) {
 
@@ -68,7 +80,7 @@ public class AccountServiceImpl implements AccountService {
 							interfaceId, host + contextPath + "/designerAccount/add", gson.toJson(accountEntity),
 							HttpStatus.OK);
 				}
-				restTemplate.postForObject(RestTemplateConstant.ACCOUNT_ADD.getMessage(), accountEntity,
+				restTemplate.postForObject(ADMIN_SERVICE+RestTemplateConstants.ACCOUNT_ADD, accountEntity,
 						AccountEntity.class);
 				return ResponseEntity.ok().body(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ACCOUNT_ADDED_MESSAGE.getMessage(), HttpStatus.OK.value()));
@@ -111,8 +123,8 @@ public class AccountServiceImpl implements AccountService {
 							interfaceId, host + contextPath + "/designerAccount/view/" + accountId, "Success",
 							HttpStatus.OK);
 				}
-				ResponseEntity<AccountEntity> accountEntity = restTemplate.getForEntity(
-						RestTemplateConstant.ACCOUNT_VIEW_BY_ID.getMessage() + accountId, AccountEntity.class);
+				ResponseEntity<AccountEntity> accountEntity = restTemplate.getForEntity(ADMIN_SERVICE+
+						RestTemplateConstants.ACCOUNT_VIEW_BY_ID + accountId, AccountEntity.class);
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
 							interfaceId, host + contextPath + "/designerAccount/view/" + accountId,
@@ -168,7 +180,7 @@ public class AccountServiceImpl implements AccountService {
 							interfaceId, host + contextPath + "/designerAccount/update/" + accountId,
 							gson.toJson(accountEntity), HttpStatus.OK);
 				}
-				restTemplate.put(RestTemplateConstant.ACCOUNT_UPDATE_BY_ID.getMessage() + accountId, accountEntity);
+				restTemplate.put(ADMIN_SERVICE+RestTemplateConstants.ACCOUNT_UPDATE_BY_ID + accountId, accountEntity);
 				return ResponseEntity.ok().body(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ACCOUNT_UPDATED_MESSAGE.getMessage(), HttpStatus.OK.value()));
 			} catch (Exception e) {
@@ -201,7 +213,7 @@ public class AccountServiceImpl implements AccountService {
 			LOGGER.debug("Inside - AccountServiceImpl.getAccountDetails()");
 		}
 		try {
-			String url = RestTemplateConstant.ACCOUNT_LIST.getMessage() + "?page=" + page + "&limit=" + limit + "&sort="
+			String url = ADMIN_SERVICE+RestTemplateConstants.ACCOUNT_LIST + "?page=" + page + "&limit=" + limit + "&sort="
 					+ sort + "&sortName=" + sortName + "&isDeleted=" + isDeleted + "&keyword=" + keyword
 					+ "&designerReturn=" + designerReturn + "&serviceCharge=" + serviceCharge + "&govtCharge="
 					+ govtCharge + "&userOrder=" + userOrder + "&ReturnStatus=" + ReturnStatus + "&sortBy=" + sortBy

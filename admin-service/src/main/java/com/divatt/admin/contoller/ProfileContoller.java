@@ -49,7 +49,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.divatt.admin.constant.MessageConstant;
-import com.divatt.admin.constant.RestTemplateConstant;
+import com.divatt.admin.constant.RestTemplateConstants;
 import com.divatt.admin.entity.AdminModule;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.LoginEntity;
@@ -163,7 +163,7 @@ public class ProfileContoller {
 				throw new CustomException(MessageConstant.CHECK_ALL_FIELDS.getMessage());
 			}
 			ResponseEntity<String> forEntity = restTemplate.getForEntity(
-					RestTemplateConstant.AUTH_PRESENT.getMessage() + loginEntity.getEmail(), String.class);
+					RestTemplateConstants.AUTH_PRESENT + loginEntity.getEmail(), String.class);
 			JSONObject jsonObject = new JSONObject(forEntity.getBody());
 			if ((boolean) jsonObject.get("isPresent"))
 				throw new CustomException(MessageConstant.EMAIL_ALREADY_PRESENT.getMessage());
@@ -194,7 +194,7 @@ public class ProfileContoller {
 
 			try {
 				restTemplate
-						.postForEntity(RestTemplateConstant.AUTH_SEND_MAIL.getMessage(), mail, String.class);
+						.postForEntity(RestTemplateConstants.AUTH_SEND_MAIL, mail, String.class);
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
 			}

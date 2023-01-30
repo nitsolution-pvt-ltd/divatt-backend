@@ -20,11 +20,9 @@ public class UtillClass {
 	private UtillClass() {
 		super();
 	}
-	public static SearchingFilterDTO searchingFilter
-	(String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,   
+	public static SearchingFilterDTO searchingFilter(String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,   
 			Boolean customization, Boolean returnStatus,Boolean priceType, String maxPrice, String minPrice,String size) {
 		try {
-			//JSONObject jsonObject= new JSONObject();
 			List<String> designerIdList= new ArrayList<String>(Arrays.asList(designerId.split(",")));
 			List<String> categoryList= new ArrayList<String>(Arrays.asList(categoryId.split(",")));
 			List<String> subCategoryList= new ArrayList<String>(Arrays.asList(subCategoryId.split(",")));
@@ -52,13 +50,6 @@ public class UtillClass {
 	}
 	public static void productListColour(List<ProductMasterEntity> filteredProducts,List<String> colore){
 		
-		LOGGER.info("Inside - UtillClass.productListColour()");
-		LOGGER.info("count of the data = {}",filteredProducts.size());
-//		colore.stream()
-//				.filter(color -> filteredProducts.stream()
-//						.anyMatch(product -> Arrays.asList(product.getImages()).stream().anyMatch(image -> Optional
-//								.ofNullable(image.getColour()).filter(image1 -> image1.equals("#"+color)).isPresent()))).forEach(System.out::println);
-		
 		filteredProducts.stream().filter(product -> colore.stream()
 				.anyMatch(color -> Arrays.asList(product.getImages()).stream().anyMatch(image -> Optional
 						.ofNullable(image.getColour()).filter(image1 -> image1.equals("#" + color)).isPresent())))
@@ -71,17 +62,6 @@ public class UtillClass {
 						image -> color1.stream().filter(colour2 -> colour2.equals(image.getColour())).count() > 0))
 				.count();
 	
-	LOGGER.info("Count = {}", count);
-		
-//		Product.stream.filter(prod->
-//        Prod.getimage.stream.filter(color->
-//                  Colorarray.contain(color)
-//        
-//        )
-//)
 	}
-	
-//	public static void productListBySize(List<ProductMasterEntity> filteredProducts, ) {
-//		
-//	}
+
 }

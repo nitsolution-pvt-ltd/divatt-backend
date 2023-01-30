@@ -20,7 +20,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.admin.constant.MessageConstant;
-import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.LoginEntity;
 import com.divatt.admin.entity.PaymentCharges;
@@ -48,6 +47,18 @@ public class CommonUtility {
 
 	@Value("${interfaceId}")
 	private String interfaceId;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtility.class);
 
@@ -143,7 +154,7 @@ public class CommonUtility {
 
 		try {
 			String urlParam = "designer/getDesignerToken";
-			getExchange = restTemplate.exchange(RestTemplateConstant.DESIGNER_URL.getMessage() + urlParam,
+			getExchange = restTemplate.exchange(DESIGNER_SERVICE + urlParam,
 					HttpMethod.GET, httpEntity, Object.class);
 
 		} catch (HttpStatusCodeException ex) {

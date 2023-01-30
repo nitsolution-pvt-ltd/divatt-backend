@@ -122,7 +122,7 @@ public class CategoryServiceImpl implements CategoryService {
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
 
-			if (findAll.getSize() <= 1) {
+			if (findAll.getSize() <= 0) {
 				throw new CustomException(MessageConstant.CATEGORY_NOT_FOUND.getMessage());
 			} else {
 				return response;

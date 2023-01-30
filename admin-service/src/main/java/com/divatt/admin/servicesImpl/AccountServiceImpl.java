@@ -30,7 +30,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.admin.constant.MessageConstant;
-import com.divatt.admin.constant.RestTemplateConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.AccountMapEntity;
 import com.divatt.admin.entity.GlobalResponse;
@@ -82,6 +81,18 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private Gson gson;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
 
 	@Override
 	public GlobalResponse postAccountDetails(@RequestBody AccountEntity accountEntity) {
@@ -528,7 +539,7 @@ public class AccountServiceImpl implements AccountService {
 			
 			try {
 				String urlParam="userOrder/transactions?page="+page+"&limit="+limit+"&sort="+sort+"&sortName="+sortName+"&keyword="+keyword+"&paymentStatus="+paymentStatus;
-				getExchange = restTemplate.exchange(RestTemplateConstant.USER_URL.getMessage()+urlParam,HttpMethod.GET, httpEntity,Object.class);
+				getExchange = restTemplate.exchange(USER_SERVICE+urlParam,HttpMethod.GET, httpEntity,Object.class);
 				
 			} catch (HttpStatusCodeException ex) {
 				if (LOGGER.isErrorEnabled()) {

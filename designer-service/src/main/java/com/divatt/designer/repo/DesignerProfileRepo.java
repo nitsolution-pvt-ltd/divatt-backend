@@ -28,4 +28,7 @@ public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEnti
 //	List<DesignerProfileEntity> findByDesignerCategoryAndDesignerCurrentStatus(String designerCategory, String designerCurrentStatus);
 //	
 	List<DesignerProfileEntity> findByDesignerIdIn(List<Long> designerId);
+
+	
+//	Optional<DesignerProfileEntity> findByDesignerProfileEmail(String email);
 }

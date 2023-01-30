@@ -32,6 +32,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -46,7 +47,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.user.constant.MessageConstant;
-import com.divatt.user.constant.RestTemplateConstant;
+import com.divatt.user.constant.RestTemplateConstants;
 import com.divatt.user.dto.OrderPlacedDTO;
 import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
@@ -57,7 +58,6 @@ import com.divatt.user.exception.CustomException;
 import com.divatt.user.repo.OrderDetailsRepo;
 import com.divatt.user.repo.OrderSKUDetailsRepo;
 import com.divatt.user.repo.UserOrderPaymentRepo;
-import com.divatt.user.response.GlobalResponse;
 import com.divatt.user.serviceImpl.UserServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -106,6 +106,18 @@ public class CommonUtility {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtility.class);
 
@@ -125,10 +137,6 @@ public class CommonUtility {
 		dto.setBillCity(orderAndPaymentGlobalEntity.getBillingAddress().getCity());
 		dto.setBillState(orderAndPaymentGlobalEntity.getBillingAddress().getState());
 		dto.setBillPostalCode(orderAndPaymentGlobalEntity.getBillingAddress().getPostalCode());
-//		String ship = orderAndPaymentGlobalEntity.getOrderDetailsEntity().getShippingAddress().toString();
-//		LOGGER.info("DATA ********************* = {}", ship);
-//		String shippingAddress = ship.substring(1, ship.toString().length() - 1).replaceAll("=", " : ");
-//		LOGGER.info("DATA *********************|*********** = {}", shippingAddress);
 
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		JSONParser parser = new JSONParser();
@@ -136,8 +144,7 @@ public class CommonUtility {
 		try {
 			String json = ow.writeValueAsString(orderAndPaymentGlobalEntity.getShippingAddress());
 			org.json.simple.JSONObject json1 = (org.json.simple.JSONObject) parser.parse(json);
-			LOGGER.info("DATA#####**** = {}", json);
-			LOGGER.info("DATA#####**** = {}", json1.get("address2") == null);
+
 			if (json1.get("address2") != null) {
 				String address1 = json1.get("address1").toString();
 				String address2 = json1.get("address2").toString();
@@ -175,16 +182,10 @@ public class CommonUtility {
 		dto.setImages(orderSKUDetailsEntity.getImages());
 		dto.setProductName(orderSKUDetailsEntity.getProductName());
 		dto.setTaxAmount(orderSKUDetailsEntity.getTaxAmount() + "");
-		// dto.setMrp(orderSKUDetailsEntity.getMrp() + "");
+
 		Long mrp = orderSKUDetailsEntity.getMrp();
 		Long salesPrice = orderSKUDetailsEntity.getSalesPrice();
-//		if (orderSKUDetailsEntity.getSalesPrice() == 0) {
-//			// dto.setMrp(orderSKUDetailsEntity.getMrp() + "");
-//			dto.setTotal((orderSKUDetailsEntity.getMrp() - orderSKUDetailsEntity.getDiscount()) + "");
-//		} else {
-//			// dto.setMrp(orderSKUDetailsEntity.getSalesPrice() + "");
-//			dto.setTotal(orderSKUDetailsEntity.getSalesPrice() + "");
-//		}
+
 		dto.setSize(orderSKUDetailsEntity.getSize());
 		dto.setDiscount(orderSKUDetailsEntity.getDiscount() + "");
 		dto.setUnits(orderSKUDetailsEntity.getUnits() + "");
@@ -344,7 +345,7 @@ public class CommonUtility {
 				ttotalGiftWrapAmount = String.valueOf(GiftWrapAmount);
 				try {
 					DesignerProfileEntity forEntity = restTemplate
-							.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
+							.getForEntity(DESIGNER_SERVICE+ RestTemplateConstants.DESIGNER_BYID + designerId,
 									DesignerProfileEntity.class)
 							.getBody();
 					designerEmail = forEntity.getDesignerProfile().getEmail();
@@ -354,7 +355,6 @@ public class CommonUtility {
 					e.printStackTrace();
 				}
 			}
-			LOGGER.info(displayName + "Inside DisplayName");
 			Query query = new Query();
 			query.addCriteria(Criteria.where("id").is(orderDetailsEntity.getUserId()));
 			UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
@@ -388,23 +388,18 @@ public class CommonUtility {
 			Context context = new Context();
 			context.setVariables(data);
 			String htmlContent = templateEngine.process("orderPlaced.html", context);
-			// String htmlContent1 = templateEngine.process("orderPlacedDesigner.html",
-			// context);
 			File createPdfSupplier;
 			try {
 				createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-
-				this.sendEmailWithAttachment(email, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true,
-						createPdfSupplier);
-//				this.sendEmailWithAttachment(designerEmail, MessageConstant.ORDER_SUMMARY.getMessage(),
-//						htmlContent1 + MessageConstant.PRODUCT_PLACED.getMessage() + userLoginEntity.getFirstName()
-//								+ " " + userLoginEntity.getLastName(),
-//						true, createPdfSupplier);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(email,MessageConstant.ORDER_SUMMARY.getMessage(), 
+						htmlContent, true, null, restTemplate,AUTH_SERVICE);
+				emailSenderThread.start();
+//				this.sendEmailWithAttachment(email, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true,
+//						createPdfSupplier);
 
 				createPdfSupplier.delete();
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			designerEmail(byDesigner, orderId, userName, ordersdata);
@@ -414,7 +409,6 @@ public class CommonUtility {
 	}
 
 	File createPdfSupplier(@RequestBody OrderDetailsEntity orderDetailsEntity) throws IOException {
-		System.out.println("ok");
 
 		/* first, get and initialize an engine */
 		VelocityEngine ve = new VelocityEngine();
@@ -511,7 +505,7 @@ public class CommonUtility {
 			query.addCriteria(Criteria.where("_id").is(userId));
 			UserLoginEntity user = mongoOperations.findOne(query, UserLoginEntity.class);
 			DesignerProfileEntity body = restTemplate
-					.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + skuDetailsEntity.getDesignerId(),
+					.getForEntity(DESIGNER_SERVICE+ RestTemplateConstants.DESIGNER_BYID + skuDetailsEntity.getDesignerId(),
 							DesignerProfileEntity.class)
 					.getBody();
 			String designerName = body.getDesignerName();
@@ -546,11 +540,11 @@ public class CommonUtility {
 			context.setVariables(data);
 			String htmlContent = templateEngine.process("ordercancelUser.html", context);
 			EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Order Cancelled", htmlContent, true,
-					null, restTemplate);
+					null, restTemplate, AUTH_SERVICE);
 			emailSenderThread.start();
 			String htmlContent1 = templateEngine.process("ordercancelDesigner.html", context);
 			EmailSenderThread emailSenderThread1 = new EmailSenderThread(designerEmail, "Order Cancelled by User",
-					htmlContent1, true, null, restTemplate);
+					htmlContent1, true, null, restTemplate, AUTH_SERVICE);
 			emailSenderThread1.start();
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -581,16 +575,14 @@ public class CommonUtility {
 			String tDiscount = null;
 
 			String designerEmail = null;
-			// String displayName = null;
 			String designerName = null;
 			String tgrossGrandTotal = null;
-			// String totalGiftWrapAmount = null;
 			String ttotalGiftWrapAmount = null;
-			// Set<String> displayName = new HashSet<>();
 			String displayName = null;
+			
 			List<OrderSKUDetailsEntity> findByOrderIdAndDesignerId = orderSKUDetailsRepo
 					.findByOrderIdAndDesignerId(orderId, value);
-			LOGGER.info("Value of findbyorderAndDesignerId", findByOrderIdAndDesignerId);
+
 			for (OrderSKUDetailsEntity orderSKUDetailsEntityRow : findByOrderIdAndDesignerId) {
 
 				int designerId = orderSKUDetailsEntityRow.getDesignerId();
@@ -628,7 +620,7 @@ public class CommonUtility {
 				ttotalGiftWrapAmount = String.valueOf(totalGiftWrapAmount);
 				try {
 					DesignerProfileEntity forEntity = restTemplate
-							.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + designerId,
+							.getForEntity(DESIGNER_SERVICE+ RestTemplateConstants.DESIGNER_BYID + designerId,
 									DesignerProfileEntity.class)
 							.getBody();
 					designerEmail = forEntity.getDesignerProfile().getEmail();
@@ -656,7 +648,7 @@ public class CommonUtility {
 			context.setVariables(data);
 			String htmlContent = templateEngine.process("orderPlacedDesigner.html", context);
 			EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
-					MessageConstant.ORDER_RECEIVED.getMessage(), htmlContent, true, null, restTemplate);
+					MessageConstant.ORDER_RECEIVED.getMessage(), htmlContent, true, null, restTemplate,AUTH_SERVICE);
 			emailSenderThreadDesigner.start();
 
 		}
@@ -686,7 +678,7 @@ public class CommonUtility {
 		Long units = item.getUnits();
 		String email2 = entity.getDesignerProfile().getEmail();
 		String colour = item.getColour();
-		// String orderId = item.getOrderId();
+
 		List<OrderPaymentEntity> findByOrderIdList = userOrderPaymentRepo.findByOrderIdList(orderId);
 
 		if (findByOrderIdList.size() > 0) {
@@ -700,8 +692,7 @@ public class CommonUtility {
 			try {
 				String json = ow.writeValueAsString(orderDetailsEntity.getShippingAddress());
 				org.json.simple.JSONObject json1 = (org.json.simple.JSONObject) parser.parse(json);
-				LOGGER.info("DATA#####**** = {}", json);
-				LOGGER.info("DATA#####**** = {}", json1.get("address2") == null);
+
 				if (json1.get("address2") != null) {
 					String address1 = json1.get("address1").toString();
 					String address2 = json1.get("address2").toString();
@@ -774,7 +765,7 @@ public class CommonUtility {
 				LOGGER.info(string);
 				String string2 = string.substring(1, string.toString().length() - 1).replaceAll("=", " : ");
 				String substring = string2.replace(",", ",\n");
-				LOGGER.info(substring);
+				
 				context.setVariable("details", substring);
 				if (orderItemStatus.equals("Orders")) {
 					context.setVariable("orderItemStatus", "Verified");
@@ -787,19 +778,19 @@ public class CommonUtility {
 				if (orderItemStatus.equals("Orders")) {
 					String htmlContent = templateEngine.process("statusChange.html", context);
 					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-							"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate);
+							"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate, AUTH_SERVICE);
 					String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
 					EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-							"Your Product Has been " + "Verified", htmlContentDesigner, true, null, restTemplate);
+							"Your Product Has been " + "Verified", htmlContentDesigner, true, null, restTemplate, AUTH_SERVICE);
 					emailSenderThreadDesigner.start();
 					emailSenderThread.start();
 				} else {
 					String htmlContent = templateEngine.process("statusChange.html", context);
 					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-							"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate);
+							"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate,AUTH_SERVICE);
 					String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
 					EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-							"Your Order Has been " + orderItemStatus, htmlContentDesigner, true, null, restTemplate);
+							"Your Order Has been " + orderItemStatus, htmlContentDesigner, true, null, restTemplate, AUTH_SERVICE);
 					emailSenderThreadDesigner.start();
 					emailSenderThread.start();
 				}
@@ -818,14 +809,14 @@ public class CommonUtility {
 			String email = userById.getEmail();
 			String firstName = userById.getFirstName();
 			DesignerProfileEntity designerDetails = restTemplate
-					.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + item.getDesignerId(),
+					.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_BYID + item.getDesignerId(),
 							DesignerProfileEntity.class)
 					.getBody();
 			String designerName = designerDetails.getDesignerName();
 			String designerEmail = designerDetails.getDesignerProfile().getEmail();
 			String displayName = designerDetails.getDesignerProfile().getDisplayName();
-			org.json.simple.JSONObject body = restTemplate.getForEntity(
-					RestTemplateConstant.ADMIN_ROLE_NAME.getLink() + MessageConstant.ADMIN_ROLES.getMessage(),
+			org.json.simple.JSONObject body = restTemplate.getForEntity(ADMIN_SERVICE+
+					RestTemplateConstants.ADMIN_ROLE_NAME + MessageConstant.ADMIN_ROLES.getMessage(),
 					org.json.simple.JSONObject.class).getBody();
 			String adminMail = body.get("email").toString();
 			String adminFirstName = body.get("firstName").toString();
@@ -929,50 +920,50 @@ public class CommonUtility {
 					LOGGER.info(string);
 					String string2 = string.substring(1, string.toString().length() - 1).replaceAll("=", " ");
 					String substring = string2.replace(",", ",\n");
-					LOGGER.info(substring);
+					
 					context.setVariable("details", substring);
 					context.setVariable("orderId", orderId);
 					context.setVariable("productImage", images);
 					if (item.getOrderItemStatus().equals("returnRequest")) {
 						String htmlContent = templateEngine.process("orderStatusUpdateUser.html", context);
 						EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Return request for an item",
-								htmlContent, true, null, restTemplate);
+								htmlContent, true, null, restTemplate, AUTH_SERVICE);
 						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesigner.html", context);
 						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
-								"Received a return request for an item", htmlContentDesigner, true, null, restTemplate);
+								"Received a return request for an item", htmlContentDesigner, true, null, restTemplate, AUTH_SERVICE);
 						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdmin.html", context);
 						EmailSenderThread emailSenderThreadAdmin = new EmailSenderThread(adminMail,
-								"Received a return request for an item", htmlContentAdmin, true, null, restTemplate);
+								"Received a return request for an item", htmlContentAdmin, true, null, restTemplate, AUTH_SERVICE);
 						emailSenderThreadDesigner.start();
 						emailSenderThread.start();
 						emailSenderThreadAdmin.start();
 					} else if (item.getOrderItemStatus().equals("returnRefund")) {
 						String htmlContent = templateEngine.process("orderStatusUpdateUserAccepted.html", context);
 						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-								"Return request for an item has been accepted ", htmlContent, true, null, restTemplate);
+								"Return request for an item has been accepted ", htmlContent, true, null, restTemplate, AUTH_SERVICE);
 						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesignerAccepted.html", context);
 						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
 								"Received a return request for an item has been accepted", htmlContentDesigner, true,
-								null, restTemplate);
+								null, restTemplate, AUTH_SERVICE);
 						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdminAccepted.html", context);
 						EmailSenderThread emailSenderThreadAdmin = new EmailSenderThread(adminMail,
 								"Received a return request for an item has been accepted", htmlContentAdmin, true, null,
-								restTemplate);
+								restTemplate, AUTH_SERVICE);
 						emailSenderThreadDesigner.start();
 						emailSenderThread.start();
 						emailSenderThreadAdmin.start();
 					} else if (item.getOrderItemStatus().equals("Rejected")) {
 						String htmlContent = templateEngine.process("orderStatusUpdateUserRejected.html", context);
 						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-								"Return request for an item has been rejected ", htmlContent, true, null, restTemplate);
+								"Return request for an item has been rejected ", htmlContent, true, null, restTemplate, AUTH_SERVICE);
 						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesignerRejected.html", context);
 						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
 								"Received a return request for an item has been rejected", htmlContentDesigner, true,
-								null, restTemplate);
+								null, restTemplate, AUTH_SERVICE);
 						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdminRejected.html", context);
 						EmailSenderThread emailSenderThreadAdmin = new EmailSenderThread(adminMail,
 								"Received a return request for an item has been rejected", htmlContentAdmin, true, null,
-								restTemplate);
+								restTemplate, AUTH_SERVICE);
 						emailSenderThreadDesigner.start();
 						emailSenderThread.start();
 						emailSenderThreadAdmin.start();

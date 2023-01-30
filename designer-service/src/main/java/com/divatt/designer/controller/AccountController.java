@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.config.JWTConfig;
-import com.divatt.designer.constant.RestTemplateConstant;
+import com.divatt.designer.constant.RestTemplateConstants;
 import com.divatt.designer.entity.account.AccountEntity;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.exception.CustomException;
@@ -58,6 +58,19 @@ public class AccountController {
 
 	@Value("${interfaceId}")
 	private String interfaceId;
+	
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
 
 	@PostMapping("/add")
 	public ResponseEntity<?> postAccountDetails(@Valid @RequestBody AccountEntity accountEntity,
@@ -124,7 +137,7 @@ public class AccountController {
 							interfaceId, host + contextPath + "/designerAccount/view/" + accountId, "Success",
 							HttpStatus.OK);
 				}
-				return restTemplate.getForEntity(RestTemplateConstant.ACCOUNT_VIEW_BY_ID.getMessage() + accountId,
+				return restTemplate.getForEntity(ADMIN_SERVICE+RestTemplateConstants.ACCOUNT_VIEW_BY_ID + accountId,
 						AccountEntity.class);
 			} else {
 				Map<String, Object> map = new HashMap<>();

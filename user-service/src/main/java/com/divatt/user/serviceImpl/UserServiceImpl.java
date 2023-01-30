@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.divatt.user.constant.MessageConstant;
-import com.divatt.user.constant.RestTemplateConstant;
+import com.divatt.user.constant.RestTemplateConstants;
 import com.divatt.user.entity.ProductCommentEntity;
 import com.divatt.user.entity.StateEntity;
 import com.divatt.user.entity.UserAddressEntity;
@@ -113,6 +114,18 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private OrderDetailsRepo detailsRepo;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USER}")
+	private String USER_SERVICE;
 
 	
 	@Override
@@ -240,7 +253,7 @@ public class UserServiceImpl implements UserService {
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
-				response1 = restTemplate.postForEntity(RestTemplateConstant.WISHLIST_PRODUCTLIST.getLink(), entity,
+				response1 = restTemplate.postForEntity(DESIGNER_SERVICE+RestTemplateConstants.WISHLIST_PRODUCTLIST, entity,
 						String.class);
 
 			}
@@ -300,7 +313,7 @@ public class UserServiceImpl implements UserService {
 			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(userCartEntity.getProductId(),
 					userCartEntity.getUserId());
 			org.json.simple.JSONObject body = restTemplate
-					.getForEntity(RestTemplateConstant.DESIGNER_PRODUCT.getLink() + userCartEntity.getProductId(),
+					.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_PRODUCT + userCartEntity.getProductId(),
 							org.json.simple.JSONObject.class)
 					.getBody();
 			String soh = body.get("soh").toString();
@@ -384,7 +397,7 @@ public class UserServiceImpl implements UserService {
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(maps, headers);
 
-				response1 = restTemplate.postForEntity(RestTemplateConstant.CART_PRODUCTLIST.getLink(), entity,
+				response1 = restTemplate.postForEntity(DESIGNER_SERVICE+RestTemplateConstants.CART_PRODUCTLIST, entity,
 						String.class);
 
 				String body = response1.getBody();
@@ -397,8 +410,8 @@ public class UserServiceImpl implements UserService {
 				object1.forEach(e -> {
 					JsonNode jn = new JsonNode(e.toString());
 					JSONObject object = jn.getObject();
-					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity(
-							RestTemplateConstant.DESIGNER_BYID.getLink() + object.get("designerId"),
+					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity(DESIGNER_SERVICE+
+							RestTemplateConstants.DESIGNER_BYID + object.get("designerId"),
 							org.json.simple.JSONObject.class);
 					UserCartEntity cart = userCartRepo
 							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
@@ -557,7 +570,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public ResponseEntity<?> getProductUser() {
 		try {
-			String body = restTemplate.getForEntity(RestTemplateConstant.PRODUCT_LIST_USER.getLink(), String.class)
+			
+			String body = restTemplate.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.PRODUCT_LIST_USER, String.class)
 					.getBody();
 
 			Json js = new Json(body);
@@ -603,8 +617,8 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> getDesignerDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, Optional<String> sortBy) {
 		try {
-			ResponseEntity<?> Response = restTemplate.getForEntity(
-					RestTemplateConstant.DESIGNER_PRODUCT_LIST_USER.getLink() + page + "&limit=" + limit + "&",
+			ResponseEntity<?> Response = restTemplate.getForEntity(DESIGNER_SERVICE+
+					RestTemplateConstants.DESIGNER_PRODUCT_LIST_USER + page + "&limit=" + limit + "&",
 					String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
@@ -618,8 +632,8 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> productDetails(Integer productId, String userId) {
 		try {
 			LOGGER.info("Inside - UserServiceImpl.productDetails()");
-			ResponseEntity<String> exchange = restTemplate.exchange(
-					RestTemplateConstant.DESIGNER_PRODUCT.getLink() + productId, HttpMethod.GET, null, String.class);
+			ResponseEntity<String> exchange = restTemplate.exchange(DESIGNER_SERVICE+
+					RestTemplateConstants.DESIGNER_PRODUCT + productId, HttpMethod.GET, null, String.class);
 
 			Json js = new Json(exchange.getBody());
 
@@ -634,8 +648,8 @@ public class UserServiceImpl implements UserService {
 
 						ObjectMapper obj = new ObjectMapper();
 						String writeValueAsString = null;
-						ResponseEntity<org.json.simple.JSONObject> categoryById = restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getLink() + object.get("categoryId"),
+						ResponseEntity<org.json.simple.JSONObject> categoryById = restTemplate.getForEntity(ADMIN_SERVICE+
+								RestTemplateConstants.CATEGORY_VIEW + object.get("categoryId"),
 								org.json.simple.JSONObject.class);
 						Object categoryName = categoryById.getBody().get("categoryName");
 					
@@ -669,7 +683,7 @@ public class UserServiceImpl implements UserService {
 		try {
 			LOGGER.info("Inside - UserServiceImpl.productDetails()");
 			ResponseEntity<String> exchange = restTemplate.exchange(
-					RestTemplateConstant.DESIGNER.getLink() +"designerProducts/productAdmin/"+ productId, HttpMethod.GET, null, String.class);
+					DESIGNER_SERVICE +"designerProducts/productAdmin/"+ productId, HttpMethod.GET, null, String.class);
 
 			Json js = new Json(exchange.getBody());
 
@@ -684,8 +698,8 @@ public class UserServiceImpl implements UserService {
 
 						ObjectMapper obj = new ObjectMapper();
 						String writeValueAsString = null;
-						ResponseEntity<org.json.simple.JSONObject> categoryById = restTemplate.getForEntity(
-								RestTemplateConstant.CATEGORY_VIEW.getLink() + object.get("categoryId"),
+						ResponseEntity<org.json.simple.JSONObject> categoryById = restTemplate.getForEntity(ADMIN_SERVICE+
+								RestTemplateConstants.CATEGORY_VIEW + object.get("categoryId"),
 								org.json.simple.JSONObject.class);
 						Object categoryName = categoryById.getBody().get("categoryName");
 						
@@ -718,7 +732,7 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> getDesignerUser() {
 		try {
 
-			String body = restTemplate.getForEntity(RestTemplateConstant.USER_DESIGNER_LIST.getLink(), String.class)
+			String body = restTemplate.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.USER_DESIGNER_LIST, String.class)
 					.getBody();
 
 			Json js = new Json(body);
@@ -734,7 +748,7 @@ public class UserServiceImpl implements UserService {
 		try {
 
 			String body = restTemplate
-					.getForEntity(RestTemplateConstant.DESIGNER_USER.getLink() + designerId, String.class).getBody();
+					.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_USER + designerId, String.class).getBody();
 			JsonNode jn = new JsonNode(body);
 			JSONObject object = jn.getObject();
 			
@@ -768,7 +782,7 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> getPerDesignerProductListService(int page, int limit, String sort, String sortName,
 			Boolean isDeleted, String keyword, Optional<String> sortBy, Integer designerId) {
 		try {
-			ResponseEntity<?> Response = restTemplate.getForEntity(RestTemplateConstant.DESIGNER_PER_PRODUCT.getLink()
+			ResponseEntity<?> Response = restTemplate.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_PER_PRODUCT
 					+ designerId + "?page=" + page + "&limit=" + limit + "&", String.class);
 			Json jsons = new Json((String) Response.getBody());
 			return ResponseEntity.ok(jsons);
@@ -943,7 +957,7 @@ public class UserServiceImpl implements UserService {
 
 			userDesignerList.stream().forEach(e -> {
 				designerList.add(restTemplate
-						.getForEntity(RestTemplateConstant.DESIGNER_BYID.getLink() + e.getDesignerId(), org.json.simple.JSONObject.class)
+						.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_BYID + e.getDesignerId(), org.json.simple.JSONObject.class)
 						.getBody());
 			});
 			designerList.stream().forEach(data -> {
@@ -968,7 +982,7 @@ public class UserServiceImpl implements UserService {
 			Long id = byUserEmail.get().getUserId();
 
 			try {
-				UserLoginEntity entity = restTemplate.getForObject(RestTemplateConstant.USER_BY_ID.getLink() + id,
+				UserLoginEntity entity = restTemplate.getForObject(USER_SERVICE+RestTemplateConstants.USER_BY_ID + id,
 						UserLoginEntity.class);
 
 				String dob = entity.getDob();
@@ -980,7 +994,7 @@ public class UserServiceImpl implements UserService {
 
 					ProductMasterEntity entity2;
 					entity2 = restTemplate
-							.getForEntity(RestTemplateConstant.DESIGNER_PRODUCT_VIEW.getLink() + productId,
+							.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_PRODUCT_VIEW + productId,
 									ProductMasterEntity.class)
 							.getBody();
 
@@ -1002,8 +1016,8 @@ public class UserServiceImpl implements UserService {
 						throw new CustomException(e.getMessage());
 					}
 					try {
-						DesignerProfileEntity profile = restTemplate.getForObject(
-								RestTemplateConstant.DESIGNER_BYID.getLink() + entity2.getDesignerId(),
+						DesignerProfileEntity profile = restTemplate.getForObject(DESIGNER_SERVICE+
+								RestTemplateConstants.DESIGNER_BYID + entity2.getDesignerId(),
 								DesignerProfileEntity.class);
 
 						String name = profile.getDesignerName();
