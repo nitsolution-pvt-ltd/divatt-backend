@@ -291,10 +291,11 @@ public class HsnServiceImpl implements HsnService {
 //					return hsnCodeFiltered;
 //				}
 				if (hsnCodeFiltered.isEmpty()) {
-					throw new CustomException(MessageConstant.NO_DATA.getMessage());
-				}
+					throw new CustomException(MessageConstant.NO_DATA.getMessage());				
+			      }
 				return hsnCodeFiltered;
 			}
+			
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
