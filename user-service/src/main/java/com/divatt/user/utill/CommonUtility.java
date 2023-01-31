@@ -472,7 +472,6 @@ public class CommonUtility {
 			xmlWorkerHelper.parseXHtml(pdfWriter, document, stringReader);
 			// close the document
 			document.close();
-			System.out.println(MessageConstant.PDF_GENERATED.getMessage());
 
 		} catch (Exception e) {
 			e.printStackTrace();

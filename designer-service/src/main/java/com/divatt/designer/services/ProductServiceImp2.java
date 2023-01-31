@@ -106,9 +106,7 @@ public class ProductServiceImp2 implements ProductService2 {
 			String data = forEntity.getBody();
 			JSONArray jsonArray = new JSONArray(data);
 
-			String designerImageData = designerProfileRepo.findBydesignerId(entity2.getDesignerId().longValue()).get()
-					.getDesignerProfile().getProfilePic();
-
+			
 			jsonArray.forEach(array -> {
 				ObjectMapper objectMapper = new ObjectMapper();
 				UserProfile readValue;
@@ -126,20 +124,24 @@ public class ProductServiceImp2 implements ProductService2 {
 				}
 			});
 
-			userId.forEach(user -> {
-				restTemplate.getForEntity(AUTH_SERVICE+RestTemplateConstants.INFO_USER + user, UserProfileInfo.class);
-
-			});
+//			userId.forEach(user -> {
+//				restTemplate.getForEntity(AUTH_SERVICE+RestTemplateConstants.INFO_USER + user, UserProfileInfo.class);
+//
+//			});
 
 			Integer productId = entity2.getProductId();
 			ProductMasterEntity2 productMasterEntity = productRepo2.findById(productId).get();
-			DesignerProfileEntity designerProfile = designerProfileRepo
-					.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
+			DesignerProfileEntity designerProfile = designerProfileRepo.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
 			ImageEntity[] images = productMasterEntity.getImages();
 			String image1 = images[0].getLarge();
 
 			Map<String, Object> data2 = new HashMap<String, Object>();
 			userInfoList.forEach(user -> {
+				String designerImageData = "";
+				Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo.findBydesignerId(entity2.getDesignerId().longValue());
+				if(findBydesignerId.isPresent()){
+					designerImageData = findBydesignerId.get().getDesignerProfile().getProfilePic();
+				}
 				EmailEntity emailEntity = new EmailEntity();
 				emailEntity.setProductDesc(productMasterEntity.getProductDetails().getProductDescription());
 				emailEntity.setProductDesignerName(designerProfile.getDesignerProfile().getDisplayName());
