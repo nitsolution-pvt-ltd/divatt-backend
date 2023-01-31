@@ -278,10 +278,10 @@ public class HsnServiceImpl implements HsnService {
 						.filter(e -> e.getDescription().contains(searchKeyword.toLowerCase())).collect(Collectors.toList());
 				if (descriptionFiltered.isEmpty()) {
 					List<HsnEntity> hsnCodeFiltered = hsnList.stream()
-							.filter(e -> searchKeyword.equals(e.getHsnCode() + "")).collect(Collectors.toList());
+							.filter(e -> searchKeyword.contains(e.getHsnCode() + "")).collect(Collectors.toList());
 					if (hsnCodeFiltered.isEmpty()) {
 						List<HsnEntity> taxValueFiltered = hsnList.stream()
-								.filter(e -> searchKeyword.equals(e.getTaxValue() + "")).collect(Collectors.toList());
+								.filter(e -> searchKeyword.contains(e.getTaxValue() + "")).collect(Collectors.toList());
 						if (taxValueFiltered.isEmpty()) {
 							throw new CustomException(MessageConstant.NO_DATA.getMessage());
 						}
