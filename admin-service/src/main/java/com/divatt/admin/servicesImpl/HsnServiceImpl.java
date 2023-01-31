@@ -274,22 +274,26 @@ public class HsnServiceImpl implements HsnService {
 			if (searchKeyword.isEmpty()) {
 				return hsnList;
 			} else {
-				List<HsnEntity> descriptionFiltered = hsnList.stream()
-						.filter(e -> e.getDescription().contains(searchKeyword.toLowerCase())).collect(Collectors.toList());
-				if (descriptionFiltered.isEmpty()) {
-					List<HsnEntity> hsnCodeFiltered = hsnList.stream()
-							.filter(e -> searchKeyword.equals(e.getHsnCode() + "")).collect(Collectors.toList());
-					if (hsnCodeFiltered.isEmpty()) {
-						List<HsnEntity> taxValueFiltered = hsnList.stream()
-								.filter(e -> searchKeyword.equals(e.getTaxValue() + "")).collect(Collectors.toList());
-						if (taxValueFiltered.isEmpty()) {
-							throw new CustomException(MessageConstant.NO_DATA.getMessage());
-						}
-						return taxValueFiltered;
-					}
-					return hsnCodeFiltered;
+				List<HsnEntity> hsnCodeFiltered = hsnList.stream()
+						.filter(e -> e.getHsnCode().toString().contains(searchKeyword)).collect(Collectors.toList());
+//				if (descriptionFiltered.isEmpty()) {
+//					List<HsnEntity> hsnCodeFiltered = hsnList.stream()
+//							.filter(e -> e.getHsnCode().toString().contains(searchKeyword)).collect(Collectors.toList());
+//							//.filter(e -> searchKeyword.equals(e.getHsnCode() + "")).collect(Collectors.toList());
+//					if (hsnCodeFiltered.isEmpty()) {
+//						List<HsnEntity> taxValueFiltered = hsnList.stream()
+//								.filter(e -> searchKeyword.equals(e.getTaxValue() + "")).collect(Collectors.toList());
+//						if (taxValueFiltered.isEmpty()) {
+//							throw new CustomException(MessageConstant.NO_DATA.getMessage());
+//						}
+//						return taxValueFiltered;
+//					}
+//					return hsnCodeFiltered;
+//				}
+				if (hsnCodeFiltered.isEmpty()) {
+					throw new CustomException(MessageConstant.NO_DATA.getMessage());
 				}
-				return descriptionFiltered;
+				return hsnCodeFiltered;
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
