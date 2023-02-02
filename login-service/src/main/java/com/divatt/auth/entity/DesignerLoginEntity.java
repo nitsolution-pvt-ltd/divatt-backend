@@ -5,6 +5,9 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import springfox.documentation.spring.web.json.Json;
 
 @Document(collection = "tbl_designer_login")
@@ -20,6 +23,7 @@ public class DesignerLoginEntity {
 	private String uniqueId;
 	
 	private String email;
+	@JsonProperty(access = Access.WRITE_ONLY)
 	@Field(name = "password")
 	private String password;
 	@Field(name = "auth_token")

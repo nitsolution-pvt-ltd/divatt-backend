@@ -2,10 +2,14 @@ package com.divatt.auth.entity;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 public class DesignerProfile {
 
 	@Field(name = "email")
 	private String email;
+	@JsonProperty(access = Access.WRITE_ONLY)
 	@Field(name = "password")
 	private String password;
 	@Field(name = "first_name1")

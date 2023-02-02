@@ -56,10 +56,13 @@ import com.divatt.user.constant.RestTemplateConstants;
 import com.divatt.user.dto.CancelEmailJSON;
 import com.divatt.user.dto.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.dto.CancelationRequestDTO;
+import com.divatt.user.dto.DesignerReceivedProductDTO;
 import com.divatt.user.dto.DesignerRequestDTO;
 import com.divatt.user.dto.ForceReturnOn;
 import com.divatt.user.dto.ForceReturnOnDTO;
 import com.divatt.user.dto.InvoiceUpdatedModel;
+import com.divatt.user.dto.ReturnRequestApproveDTO;
+import com.divatt.user.dto.UserShippedProductDTO;
 import com.divatt.user.entity.BillingAddressEntity;
 import com.divatt.user.entity.InvoiceEntity;
 import com.divatt.user.entity.OrderInvoiceEntity;
@@ -179,6 +182,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@Autowired
 	private CommonUtility commonUtility;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	protected String getRandomString() {
 		/*** String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"; ***/
@@ -1367,7 +1373,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("returnRefund")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
-				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
+				org.json.simple.JSONObject returnFromAdmin = orderSKUDetailsEntity.getOrderStatusDetails().getReturnFromAdmin();
+				skuDetailsEntity.getOrderStatusDetails().setReturnFromAdmin(returnFromAdmin);
 				orderSKUDetailsRepo.save(skuDetailsEntity);
 
 				Query query2 = new Query();
@@ -1391,6 +1398,27 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				commonUtility.mailReturnRequest(skuDetailsEntity, refOrderId, refProductId, map);
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_REFUND_REJECTED.getMessage(), 200);
+			
+			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("Product shipped by user")) {
+				
+				if (!skuDetailsEntity.equals(orderSKUDetailsEntity.getOrderItemStatus())) {
+					if (skuDetailsEntity.getOrderItemStatus().equals("Return request approved")) {
+						
+						try {
+							OrderStatusDetails orderStatusDetails = skuDetailsEntity.getOrderStatusDetails();
+							orderStatusDetails.setUserShippedProduct(orderSKUDetailsEntity.getOrderStatusDetails().getUserShippedProduct());
+							skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
+							orderSKUDetailsRepo.save(skuDetailsEntity);
+//							commonUtility.mailSend(skuDetailsEntity, entity, skuDetailsEntity.getOrderId(), skuDetailsEntity.getProductId(), orderSKUDetailsEntity.getOrderItemStatus(), map);
+						} catch (Exception e) {
+							throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
+						}
+					} else
+						throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
+				} else {
+					throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + orderSKUDetailsEntity.getOrderItemStatus());
+				}
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.PRODUCT_SHIPPED_SUCCESSFULLY.getMessage(), 200);
 			} else {
 				throw new CustomException(MessageConstant.BAD_REQUEST.getMessage());
 			}
@@ -1966,16 +1994,23 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		try {
 			String designerEmail = jwtconfig.extractUsername(token.substring(7));
 			try {
-				DesignerProfileEntity entity = restTemplate
-						.getForEntity(AUTH_SERVICE+RestTemplateConstants.DESIGNER_DETAILS + designerEmail,
-								DesignerProfileEntity.class)
-						.getBody();
+				DesignerProfileEntity entity = new DesignerProfileEntity();
+				try {
+					entity = restTemplate
+							.getForEntity(AUTH_SERVICE+RestTemplateConstants.DESIGNER_DETAILS + designerEmail, DesignerProfileEntity.class)
+							.getBody();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 				String designerId = entity.getDesignerId().toString();
 				String displayName = entity.getDesignerProfile().getDisplayName();
 				Map<String, Object> map = new HashMap<>();
+				
 				OrderSKUDetailsEntity item1 = orderSKUDetailsRepo
 						.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 				String designerId2 = item1.getDesignerId() + "";
+				
 				if (designerId.equals(designerId2)) {
 					try {
 						OrderSKUDetailsEntity item = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderId(
@@ -1997,6 +2032,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						Date dates = new Date();
 						String format = formatter.format(dates);
 						Context context = new Context();
+						
 						if (orderItemStatus.equals("Orders")) {
 							if (!itemStatus.equals(orderItemStatus)) {
 								if (itemStatus.equals("New")) {
@@ -2079,9 +2115,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject2.put("packingVideo", false);
 										jsonObject2.put("orderPackedTime", format);
 										context.setVariables(jsonObject2);
-//										map.put("Packed Covered", false);
-//										map.put("Packing Video", false);
-//										map.put("Order Packed Time", format);
 										item.setOrderItemStatus(orderItemStatus);
 										orderStatusDetails.setPackedDetails(jsonObject2);
 										orderSKUDetailsRepo.save(item);
@@ -2157,17 +2190,30 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 									commonUtility.mailSend(item, entity, orderId, productId, orderItemStatus, map);
 								} else
 									throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
-
+							} else
+								throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
+						} else if (orderItemStatus.equals("Product received from user")) {
+							if (!itemStatus.equals(orderItemStatus)) {
+								if (itemStatus.equals("Product shipped by user")) {
+									Object string = statusChange.get("designerReceivedProduct");
+									DesignerReceivedProductDTO fromJson = objectMapper.convertValue(string, DesignerReceivedProductDTO.class);
+									try {
+										orderStatusDetails.setDesignerReceivedProduct(fromJson);
+										item.setOrderItemStatus(orderItemStatus);
+										orderSKUDetailsRepo.save(item);
+										commonUtility.mailSend(item, entity, orderId, productId, orderItemStatus, map);
+									} catch (Exception e) {
+										throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
+									}
+								} else
+									throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
 							} else
 								throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 						}
 
-
 						return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
-								MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus
-										+ MessageConstant.TO.getMessage() + orderItemStatus
-										+ MessageConstant.SUCCESSFULLY.getMessage(),
-								HttpStatus.OK.value());
+								MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage() + orderItemStatus
+										+ MessageConstant.SUCCESSFULLY.getMessage(), HttpStatus.OK.value());
 
 					} catch (Exception e) {
 						throw new CustomException(e.getMessage());
@@ -2192,23 +2238,29 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			String extractUsername = jwtconfig.extractUsername(token.substring(7));
 			Map<String, Object> map = new HashMap<>();
 			try {
-				String adminEmail = restTemplate
+				ResponseEntity<org.json.simple.JSONObject> forEntity = restTemplate
 						.getForEntity(ADMIN_SERVICE+RestTemplateConstants.ADMIN_ROLE_NAME
-								+ MessageConstant.ADMIN_ROLES.getMessage(), org.json.simple.JSONObject.class)
-						.getBody().get("email").toString();
+								+ MessageConstant.ADMIN_ROLES.getMessage(), org.json.simple.JSONObject.class);
+				String adminEmail =  null;
+				if(!forEntity.getBody().equals(null)) {
+					adminEmail = forEntity.getBody().get("email").toString();
+				}
 				if (!extractUsername.equals(adminEmail)) {
 					throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
 				}
 			} catch (Exception e) {
 				throw new CustomException(e.getLocalizedMessage());
 			}
+			
 			OrderSKUDetailsEntity item = orderSKUDetailsRepo
 					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
 			OrderStatusDetails orderStatusDetails = item.getOrderStatusDetails();
 			String itemStatus = item.getOrderItemStatus();
 			int designerId = item.getDesignerId();
+			
 			DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
 					RestTemplateConstants.DESIGNER_BYID + designerId, DesignerProfileEntity.class).getBody();
+			
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
 			String format = formatter.format(dates);
@@ -2221,8 +2273,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						if (itemStatus.equals("Orders")) {
 							org.json.simple.JSONObject jsonObject2 = new org.json.simple.JSONObject();
 							String string = statusChange.get("PackedDTO").toString();
-							org.json.simple.JSONObject fromJson = gson.fromJson(string,
-									org.json.simple.JSONObject.class);
+							org.json.simple.JSONObject fromJson = gson.fromJson(string, org.json.simple.JSONObject.class);
 
 							if (fromJson.containsKey("packedCovered") || fromJson.containsKey("packingVideo")) {
 								jsonObject2.put("packedCovered", fromJson.get("packedCovered"));
@@ -2293,8 +2344,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						if (itemStatus.equals("Shipped")) {
 							org.json.simple.JSONObject jsonObject4 = new org.json.simple.JSONObject();
 							String string = statusChange.get("DeliveryDTO").toString();
-							org.json.simple.JSONObject fromJson = gson.fromJson(string,
-									org.json.simple.JSONObject.class);
+							org.json.simple.JSONObject fromJson = gson.fromJson(string, org.json.simple.JSONObject.class);
 							try {
 								String deliveredDate = (String) fromJson.get("deliveredDate");
 								SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -2319,8 +2369,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				} else if (orderItemStatus.equals("ForceReturnAdmin")) {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("Delivered")) {
-							String string = statusChange.get("ForceReturnOnDTO").toString();
-							ForceReturnOnDTO fromJson = gson.fromJson(string, ForceReturnOnDTO.class);
+							Object string = statusChange.get("ForceReturnOnDTO");
+							ForceReturnOnDTO fromJson = objectMapper.convertValue(string, ForceReturnOnDTO.class);
 							try {
 								ForceReturnOnDTO forceReturnOnDTO = new ForceReturnOnDTO();
 								ForceReturnOn forceReturnOn = new ForceReturnOn();
@@ -2341,7 +2391,25 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 					} else
 						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
-				}
+				} else if (orderItemStatus.equals("Return request approved")) {
+					if (!itemStatus.equals(orderItemStatus)) {
+						if (itemStatus.equals("Delivered") || itemStatus.equals("returnRequest")) {
+							Object string = statusChange.get("ReturnRequestApproveDTO");
+							ReturnRequestApproveDTO fromJson = objectMapper.convertValue(string, ReturnRequestApproveDTO.class);
+							try {
+								orderStatusDetails.setReturnRequestApprove(fromJson);
+								item.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(item);
+								commonUtility.mailSend(item, forEntity, orderId, productId, orderItemStatus, map);
+							} catch (Exception e) {
+								throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
+							}
+						} else
+							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
+
+					} else
+						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
+				} 
 
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage()
@@ -2486,8 +2554,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("totalPage", totalPage);
 			response.put("perPage", findAll.getSize());
 			response.put("perPageElement", findAll.getNumberOfElements());
-			response.put("requestForCancelation",
-					orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
+			response.put("requestForCancelation", orderSKUDetailsRepo.findByOrderItemStatus("Request for cancelation").size());
 			response.put("New", orderSKUDetailsRepo.findByOrderItemStatus("New").size());
 			response.put("Packed", orderSKUDetailsRepo.findByOrderItemStatus("Packed").size());
 			response.put("Shipped", orderSKUDetailsRepo.findByOrderItemStatus("Shipped").size());
@@ -2496,10 +2563,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Active", orderSKUDetailsRepo.findByOrderItemStatus("Active").size());
 			response.put("Cancelled", orderSKUDetailsRepo.findByOrderItemStatus("cancelled").size());
 			response.put("Orders", orderSKUDetailsRepo.findByOrderItemStatus("Orders").size());
-			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
+			response. put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
 			response.put("returnRequest", orderSKUDetailsRepo.findByOrderItemStatus("returnRequest").size());
 			response.put("returnRefund", orderSKUDetailsRepo.findByOrderItemStatus("returnRefund").size());
 			response.put("rejected", orderSKUDetailsRepo.findByOrderItemStatus("Rejected").size());
+			response.put("returnRequestApproved", orderSKUDetailsRepo.findByOrderItemStatus("Return request approved").size());
+			response.put("productShippedByUser", orderSKUDetailsRepo.findByOrderItemStatus("Product shipped by user").size());
+			response.put("productReceivedFromUser", orderSKUDetailsRepo.findByOrderItemStatus("Product receved from user").size());
 			return response;
 
 		} catch (Exception e) {
