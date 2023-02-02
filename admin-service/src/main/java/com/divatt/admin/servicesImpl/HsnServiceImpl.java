@@ -2,6 +2,7 @@ package com.divatt.admin.servicesImpl;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -267,6 +268,7 @@ public class HsnServiceImpl implements HsnService {
 	}
 
 	public List<HsnEntity> getActiveHSNListService(String searchKeyword) {
+		LOGGER.info("sdfg");
 		try {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("isActive").is(true).and("isDelete").is(false));
@@ -289,9 +291,11 @@ public class HsnServiceImpl implements HsnService {
 //						return taxValueFiltered;
 //					}
 //					return hsnCodeFiltered;
-//				}
+//				}			
+				
 				if (hsnCodeFiltered.isEmpty()) {
-					throw new CustomException(MessageConstant.NO_DATA.getMessage());				
+//					throw new CustomException(MessageConstant.NO_DATA.getMessage());	
+					return new ArrayList<>();
 			      }
 				return hsnCodeFiltered;
 			}
