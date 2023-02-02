@@ -52,7 +52,8 @@ public enum MessageConstant {
 	DATE_FORMAT_TYPE("dd/MM/yyyy"), DATA_TYPE_FORMAT("dd/MM/yyyy"),
 	PRODUCT_ALREADY_DELIVERED("The product is already delivered"), PRODUCT_PLACED("Your product has been ordered by "),
 	ADMIN_ROLES("SADMIN"), PLEASE_FILL_UP_REQUIRED_FIELDS("Please fill up the required fields"),
-	INVALID_TOKEN("Invalid token"),ORDER_RECEIVED("Order received");
+	INVALID_TOKEN("Invalid token"),ORDER_RECEIVED("Order received"),
+	PRODUCT_SHIPPED_SUCCESSFULLY("Product shipped successfully");
 
 	private String message;
 

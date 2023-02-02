@@ -16,7 +16,7 @@ import com.divatt.designer.entity.profile.DesignerProfile;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
-@Document(collection = "tbl2_products")
+@Document(collection = "tbl_products")
 public class ProductMasterEntity2 implements Cloneable {
 	@Id
 	@Field(name = "_id")

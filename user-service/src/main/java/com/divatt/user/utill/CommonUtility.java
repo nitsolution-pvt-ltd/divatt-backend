@@ -761,17 +761,16 @@ public class CommonUtility {
 					context.setVariable("mrp", format3);
 				}
 				String string = data.toString();
-				LOGGER.info(string);
 				String string2 = string.substring(1, string.toString().length() - 1).replaceAll("=", " : ");
 				String substring = string2.replace(",", ",\n");
 				
 				context.setVariable("details", substring);
 				if (orderItemStatus.equals("Orders")) {
 					context.setVariable("orderItemStatus", "Verified");
-
 				} else {
 					context.setVariable("orderItemStatus", orderItemStatus);
 				}
+				
 				context.setVariable("orderId", orderId);
 				context.setVariable("productImage", images);
 				if (orderItemStatus.equals("Orders")) {

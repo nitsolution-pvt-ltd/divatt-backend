@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import springfox.documentation.spring.web.json.Json;
 
 @Document(collection = "tbl_users")
@@ -26,6 +29,7 @@ public class UserLoginEntity {
 	@NotNull
 	@Field("email") private String email;
 	@NotNull
+	@JsonProperty(access = Access.WRITE_ONLY)
 	@Field("password") private String password;
 	@NotNull
 	@Field("mobile_no") private String mobileNo;

@@ -1101,28 +1101,28 @@ public class ProductServiceImp2 implements ProductService2 {
 					findall.addAll(findProduct);
 				}
 			});
-			ProductMasterEntity2 productMasterEntity22 = new ProductMasterEntity2();
+			ProductMasterEntity2 productMasterEntity = new ProductMasterEntity2();
 
 			if (findall.size() > 0) {
-				productMasterEntity22 = findall.get(0);
+				productMasterEntity = findall.get(0);
 				DesignerProfileEntity designerProfileEntity = designerProfileRepo
-						.findBydesignerIdAndDesignerCurrentStatus(productMasterEntity22.getDesignerId().longValue(),
+						.findBydesignerIdAndDesignerCurrentStatus(productMasterEntity.getDesignerId().longValue(),
 								"Online")
 						.get();
 
 				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE+
-						RestTemplateConstants.SUBCATEGORY_VIEW + productMasterEntity22.getSubCategoryId(),
+						RestTemplateConstants.SUBCATEGORY_VIEW + productMasterEntity.getSubCategoryId(),
 						SubCategoryEntity.class);
 
 				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-						RestTemplateConstants.CATEGORY_VIEW + productMasterEntity22.getCategoryId(),
+						RestTemplateConstants.CATEGORY_VIEW + productMasterEntity.getCategoryId(),
 						CategoryEntity.class);
 
-				productMasterEntity22.setSubCategoryName(subCatagory.getBody().getCategoryName());
-				productMasterEntity22.setCategoryName(catagory.getBody().getCategoryName());
-				productMasterEntity22.setDesignerProfile(designerProfileEntity.getDesignerProfile());
+				productMasterEntity.setSubCategoryName(subCatagory.getBody().getCategoryName());
+				productMasterEntity.setCategoryName(catagory.getBody().getCategoryName());
+				productMasterEntity.setDesignerProfile(designerProfileEntity.getDesignerProfile());
 			}
-			return productMasterEntity22;
+			return productMasterEntity;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
