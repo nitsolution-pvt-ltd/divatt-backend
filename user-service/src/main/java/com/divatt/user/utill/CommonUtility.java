@@ -106,7 +106,7 @@ public class CommonUtility {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	
+
 	@Value("${DESIGNER}")
 	private String DESIGNER_SERVICE;
 
@@ -345,7 +345,7 @@ public class CommonUtility {
 				ttotalGiftWrapAmount = String.valueOf(GiftWrapAmount);
 				try {
 					DesignerProfileEntity forEntity = restTemplate
-							.getForEntity(DESIGNER_SERVICE+ RestTemplateConstants.DESIGNER_BYID + designerId,
+							.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BYID + designerId,
 									DesignerProfileEntity.class)
 							.getBody();
 					designerEmail = forEntity.getDesignerProfile().getEmail();
@@ -391,8 +391,9 @@ public class CommonUtility {
 			File createPdfSupplier;
 			try {
 				createPdfSupplier = createPdfSupplier(orderDetailsEntity);
-				EmailSenderThread emailSenderThread = new EmailSenderThread(email,MessageConstant.ORDER_SUMMARY.getMessage(), 
-						htmlContent, true, null, restTemplate,AUTH_SERVICE);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+						MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true, null, restTemplate,
+						AUTH_SERVICE);
 				emailSenderThread.start();
 //				this.sendEmailWithAttachment(email, MessageConstant.ORDER_SUMMARY.getMessage(), htmlContent, true,
 //						createPdfSupplier);
@@ -503,10 +504,9 @@ public class CommonUtility {
 			Query query = new Query();
 			query.addCriteria(Criteria.where("_id").is(userId));
 			UserLoginEntity user = mongoOperations.findOne(query, UserLoginEntity.class);
-			DesignerProfileEntity body = restTemplate
-					.getForEntity(DESIGNER_SERVICE+ RestTemplateConstants.DESIGNER_BYID + skuDetailsEntity.getDesignerId(),
-							DesignerProfileEntity.class)
-					.getBody();
+			DesignerProfileEntity body = restTemplate.getForEntity(
+					DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BYID + skuDetailsEntity.getDesignerId(),
+					DesignerProfileEntity.class).getBody();
 			String designerName = body.getDesignerName();
 			String designerEmail = body.getDesignerProfile().getEmail();
 			String email = user.getEmail();
@@ -578,7 +578,7 @@ public class CommonUtility {
 			String tgrossGrandTotal = null;
 			String ttotalGiftWrapAmount = null;
 			String displayName = null;
-			
+
 			List<OrderSKUDetailsEntity> findByOrderIdAndDesignerId = orderSKUDetailsRepo
 					.findByOrderIdAndDesignerId(orderId, value);
 
@@ -619,7 +619,7 @@ public class CommonUtility {
 				ttotalGiftWrapAmount = String.valueOf(totalGiftWrapAmount);
 				try {
 					DesignerProfileEntity forEntity = restTemplate
-							.getForEntity(DESIGNER_SERVICE+ RestTemplateConstants.DESIGNER_BYID + designerId,
+							.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BYID + designerId,
 									DesignerProfileEntity.class)
 							.getBody();
 					designerEmail = forEntity.getDesignerProfile().getEmail();
@@ -647,7 +647,7 @@ public class CommonUtility {
 			context.setVariables(data);
 			String htmlContent = templateEngine.process("orderPlacedDesigner.html", context);
 			EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
-					MessageConstant.ORDER_RECEIVED.getMessage(), htmlContent, true, null, restTemplate,AUTH_SERVICE);
+					MessageConstant.ORDER_RECEIVED.getMessage(), htmlContent, true, null, restTemplate, AUTH_SERVICE);
 			emailSenderThreadDesigner.start();
 
 		}
@@ -763,14 +763,14 @@ public class CommonUtility {
 				String string = data.toString();
 				String string2 = string.substring(1, string.toString().length() - 1).replaceAll("=", " : ");
 				String substring = string2.replace(",", ",\n");
-				
+
 				context.setVariable("details", substring);
 				if (orderItemStatus.equals("Orders")) {
 					context.setVariable("orderItemStatus", "Verified");
 				} else {
 					context.setVariable("orderItemStatus", orderItemStatus);
 				}
-				
+
 				context.setVariable("orderId", orderId);
 				context.setVariable("productImage", images);
 				if (orderItemStatus.equals("Orders")) {
@@ -779,16 +779,19 @@ public class CommonUtility {
 							"Your Order Has been " + "Verified", htmlContent, true, null, restTemplate, AUTH_SERVICE);
 					String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
 					EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-							"Your Product Has been " + "Verified", htmlContentDesigner, true, null, restTemplate, AUTH_SERVICE);
+							"Your Product Has been " + "Verified", htmlContentDesigner, true, null, restTemplate,
+							AUTH_SERVICE);
 					emailSenderThreadDesigner.start();
 					emailSenderThread.start();
 				} else {
 					String htmlContent = templateEngine.process("statusChange.html", context);
 					EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-							"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate,AUTH_SERVICE);
+							"Your Order Has been " + orderItemStatus, htmlContent, true, null, restTemplate,
+							AUTH_SERVICE);
 					String htmlContentDesigner = templateEngine.process("statusChangeDesigner.html", context);
 					EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(email2,
-							"Your Order Has been " + orderItemStatus, htmlContentDesigner, true, null, restTemplate, AUTH_SERVICE);
+							"Your Order Has been " + orderItemStatus, htmlContentDesigner, true, null, restTemplate,
+							AUTH_SERVICE);
 					emailSenderThreadDesigner.start();
 					emailSenderThread.start();
 				}
@@ -807,14 +810,17 @@ public class CommonUtility {
 			String email = userById.getEmail();
 			String firstName = userById.getFirstName();
 			DesignerProfileEntity designerDetails = restTemplate
-					.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_BYID + item.getDesignerId(),
+					.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BYID + item.getDesignerId(),
 							DesignerProfileEntity.class)
 					.getBody();
+			Query query = new Query();
+			query.addCriteria(Criteria.where("order_id").is(orderId).and("productId").is(productId));
+			OrderSKUDetailsEntity skuDetailsEntity = mongoOperations.findOne(query, OrderSKUDetailsEntity.class);
 			String designerName = designerDetails.getDesignerName();
 			String designerEmail = designerDetails.getDesignerProfile().getEmail();
 			String displayName = designerDetails.getDesignerProfile().getDisplayName();
-			org.json.simple.JSONObject body = restTemplate.getForEntity(ADMIN_SERVICE+
-					RestTemplateConstants.ADMIN_ROLE_NAME + MessageConstant.ADMIN_ROLES.getMessage(),
+			org.json.simple.JSONObject body = restTemplate.getForEntity(
+					ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME + MessageConstant.ADMIN_ROLES.getMessage(),
 					org.json.simple.JSONObject.class).getBody();
 			String adminMail = body.get("email").toString();
 			String adminFirstName = body.get("firstName").toString();
@@ -918,7 +924,7 @@ public class CommonUtility {
 					LOGGER.info(string);
 					String string2 = string.substring(1, string.toString().length() - 1).replaceAll("=", " ");
 					String substring = string2.replace(",", ",\n");
-					
+
 					context.setVariable("details", substring);
 					context.setVariable("orderId", orderId);
 					context.setVariable("productImage", images);
@@ -928,22 +934,27 @@ public class CommonUtility {
 								htmlContent, true, null, restTemplate, AUTH_SERVICE);
 						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesigner.html", context);
 						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
-								"Received a return request for an item", htmlContentDesigner, true, null, restTemplate, AUTH_SERVICE);
+								"Received a return request for an item", htmlContentDesigner, true, null, restTemplate,
+								AUTH_SERVICE);
 						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdmin.html", context);
 						EmailSenderThread emailSenderThreadAdmin = new EmailSenderThread(adminMail,
-								"Received a return request for an item", htmlContentAdmin, true, null, restTemplate, AUTH_SERVICE);
+								"Received a return request for an item", htmlContentAdmin, true, null, restTemplate,
+								AUTH_SERVICE);
 						emailSenderThreadDesigner.start();
 						emailSenderThread.start();
 						emailSenderThreadAdmin.start();
 					} else if (item.getOrderItemStatus().equals("returnRefund")) {
 						String htmlContent = templateEngine.process("orderStatusUpdateUserAccepted.html", context);
 						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-								"Return request for an item has been accepted ", htmlContent, true, null, restTemplate, AUTH_SERVICE);
-						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesignerAccepted.html", context);
+								"Return request for an item has been accepted ", htmlContent, true, null, restTemplate,
+								AUTH_SERVICE);
+						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesignerAccepted.html",
+								context);
 						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
 								"Received a return request for an item has been accepted", htmlContentDesigner, true,
 								null, restTemplate, AUTH_SERVICE);
-						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdminAccepted.html", context);
+						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdminAccepted.html",
+								context);
 						EmailSenderThread emailSenderThreadAdmin = new EmailSenderThread(adminMail,
 								"Received a return request for an item has been accepted", htmlContentAdmin, true, null,
 								restTemplate, AUTH_SERVICE);
@@ -953,18 +964,45 @@ public class CommonUtility {
 					} else if (item.getOrderItemStatus().equals("Rejected")) {
 						String htmlContent = templateEngine.process("orderStatusUpdateUserRejected.html", context);
 						EmailSenderThread emailSenderThread = new EmailSenderThread(email,
-								"Return request for an item has been rejected ", htmlContent, true, null, restTemplate, AUTH_SERVICE);
-						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesignerRejected.html", context);
+								"Return request for an item has been rejected ", htmlContent, true, null, restTemplate,
+								AUTH_SERVICE);
+						String htmlContentDesigner = templateEngine.process("orderStatusUpdateDesignerRejected.html",
+								context);
 						EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
 								"Received a return request for an item has been rejected", htmlContentDesigner, true,
 								null, restTemplate, AUTH_SERVICE);
-						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdminRejected.html", context);
+						String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdminRejected.html",
+								context);
 						EmailSenderThread emailSenderThreadAdmin = new EmailSenderThread(adminMail,
 								"Received a return request for an item has been rejected", htmlContentAdmin, true, null,
 								restTemplate, AUTH_SERVICE);
 						emailSenderThreadDesigner.start();
 						emailSenderThread.start();
 						emailSenderThreadAdmin.start();
+					} else if (item.getOrderItemStatus().equals("Product shipped by user")) {
+
+						if (!skuDetailsEntity.equals(item.getOrderItemStatus())) {
+							if (skuDetailsEntity.getOrderItemStatus().equals("Return request approved")) {
+								String htmlContent = templateEngine.process("orderStatusUpdateUserRejected.html",
+										context);
+								EmailSenderThread emailSenderThread = new EmailSenderThread(email,
+										"Return request for an item has been rejected ", htmlContent, true, null,
+										restTemplate, AUTH_SERVICE);
+								String htmlContentDesigner = templateEngine
+										.process("orderStatusUpdateDesignerRejected.html", context);
+								EmailSenderThread emailSenderThreadDesigner = new EmailSenderThread(designerEmail,
+										"Received a return request for an item has been rejected", htmlContentDesigner,
+										true, null, restTemplate, AUTH_SERVICE);
+								String htmlContentAdmin = templateEngine.process("orderStatusUpdateAdminRejected.html",
+										context);
+								EmailSenderThread emailSenderThreadAdmin = new EmailSenderThread(adminMail,
+										"Received a return request for an item has been rejected", htmlContentAdmin,
+										true, null, restTemplate, AUTH_SERVICE);
+								emailSenderThreadDesigner.start();
+								emailSenderThread.start();
+								emailSenderThreadAdmin.start();
+							}
+						}
 					}
 				} catch (java.text.ParseException e) {
 					e.printStackTrace();

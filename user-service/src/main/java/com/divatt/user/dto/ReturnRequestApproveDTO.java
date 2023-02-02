@@ -5,8 +5,17 @@ public class ReturnRequestApproveDTO {
 	public String comments;
 	public String dateTime;
 	public Boolean isReturn;
+	public Boolean forceReturnByAdmin;
 	public Object updatedBy;
 	
+	
+	
+	public Boolean getForceReturnByAdmin() {
+		return forceReturnByAdmin;
+	}
+	public void setForceReturnByAdmin(Boolean forceReturnByAdmin) {
+		this.forceReturnByAdmin = forceReturnByAdmin;
+	}
 	public String getComments() {
 		return comments;
 	}

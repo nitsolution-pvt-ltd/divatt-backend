@@ -1,19 +1,29 @@
 package com.divatt.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class ForceReturnOnDTO {
 
-	@JsonProperty("ForceReturnOnDTO")
-	public ForceReturnOn forceReturnOn;
+	public String comments;
+	public String dateTime;
 	public boolean returnAcceptable;
+	public Object updatedBy;
 	
-	
-	public ForceReturnOn getForceReturnOn() {
-		return forceReturnOn;
+	public String getComments() {
+		return comments;
 	}
-	public void setForceReturnOn(ForceReturnOn forceReturnOn) {
-		this.forceReturnOn = forceReturnOn;
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+	public String getDateTime() {
+		return dateTime;
+	}
+	public void setDateTime(String dateTime) {
+		this.dateTime = dateTime;
+	}
+	public Object getUpdatedBy() {
+		return updatedBy;
+	}
+	public void setUpdatedBy(Object updatedBy) {
+		this.updatedBy = updatedBy;
 	}
 	public boolean isReturnAcceptable() {
 		return returnAcceptable;
@@ -23,5 +33,8 @@ public class ForceReturnOnDTO {
 	}
 	
 	
-
+	
+	
+	
+	
 }

@@ -1,10 +1,11 @@
 package com.divatt.user.dto;
 
-public class ForceReturnOn {
-
+public class ReturnRejectedByAdminDTO {
+	
 	public String comments;
 	public String dateTime;
 	public Object updatedBy;
+	
 	public String getComments() {
 		return comments;
 	}
@@ -25,8 +26,5 @@ public class ForceReturnOn {
 	}
 	
 	
-	
-	
-	
-	
+
 }

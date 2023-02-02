@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 
 import com.divatt.user.dto.DesignerReceivedProductDTO;
 import com.divatt.user.dto.ForceReturnOnDTO;
+import com.divatt.user.dto.ReturnRejectedByAdminDTO;
 import com.divatt.user.dto.ReturnRequestApproveDTO;
 import com.divatt.user.dto.UserShippedProductDTO;
 
@@ -23,6 +24,7 @@ public class OrderStatusDetails {
 	private ReturnRequestApproveDTO returnRequestApprove;
 	private UserShippedProductDTO userShippedProduct;
 	private DesignerReceivedProductDTO designerReceivedProduct;
+	private ReturnRejectedByAdminDTO returnRejectedByAdmin;
 	
 	
 	
@@ -110,6 +112,13 @@ public class OrderStatusDetails {
 	public void setDesignerReceivedProduct(DesignerReceivedProductDTO designerReceivedProduct) {
 		this.designerReceivedProduct = designerReceivedProduct;
 	}
+	public ReturnRejectedByAdminDTO getReturnRejectedByAdmin() {
+		return returnRejectedByAdmin;
+	}
+	public void setReturnRejectedByAdmin(ReturnRejectedByAdminDTO returnRejectedByAdmin) {
+		this.returnRejectedByAdmin = returnRejectedByAdmin;
+	}
+	
 	
 	
 

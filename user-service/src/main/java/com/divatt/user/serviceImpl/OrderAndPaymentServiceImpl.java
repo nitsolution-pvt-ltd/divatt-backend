@@ -58,9 +58,10 @@ import com.divatt.user.dto.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.dto.CancelationRequestDTO;
 import com.divatt.user.dto.DesignerReceivedProductDTO;
 import com.divatt.user.dto.DesignerRequestDTO;
-import com.divatt.user.dto.ForceReturnOn;
+import com.divatt.user.dto.ForceReturnOnDTO;
 import com.divatt.user.dto.ForceReturnOnDTO;
 import com.divatt.user.dto.InvoiceUpdatedModel;
+import com.divatt.user.dto.ReturnRejectedByAdminDTO;
 import com.divatt.user.dto.ReturnRequestApproveDTO;
 import com.divatt.user.dto.UserShippedProductDTO;
 import com.divatt.user.entity.BillingAddressEntity;
@@ -983,15 +984,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Delivered", orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered").size());
 			response.put("Return", orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRefund").size());
 			response.put("Active", orderSKUDetailsRepo.findByOrderTotal(designerId, "Active").size());
-			response.put("cancelRequest",
-					orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
+			response.put("cancelRequest", orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
 			response.put("Orders", orderSKUDetailsRepo.findByDesignerId(designerId).size());
 			response.put("Canceled", orderSKUDetailsRepo.findByOrderTotal(designerId, "cancelled").size());
 			response.put("returnRequest", orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRequest").size());
 			response.put("rejected", orderSKUDetailsRepo.findByOrderTotal(designerId, "Rejected").size());
-			response.put("requestCancelation",
-					orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
-
+			response.put("requestCancelation",orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
+			response.put("returnRequestApproved", orderSKUDetailsRepo.findByOrderTotal(designerId, "Return request approved").size());
+			response.put("productShippedByUser", orderSKUDetailsRepo.findByOrderTotal(designerId, "Product shipped by user").size());
+			response.put("productReceivedFromUser", orderSKUDetailsRepo.findByOrderTotal(designerId, "Product receved from user").size());
 			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1403,13 +1404,20 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				
 				if (!skuDetailsEntity.equals(orderSKUDetailsEntity.getOrderItemStatus())) {
 					if (skuDetailsEntity.getOrderItemStatus().equals("Return request approved")) {
-						
 						try {
 							OrderStatusDetails orderStatusDetails = skuDetailsEntity.getOrderStatusDetails();
 							orderStatusDetails.setUserShippedProduct(orderSKUDetailsEntity.getOrderStatusDetails().getUserShippedProduct());
 							skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
 							orderSKUDetailsRepo.save(skuDetailsEntity);
-//							commonUtility.mailSend(skuDetailsEntity, entity, skuDetailsEntity.getOrderId(), skuDetailsEntity.getProductId(), orderSKUDetailsEntity.getOrderItemStatus(), map);
+							
+							String comment = orderSKUDetailsEntity.getOrderStatusDetails().getUserShippedProduct().getComments()
+									.toString();
+							String courierName = orderSKUDetailsEntity.getOrderStatusDetails().getUserShippedProduct().getCourierName()
+									.toString();
+							String trackingNumber = orderSKUDetailsEntity.getOrderStatusDetails().getUserShippedProduct().getTrakingNumber()
+									.toString();
+							map.put(" for", comment + " and Courier Name is : " + courierName+", and Tracking Number is : "+trackingNumber);
+							commonUtility.mailReturnRequest(orderSKUDetailsEntity, refOrderId, refProductId, map);
 						} catch (Exception e) {
 							throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
 						}
@@ -2367,20 +2375,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					} else
 						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				} else if (orderItemStatus.equals("ForceReturnAdmin")) {
-					if (!itemStatus.equals(orderItemStatus)) {
-						if (itemStatus.equals("Delivered")) {
-							Object string = statusChange.get("ForceReturnOnDTO");
+						if (itemStatus.equals("Delivered") && orderItemStatus.equals("ForceReturnAdmin")) {
+							Object string = statusChange.get("forceReturnOnDTO");
 							ForceReturnOnDTO fromJson = objectMapper.convertValue(string, ForceReturnOnDTO.class);
 							try {
-								ForceReturnOnDTO forceReturnOnDTO = new ForceReturnOnDTO();
-								ForceReturnOn forceReturnOn = new ForceReturnOn();
-								forceReturnOn.setComments(fromJson.getForceReturnOn().getComments());
-								forceReturnOn.setDateTime(fromJson.getForceReturnOn().getDateTime());
-								forceReturnOn.setUpdatedBy(fromJson.getForceReturnOn().getUpdatedBy());
-								forceReturnOnDTO.setForceReturnOn(forceReturnOn);
-
-								orderStatusDetails.setForceReturnOnDTO(forceReturnOnDTO);
-								item.setOrderItemStatus(orderItemStatus);
+								orderStatusDetails.setForceReturnOnDTO(fromJson);
+								item.setOrderStatusDetails(orderStatusDetails);
+								item.setReturnAcceptable(true);
 								orderSKUDetailsRepo.save(item);
 								commonUtility.mailSend(item, forEntity, orderId, productId, orderItemStatus, map);
 							} catch (Exception e) {
@@ -2388,9 +2389,6 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 							}
 						} else
 							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
-
-					} else
-						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				} else if (orderItemStatus.equals("Return request approved")) {
 					if (!itemStatus.equals(orderItemStatus)) {
 						if (itemStatus.equals("Delivered") || itemStatus.equals("returnRequest")) {
@@ -2409,7 +2407,26 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 					} else
 						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
+				} else if (orderItemStatus.equals("Return rejected by admin")) {
+					if (!itemStatus.equals(orderItemStatus)) {
+						if (itemStatus.equals("returnRequest")) {
+							Object string = statusChange.get("returnRejectedByAdmin");
+							ReturnRejectedByAdminDTO fromJson = objectMapper.convertValue(string, ReturnRejectedByAdminDTO.class);
+							try {
+								orderStatusDetails.setReturnRejectedByAdmin(fromJson);
+								item.setOrderItemStatus(orderItemStatus);
+								orderSKUDetailsRepo.save(item);
+								commonUtility.mailSend(item, forEntity, orderId, productId, orderItemStatus, map);
+							} catch (Exception e) {
+								throw new CustomException(MessageConstant.PLEASE_FILL_UP_REQUIRED_FIELDS.getMessage());
+							}
+						} else
+							throw new CustomException(MessageConstant.YOU_CANNOT_SKIP_STATUS.getMessage());
+
+					} else
+						throw new CustomException(MessageConstant.PRODUCT_STATUS.getMessage() + itemStatus);
 				} 
+
 
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ITEM_STATUS_CHANGE.getMessage() + itemStatus + MessageConstant.TO.getMessage()
