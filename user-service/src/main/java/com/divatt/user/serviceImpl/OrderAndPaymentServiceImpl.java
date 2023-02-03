@@ -993,6 +993,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("returnRequestApproved", orderSKUDetailsRepo.findByOrderTotal(designerId, "Return request approved").size());
 			response.put("productShippedByUser", orderSKUDetailsRepo.findByOrderTotal(designerId, "Product shipped by user").size());
 			response.put("productReceivedFromUser", orderSKUDetailsRepo.findByOrderTotal(designerId, "Product receved from user").size());
+			response.put("returnRejectedByAdmin", orderSKUDetailsRepo.findByOrderItemStatus("Return rejected by admin").size());
 			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -2580,13 +2581,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("Active", orderSKUDetailsRepo.findByOrderItemStatus("Active").size());
 			response.put("Cancelled", orderSKUDetailsRepo.findByOrderItemStatus("cancelled").size());
 			response.put("Orders", orderSKUDetailsRepo.findByOrderItemStatus("Orders").size());
-			response. put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
+			response.put("totalIteamStatus", orderSKUDetailsRepo.findByOrder(orderItemStatus).size());
 			response.put("returnRequest", orderSKUDetailsRepo.findByOrderItemStatus("returnRequest").size());
 			response.put("returnRefund", orderSKUDetailsRepo.findByOrderItemStatus("returnRefund").size());
 			response.put("rejected", orderSKUDetailsRepo.findByOrderItemStatus("Rejected").size());
 			response.put("returnRequestApproved", orderSKUDetailsRepo.findByOrderItemStatus("Return request approved").size());
 			response.put("productShippedByUser", orderSKUDetailsRepo.findByOrderItemStatus("Product shipped by user").size());
 			response.put("productReceivedFromUser", orderSKUDetailsRepo.findByOrderItemStatus("Product receved from user").size());
+			response.put("returnRejectedByAdmin", orderSKUDetailsRepo.findByOrderItemStatus("Return rejected by admin").size());
 			return response;
 
 		} catch (Exception e) {
@@ -2628,8 +2630,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				try {
 					List<InvoiceUpdatedModel> productDetailsList = responceData.get(gstNo);
 					Query query1 = new Query();
-					query1.addCriteria(
-							Criteria.where("designerId").is(invoiceEntity.getProductDetails().getDesignerId())
+					query1.addCriteria(Criteria.where("designerId").is(invoiceEntity.getProductDetails().getDesignerId())
 									.and("orderId").is(invoiceEntity.getOrderId()).and("productId")
 									.is(invoiceEntity.getProductDetails().getProductId()));
 
