@@ -678,12 +678,14 @@ public class ProfileContoller {
 	public org.json.simple.JSONObject countData(@PathVariable Long designerId) {
 		try {
 			org.json.simple.JSONObject response = new org.json.simple.JSONObject();
-			ResponseEntity<GlobalResponce> userData = restTemplate.getForEntity(USER_SERVICE+
-					RestTemplateConstants.USER_FOLLOWER_COUNT + designerId, GlobalResponce.class);
-			String followersData = userData.getBody().getMessage();
-			response.put("FollowersData", followersData);
-			response.put("Products", productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,
-					"Approved", designerId.intValue(), true));
+//			ResponseEntity<GlobalResponce> userData = restTemplate.getForEntity(USER_SERVICE+RestTemplateConstants.USER_FOLLOWER_COUNT + designerId, GlobalResponce.class);
+			ResponseEntity<GlobalResponce> userData = restTemplate.getForEntity(RestTemplateConstants.USER_FOLLOWER_COUNT_URL + designerId, GlobalResponce.class);
+			
+			if(!userData.getBody().equals(null)) {
+				String followersData = userData.getBody().getMessage();
+				response.put("FollowersData", followersData);
+			}
+			response.put("Products", productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,"Approved", designerId.intValue(), true));
 			return response;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -759,7 +761,7 @@ public class ProfileContoller {
 						DesignerProfileEntity designerProfileData = mongoOperations.findOne(query2,
 								DesignerProfileEntity.class);
 						dRow.setDesignerProfileEntity(designerProfileData);
-						org.json.simple.JSONObject countData = countData(dRow.getdId());
+						org.json.simple.JSONObject countData = this.countData(dRow.getdId());
 						String productCount = countData.get("Products").toString();
 						String followerCount = countData.get("FollowersData").toString();
 						dRow.setProductCount(Integer.parseInt(productCount));
@@ -770,7 +772,7 @@ public class ProfileContoller {
 					return designerData;
 				} else {
 					UserDesignerEntity[] userDesignerEntity = restTemplate
-							.getForEntity(USER_SERVICE+RestTemplateConstants.USER_DESIGNER_DETAILS + usermail,
+							.getForEntity(RestTemplateConstants.USER_DESIGNER_DETAILS_URL + usermail,
 									UserDesignerEntity[].class)
 							.getBody();
 					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
@@ -808,7 +810,7 @@ public class ProfileContoller {
 				} else {
 
 					UserDesignerEntity[] userDesignerEntity = restTemplate
-							.getForEntity(USER_SERVICE+RestTemplateConstants.USER_DESIGNER_DETAILS + usermail,
+							.getForEntity(RestTemplateConstants.USER_DESIGNER_DETAILS_URL + usermail,
 									UserDesignerEntity[].class)
 							.getBody();
 					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
