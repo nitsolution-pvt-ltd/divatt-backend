@@ -24,10 +24,10 @@ public class RestTemplateConstants {
 	public static final String AUTH_SEND_MAIL="auth/sendMail"; 
 	public static final String DESIGNER="https://dev.divatt.com/designer/";
 	public static final String USER_FOLLOWER_COUNT="user/followerCount/";
-	public static final String USER_FOLLOWER_COUNT_URL="https://localhost:8082/dev/user/followerCount/";
+//	public static final String USER_FOLLOWER_COUNT_URL="https://localhost:8082/dev/user/followerCount/";
 	
 //	public static final String USER_FOLLOWED_DESIGNER=USER_SERVICE+"user/followedDesigner/";
-	public static final String ADMIN_EMAIL="developer.nitsolution@gmail.com";
+//	public static final String ADMIN_EMAIL="developer.nitsolution@gmail.com";
 
 	public static final String ACCOUNT_ADD="account/add";
 	public static final String ACCOUNT_VIEW_BY_ID="account/view/";
@@ -35,7 +35,7 @@ public class RestTemplateConstants {
 	public static final String ACCOUNT_LIST="account/list";
 	public static final String ADMIN_ROLE_NAME="admin/profile/getRoleName/";
 	public static final String USER_DESIGNER_DETAILS="user/getUserDesignerDetails/";
-	public static final String USER_DESIGNER_DETAILS_URL="https://localhost:8082/dev/user/getUserDesignerDetails/";
+//	public static final String USER_DESIGNER_DETAILS_URL="https://localhost:8082/dev/user/getUserDesignerDetails/";
 	public static final String GET_ALL_CATEGORYDETAILS="category/getAllCategoryDetails";
 	public static final String DESIGNER_BY_ID="designer/";
 
