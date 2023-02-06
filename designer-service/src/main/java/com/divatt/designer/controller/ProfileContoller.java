@@ -132,8 +132,8 @@ public class ProfileContoller {
 	@Value("${ADMIN}")
 	private String ADMIN_SERVICE;
 
-	@Value("${USER}")
-	private String USER_SERVICE;
+	@Value("${USERS}")
+	private String USER_SERVICES;
 	
 	@Value("${redirectURL}")
 	private String redirectURL;
@@ -678,8 +678,8 @@ public class ProfileContoller {
 	public org.json.simple.JSONObject countData(@PathVariable Long designerId) {
 		try {
 			org.json.simple.JSONObject response = new org.json.simple.JSONObject();
-//			ResponseEntity<GlobalResponce> userData = restTemplate.getForEntity(USER_SERVICE+RestTemplateConstants.USER_FOLLOWER_COUNT + designerId, GlobalResponce.class);
-			ResponseEntity<GlobalResponce> userData = restTemplate.getForEntity(RestTemplateConstants.USER_FOLLOWER_COUNT_URL + designerId, GlobalResponce.class);
+			ResponseEntity<GlobalResponce> userData = restTemplate.getForEntity(USER_SERVICES+RestTemplateConstants.USER_FOLLOWER_COUNT + designerId, GlobalResponce.class);
+//			ResponseEntity<GlobalResponce> userData = restTemplate.getForEntity(RestTemplateConstants.USER_FOLLOWER_COUNT_URL + designerId, GlobalResponce.class);
 			
 			if(!userData.getBody().equals(null)) {
 				String followersData = userData.getBody().getMessage();
@@ -772,7 +772,7 @@ public class ProfileContoller {
 					return designerData;
 				} else {
 					UserDesignerEntity[] userDesignerEntity = restTemplate
-							.getForEntity(RestTemplateConstants.USER_DESIGNER_DETAILS_URL + usermail,
+							.getForEntity(USER_SERVICES + RestTemplateConstants.USER_DESIGNER_DETAILS + usermail,
 									UserDesignerEntity[].class)
 							.getBody();
 					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
@@ -810,7 +810,7 @@ public class ProfileContoller {
 				} else {
 
 					UserDesignerEntity[] userDesignerEntity = restTemplate
-							.getForEntity(RestTemplateConstants.USER_DESIGNER_DETAILS_URL + usermail,
+							.getForEntity(USER_SERVICES+ RestTemplateConstants.USER_DESIGNER_DETAILS + usermail,
 									UserDesignerEntity[].class)
 							.getBody();
 					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
