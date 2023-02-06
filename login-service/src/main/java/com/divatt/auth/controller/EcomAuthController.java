@@ -115,7 +115,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 	@Value("${ADMIN}")
 	private String ADMIN_SERVICE;
 
-	@Value("${USER}")
+	@Value("${USERS}")
 	private String USER_SERVICE;
 	
 	@Value("${DESIGNER_RESET_PASSWORD_LINK}")

@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
 	@Value("${ADMIN}")
 	private String ADMIN_SERVICE;
 
-	@Value("${USER}")
+	@Value("${USERS}")
 	private String USER_SERVICE;
 
 	public ResponseEntity<?> postAccountDetails(@RequestBody AccountEntity accountEntity, String token) {

@@ -124,7 +124,7 @@ public class UserServiceImpl implements UserService {
 	@Value("${ADMIN}")
 	private String ADMIN_SERVICE;
 
-	@Value("${USER}")
+	@Value("${USERS}")
 	private String USER_SERVICE;
 
 	

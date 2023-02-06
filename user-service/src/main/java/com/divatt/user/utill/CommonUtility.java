@@ -116,7 +116,7 @@ public class CommonUtility {
 	@Value("${ADMIN}")
 	private String ADMIN_SERVICE;
 
-	@Value("${USER}")
+	@Value("${USERS}")
 	private String USER_SERVICE;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtility.class);

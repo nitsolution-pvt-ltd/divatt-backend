@@ -86,7 +86,7 @@ public class ProductServiceImp2 implements ProductService2 {
 	@Value("${ADMIN}")
 	private String ADMIN_SERVICE;
 
-	@Value("${USER}")
+	@Value("${USERS}")
 	private String USER_SERVICE;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImp2.class);

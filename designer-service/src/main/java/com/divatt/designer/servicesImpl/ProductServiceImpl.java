@@ -96,7 +96,7 @@ public class ProductServiceImpl implements ProductService{
 	@Value("${ADMIN}")
 	private String ADMIN_SERVICE;
 
-	@Value("${USER}")
+	@Value("${USERS}")
 	private String USER_SERVICE;
 	
 	
