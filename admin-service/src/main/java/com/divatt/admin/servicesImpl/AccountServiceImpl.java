@@ -91,8 +91,8 @@ public class AccountServiceImpl implements AccountService {
 	@Value("${ADMIN}")
 	private String ADMIN_SERVICE;
 
-	@Value("${USER}")
-	private String USER_SERVICE;
+	@Value("${USERS}")
+	private String USER_SERVICES;
 
 	@Override
 	public GlobalResponse postAccountDetails(@RequestBody AccountEntity accountEntity) {
@@ -539,7 +539,7 @@ public class AccountServiceImpl implements AccountService {
 			
 			try {
 				String urlParam="userOrder/transactions?page="+page+"&limit="+limit+"&sort="+sort+"&sortName="+sortName+"&keyword="+keyword+"&paymentStatus="+paymentStatus;
-				getExchange = restTemplate.exchange(USER_SERVICE+urlParam,HttpMethod.GET, httpEntity,Object.class);
+				getExchange = restTemplate.exchange(USER_SERVICES+urlParam,HttpMethod.GET, httpEntity,Object.class);
 				
 			} catch (HttpStatusCodeException ex) {
 				if (LOGGER.isErrorEnabled()) {
