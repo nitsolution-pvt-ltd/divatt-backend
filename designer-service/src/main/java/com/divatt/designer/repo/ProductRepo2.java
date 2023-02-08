@@ -100,7 +100,7 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
 	@Query(value = "{$or: [ { 'productStage' : {$regex:?0,$options:'i'} }, { 'productDetails.occation' : {$regex:?0,$options:'i'} },{ 'Deal.dealName' : {$regex:?0,$options:'i'} },{ 'colour' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'productDetails.productName' : {$regex:?0,$options:'i'} },{ 'productDetails.composition' : {$regex:?0,$options:'i'} },{ 'priceType' : {$regex:?0,$options:'i'} }, { 'mrp' : {$regex:?0,$options:'i'} } ] }")
 	Page<ProductMasterEntity2> findByIsDeletedAndSearch(String keyword, Boolean isDeleted, Pageable pagingSort);
 
-	
+	List<ProductMasterEntity2> findByDesignerId(Integer designerId);
 	
 	
 }
