@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 
 public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEntity, Long> {
@@ -28,6 +29,10 @@ public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEnti
 //	List<DesignerProfileEntity> findByDesignerCategoryAndDesignerCurrentStatus(String designerCategory, String designerCurrentStatus);
 //	
 	List<DesignerProfileEntity> findByDesignerIdIn(List<Long> designerId);
+
+	@Query(value = "{$or: [ { 'designerProfile.displayName' : {$regex:?0,$options:'i'} },{ 'boutiqueProfile.boutiqueName' : {$regex:?0,$options:'i'} } ]"
+			+ "$and: [{'designerId':?1}]}")
+	List<DesignerProfileEntity> findbySearchKeyAndDesignerId(String searchKey, Long designerId);
 
 	
 //	Optional<DesignerProfileEntity> findByDesignerProfileEmail(String email);

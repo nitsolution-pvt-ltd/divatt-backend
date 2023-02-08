@@ -53,17 +53,17 @@ public class CustomFunction {
 
 	RestTemplate restTemplate = new RestTemplate();
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomFunction.class);
-	
+
 	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
 	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
 	private static final Pattern EDGESDHASHES = Pattern.compile("(^-|-$)");
 
 	public String toSlug(String input) {
-	    String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
-	    String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
-	    String slug = NONLATIN.matcher(normalized).replaceAll("");
-	    slug = EDGESDHASHES.matcher(slug).replaceAll("");
-	    return slug.toLowerCase(Locale.ENGLISH);
+		String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
+		String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
+		String slug = NONLATIN.matcher(normalized).replaceAll("");
+		slug = EDGESDHASHES.matcher(slug).replaceAll("");
+		return slug.toLowerCase(Locale.ENGLISH);
 	}
 
 	public ProductMasterEntity filterDataEntity(ProductMasterEntity productData) {
@@ -204,7 +204,7 @@ public class CustomFunction {
 			String slug = this.toSlug(productMasterEntity2.getProductDetails().getProductName());
 			String alphaNumericString = CustomRandomString.getAlphaNumericString(10);
 			ProductMasterEntity2 updateMasterEntity = productRepo2.findById(productId).get();
-			
+
 //			ProductMasterEntity2 updateMasterEntity = new ProductMasterEntity2();
 			ProductStageDetails productStageDetails = new ProductStageDetails();
 //			updateMasterEntity.setProductId(productId);
@@ -249,7 +249,7 @@ public class CustomFunction {
 			updateMasterEntity.setDeal(productMasterEntity2.getDeal());
 			updateMasterEntity.setIsActive(true);
 			updateMasterEntity.setIsDeleted(false);
-			updateMasterEntity.setSlug(slug+"-itm"+alphaNumericString.toLowerCase());
+			updateMasterEntity.setSlug(slug + "-itm" + alphaNumericString.toLowerCase());
 
 			// Product stage
 			productStageDetails.setSubmittedBy(productMasterEntity2.getProductStageDetails().getSubmittedBy());
@@ -262,14 +262,14 @@ public class CustomFunction {
 			updateMasterEntity.setProductStageDetails(productStageDetails);
 
 			return updateMasterEntity;
- 
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	public ProductMasterEntity2 addProductMasterData(ProductMasterEntity2 filterProductEntity) {
-		
+
 		try {
 			String slug = this.toSlug(filterProductEntity.getProductDetails().getProductName());
 			String alphaNumericString = CustomRandomString.getAlphaNumericString(10);
@@ -313,7 +313,7 @@ public class CustomFunction {
 //			filterProductEntity.setUpdatedOn(productMasterEntity2.getUpdatedOn());
 //			filterProductEntity.setUpdatedBy(productMasterEntity2.getUpdatedBy());
 			filterProductEntity.setAdminStatus("Pending");
-			filterProductEntity.setSlug(slug+"-itm"+alphaNumericString.toLowerCase());
+			filterProductEntity.setSlug(slug + "-itm" + alphaNumericString.toLowerCase());
 
 			// Product stage
 			productStageDetails.setSubmittedBy(filterProductEntity.getProductStageDetails().getSubmittedBy());
@@ -341,7 +341,7 @@ public class CustomFunction {
 			DesignerProfileEntity designerProfileEntity = new DesignerProfileEntity();
 			DesignerProfile designerProfile = new DesignerProfile();
 			BoutiqueProfile boutiqueProfile = new BoutiqueProfile();
-			
+
 			designerProfileEntity.setId(body.getId());
 			designerProfileEntity.setAccountStatus(body.getAccountStatus());
 			designerProfileEntity.setBoutiqueProfile(body.getBoutiqueProfile());
@@ -359,7 +359,7 @@ public class CustomFunction {
 			designerProfileEntity.setSocialProfile(body.getSocialProfile());
 			designerProfileEntity.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 			designerProfileEntity.setUid(designerLoginEntity.getUid());
-		
+
 			designerProfile.setDesignerCategory(designerLoginEntity.getDesignerCategory());
 			designerProfile.setDisplayName(designerLoginEntity.getDisplayName());
 			designerProfile.setAltMobileNo(body.getDesignerProfile().getAltMobileNo());
@@ -400,7 +400,7 @@ public class CustomFunction {
 			designerProfile.setPinCode(body.getDesignerProfile().getPinCode());
 			designerProfile.setState(body.getDesignerProfile().getState());
 			designerProfile.setUid(body.getDesignerProfile().getUid());
-			
+
 			designerProfileEntity.setDesignerProfile(designerProfile);
 			designerProfileEntity.setBoutiqueProfile(boutiqueProfile);
 

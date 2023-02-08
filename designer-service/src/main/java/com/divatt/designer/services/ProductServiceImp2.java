@@ -53,7 +53,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 @Service
 public class ProductServiceImp2 implements ProductService2 {
 	@Autowired
@@ -76,7 +75,7 @@ public class ProductServiceImp2 implements ProductService2 {
 
 	@Autowired
 	private MongoOperations mongoOperations;
-	
+
 	@Value("${DESIGNER}")
 	private String DESIGNER_SERVICE;
 
@@ -101,20 +100,19 @@ public class ProductServiceImp2 implements ProductService2 {
 			List<UserProfileInfo> userInfoList = new ArrayList<UserProfileInfo>();
 			List<Long> userId = new ArrayList<Long>();
 
-			ResponseEntity<String> forEntity = restTemplate.getForEntity(USER_SERVICE+
-					RestTemplateConstants.USER_FOLLOWEDUSERLIST + entity2.getDesignerId(), String.class);
+			ResponseEntity<String> forEntity = restTemplate.getForEntity(
+					USER_SERVICE + RestTemplateConstants.USER_FOLLOWEDUSERLIST + entity2.getDesignerId(), String.class);
 			String data = forEntity.getBody();
 			JSONArray jsonArray = new JSONArray(data);
 
-			
 			jsonArray.forEach(array -> {
 				ObjectMapper objectMapper = new ObjectMapper();
 				UserProfile readValue;
 
 				try {
 					readValue = objectMapper.readValue(array.toString(), UserProfile.class);
-					ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(USER_SERVICE+
-							RestTemplateConstants.USER_GET_USER_ID + readValue.getUserId(),
+					ResponseEntity<UserProfileInfo> userInfo = restTemplate.getForEntity(
+							USER_SERVICE + RestTemplateConstants.USER_GET_USER_ID + readValue.getUserId(),
 							UserProfileInfo.class);
 					userInfoList.add(userInfo.getBody());
 				} catch (JsonMappingException e) {
@@ -131,15 +129,17 @@ public class ProductServiceImp2 implements ProductService2 {
 
 			Integer productId = entity2.getProductId();
 			ProductMasterEntity2 productMasterEntity = productRepo2.findById(productId).get();
-			DesignerProfileEntity designerProfile = designerProfileRepo.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
+			DesignerProfileEntity designerProfile = designerProfileRepo
+					.findBydesignerId(productMasterEntity.getDesignerId().longValue()).get();
 			ImageEntity[] images = productMasterEntity.getImages();
 			String image1 = images[0].getLarge();
 
 			Map<String, Object> data2 = new HashMap<String, Object>();
 			userInfoList.forEach(user -> {
 				String designerImageData = "";
-				Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo.findBydesignerId(entity2.getDesignerId().longValue());
-				if(findBydesignerId.isPresent()){
+				Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo
+						.findBydesignerId(entity2.getDesignerId().longValue());
+				if (findBydesignerId.isPresent()) {
 					designerImageData = findBydesignerId.get().getDesignerProfile().getProfilePic();
 				}
 				EmailEntity emailEntity = new EmailEntity();
@@ -184,8 +184,10 @@ public class ProductServiceImp2 implements ProductService2 {
 
 				productRepo2.save(customFunction.updateProductData(productMasterEntity2, productId));
 				try {
-					LoginEntity forEntity = restTemplate.getForEntity(ADMIN_SERVICE+RestTemplateConstants.ADMIN_ROLE_NAME
-							+ MessageConstant.ADMIN_ROLES.getMessage(), LoginEntity.class).getBody();
+					LoginEntity forEntity = restTemplate
+							.getForEntity(ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME
+									+ MessageConstant.ADMIN_ROLES.getMessage(), LoginEntity.class)
+							.getBody();
 					String email2 = forEntity.getEmail();
 					Integer designerId = productMasterEntity2.getDesignerId();
 					DesignerProfileEntity findBydesignerId = designerProfileRepo
@@ -279,12 +281,12 @@ public class ProductServiceImp2 implements ProductService2 {
 				ProductMasterEntity2 productMasterEntity2 = list.get(0);
 				DesignerProfileEntity designerProfileEntity = designerProfileRepo
 						.findBydesignerId(productMasterEntity2.getDesignerId().longValue()).get();
-				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE+
-						RestTemplateConstants.SUBCATEGORY_VIEW + productMasterEntity2.getSubCategoryId(),
+				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE
+						+ RestTemplateConstants.SUBCATEGORY_VIEW + productMasterEntity2.getSubCategoryId(),
 						SubCategoryEntity.class);
 
-				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-						RestTemplateConstants.CATEGORY_VIEW + productMasterEntity2.getCategoryId(),
+				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+						ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + productMasterEntity2.getCategoryId(),
 						CategoryEntity.class);
 
 				productMasterEntity2.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -330,16 +332,17 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.findByIsDeleted(isDeleted, pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
-							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
-									.getForEntity(ADMIN_SERVICE+RestTemplateConstants.SUBCATEGORY_VIEW
-											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
-							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-									RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE
+									+ RestTemplateConstants.SUBCATEGORY_VIEW + catagoryData.getSubCategoryId(),
+									SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
 									CategoryEntity.class);
 							DesignerProfile designerProfile = new DesignerProfile();
-							DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
-									RestTemplateConstants.DESIGNER_BY_ID + catagoryData.getDesignerId(),
-									DesignerProfileEntity.class).getBody();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BY_ID
+											+ catagoryData.getDesignerId(), DesignerProfileEntity.class)
+									.getBody();
 
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
@@ -370,16 +373,17 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Pending", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
-							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
-									.getForEntity(ADMIN_SERVICE+ RestTemplateConstants.SUBCATEGORY_VIEW
-											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
-							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-									RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE
+									+ RestTemplateConstants.SUBCATEGORY_VIEW + catagoryData.getSubCategoryId(),
+									SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
 									CategoryEntity.class);
 							DesignerProfile designerProfile = new DesignerProfile();
-							DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
-									RestTemplateConstants.DESIGNER_BY_ID + catagoryData.getDesignerId(),
-									DesignerProfileEntity.class).getBody();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BY_ID
+											+ catagoryData.getDesignerId(), DesignerProfileEntity.class)
+									.getBody();
 
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
@@ -410,16 +414,17 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Approved", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
-							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
-									.getForEntity(ADMIN_SERVICE+RestTemplateConstants.SUBCATEGORY_VIEW
-											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
-							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-									RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE
+									+ RestTemplateConstants.SUBCATEGORY_VIEW + catagoryData.getSubCategoryId(),
+									SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
 									CategoryEntity.class);
 							DesignerProfile designerProfile = new DesignerProfile();
-							DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
-									RestTemplateConstants.DESIGNER_BY_ID + catagoryData.getDesignerId(),
-									DesignerProfileEntity.class).getBody();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BY_ID
+											+ catagoryData.getDesignerId(), DesignerProfileEntity.class)
+									.getBody();
 
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
@@ -450,16 +455,17 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.findByIsDeletedAndAdminStatus(isDeleted, "Rejected", pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
-							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
-									.getForEntity(ADMIN_SERVICE+RestTemplateConstants.SUBCATEGORY_VIEW
-											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
-							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-									RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE
+									+ RestTemplateConstants.SUBCATEGORY_VIEW + catagoryData.getSubCategoryId(),
+									SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
 									CategoryEntity.class);
 							DesignerProfile designerProfile = new DesignerProfile();
-							DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
-									RestTemplateConstants.DESIGNER_BY_ID + catagoryData.getDesignerId(),
-									DesignerProfileEntity.class).getBody();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BY_ID
+											+ catagoryData.getDesignerId(), DesignerProfileEntity.class)
+									.getBody();
 
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
@@ -492,16 +498,17 @@ public class ProductServiceImp2 implements ProductService2 {
 					findAll = productRepo2.SearchAndfindByIsDeleted(keyword, isDeleted, pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
-							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
-									.getForEntity(ADMIN_SERVICE+RestTemplateConstants.SUBCATEGORY_VIEW
-											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
-							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-									RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE
+									+ RestTemplateConstants.SUBCATEGORY_VIEW + catagoryData.getSubCategoryId(),
+									SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
 									CategoryEntity.class);
 							DesignerProfile designerProfile = new DesignerProfile();
-							DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
-									RestTemplateConstants.DESIGNER_BY_ID + catagoryData.getDesignerId(),
-									DesignerProfileEntity.class).getBody();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BY_ID
+											+ catagoryData.getDesignerId(), DesignerProfileEntity.class)
+									.getBody();
 
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
@@ -529,19 +536,21 @@ public class ProductServiceImp2 implements ProductService2 {
 						}
 					});
 				} else if (adminStatus.equals("pending")) {
-					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Pending", pagingSort);
+					findAll = productRepo2.SearchAndfindByIsDeletedAndAdminStatus(keyword, isDeleted, "Pending",
+							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
-							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
-									.getForEntity(ADMIN_SERVICE+RestTemplateConstants.SUBCATEGORY_VIEW
-											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
-							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-									RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE
+									+ RestTemplateConstants.SUBCATEGORY_VIEW + catagoryData.getSubCategoryId(),
+									SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
 									CategoryEntity.class);
 							DesignerProfile designerProfile = new DesignerProfile();
-							DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
-									RestTemplateConstants.DESIGNER_BY_ID + catagoryData.getDesignerId(),
-									DesignerProfileEntity.class).getBody();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BY_ID
+											+ catagoryData.getDesignerId(), DesignerProfileEntity.class)
+									.getBody();
 
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
@@ -573,16 +582,17 @@ public class ProductServiceImp2 implements ProductService2 {
 							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
-							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
-									.getForEntity(ADMIN_SERVICE+ RestTemplateConstants.SUBCATEGORY_VIEW
-											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
-							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-									RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE
+									+ RestTemplateConstants.SUBCATEGORY_VIEW + catagoryData.getSubCategoryId(),
+									SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
 									CategoryEntity.class);
 							DesignerProfile designerProfile = new DesignerProfile();
-							DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
-									RestTemplateConstants.DESIGNER_BY_ID + catagoryData.getDesignerId(),
-									DesignerProfileEntity.class).getBody();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BY_ID
+											+ catagoryData.getDesignerId(), DesignerProfileEntity.class)
+									.getBody();
 
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
@@ -614,16 +624,17 @@ public class ProductServiceImp2 implements ProductService2 {
 							pagingSort);
 					findAll.getContent().forEach(catagoryData -> {
 						try {
-							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate
-									.getForEntity(ADMIN_SERVICE+ RestTemplateConstants.SUBCATEGORY_VIEW
-											+ catagoryData.getSubCategoryId(), SubCategoryEntity.class);
-							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-									RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
+							ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE
+									+ RestTemplateConstants.SUBCATEGORY_VIEW + catagoryData.getSubCategoryId(),
+									SubCategoryEntity.class);
+							ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+									ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + catagoryData.getCategoryId(),
 									CategoryEntity.class);
 							DesignerProfile designerProfile = new DesignerProfile();
-							DesignerProfileEntity forEntity = restTemplate.getForEntity(DESIGNER_SERVICE+
-									RestTemplateConstants.DESIGNER_BY_ID + catagoryData.getDesignerId(),
-									DesignerProfileEntity.class).getBody();
+							DesignerProfileEntity forEntity = restTemplate
+									.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BY_ID
+											+ catagoryData.getDesignerId(), DesignerProfileEntity.class)
+									.getBody();
 							designerProfile.setAltMobileNo(forEntity.getDesignerProfile().getAltMobileNo());
 							designerProfile.setCity(forEntity.getDesignerProfile().getCity());
 							designerProfile.setCountry(forEntity.getDesignerProfile().getCountry());
@@ -969,11 +980,11 @@ public class ProductServiceImp2 implements ProductService2 {
 				Page<ProductMasterEntity2> findByProductIdIn = productRepo2.findByProductIdIn(productIdList,
 						pagingSort);
 				findByProductIdIn.getContent().forEach(productData -> {
-					ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE+
-							RestTemplateConstants.SUBCATEGORY_VIEW + productData.getSubCategoryId(),
+					ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+							ADMIN_SERVICE + RestTemplateConstants.SUBCATEGORY_VIEW + productData.getSubCategoryId(),
 							SubCategoryEntity.class);
-					ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-							RestTemplateConstants.CATEGORY_VIEW + productData.getCategoryId(),
+					ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+							ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + productData.getCategoryId(),
 							CategoryEntity.class);
 					DesignerProfileEntity designerProfileEntity = designerProfileRepo
 							.findBydesignerId(Long.parseLong(productData.getDesignerId().toString())).get();
@@ -1050,13 +1061,26 @@ public class ProductServiceImp2 implements ProductService2 {
 				if (designerRow.getDesignerCurrentStatus().equals("Online")) {
 					List<ProductMasterEntity2> findProduct = new ArrayList<>();
 					if (!searchKey.equals("")) {
-						findProduct = productRepo2.findbySearchKeyAndDesignerId(searchKey,designerRow.getDesignerId());
+						findProduct = productRepo2.findbySearchKeyAndDesignerId(searchKey, designerRow.getDesignerId());
+						if (findProduct.isEmpty()) {
+							List<DesignerProfileEntity> displayName = designerProfileRepo
+									.findbySearchKeyAndDesignerId(searchKey, designerRow.getDesignerId());
+							for (DesignerProfileEntity did : displayName) {
+								Integer designerIds = Integer.parseInt(did.getDesignerId().toString());
+								List<ProductMasterEntity2> findByDesignerId = productRepo2
+										.findByDesignerId(designerIds);
+								for (ProductMasterEntity2 prod : findByDesignerId) {
+									prod.setDesignerProfile(did.getDesignerProfile());
+								}
+								findProduct = findByDesignerId;
+							}
+						}
 					} else {
 						findProduct = productRepo2.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerId(false,
 								"Approved", true, designerRow.getDesignerId());
 					}
 					productMasterData.addAll(findProduct);
-					
+
 				}
 			});
 
@@ -1065,7 +1089,7 @@ public class ProductServiceImp2 implements ProductService2 {
 					maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice, labelType);
 			int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 			int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filterProduct.size());
-			
+
 			List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
 					: filterProduct.subList(startOfPage, endOfPage);
 			findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filterProduct.size());
@@ -1110,12 +1134,12 @@ public class ProductServiceImp2 implements ProductService2 {
 								"Online")
 						.get();
 
-				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE+
-						RestTemplateConstants.SUBCATEGORY_VIEW + productMasterEntity.getSubCategoryId(),
+				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(
+						ADMIN_SERVICE + RestTemplateConstants.SUBCATEGORY_VIEW + productMasterEntity.getSubCategoryId(),
 						SubCategoryEntity.class);
 
-				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-						RestTemplateConstants.CATEGORY_VIEW + productMasterEntity.getCategoryId(),
+				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+						ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + productMasterEntity.getCategoryId(),
 						CategoryEntity.class);
 
 				productMasterEntity.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -1149,12 +1173,12 @@ public class ProductServiceImp2 implements ProductService2 {
 				DesignerProfileEntity designerProfileEntity = designerProfileRepo
 						.findBydesignerId(productMasterEntity22.getDesignerId().longValue()).get();
 
-				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE+
-						RestTemplateConstants.SUBCATEGORY_VIEW + productMasterEntity22.getSubCategoryId(),
+				ResponseEntity<SubCategoryEntity> subCatagory = restTemplate.getForEntity(ADMIN_SERVICE
+						+ RestTemplateConstants.SUBCATEGORY_VIEW + productMasterEntity22.getSubCategoryId(),
 						SubCategoryEntity.class);
 
-				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(ADMIN_SERVICE+
-						RestTemplateConstants.CATEGORY_VIEW + productMasterEntity22.getCategoryId(),
+				ResponseEntity<CategoryEntity> catagory = restTemplate.getForEntity(
+						ADMIN_SERVICE + RestTemplateConstants.CATEGORY_VIEW + productMasterEntity22.getCategoryId(),
 						CategoryEntity.class);
 
 				productMasterEntity22.setSubCategoryName(subCatagory.getBody().getCategoryName());
@@ -1191,10 +1215,11 @@ public class ProductServiceImp2 implements ProductService2 {
 			} else {
 				findAll = productRepo2.findByIsDeletedAndSearch(keyword, false, pagingSort);
 
-			}			
+			}
 			CategoryEntity[] categoryDetails = restTemplate
-			.getForEntity(ADMIN_SERVICE+RestTemplateConstants.GET_ALL_CATEGORYDETAILS, CategoryEntity[].class).getBody();
-					
+					.getForEntity(ADMIN_SERVICE + RestTemplateConstants.GET_ALL_CATEGORYDETAILS, CategoryEntity[].class)
+					.getBody();
+
 			List<CategoryEntity> categoryList = Arrays.asList(categoryDetails);
 
 			if (categoryList.size() > 0) {
@@ -1208,8 +1233,7 @@ public class ProductServiceImp2 implements ProductService2 {
 								returnStatus, maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice,
 								labelType);
 
-
-				     int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+						int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
 						int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filterProduct.size());
 						List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
 								: filterProduct.subList(startOfPage, endOfPage);
