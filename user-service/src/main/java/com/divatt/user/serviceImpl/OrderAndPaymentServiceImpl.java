@@ -847,7 +847,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
 
-						.filter(e -> e.getOrderItemStatus().equals(orderItemStatus))
+						.filter(e -> orderItemStatus.equals(e.getOrderItemStatus()))
 						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword.toUpperCase()) : true)
 						.filter(e -> {
 							if (!startDate.isBlank() && !endDate.isBlank()) {
@@ -992,7 +992,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("requestCancelation",orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation").size());
 			response.put("returnRequestApproved", orderSKUDetailsRepo.findByOrderTotal(designerId, "Return request approved").size());
 			response.put("productShippedByUser", orderSKUDetailsRepo.findByOrderTotal(designerId, "Product shipped by user").size());
-			response.put("productReceivedFromUser", orderSKUDetailsRepo.findByOrderTotal(designerId, "Product receved from user").size());
+			response.put("productReceivedFromUser", orderSKUDetailsRepo.findByOrderTotal(designerId, "Product received from user").size());
 			response.put("returnRejectedByAdmin", orderSKUDetailsRepo.findByOrderItemStatus("Return rejected by admin").size());
 			return response;
 		} catch (Exception e) {
@@ -2601,7 +2601,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			response.put("rejected", orderSKUDetailsRepo.findByOrderItemStatus("Rejected").size());
 			response.put("returnRequestApproved", orderSKUDetailsRepo.findByOrderItemStatus("Return request approved").size());
 			response.put("productShippedByUser", orderSKUDetailsRepo.findByOrderItemStatus("Product shipped by user").size());
-			response.put("productReceivedFromUser", orderSKUDetailsRepo.findByOrderItemStatus("Product receved from user").size());
+			response.put("productReceivedFromUser", orderSKUDetailsRepo.findByOrderItemStatus("Product received from user").size());
 			response.put("returnRejectedByAdmin", orderSKUDetailsRepo.findByOrderItemStatus("Return rejected by admin").size());
 			return response;
 
