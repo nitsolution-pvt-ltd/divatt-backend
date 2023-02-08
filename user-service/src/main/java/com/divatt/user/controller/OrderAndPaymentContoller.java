@@ -659,9 +659,9 @@ public class OrderAndPaymentContoller {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.parseMediaType("application/pdf"));
-		String filename = "Order.pdf";
+		//String filename = "Order.pdf";
 
-		headers.add("content-disposition", "inline;filename=" + filename);
+		headers.add("content-disposition", "inline;filename=" + id + ".pdf");
 		headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(arr, headers, HttpStatus.OK);
 		return response;
