@@ -4,6 +4,9 @@ public class CancelationRequestDTO {
 	
 	private String comment;
 	private String orderStatus;
+	private String canceledBy;
+	private Object updatedBy;
+	
 	public CancelationRequestDTO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -28,6 +31,18 @@ public class CancelationRequestDTO {
 	}
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
+	}
+	public String getCanceledBy() {
+		return canceledBy;
+	}
+	public void setCanceledBy(String canceledBy) {
+		this.canceledBy = canceledBy;
+	}
+	public Object getUpdatedBy() {
+		return updatedBy;
+	}
+	public void setUpdatedBy(Object updatedBy) {
+		this.updatedBy = updatedBy;
 	}
 	
 }

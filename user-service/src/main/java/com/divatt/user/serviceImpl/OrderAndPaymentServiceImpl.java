@@ -1358,6 +1358,16 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ORDER_CANCEL.getMessage(), 200);
 
+			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("Request for cancelation")) {
+				skuDetailsEntity.setId(skuDetailsEntity.getId());
+				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
+				skuDetailsEntity.setOrderStatusDetails(orderSKUDetailsEntity.getOrderStatusDetails());
+				orderSKUDetailsRepo.save(skuDetailsEntity);
+
+				commonUtility.orderCancel(skuDetailsEntity);
+				return new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.ORDER_CANCEL.getMessage(), 200);
+
 			} else if (orderSKUDetailsEntity.getOrderItemStatus().equals("returnRequest")) {
 				skuDetailsEntity.setId(skuDetailsEntity.getId());
 				skuDetailsEntity.setOrderItemStatus(orderSKUDetailsEntity.getOrderItemStatus());
@@ -1807,6 +1817,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					if (cancelationRequestDTO.getOrderStatus().equals("Request for cancelation")) {
 						jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
 						jsonObject.put("cancelationTime", format);
+						jsonObject.put("canceledBy", cancelationRequestDTO.getCanceledBy());
+						jsonObject.put("updatedBy", cancelationRequestDTO.getUpdatedBy());
 						orderStatusDetails.setCancelOrderDetails(jsonObject);
 						orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
 						orderDetails.get(0).setOrderItemStatus("Request for cancelation");
@@ -1824,6 +1836,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				if (cancelationRequestDTO.getOrderStatus().equals("Request for cancelation")) {
 					jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
 					jsonObject.put("cancelationTime", format);
+					jsonObject.put("canceledBy", cancelationRequestDTO.getCanceledBy());
+					jsonObject.put("updatedBy", cancelationRequestDTO.getUpdatedBy());
 					orderStatusDetails.setCancelOrderDetails(jsonObject);
 					orderDetails.get(0).setOrderStatusDetails(orderStatusDetails);
 					orderDetails.get(0).setOrderItemStatus("Request for cancelation");

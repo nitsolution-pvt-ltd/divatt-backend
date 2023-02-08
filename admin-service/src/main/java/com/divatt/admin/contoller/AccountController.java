@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import com.divatt.admin.services.AccountService;
 import com.divatt.admin.utility.AccountExcelExporter;
 import com.divatt.admin.utility.CommonUtility;
 import com.divatt.admin.utility.DesignerAccountExcelExporter;
+import com.google.gson.Gson;
 
 
 @RestController
@@ -65,6 +67,9 @@ public class AccountController {
 	
 	@Autowired
 	private CommonUtility commonUtility;
+	
+	@Autowired
+	private Gson gson;
 	
 	
 	@PostMapping("/add")
@@ -290,7 +295,10 @@ public class AccountController {
 				String headerKey = "Content-Disposition";
 				String headerValue = "attachment; filename=Divatt_payments_report_" + currentDateTime + ".xlsx";
 				response.setHeader(headerKey, headerValue);
-	
+				
+				JSONObject json =new JSONObject(gson.toJson(designerDetails.getBody()));
+				designerId=json.get("dId").toString();
+				
 				List<AccountEntity> listUsers = accountService.excelReportService(designerReturn, serviceCharge, govtCharge,
 						userOrder, ReturnStatus, settlement, year, month, designerId);
 				DesignerAccountExcelExporter excelExporter = new DesignerAccountExcelExporter(listUsers);

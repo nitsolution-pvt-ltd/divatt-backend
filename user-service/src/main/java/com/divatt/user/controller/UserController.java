@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -605,10 +607,14 @@ public class UserController {
 		try {
 			Optional<UserLoginEntity> findByEmail = userLoginRepo
 					.findByEmail(jwtUtil.extractUsername(token.substring(7)));
+			if(!findByEmail.isPresent()) {
+				throw new CustomException("User "+MessageConstant.ID_NOT_FOUND.getMessage());
+			}
 			List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(findByEmail.get().getId());
-			if (findByUserId.size() < 1)
+			if (findByUserId.size() <= 0)
 				throw new CustomException(MessageConstant.NO_ADDRESS_FOUND.getMessage());
 			return ResponseEntity.ok(findByUserId);
+			
 		} catch (ExpiredJwtException e) {
 			LOGGER.error("Error",e.getLocalizedMessage());
 			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.UNAUTHORIZED);
@@ -880,5 +886,18 @@ public class UserController {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	@RequestMapping(value = "processing", method = RequestMethod.GET)
+	public Map<String, String> processData(HttpServletRequest request) {
+
+		Map<String, String> map = new HashMap<>();
+			map.put("getRemoteAddr",request.getRemoteAddr());
+			map.put("getRemoteHost",request.getRemoteHost());
+			map.put("getRemoteUser",request.getRemoteUser());
+			map.put("X-FORWARDED-FOR",request.getHeader("X-FORWARDED-FOR"));
+			return map;
+
+	        // some other code
+	    }
 
 }
