@@ -500,7 +500,7 @@ public class AccountServiceImpl implements AccountService {
 			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);
 			HttpHeaders headers = new HttpHeaders();
 			
-			headers.add("Content-Disposition", "attachment; filename=" + order.get(0).getService_charge().getDesigner_invoice_id()+".pdf");
+			headers.add("Content-Disposition", "attachment; filename=" + orderId +".pdf");
 			if (LOGGER.isInfoEnabled()) {
 				LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,
 						host + contextPath + "/account/getDesignerInvoice/"+orderId+"/"+designerId, "Success", HttpStatus.OK);

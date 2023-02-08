@@ -140,7 +140,7 @@ public class OrderServiceImpl implements OrderService {
 			HtmlConverter.convertToPdf(htmlContent, target, converterProperties);
 			byte[] bytes = target.toByteArray();
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Disposition", "attachment; filename=" + "OrderInvoice" + orderId + ".pdf");
+			headers.add("Content-Disposition", "attachment; filename=" + orderId + ".pdf");
 			return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(bytes);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

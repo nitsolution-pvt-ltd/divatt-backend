@@ -7,7 +7,7 @@
     <title>Document</title> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 <link
 	href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap"
 	rel="stylesheet">
@@ -59,7 +59,7 @@
 								<table style="width: 100%;">
 									<!--<tr><td ><span></span></td></tr> -->
 									<tr>
-										<td style="color: #000; font-weight: 600;">
+										<td style="color: #000; font-family: 'Roboto', sans-serif;">
 
 											<div>
 												<span>GSTIN</span> <span th:text="${data1.adminGst}"></span>
@@ -100,7 +100,7 @@
 								style="font-size: 16px; line-height: 22px; color: #000; width: 100%">
 								<table style="width: 100%;">
 									<tr>
-										<td style="color: #000; font-weight: 600;">
+										<td style="color: #000; font-family: 'Roboto', sans-serif;">
 											<div>
 												<span>Boutique Name :</span> <span
 													th:text="${boutiqueName}"></span>
@@ -154,35 +154,35 @@
 			<tbody>
 				<tr th:each="data1 : ${data}">
 					<td
-						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-weight: 600; font-size: 12px; color: #000; max-width: 80px; min-width: 120px;">
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000; max-width: 80px; min-width: 120px;">
 						<th:block th:text="${data1.productName}"></th:block>
 					</td>
 					<td
-						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: center; font-weight: 600; font-size: 12px; color: #000; min-width: 50px;">
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: center; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000; min-width: 50px;">
 						<th:block th:text="${data1.hsnCode}"></th:block>
 					</td>
 					<td
-						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-weight: 600; font-size: 12px; color: #000;">
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
 						<th:block th:text="${data1.fee}"></th:block>
 					</td>
 					<td
-						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-weight: 600; font-size: 12px; color: #000;">
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
 						<th:block th:text="${data1.tcs}"></th:block>
 					</td>
 					<td
-						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-weight: 600; font-size: 12px; color: #000;">
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
 						<th:block th:text="${data1.cgst}"></th:block>
 					</td>
 					<td
-						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-weight: 600; font-size: 12px; color: #000;">
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
 						<th:block th:text="${data1.sgst}"></th:block>
 					</td>
 					<td
-						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-weight: 600; font-size: 12px; color: #000;">
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
 						<th:block th:text="${data1.igst}"></th:block>
 					</td>
 					<td
-						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-weight: 600; font-size: 12px; color: #000;">
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
 						<th:block th:text="${data1.total}"></th:block>
 					</td>
 				</tr>
@@ -191,16 +191,16 @@
 					<td style="padding: 10px 0;" colspan="2">
 						<!-- <th:block th:text="${data1.total}">1111</th:block>  --> Total
 					</td>
-					<td style="padding: 10px 0;"><th:block th:text="${totalGross}"></th:block>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${totalGross}"></th:block>
 					</td>
-					<td style="padding: 10px 0;"><th:block th:text="${totalTcs}"></th:block></td>
-					<td style="padding: 10px 0;"><th:block th:text="${totalCgst}"></th:block>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${totalTcs}"></th:block></td>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${totalCgst}"></th:block>
 					</td>
-					<td style="padding: 10px 0;"><th:block th:text="${totalSgst}"></th:block>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${totalSgst}"></th:block>
 					</td>
-					<td style="padding: 10px 0;"><th:block th:text="${totalIgst}"></th:block>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${totalIgst}"></th:block>
 					</td>
-					<td style="padding: 10px 0;"><th:block th:text="${total}"></th:block>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${total}"></th:block>
 					</td>
 				</tr>
 				<tr>
@@ -222,9 +222,11 @@
 				</tr>
 			</tbody>
 		</table>
-		<div style="text-align: right; padding-right: 20px; font-weight: 600;">
-			Name of seller : <span th:text="${designerName}"></span>
-		</div>
+		<div style="text-align: right;padding-right: 20px;font-weight: 600;">
+            Name of seller
+            <br>
+            <span th:text="${designerName}"></span>
+        </div>
 		<!-- <table>
             <tbody>
                 <tr>
