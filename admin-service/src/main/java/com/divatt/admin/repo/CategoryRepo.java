@@ -26,11 +26,9 @@ public interface CategoryRepo extends MongoRepository<CategoryEntity, Integer>{
 	
 	Page<CategoryEntity> findByIsDeletedAndParentId(Boolean isDeleted,String parentId,Pageable pagingSort);
 	
-//	@Query("{ 'categoryName' : ?0, 'isDeleted' : ?1 }")
 	@Query(value = "{ $or: [ { 'categoryName' : {$regex:?0,$options:'i'} }, { 'categoryDescription' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'categoryImage' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1 }],$and: [ { 'parentId' : ?2 }]}")
     Page<CategoryEntity> Search(String sortKey, Boolean isDeleted,String parentId,Pageable pageable);
 
 	List<CategoryEntity> findByIsDeletedAndIsActiveAndParentId(Boolean isDeleted, Boolean Status,String string);
 
-//	Optional<CategoryEntity> findByIsDeletedAndParentId(String falses, String string);
 }
