@@ -3,14 +3,17 @@ package com.divatt.admin.servicesImpl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,18 +24,23 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.client.RestTemplate;
 
 import com.divatt.admin.constant.MessageConstant;
+import com.divatt.admin.constant.RestTemplateConstants;
 import com.divatt.admin.entity.CategoryEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.SubCategoryEntity;
 import com.divatt.admin.entity.UserCategoryResponse;
 import com.divatt.admin.entity.UserResponseEntity;
+import com.divatt.admin.entity.product.ProductMasterEntity2;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.CategoryRepo;
 import com.divatt.admin.repo.SubCategoryRepo;
 import com.divatt.admin.services.CategoryService;
 import com.divatt.admin.services.SequenceGenerator;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Service
@@ -51,6 +59,25 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Autowired
 	private MongoOperations mongoOperations;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
+
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
+
+	@Value("${ADMIN}")
+	private String ADMIN_SERVICE;
+
+	@Value("${USERS}")
+	private String USER_SERVICE;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
+	
 
 	public GlobalResponse postCategoryDetails(@RequestBody CategoryEntity categoryEntity) {
 		LOGGER.info("Inside - CategoryServiceImpl.postCategoryDetails()");
@@ -326,21 +353,47 @@ public class CategoryServiceImpl implements CategoryService {
 		try {
 
 			List<UserCategoryResponse> categoryList = new ArrayList<UserCategoryResponse>();
-			List<CategoryEntity> listOfCategory = categoryRepo.findByIsDeletedAndIsActiveAndParentId(false, true, "0");
-			// System.out.println(listOfCategory);
-			for (int i = 0; i < listOfCategory.size(); i++) {
-				UserCategoryResponse categoryResponse = new UserCategoryResponse();
-				categoryResponse.setId(listOfCategory.get(i).getId());
-				// System.out.println(listOfCategory.get(i).getId());
-				categoryResponse.setCategoryDescription(listOfCategory.get(i).getCategoryDescription());
-				categoryResponse.setCategoryImage(listOfCategory.get(i).getCategoryImage());
-				categoryResponse.setCategoryName(listOfCategory.get(i).getCategoryName());
-				categoryResponse.setSubCategoryEntities(categoryRepo.findByIsDeletedAndIsActiveAndParentId(false, true,
-						listOfCategory.get(i).getId().toString()));
-				categoryList.add(categoryResponse);
-				// categoryIdList.add(listOfCategory.get(i).getId());
+			List<CategoryEntity> listOfCategory = new ArrayList<>();
+			List<ProductMasterEntity2> productList = new ArrayList<>();
+			Set<Integer> SetOfCategory = new HashSet<Integer>();
+			
+			try {
+				ResponseEntity<Object> productObj = restTemplate.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.PRODUCT_LIST,
+						Object.class);
+				productList = (List)productObj.getBody();
+				productList = objectMapper.convertValue(productObj.getBody(), new TypeReference<List<ProductMasterEntity2>>(){}
+					);
+				
+			} catch (Exception e) {
+				LOGGER.error("Category list using products from live "+e.getLocalizedMessage());
 			}
+			
+			productList.forEach(ea->{
+					ProductMasterEntity2 categoryEntity = ea;
+					SetOfCategory.add(categoryEntity.getCategoryId());
+			});
+			
+			SetOfCategory.forEach(ea->{
+				Optional<CategoryEntity> listOfCategorys = categoryRepo.findById(ea);
+				if(listOfCategorys.isPresent()) {
+					CategoryEntity categoryEntity = listOfCategorys.get();
+					listOfCategory.add(categoryEntity);
+				}
+			});
+			
+			for(CategoryEntity categoryRow : listOfCategory) {
 
+				UserCategoryResponse categoryResponse = new UserCategoryResponse();
+				categoryResponse.setId(categoryRow.getId());
+				categoryResponse.setCategoryDescription(categoryRow.getCategoryDescription());
+				categoryResponse.setCategoryImage(categoryRow.getCategoryImage());
+				categoryResponse.setCategoryName(categoryRow.getCategoryName());
+				productList.forEach(e->{
+					categoryResponse.setSubCategoryEntities(categoryRepo.findByIsDeletedAndIsActiveAndParentId(false, true,
+							e.getCategoryId().toString()));
+				});
+				categoryList.add(categoryResponse);
+			}
 			return categoryList;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -351,7 +404,6 @@ public class CategoryServiceImpl implements CategoryService {
 		try {
 			Query query = new Query();
 			Query query1 = new Query();
-			// CategoryEntity categoryEntity= new CategoryEntity();
 			UserResponseEntity responseEntity = new UserResponseEntity();
 			query.addCriteria(Criteria.where("categoryName").is(categoryName));
 			CategoryEntity categoryEntity = mongoOperations.findOne(query, CategoryEntity.class);

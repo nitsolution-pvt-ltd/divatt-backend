@@ -19,5 +19,6 @@ public class RestTemplateConstants {
 	public static String AUTH_PRESENT=AUTH_SERVICE+"auth/Present/";
 	public static String AUTH_SEND_MAIL=AUTH_SERVICE+"auth/sendMail";
 	public static String DESIGNER_BYID=DESIGNER_SERVICE+"designer/";
+	public static String PRODUCT_LIST="designerProducts/productListUser";
 
 }
