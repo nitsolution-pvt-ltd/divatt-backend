@@ -214,10 +214,10 @@ public class ProfileContoller {
 			@Valid @RequestBody LoginEntity loginEntity, Errors error) {
 		LOGGER.info("Inside - ProfileContoller.updateProfile()");
 		try {
-
-			if (error.hasErrors()) {
-				throw new CustomException(MessageConstant.CHECK.getMessage());
-			}
+//
+//			if (error.hasErrors()) {
+//				throw new CustomException(MessageConstant.CHECK.getMessage());
+//			}
 			if (!checkPermission(token, "module7", "update"))
 				throw new CustomException(MessageConstant.NO_UPDATE_PERMISSION.getMessage());
 			if (loginEntity.getUid() == null || loginEntity.getUid().equals(""))
