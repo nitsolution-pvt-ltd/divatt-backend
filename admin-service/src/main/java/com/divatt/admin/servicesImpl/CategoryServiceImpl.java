@@ -354,16 +354,16 @@ public class CategoryServiceImpl implements CategoryService {
 
 			List<UserCategoryResponse> categoryList = new ArrayList<UserCategoryResponse>();
 			List<CategoryEntity> listOfCategory = new ArrayList<>();
+			List<CategoryEntity> listOfsubCategory = new ArrayList<>();
 			List<ProductMasterEntity2> productList = new ArrayList<>();
 			Set<Integer> SetOfCategory = new HashSet<Integer>();
+			Set<Integer> SetOfSubCategory = new HashSet<Integer>();
 			
 			try {
 				ResponseEntity<Object> productObj = restTemplate.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.PRODUCT_LIST,
 						Object.class);
-				productList = (List)productObj.getBody();
 				productList = objectMapper.convertValue(productObj.getBody(), new TypeReference<List<ProductMasterEntity2>>(){}
 					);
-				
 			} catch (Exception e) {
 				LOGGER.error("Category list using products from live "+e.getLocalizedMessage());
 			}
@@ -371,6 +371,7 @@ public class CategoryServiceImpl implements CategoryService {
 			productList.forEach(ea->{
 					ProductMasterEntity2 categoryEntity = ea;
 					SetOfCategory.add(categoryEntity.getCategoryId());
+					SetOfSubCategory.add(categoryEntity.getSubCategoryId());
 			});
 			
 			SetOfCategory.forEach(ea->{
@@ -378,6 +379,12 @@ public class CategoryServiceImpl implements CategoryService {
 				if(listOfCategorys.isPresent()) {
 					CategoryEntity categoryEntity = listOfCategorys.get();
 					listOfCategory.add(categoryEntity);
+				}
+			});
+			SetOfSubCategory.forEach(e->{
+				Optional<CategoryEntity> findByIdAndIsDeletedAndIsActive = categoryRepo.findByIdAndIsDeletedAndIsActive(e,false, true);
+				if(findByIdAndIsDeletedAndIsActive.isPresent()) {
+					listOfsubCategory.add(findByIdAndIsDeletedAndIsActive.get());
 				}
 			});
 			
@@ -388,10 +395,17 @@ public class CategoryServiceImpl implements CategoryService {
 				categoryResponse.setCategoryDescription(categoryRow.getCategoryDescription());
 				categoryResponse.setCategoryImage(categoryRow.getCategoryImage());
 				categoryResponse.setCategoryName(categoryRow.getCategoryName());
-				productList.forEach(e->{
-					categoryResponse.setSubCategoryEntities(categoryRepo.findByIsDeletedAndIsActiveAndParentId(false, true,
-							e.getCategoryId().toString()));
-				});
+				List<CategoryEntity> subcategoryList = new ArrayList<>();
+				List<CategoryEntity> findBySubcategory= categoryRepo.findByIsDeletedAndIsActiveAndParentId(false, true,
+						categoryRow.getId().toString());
+				for(CategoryEntity subcategoryRow:findBySubcategory) {
+					SetOfSubCategory.forEach(e->{
+						if(subcategoryRow.getId() == e) {
+							subcategoryList.add(subcategoryRow);
+						}
+					});
+				}
+				categoryResponse.setSubCategoryEntities(subcategoryList);
 				categoryList.add(categoryResponse);
 			}
 			return categoryList;

@@ -15,7 +15,7 @@ public enum MessageConstant {
 	RESET_DIVATT_PASSWORD("Reset Divatt Password"), SUCESS("SUCCESS"),
 	PASSWORD_CHANGED("Password changed successfully"), OLD_PASSWORD_NOT_VALID("Old password is not valid"),
 	TOKEN_NOT_VALID("Token not valid"), URL_NOT_VALID("This URL is not valid"),
-	LINKEXPIRED("This link has been expierd"), PASSWORD_GENERATE_SUCESS("Password generate successfully"),WAIT_FOR_APPROVAL("Waiting for Approval");
+	LINKEXPIRED("This link has been expired"), PASSWORD_GENERATE_SUCESS("Password generate successfully"),WAIT_FOR_APPROVAL("Waiting for Approval");
 
 	private String message;
 

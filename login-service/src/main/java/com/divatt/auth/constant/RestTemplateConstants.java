@@ -30,9 +30,9 @@ public class RestTemplateConstants {
 	
 	public static String USER_LOGIN_ADD="user/add";
 //	public static String ADMIN_RESET_PASSWORD_LINK=ADMIN_RESET_PASSWORD_LINK_LIVE;
-	public static String SEND_EMAIL=AUTH_SERVICE+"auth/sendMail";
+//	public static String SEND_EMAIL=AUTH_SERVICE+"auth/sendMail";
 //	public static String DESIGNER_RESET_PASSWORD_LINK=DESIGNER_RESET_PASSWORD_LINK_LIVE;
 //	public static String USER_RESET_PASSWORD_LINK=USER_RESET_PASSWORD_LINK_LIVE;
-	public static String MAIL_SEND=AUTH_SERVICE+"auth/sendMail";
+	public static String MAIL_SEND="auth/sendMail";
 	
 }

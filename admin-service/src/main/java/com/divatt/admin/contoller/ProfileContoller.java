@@ -245,6 +245,7 @@ public class ProfileContoller {
 			loginEntity.setGstIn(loginEntity.getGstIn());
 			loginEntity.setState(loginEntity.getState());
 			loginEntity.setPin(loginEntity.getPin());
+			loginEntity.setPassword(findById.getPassword());
 			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName().toUpperCase());
 			loginRepository.save(loginEntity);
 			return new ResponseEntity<>(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),

@@ -30,5 +30,20 @@ public interface CategoryRepo extends MongoRepository<CategoryEntity, Integer>{
     Page<CategoryEntity> Search(String sortKey, Boolean isDeleted,String parentId,Pageable pageable);
 
 	List<CategoryEntity> findByIsDeletedAndIsActiveAndParentId(Boolean isDeleted, Boolean Status,String string);
+//	List<CategoryEntity> findByIdAndIsDeletedAndIsActive(Integer string, Boolean isDeleted, Boolean Status);
+	
+	@Query("{ 'id' : ?0}")	
+	List<CategoryEntity> findByIdList(Integer falses);
+
+	List<CategoryEntity> findByIsDeletedAndIsActiveAndParentIdAndId( boolean b, boolean c,String k,Integer integer);
+
+	Optional<CategoryEntity> findByIdAndIsDeletedAndIsActive(Integer e, boolean b, boolean c);
+
+	List<CategoryEntity> findByIsDeletedAndIsActiveAndParentId(boolean b, boolean c, String parentId);
+
+	List<CategoryEntity> findByIsDeletedAndIsActiveAndId(boolean b, boolean c, Integer id);	
+	
+	
 
 }
+

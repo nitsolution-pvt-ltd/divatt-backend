@@ -15,8 +15,8 @@ public interface EcomAuthContollerMethod {
 	
 	public ResponseEntity<?> superAdminLogin(@RequestBody AdminLoginEntity loginEntity);
 	public ResponseEntity<String> sendMail(@RequestBody() SendMail senderMailId) ;
-	public GlobalResponse mailForgotPasswordLink(@PathVariable("email") String email) ;
-	public GlobalResponse resetPassword(@PathVariable("link") String link, @PathVariable("linkTime") String linkTime, @RequestBody GlobalEntity globalEntity);
+	public GlobalResponse mailForgotPasswordLink(@PathVariable("user") String userType, @PathVariable("email") String email) ;
+	public GlobalResponse resetPassword(@PathVariable("link") String link, @PathVariable("linkTime") String linkTime, @PathVariable("user") String userType, @RequestBody GlobalEntity globalEntity);
 	public GlobalResponse changePassword(@RequestBody GlobalEntity globalEntity,@RequestHeader(name = "Authorization") String token);
 	
 	public static boolean check() throws ClassNotFoundException {
