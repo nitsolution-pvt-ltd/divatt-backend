@@ -368,28 +368,28 @@ public class CategoryServiceImpl implements CategoryService {
 				LOGGER.error("Category list using products from live "+e.getLocalizedMessage());
 			}
 			
-			productList.forEach(ea->{
+			productList.stream().forEach(ea->{
 					ProductMasterEntity2 categoryEntity = ea;
 					SetOfCategory.add(categoryEntity.getCategoryId());
 					SetOfSubCategory.add(categoryEntity.getSubCategoryId());
 			});
 			
-			SetOfCategory.forEach(ea->{
+			SetOfCategory.stream().forEach(ea->{
 				Optional<CategoryEntity> listOfCategorys = categoryRepo.findById(ea);
 				if(listOfCategorys.isPresent()) {
 					CategoryEntity categoryEntity = listOfCategorys.get();
 					listOfCategory.add(categoryEntity);
 				}
 			});
-			SetOfSubCategory.forEach(e->{
+			SetOfSubCategory.stream().forEach(e->{
 				Optional<CategoryEntity> findByIdAndIsDeletedAndIsActive = categoryRepo.findByIdAndIsDeletedAndIsActive(e,false, true);
 				if(findByIdAndIsDeletedAndIsActive.isPresent()) {
 					listOfsubCategory.add(findByIdAndIsDeletedAndIsActive.get());
 				}
 			});
 			
-			for(CategoryEntity categoryRow : listOfCategory) {
-
+			
+			listOfCategory.stream().forEach(categoryRow->{
 				UserCategoryResponse categoryResponse = new UserCategoryResponse();
 				categoryResponse.setId(categoryRow.getId());
 				categoryResponse.setCategoryDescription(categoryRow.getCategoryDescription());
@@ -398,7 +398,6 @@ public class CategoryServiceImpl implements CategoryService {
 				List<CategoryEntity> subcategoryList = new ArrayList<>();
 				List<CategoryEntity> findBySubcategory= categoryRepo.findByIsDeletedAndIsActiveAndParentId(false, true,
 						categoryRow.getId().toString());
-				
 				findBySubcategory.forEach(subcategoryRow->{
 					SetOfSubCategory.forEach(e->{
 						if(subcategoryRow.getId() == e) {
@@ -408,7 +407,7 @@ public class CategoryServiceImpl implements CategoryService {
 				});
 				categoryResponse.setSubCategoryEntities(subcategoryList);
 				categoryList.add(categoryResponse);
-			}
+			});
 			return categoryList;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
