@@ -145,6 +145,8 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 	public ResponseEntity<?> superAdminLogin(@RequestBody AdminLoginEntity loginEntity) {
 
 		LOGGER.info("Inside - EcomAuthController.superAdminLogin()");
+		loginUserDetails.setType(loginEntity.getType());
+		
 		if (loginEntity.getType().equals("USER")) {
 			UserLoginEntity entity = new UserLoginEntity();
 			if (userLoginRepo.findByEmail(loginEntity.getEmail()).isEmpty()) {
@@ -549,10 +551,14 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 						
 						Optional<DesignerLoginEntity> findByIdDesigner = Optional.empty();
 						Optional<DesignerLoginEntity> findByEmailDesigner = Optional.empty();
-						if(decodedStringUserType == "Designer") {
+						Optional<UserLoginEntity> findByUserId = Optional.ofNullable(null);
+						Optional<UserLoginEntity> findByUserEmail = Optional.ofNullable(null);
+						if(decodedStringUserType.equals("Designer")) {
 							findByIdDesigner = designerLoginRepo.findById((loginResetEntity.getUser_id()));
-						}else if(decodedStringUserType == "User") {
-							findByEmailDesigner = designerLoginRepo.findByEmail((loginResetEntity.getEmail()));
+							findByEmailDesigner = designerLoginRepo.findByEmail(loginResetEntity.getEmail());
+						}else if(decodedStringUserType.equals("User")) {
+							findByUserId = userLoginRepo.findById((long) loginResetEntity.getUser_id());
+							findByUserEmail = userLoginRepo.findByEmail(loginResetEntity.getEmail());
 						}
 						
 						if (findByEmailDesigner.isPresent()) {
@@ -566,29 +572,31 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 								loginResetEntity.setStatus("DEACTIVE");
 								PasswordResetEntity save2 = loginResetRepo.save(loginResetEntity);
 								jo.addProperty("senderMailId", save2.getEmail());
-								return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
-										MessageConstant.PASSWORD_GENERATE_SUCESS.getMessage(), 200);
 							}
-						} else {
-							Optional<UserLoginEntity> findByUserId = userLoginRepo.findById((long) loginResetEntity.getUser_id());
-							Optional<UserLoginEntity> findByUserEmail = userLoginRepo.findByEmail(loginResetEntity.getEmail());
-							
+						}else {
 							if (!findByUserEmail.isPresent()) {
 								throw new CustomException(MessageConstant.USERNAME_NOT_FOUND.getMessage());
 							}
-							UserLoginEntity loginEntity = findByUserId.get();
-							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass().toString().trim()));
-							UserLoginEntity save = userLoginRepo.save(loginEntity);
-							if (save.equals(null)) {
-								throw new CustomException(MessageConstant.DATANOTSAVE.getMessage());
-							} else {
-								loginResetEntity.setStatus("DEACTIVE");
-								PasswordResetEntity save2 = loginResetRepo.save(loginResetEntity);
-								jo.addProperty("senderMailId", save2.getEmail());
-								return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
-										MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
+							if(findByUserEmail.isPresent()){
+//								Optional<UserLoginEntity> findByUserId = userLoginRepo.findById((long) loginResetEntity.getUser_id());
+//								Optional<UserLoginEntity> findByUserEmail = userLoginRepo.findByEmail(loginResetEntity.getEmail());
+								
+								
+								UserLoginEntity loginEntity = findByUserId.get();
+								loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass().toString().trim()));
+								UserLoginEntity save = userLoginRepo.save(loginEntity);
+								if (save.equals(null)) {
+									throw new CustomException(MessageConstant.DATANOTSAVE.getMessage());
+								} else {
+									loginResetEntity.setStatus("DEACTIVE");
+									PasswordResetEntity save2 = loginResetRepo.save(loginResetEntity);
+									jo.addProperty("senderMailId", save2.getEmail());
+								}
 							}
 						}
+						
+						return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+								MessageConstant.PASSWORD_GENERATE_SUCESS.getMessage(), 200);
 
 					}
 
@@ -602,6 +610,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	
 
 	}
 

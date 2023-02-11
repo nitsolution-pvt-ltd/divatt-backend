@@ -24,6 +24,9 @@ import com.divatt.auth.repo.UserLoginRepo;
 @Service
 public class LoginUserDetails implements UserDetailsService {
 	
+	private String type;
+	
+	
 	@Autowired
 	private AdminLoginRepository adminLoginRepository;
 	
@@ -41,7 +44,7 @@ public class LoginUserDetails implements UserDetailsService {
 			return admin.map(LoginAdminData :: new).get();
 		} else {
 			Optional<DesignerLoginEntity> designer = designerLoginRepo.findByEmail(username);
-			if (designer.isPresent()) {
+			if (designer.isPresent() && "DESIGNER".equals(type)) {
 				designer.orElseThrow(() -> new CustomException("Please check the username"));
 				return designer.map(LoginDesignerData :: new).get();
 			}else {
@@ -58,4 +61,12 @@ public class LoginUserDetails implements UserDetailsService {
 
 
 }
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }
