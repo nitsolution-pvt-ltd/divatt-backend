@@ -398,13 +398,14 @@ public class CategoryServiceImpl implements CategoryService {
 				List<CategoryEntity> subcategoryList = new ArrayList<>();
 				List<CategoryEntity> findBySubcategory= categoryRepo.findByIsDeletedAndIsActiveAndParentId(false, true,
 						categoryRow.getId().toString());
-				for(CategoryEntity subcategoryRow:findBySubcategory) {
+				
+				findBySubcategory.forEach(subcategoryRow->{
 					SetOfSubCategory.forEach(e->{
 						if(subcategoryRow.getId() == e) {
 							subcategoryList.add(subcategoryRow);
 						}
 					});
-				}
+				});
 				categoryResponse.setSubCategoryEntities(subcategoryList);
 				categoryList.add(categoryResponse);
 			}
