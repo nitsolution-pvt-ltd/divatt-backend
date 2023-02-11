@@ -626,10 +626,14 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 				Optional<DesignerLoginEntity> findByUserNameDesigner = designerLoginRepo
 						.findByEmail(globalEntity.getUserName());
 				Optional<UserLoginEntity> findByUserEmail = userLoginRepo.findByEmail(globalEntity.getUserName());
-				if (!findByUserName.isPresent() && !findByUserNameDesigner.isPresent() && !findByUserEmail.isPresent())
+
+				if (!findByUserName.isPresent() && !findByUserNameDesigner.isPresent()
+						&& !findByUserEmail.isPresent()) {
 					throw new CustomException(MessageConstant.USERNAME_NOT_FOUND.getMessage());
+				}
+
 				if (globalEntity.getUserName().equals(jwtUtil.extractUsername(token.substring(7)))) {
-					try {
+					if (globalEntity.getUserType().equals("Admin")) {
 						if (!passwordEncoder.matches(globalEntity.getOldPass(), findByUserName.get().getPassword()))
 							throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
 						AdminLoginEntity loginEntity = findByUserName.get();
@@ -637,35 +641,28 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 						loginRepository.save(loginEntity);
 						return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
 								MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
-					} catch (Exception e) {
-						try {
-							if (!passwordEncoder.matches(globalEntity.getOldPass(),
-									findByUserNameDesigner.get().getPassword()))
-								throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
-							DesignerLoginEntity loginEntity = findByUserNameDesigner.get();
-							loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
-							designerLoginRepo.save(loginEntity);
-							return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
-									MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
+					
+					} else if (globalEntity.getUserType().equals("Designer")) {
+						if (!passwordEncoder.matches(globalEntity.getOldPass(),
+								findByUserNameDesigner.get().getPassword()))
+							throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
+						DesignerLoginEntity loginEntity = findByUserNameDesigner.get();
+						loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
+						designerLoginRepo.save(loginEntity);
+						return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+								MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
+					} else if (globalEntity.getUserType().equals("user")) {
+						if (!passwordEncoder.matches(globalEntity.getOldPass(), findByUserEmail.get().getPassword()))
+							throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
+						UserLoginEntity loginEntity = findByUserEmail.get();
+						loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
+						userLoginRepo.save(loginEntity);
 
-						} catch (Exception Z) {
-							try {
-								if (!passwordEncoder.matches(globalEntity.getOldPass(),
-										findByUserEmail.get().getPassword()))
-									throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
-								UserLoginEntity loginEntity = findByUserEmail.get();
-								loginEntity.setPassword(passwordEncoder.encode(globalEntity.getNewPass()));
-								userLoginRepo.save(loginEntity);
-								return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
-										MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
-							} catch (Exception o) {
-								throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
-							}
-
-						}
-
+						return new GlobalResponse(MessageConstant.SUCESS.getMessage(),
+								MessageConstant.PASSWORD_CHANGED.getMessage(), 200);
+					} else {
+						throw new CustomException(MessageConstant.OLD_PASSWORD_NOT_VALID.getMessage());
 					}
-
 				} else {
 					throw new CustomException(MessageConstant.USERNAME_NOT_FOUND.getMessage());
 				}
