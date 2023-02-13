@@ -1,0 +1,276 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<!-- <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap"
+	rel="stylesheet">
+</head>
+
+<body>
+	<div
+		style="width: 100%; margin: auto; font-family: 'Lato', sans-serif;">
+		<table style="width: 100%;">
+			<thead>
+				<tr style="font-size: 20px;">
+					<td colspan="5" style="padding: 20px 20px; text-align: center;">
+						<img
+						src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/89ed60f8-9220-1a42-6d9c-92b125b34860.png"
+						alt="" style="width: 100px;">
+
+						<div style="font-size: 22px; font-weight: 600; margin-top: 8px;">
+							X <br> <span th:text="${displayName}"></span>
+						</div>
+					</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td colspan="5" style="width: 100%;">
+						<hr
+							style="border-left: 0; border-width: 3px; border-bottom: 0; border-color: #000; margin-top: 38px; width: 100%;" />
+
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table
+			style="border-collapse: collapse; font-size: 16px; width: 100%; margin-bottom: 40px;">
+			<tr style="vertical-align: text-top;">
+				<td style="width: 50%;">
+					<table
+						style="border-collapse: collapse; font-size: 16px; width: 100%;">
+						<tr>
+							<th style="width: 100%">
+								<h1
+									style="text-transform: uppercase; font-size: 17px; font-weight: 800; margin-bottom: 22px; border-bottom: 1.6px solid; padding-bottom: 17px; color: #000; text-align: left; width: 95%;">
+									DIVATT Details</h1>
+							</th>
+						</tr>
+						<tr th:each="data1 : ${datas}">
+							<td
+								style="font-size: 16px; line-height: 22px; color: #000; width: 100%">
+								<table style="width: 100%;">
+									<!--<tr><td ><span></span></td></tr> -->
+									<tr>
+										<td style="color: #000; font-family: 'Roboto', sans-serif;">
+
+											<div>
+												<span>GSTIN</span> <span th:text="${data1.adminGst}"></span>
+											</div>
+											<div>
+												<span>PAN</span> <span th:text="${data1.adminPan}"></span>
+											</div>
+											<div>
+												<span th:text="${data1.adminCity}"></span><span
+													th:text="${data1.adminPin}"></span>
+											</div>
+											<div>
+												<span th:text="${data1.adminState}"></span><span
+													th:text="${data1.adminCountry}"></span>
+											</div>
+											<div>
+												<span th:text="${data1.adminPhone}"></span>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td style="width: 50%;">
+					<table
+						style="border-collapse: collapse; font-size: 16px; width: 100%;">
+						<tr>
+							<th style="width: 100%">
+								<h1
+									style="text-transform: uppercase; font-size: 17px; font-weight: 800; margin-bottom: 22px; border-bottom: 1.6px solid; padding-bottom: 17px; color: #000; text-align: left; width: 95%;">
+									Designer Details</h1>
+							</th>
+						</tr>
+						<tr th:each="data1 : ${datas}">
+							<td
+								style="font-size: 16px; line-height: 22px; color: #000; width: 100%">
+								<table style="width: 100%;">
+									<tr>
+										<td style="color: #000; font-family: 'Roboto', sans-serif;">
+											<div>
+												<span>Boutique Name :</span> <span
+													th:text="${boutiqueName}"></span>
+											</div>
+											<div>
+												<span>GSTIN :</span> <span th:text="${data1.designerGst}"></span>
+											</div>
+											<div>
+												<span th:text="${data1.designerCity}"></span>, <span
+													th:text="${data1.designerPin}"></span>
+											</div>
+											<div>
+												<span th:text="${data1.designerState}"></span>, <span
+													th:text="${data1.designerCountry}"></span>
+											</div>
+											<div>
+												<span th:text="${data1.designerPhone}"></span>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		<table
+			style="border-collapse: collapse; font-size: 16px; width: 100%;">
+			<thead>
+				<th
+					style="text-align: left; font-weight: 600; font-size: 12px; max-width: 90px;">
+					Description</th>
+				<th
+					style="text-align: center; font-weight: 600; font-size: 12px; min-width: 50px;">
+					HSN/SAC Code</th>
+				<th
+					style="text-align: left; font-weight: 600; font-size: 12px; min-width: 70px;">
+					Gross Amount ₹</th>
+				<th style="text-align: left; font-weight: 600; font-size: 12px;">TCS(1%)
+					₹</th>
+				<th style="text-align: left; font-weight: 600; font-size: 12px;">CGST(9%)
+					₹</th>
+				<th style="text-align: left; font-weight: 600; font-size: 12px;">SGST(9%)
+					₹</th>
+				<th style="text-align: left; font-weight: 600; font-size: 12px;">IGST(18%)
+					₹</th>
+				<th style="text-align: left; font-weight: 600; font-size: 12px;">Total
+					₹</th>
+			</thead>
+			<tbody>
+				<tr th:each="data1 : ${data}">
+					<td
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000; max-width: 80px; min-width: 120px;">
+						<th:block th:text="${data1.productName}"></th:block>
+					</td>
+					<td
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: center; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000; min-width: 50px;">
+						<th:block th:text="${data1.hsnCode}"></th:block>
+					</td>
+					<td
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
+						<th:block th:text="${data1.fee}"></th:block>
+					</td>
+					<td
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
+						<th:block th:text="${data1.tcs}"></th:block>
+					</td>
+					<td
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
+						<th:block th:text="${data1.cgst}"></th:block>
+					</td>
+					<td
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
+						<th:block th:text="${data1.sgst}"></th:block>
+					</td>
+					<td
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
+						<th:block th:text="${data1.igst}"></th:block>
+					</td>
+					<td
+						style="border-top: 1px solid #999; border-bottom: 1px solid #999; padding: 10px 0; text-align: left; font-family: 'Roboto', sans-serif; font-size: 12px; color: #000;">
+						<th:block th:text="${data1.total}"></th:block>
+					</td>
+				</tr>
+				<tr
+					style="border-top: 1px solid #999; border-bottom: 1px solid #999; font-weight: 800; font-size: 14px; padding: 20px 0;">
+					<td style="padding: 10px 0;" colspan="2">
+						<!-- <th:block th:text="${data1.total}">1111</th:block>  --> Total
+					</td>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${totalGross}"></th:block>
+					</td>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${totalTcs}"></th:block></td>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${totalCgst}"></th:block>
+					</td>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${totalSgst}"></th:block>
+					</td>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${totalIgst}"></th:block>
+					</td>
+					<td style="padding: 10px 0;font-family: 'Roboto', sans-serif;"><th:block th:text="${total}"></th:block>
+					</td>
+				</tr>
+				<tr>
+
+
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+
+					<td style="font-weight: 800; font-size: 20px; padding: 20px 0;"
+						colspan="2">Grand Total&nbsp;:&nbsp;</td>
+					<!-- <td>&nbsp;</td> -->
+					<td>&nbsp;</td>
+					<td style="font-weight: 600; font-size: 20px;">
+						<!-- ₹  --> <th:block th:text="${total}"></th:block>
+					</td>
+
+				</tr>
+			</tbody>
+		</table>
+		<div style="text-align: right;padding-right: 20px;font-weight: 600;">
+            Name of seller
+            <br>
+            <span th:text="${designerName}"></span>
+        </div>
+		<!-- <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <td  style="font-weight: 600;font-size:20px;">Grand Total&nbsp;:&nbsp;402.00</td>
+                    </td>
+                </tr>
+            </tbody>
+        </table> -->
+
+
+		<h1
+			style="font-family: 'Lato', sans-serif; text-transform: uppercase; font-size: 23px; font-weight: 800; margin-bottom: 22px; margin-top: 40px; letter-spacing: 1.5px; text-align: center;">Follow
+			US</h1>
+		<div style="text-align: center;">
+			<a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png"
+				alt="" style="width: 40px; height: 40px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg"
+				alt="" style="width: 37px; height: 37px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png"
+				alt="" style="width: 40px; height: 40px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png"
+				alt="" style="width: 42px; height: 42px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png"
+				alt="" style="width: 39px; height: 37px;">
+			</a>
+		</div>
+	</div>
+	<script type="text/javascript"
+		src="/LBKlAJ/lDsEbq/5P/c4gA/oVBSEXBP4/7cErfJDL3S/NCUhTw/fHU5/ZXVTawM"></script></body>
+
+</html>

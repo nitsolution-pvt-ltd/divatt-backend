@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.divatt.admin.entity.specification.SpecificationEntity;
+import com.divatt.admin.entity.product.SpecificationEntity;
 
 @Repository
 public interface SpecificationRepo extends MongoRepository<SpecificationEntity, Integer>{

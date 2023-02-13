@@ -6,10 +6,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import springfox.documentation.spring.web.json.Json;
 
 @Document(collection = "tbl_users")
+@Component
 public class UserLoginEntity {
 	
 	@Transient
@@ -24,6 +29,7 @@ public class UserLoginEntity {
 	@NotNull
 	@Field("email") private String email;
 	@NotNull
+	@JsonProperty(access = Access.WRITE_ONLY)
 	@Field("password") private String password;
 	@NotNull
 	@Field("mobile_no") private String mobileNo;
@@ -36,13 +42,29 @@ public class UserLoginEntity {
 	@Field("register_type") private String registerType;
 	@Field("username") private String username;
 	@Field("logins") private Json logins;
+	
+	@Field(name = "social_type")
+	private String socialType;
+	
+	@Field(name = "social_id")
+	private String socialId ; 
+	private String name ;
+	
 	public UserLoginEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public UserLoginEntity(Long uId, String firstName, String lastName, String email, String password, String mobileNo,
-			String dob, Boolean isActive, Boolean isDeleted, String createdOn, String profilePic, String registerType,
-			String username, Json logins) {
+	
+	
+
+
+
+
+
+	public UserLoginEntity(Long uId, @NotNull String firstName, @NotNull String lastName, @NotNull String email,
+			@NotNull String password, @NotNull String mobileNo, @NotNull String dob, Boolean isActive,
+			Boolean isDeleted, String createdOn, String profilePic, String registerType, String username, Json logins,
+			String socialType, String socialId, String name) {
 		super();
 		this.uId = uId;
 		this.firstName = firstName;
@@ -58,14 +80,32 @@ public class UserLoginEntity {
 		this.registerType = registerType;
 		this.username = username;
 		this.logins = logins;
+		this.socialType = socialType;
+		this.socialId = socialId;
+		this.name = name;
 	}
+
+
+
+
+
+
+
 	@Override
 	public String toString() {
 		return "UserLoginEntity [uId=" + uId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
 				+ email + ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", isActive="
 				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", profilePic=" + profilePic
-				+ ", registerType=" + registerType + ", username=" + username + ", logins=" + logins + "]";
+				+ ", registerType=" + registerType + ", username=" + username + ", logins=" + logins + ", socialType="
+				+ socialType + ", socialId=" + socialId + ", name=" + name + "]";
 	}
+
+
+
+
+
+
+
 	public Long getuId() {
 		return uId;
 	}
@@ -152,6 +192,58 @@ public class UserLoginEntity {
 	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
+	}
+
+
+
+
+
+	public String getSocialType() {
+		return socialType;
+	}
+
+
+
+
+
+	public void setSocialType(String socialType) {
+		this.socialType = socialType;
+	}
+
+
+
+
+
+	public String getSocialId() {
+		return socialId;
+	}
+
+
+
+
+
+	public void setSocialId(String socialId) {
+		this.socialId = socialId;
+	}
+
+
+
+
+
+
+
+	public String getName() {
+		return name;
+	}
+
+
+
+
+
+
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

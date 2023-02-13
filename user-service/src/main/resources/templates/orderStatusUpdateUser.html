@@ -1,0 +1,206 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<!-- <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+	href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap"
+	rel="stylesheet">
+</head>
+<body>
+	<div
+		style="margin: auto; padding: 15px !important; font-family: 'Lato', sans-serif;">
+		<table style="width: 100%;">
+			<thead>
+				<tr style="font-size: 20px;">
+					<td colspan="5" style="padding: 20px 0; text-align: left;"><img
+						src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/89ed60f8-9220-1a42-6d9c-92b125b34860.png"
+						alt="" style="width: 100px;">
+						<div
+							style="font-size: 20px; font-weight: 800; color: #4f4e4e; line-height: 28px; margin-top: 6px;">
+							X <br> <span th:text="${displayName}"></span>
+						</div></td>
+				</tr>
+
+			</thead>
+			<tbody>
+				<tr style="font-size: 20px;">
+					<td colspan="5" style="padding: 20px 0; text-align: left;">
+						<div
+							style="font-size: 22px; text-transform: capitalize; margin-top: 12px; letter-spacing: 1.5px; font-weight: 900; color: #555353;">
+							
+						</div>
+					</td>
+				</tr>
+				<tr style="font-size: 20px;">
+					<td colspan="5" style="padding: 0; text-align: left;">
+						<div
+							style="font-size: 17px; text-transform: capitalize; margin-top: 6px; letter-spacing: 1.5px; font-weight: 900; font-family: system-ui; color: #3d3c3c;">
+							Hello <span th:text="${firstName}"></span>,
+						</div>
+						<div
+							style="font-size: 14px; text-transform: capitalize; margin-top: 17px; letter-spacing: 1.5px; font-weight: 600; color: #3d3c3c;">
+							Return request for an item from your order Id : <span th:text="${orderId}"></span> has been 
+							sent to Divatt <br>
+							<span th:text="${details}"></span>.
+							We will get back to you within 24 hours.
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table
+			style="border-collapse: collapse; font-size: 16px; width: 100%; margin: auto; margin-top: 3em;">
+			<tbody>
+				<tr
+					style="border-bottom: 1px solid #cccccc; border-top: 1px solid #cccccc;">
+					<td style="padding: 22px 0; width: 25%;">
+						<div
+							style="color: #706f6f; margin-bottom: 8px; font-size: 14px; font-weight: 600;">Order
+							Date</div>
+						<div style="font-weight: bold; font-size: 14px; color: #000;">
+							<span th:text="${orderDate}"></span>
+						</div>
+					</td>
+					<td style="padding: 22px 0; width: 25%;">
+						<div
+							style="color: #706f6f; margin-bottom: 8px; font-size: 14px; font-weight: 600;">Order
+							No</div>
+						<div style="font-weight: bold; font-size: 14px; color: #000;">
+							<span th:text="${orderId}"></span>
+						</div>
+					</td>
+					<td style="padding: 22px 0; width: 25%;">
+						<div
+							style="color: #706f6f; margin-bottom: 8px; font-size: 14px; font-weight: 600;">Payment</div>
+						<div style="font-weight: bold; font-size: 14px; color: #000;">
+							<span th:text="${paymentMode}"></span>
+						</div>
+					</td>
+					<td style="padding: 22px 0; width: 25%;">
+						<div
+							style="color: #706f6f; margin-bottom: 8px; font-size: 14px; font-weight: 600;">Shipping
+							Address</div>
+						<div style="font-weight: bold; font-size: 14px; color: #000;">
+							<span th:text="${shippingAddress}"></span>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table
+			style="border-collapse: collapse; font-size: 16px; width: 100%; margin: auto;">
+			<tbody>
+				<tr style="border-bottom: 1px solid #ccc;">
+					<td
+						style="vertical-align: top; padding-top: 27px; padding-bottom: 27px;">
+						<div>
+							<img style="width: 50px; object-fit: cover;"
+								th:src="@{${productImage}}">
+						</div>
+					</td>
+					<td
+						style="vertical-align: top; padding-top: 21px; padding-bottom: 27px; padding-left: 19px;">
+						<div
+							style="line-height: 22px; max-width: 29rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #000;">
+							<span th:text="${productName}"></span>
+
+						</div>
+						<div style="margin-top: 8px; color: #999999;">
+							Quantity: &nbsp;<span th:text="${quantity}"></span>
+						</div>
+						<div style="margin-top: 6px; color: #999999;">
+							Color: &nbsp;<span th:text="${colour}"></span>
+						</div>
+					</td>
+					<td
+						style="vertical-align: top; padding-top: 20px; padding-bottom: 27px; min-width: 80px;">
+						<div
+							style="line-height: 27px; text-align: right; color: #000; min-width: 80px;">
+							Net Amount.&nbsp;<span th:text="${mrp}"></span>
+						</div>
+						<div
+							style="margin-top: 5px; text-align: right; color: #000; min-width: 80px;">
+							Tax. &nbsp;<span th:text="${taxAmount}"></span>
+						</div>
+						<div
+							style="margin-top: 5px; text-align: right; color: #000; min-width: 80px;">
+							Discount - &nbsp;<span th:text="${discount}"></span>
+						</div>
+						<div
+							style="margin-top: 5px; text-align: right; color: #000; min-width: 80px;">
+							GiftWrapAmount - &nbsp;<span th:text="${giftWrapAmount}"></span>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table
+			style="border-collapse: collapse; font-size: 16px; width: 100%; margin: auto; margin-top: 1em;">
+			<tr>
+				<td style="width: 55%;">&nbsp;</td>
+				<td style="width: 45%;">
+					<table
+						style="border-collapse: collapse; font-size: 16px; width: 100%; margin: auto;">
+						<tr>
+							<td>Total</td>
+							<td
+								style="text-align: right; font-weight: 600; padding-top: 4px;">
+								<span th:text="${format3}"></span>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		<div
+			style="margin-top: 2.5rem; font-size: 15px; font-weight: 600; color: #626262">
+		</div>
+		<div style="margin-top: 1em; font-weight: 800; color: #000;">
+			Thank You for shopping with us!
+			<div style="margin-top: 6px; font-weight: 600; color: #000;">Team
+				Divatt</div>
+		</div>
+		<div
+			style="margin-top: 2.5rem; font-size: 14px; color: #626262; text-align: center;">
+			Need help?&nbsp;&nbsp;Visit our <a href="#"
+				style="text-decoration: none;">Help Center.</a>
+		</div>
+		<h1
+			style="text-transform: uppercase; font-size: 23px; font-weight: 800; margin-bottom: 22px; margin-top: 40px; letter-spacing: 1.5px; text-align: center; color: #000">Follow
+			US</h1>
+		<div style="text-align: center;">
+			<a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png"
+				alt="" style="width: 40px; height: 40px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg"
+				alt="" style="width: 37px; height: 37px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png"
+				alt="" style="width: 40px; height: 40px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png"
+				alt="" style="width: 42px; height: 42px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png"
+				alt="" style="width: 39px; height: 37px;">
+			</a>
+		</div>
+	</div>
+</body>
+</html>

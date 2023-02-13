@@ -1,16 +1,13 @@
 package com.divatt.designer.services;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.divatt.designer.response.GlobalResponce;
-import com.divatt.designer.entity.ListProduct;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
-import com.divatt.designer.entity.profile.DesignerProfileEntity;
+import com.divatt.designer.response.GlobalResponce;
 
 public interface ProductServiceImp {
 

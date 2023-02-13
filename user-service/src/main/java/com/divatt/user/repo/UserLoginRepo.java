@@ -18,6 +18,9 @@ public interface UserLoginRepo extends MongoRepository<UserLoginEntity, Long>{
 	Page<UserLoginEntity> Search(String keyword, Boolean isDeleted, Pageable pagingSort);
 
 	Page<UserLoginEntity> findByIsDeleted(Boolean isDeleted, Pageable pagingSort);
+    
+	@Query("{'isDeleted':?0 ,'isActive':?1}")
+	Page<UserLoginEntity> findByIsActive(Boolean isDeleted, Boolean isActive, Pageable pagingSort);
 
 //	@Query(value = "{ $or: [ { 'productName' : {$regex:?0,$options:'i'} }, { 'gender' : {$regex:?0,$options:'i'} },{ 'productDescription' : {$regex:?0,$options:'i'} },{ 'productId' : {$regex:?0,$options:'i'} },{ 'isActive' : {$regex:?0,$options:'i'} },{ 'createdOn' : {$regex:?0,$options:'i'} },{ 'age.min' : {$regex:?0,$options:'i'} },{ 'designer_name' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDeleted' : ?1,'designerId' : ?2 }]}")
 	

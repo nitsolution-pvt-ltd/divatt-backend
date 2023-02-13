@@ -5,9 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.divatt.designer.entity.product.AgeEntity;
-
 import com.divatt.designer.entity.product.GiftEntity;
-import com.divatt.designer.entity.product.ImagesEntity;
 import com.divatt.designer.entity.product.PriceEntity;
 import com.divatt.designer.entity.product.PurchaseEntity;
 import com.divatt.designer.entity.product.Specification;
@@ -58,18 +56,19 @@ public class ProductEntity {
 	private String adminStatus;
 	private Object categoryObject;
 	private Object subCategoryObject;
+	private Object hsnData;
 	public ProductEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public ProductEntity(Integer productId, String designerName, Integer designerId, Integer categoryId,
 			Integer subCategoryId, String gender, String productName, String productDescription, AgeEntity age,
 			Boolean cod, Boolean customization, PurchaseEntity purchaseQuantity, String priceType, Float taxPercentage,
-			Boolean taxInclusive, Boolean giftWrap, GiftEntity giftWrapAmount, PriceEntity price, ImagesEntity[] images,
+			Boolean taxInclusive, Boolean giftWrap, GiftEntity giftWrapAmount, PriceEntity price, Object[] images,
 			List<StandardSOH> standeredSOH, Integer customizationSOH, Object extraSpecifications,
 			Specification specifications, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			Date adminStatusOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String sKQCode,
-			List<Object> comments, String adminStatus, Object categoryObject, Object subCategoryObject) {
+			List<Object> comments, String adminStatus, Object categoryObject, Object subCategoryObject,
+			Object hsnData) {
 		super();
 		this.productId = productId;
 		this.designerName = designerName;
@@ -108,6 +107,7 @@ public class ProductEntity {
 		this.adminStatus = adminStatus;
 		this.categoryObject = categoryObject;
 		this.subCategoryObject = subCategoryObject;
+		this.hsnData = hsnData;
 	}
 	@Override
 	public String toString() {
@@ -123,7 +123,7 @@ public class ProductEntity {
 				+ ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
 				+ ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn + ", SKQCode=" + SKQCode + ", comments="
 				+ comments + ", adminStatus=" + adminStatus + ", categoryObject=" + categoryObject
-				+ ", subCategoryObject=" + subCategoryObject + "]";
+				+ ", subCategoryObject=" + subCategoryObject + ", hsnData=" + hsnData + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -236,7 +236,7 @@ public class ProductEntity {
 	public Object[] getImages() {
 		return images;
 	}
-	public void setImages(ImagesEntity[] images) {
+	public void setImages(Object[] images) {
 		this.images = images;
 	}
 	public List<StandardSOH> getStanderedSOH() {
@@ -326,8 +326,8 @@ public class ProductEntity {
 	public List<Object> getComments() {
 		return comments;
 	}
-	public void setComments(List<Object> list) {
-		this.comments = list;
+	public void setComments(List<Object> comments) {
+		this.comments = comments;
 	}
 	public String getAdminStatus() {
 		return adminStatus;
@@ -346,6 +346,12 @@ public class ProductEntity {
 	}
 	public void setSubCategoryObject(Object subCategoryObject) {
 		this.subCategoryObject = subCategoryObject;
+	}
+	public Object getHsnData() {
+		return hsnData;
+	}
+	public void setHsnData(Object hsnData) {
+		this.hsnData = hsnData;
 	}
 	
 }

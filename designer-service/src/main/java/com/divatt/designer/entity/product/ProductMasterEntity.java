@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.NotEmpty;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.google.gson.JsonObject;
 @Document(collection = "tbl_products")
 public class ProductMasterEntity {
 
@@ -37,6 +36,7 @@ public class ProductMasterEntity {
 	private String productName;
 	@NotEmpty(message = "Product Description Required")
 	private String productDescription;
+	
 	private AgeEntity age;
 	//@NotEmpty(message = "COD Status Required")
 	private Boolean cod;
@@ -58,7 +58,7 @@ public class ProductMasterEntity {
 	//@NotEmpty(message = "Stock On Hand Required")
 	private List<StandardSOH> standeredSOH;
 	private Integer customizationSOH;
-	private Object extraSpecifications;
+	private JSONObject extraSpecifications;
 	//@NotEmpty(message = "Product Specification Required")
 	private Specification specifications;
 	//@NotEmpty(message = "Product Approval Required")
@@ -79,6 +79,11 @@ public class ProductMasterEntity {
 	private List<Object> comments = new ArrayList<>();
 	 
 	private String adminStatus;
+	private Object hsnData;
+	
+	public ProductMasterEntity() {
+		super();
+	}
 	public ProductMasterEntity(Integer productId, String designerName, Integer designerId, Integer categoryId,
 			Integer subCategoryId, @NotEmpty(message = "Gender Category Required") String gender,
 			@NotEmpty(message = "Product Name Required") String productName,
@@ -86,10 +91,10 @@ public class ProductMasterEntity {
 			Boolean customization, PurchaseEntity purchaseQuantity,
 			@NotEmpty(message = "Price Type Required") String priceType, Float taxPercentage, Boolean taxInclusive,
 			Boolean giftWrap, GiftEntity giftWrapAmount, PriceEntity price, ImagesEntity[] images,
-			List<StandardSOH> standeredSOH, Integer customizationSOH, Object extraSpecifications,
+			List<StandardSOH> standeredSOH, Integer customizationSOH, JSONObject extraSpecifications,
 			Specification specifications, Boolean isActive, Boolean isDeleted, Date createdOn, String createdBy,
 			Date adminStatusOn, String updatedBy, Date updatedOn, String approvedBy, Date approvedOn, String sKQCode,
-			List<Object> comments, String adminStatus) {
+			List<Object> comments, String adminStatus, Object hsnData) {
 		super();
 		this.productId = productId;
 		this.designerName = designerName;
@@ -126,6 +131,7 @@ public class ProductMasterEntity {
 		this.SKQCode = sKQCode;
 		this.comments = comments;
 		this.adminStatus = adminStatus;
+		this.hsnData = hsnData;
 	}
 	@Override
 	public String toString() {
@@ -140,7 +146,7 @@ public class ProductMasterEntity {
 				+ isActive + ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + ", createdBy=" + createdBy
 				+ ", adminStatusOn=" + adminStatusOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
 				+ ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn + ", SKQCode=" + SKQCode + ", comments="
-				+ comments + ", adminStatus=" + adminStatus + "]";
+				+ comments + ", adminStatus=" + adminStatus + ", hsnData=" + hsnData + "]";
 	}
 	public Integer getProductId() {
 		return productId;
@@ -268,10 +274,10 @@ public class ProductMasterEntity {
 	public void setCustomizationSOH(Integer customizationSOH) {
 		this.customizationSOH = customizationSOH;
 	}
-	public Object getExtraSpecifications() {
+	public JSONObject getExtraSpecifications() {
 		return extraSpecifications;
 	}
-	public void setExtraSpecifications(Object extraSpecifications) {
+	public void setExtraSpecifications(JSONObject extraSpecifications) {
 		this.extraSpecifications = extraSpecifications;
 	}
 	public Specification getSpecifications() {
@@ -346,20 +352,20 @@ public class ProductMasterEntity {
 	public void setComments(List<Object> comments) {
 		this.comments = comments;
 	}
-
 	public String getAdminStatus() {
 		return adminStatus;
 	}
 	public void setAdminStatus(String adminStatus) {
 		this.adminStatus = adminStatus;
 	}
+	public Object getHsnData() {
+		return hsnData;
+	}
+	public void setHsnData(Object hsnData) {
+		this.hsnData = hsnData;
+	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	public ProductMasterEntity() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	
 	
 }

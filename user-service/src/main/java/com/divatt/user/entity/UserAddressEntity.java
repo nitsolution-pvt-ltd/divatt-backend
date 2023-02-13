@@ -40,7 +40,7 @@ public class UserAddressEntity {
 	@NotNull(message = "Address1 is required!")
 	@Field(name = "address1") private String address1;
 	
-	@NotNull(message = "Address2 is required!")
+	//@NotNull(message = "Address2 is required!")
 	@Field(name = "address2") private String address2;
 	
 	@NotNull(message = "Landmark is required!")

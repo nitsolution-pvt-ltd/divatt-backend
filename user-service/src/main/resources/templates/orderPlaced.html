@@ -1,0 +1,323 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<!-- <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+	href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap"
+	rel="stylesheet">
+</head>
+
+<body>
+	<div
+		style="width: 650px; margin: auto; padding: 15px !important; font-family: 'Lato', sans-serif;">
+		<table style="width: 100%;">
+			<thead>
+
+				<tr style="font-size: 20px;">
+					<td colspan="5" style="padding: 20px px; text-align: center;">
+						<img
+						src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/89ed60f8-9220-1a42-6d9c-92b125b34860.png"
+						alt="" style="width: 100px;"> <br> X
+					</td>
+				</tr>
+
+				<tr>
+					<td
+						style="font-size: 16px; color: #000; text-align: center; width: 50%">
+						<table style="width: 100%;">
+
+							<tr>
+								<td th:text=" ${displayName}"><span></span></td>
+
+							</tr>
+
+
+						</table>
+					</td>
+				</tr>
+
+
+			</thead>
+			<tbody>
+				<tr th:each="data1 : ${data}">
+					<td colspan="5" style="padding: 20px 20px; text-align: center;">
+						<img
+						src="https://mercomindia.s3.ap-south-1.amazonaws.com/wp-content/uploads/2021/11/tick-mark.png"
+						alt="" style="width: 60px;">
+						<div
+							style="font-size: 22px; text-transform: uppercase; margin-top: 12px; letter-spacing: 1.5px; font-weight: 600;">Thank
+							You</div>
+						<div
+							style="font-size: 18px; text-transform: capitalize; margin-top: 12px; font-weight: 500; line-height: 30px;">
+
+
+							Your order for
+							<th:block th:text="${data1.productName}"></th:block> has been successfully placed.
+						</div>
+						<hr
+							style="border-left: 0; border-width: 3px; border-bottom: 0; border-color: rgb(0, 0, 0); margin-top: 38px;" />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table
+			style="border-collapse: collapse; font-size: 16px; width: 100%; margin-bottom: 30px;">
+			<thead>
+				<tr>
+					<th style="width: 50%">
+						<h1
+							style="text-transform: uppercase; font-size: 17px; font-weight: 800; margin-bottom: 22px; margin-top: 40px; border-bottom: 1.6px solid; padding-bottom: 17px; color: #000; text-align: left; width: 95%;">Bill
+							To</h1>
+					</th>
+					<th style="width: 50%">
+						<h1
+							style="text-transform: uppercase; font-size: 17px; font-weight: 800; margin-bottom: 22px; margin-top: 40px; border-bottom: 1.6px solid; padding-bottom: 17px; color: #000; text-align: left; width: 95%;">Ship
+							To</h1>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+
+				<!--<tr>
+                        <td th:text="'Profile: ' + ${profile}"></td>
+                    </tr>-->
+				<tr th:each="data1 : ${datas}">
+					<td
+						style="font-size: 16px; line-height: 22px; color: #000; width: 50%">
+						<table style="width: 100%;">
+							<tr>
+								<td th:text=" ${data1.userName}"><span></span></td>
+							</tr>
+							<tr>
+								<td th:text=" ${data1.billAddress1}"><span>,</span></td>
+							</tr>
+							<tr>
+								<td th:text=" ${data1.billAddress2}"><span>,</span></td>
+							</tr>
+							<tr>
+								<td th:text=" ${data1.billCity}"><span></span></td>
+							</tr>
+							<tr>
+								<td th:text=" ${data1.billState}"><span></span></td>
+							</tr>
+							<tr>
+								<td th:text=" ${data1.billPostalCode}"><span></span></td>
+							</tr>
+						</table>
+					</td>
+					<td
+						style="font-size: 16px; line-height: 22px; color: #000; width: 50%">
+						<table style="width: 100%;">
+							<tr>
+								<td th:text=" ${data1.userName}"><span></span></td>
+							</tr>
+							<tr>
+								<td th:text=" ${data1.shippingAddress}"><span></span></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table
+			style="border-collapse: collapse; font-size: 16px; width: 100%;">
+			<tr>
+			<tr>
+				<td>
+					<table
+						style="border-collapse: collapse; font-size: 16px; width: 100%;">
+						<tbody>
+
+							<tr th:each="data1 : ${datas}">
+								<td
+									style="font-size: 16px; line-height: 22px; color: #000; width: 50%">
+									<table style="width: 100%;">
+										<tr style="font-weight: 600;">
+											<td>Order Id :</td>
+											<td th:text=" ${data1.orderId}"></td>
+										</tr>
+										<tr>
+											<td>Order Date :</td>
+											<td th:text=" ${data1.orderDate}"></td>
+										</tr>
+										<tr>
+											<td>&nbsp;</td>
+										</tr>
+										<tr>
+											<td>&nbsp;</td>
+										</tr>
+										<tr>
+											<td>&nbsp;</td>
+										</tr>
+										<tr>
+											<td>&nbsp;</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<h1
+						style="text-transform: uppercase; font-size: 17px; font-weight: 600; margin-bottom: 22px;">Your
+						order details</h1>
+					<table
+						style="width: 100%; height: auto; background-color: #fff; margin-top: 0px; padding: 20px; border: 1.5px solid #656262; border-collapse: collapse;"
+						border>
+						<thead>
+							<tr>
+								<td colspan="3"
+									style="width: 23%; margin-left: 10px; text-align: left; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Product</td>
+								<td colspan="3"
+									style="width: 30%; margin-left: 10px; text-align: left; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Description</td>
+								<td
+									style="width: 10%; padding: 5px; text-align: center; border-bottom: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">QUANTITY</td>
+								<td colspan="3"
+									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Gross
+									Amount (Rs.)</td>
+								<td colspan="3"
+									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Gift
+									wrap Amount (Rs.)</td>
+								<td colspan="3"
+									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Discount
+									(Rs.)</td>
+								<td colspan="3"
+									style="width: 10%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">TAX
+									(Rs.)</td>
+								<td colspan="3"
+									style="width: 20%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Total
+									(Rs.)</td>
+
+							</tr>
+						</thead>
+
+						<tbody style="">
+							<tr th:each="data1 : ${data}">
+								<td colspan="3"
+									style="width: 23%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
+									<img th:src="@{${data1.images}}"
+									style="width: auto; margin: auto; height: 80px;">
+								</td>
+								<td colspan="3"
+									style="width: 30%; margin-left: 10px; text-align: left; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
+									<th:block th:text="${data1.productName}"></th:block>
+								</td>
+								<td
+									style="width: 12%; padding: 5px; text-align: center; border-bottom: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
+									<table style="width: 100%;">
+										<tr>
+											<td style="width: 60%; color: #000;">Size :</td>
+											<td style="color: #000;"><th:block
+													th:text="${data1.size}"></th:block></td>
+										</tr>
+										<tr>
+											<td style="width: 60%; color: #000;">Qty :</td>
+											<td style="color: #000;"><th:block
+													th:text="${data1.units}"></th:block></td>
+										</tr>
+									</table>
+								</td>
+
+								<td colspan="3"
+									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
+									<th:block th:text="${data1.Mrp}"></th:block>
+								</td>
+								<td colspan="3"
+									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
+									<th:block th:text="${data1.giftWrapAmount}"></th:block>
+								</td>
+								<td colspan="3"
+									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
+									<th:block th:text="${data1.discount}"></th:block>
+								</td>
+								<td colspan="3"
+									style="width: 10%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
+									<th:block th:text="${data1.taxAmount}"></th:block>
+								</td>
+								<td colspan="3"
+									style="width: 20%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
+									<th:block th:text="${data1.Total}"></th:block>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="7"
+									style="width: 58%; border-left: 1.6px solid; border-bottom: 1.6px solid; padding: 16px;">
+
+								</td>
+								<td colspan="3"
+									style="width: 12%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
+									<th:block th:text="${tgrossGrandTotal}"></th:block>
+								</td>
+								<td colspan="3"
+									style="width: 12%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
+									<th:block th:text="${totalGiftWrapAmount}"></th:block>
+								</td>
+								<td colspan="3"
+									style="width: 12%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
+									<th:block th:text="${tDiscount}"></th:block>
+								</td>
+								<td colspan="3"
+									style="width: 10%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
+									<th:block th:text="${ttaxAmount}"></th:block>
+								</td>
+								<td colspan="3"
+									style="width: 20%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
+									<th:block th:text="${tgrandTotal}"></th:block>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			</tr>
+
+		</table>
+
+
+
+
+
+		<h1
+			style="text-transform: uppercase; font-size: 23px; font-weight: 800; margin-bottom: 22px; margin-top: 40px; letter-spacing: 1.5px; text-align: center;">Follow
+			US</h1>
+		<div style="text-align: center;">
+			<a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/3c1d4e2a-f7a7-49d7-5da0-033d43c001a9.png"
+				alt="" style="width: 40px; height: 40px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/903b697c-e17e-3467-37ec-a2579fce3114.jpg"
+				alt="" style="width: 37px; height: 37px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/05d98f76-7feb-df56-d2ef-ea254e07e373.png"
+				alt="" style="width: 40px; height: 40px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center; margin-right: 10px;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/17b7c9d8-a3cc-1eb7-7bc8-6ac6c153d52c.png"
+				alt="" style="width: 42px; height: 42px;">
+			</a> <a href="#"
+				style="text-decoration: none; color: #000; text-align: center;">
+				<img
+				src="https://mcusercontent.com/4ca4564f8cab8a58cbc0f32e2/images/27dc3b48-f225-b21e-1b25-23e3afd95566.png"
+				alt="" style="width: 39px; height: 37px;">
+			</a>
+		</div>
+	</div>
+</body>
+
+</html>

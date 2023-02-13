@@ -6,9 +6,9 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
-//import org.hibernate.validator.internal.util.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,18 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-//import com.divatt.admin.config.UserDetails;
 import com.divatt.admin.entity.BannerEntity;
 import com.divatt.admin.entity.ColourEntity;
-import com.divatt.admin.entity.ColourMetaEntity;
 import com.divatt.admin.entity.DesignerCategoryEntity;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.services.AdminMService;
-import com.divatt.admin.services.CategoryService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/adminMData")
@@ -43,6 +38,7 @@ public class AdminMDataController {
 
 	@GetMapping("/coloreList")
 	public List<ColourEntity> colourList() {
+		LOGGER.info("Inside - AdminMDataController.colourList()");
 		try {
 			return this.adminMService.getColours();
 		} catch (Exception e) {
@@ -52,6 +48,8 @@ public class AdminMDataController {
 
 	@PutMapping("/addColour")
 	public GlobalResponse addColore(@RequestBody ColourEntity colourEntity) {
+		LOGGER.info("Inside - AdminMDataController.addColore()");
+
 		try {
 			return this.adminMService.addColour(colourEntity);
 		} catch (Exception e) {
@@ -59,12 +57,13 @@ public class AdminMDataController {
 		}
 	}
 
-	@PutMapping("/updateColour/{index}")
+	@PutMapping("/updateColours/{name}")
 
-	public GlobalResponse updateColore(@RequestBody ColourEntity colourEntity,
-			@PathVariable(value = "index") Integer index) {
+	public GlobalResponse updateColores(@RequestBody ColourEntity colourEntity,
+			@PathVariable(value = "name") String name) {
+		LOGGER.info("Inside - AdminMDataController.updateColores()");
 		try {
-			return this.adminMService.updateColour(colourEntity, index);
+			return this.adminMService.updateColours(colourEntity, name);
 		}
 
 		catch (Exception e) {
@@ -74,12 +73,12 @@ public class AdminMDataController {
 
 	}
 
-	@PutMapping("/updateColours/{name}")
+	@DeleteMapping("/deleteColour/{name}")
 
-	public GlobalResponse updateColores(@RequestBody ColourEntity colourEntity,
-			@PathVariable(value = "name") String name) {
+	public GlobalResponse deleteColour(@PathVariable(value = "name") String name) {
+		LOGGER.info("Inside - AdminMDataController.deleteColour()");
 		try {
-			return this.adminMService.updateColours(colourEntity, name);
+			return this.adminMService.deleteColour(name);
 		}
 
 		catch (Exception e) {
@@ -137,6 +136,9 @@ public class AdminMDataController {
 			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "colors") String metaKey, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
+
+		LOGGER.info("Inside - AdminMDataController.getColourDetails()");
+
 		try {
 			return this.adminMService.tblList(page, metaKey, keyword, limit, sort, sortBy, sortName);
 		} catch (Exception e) {
@@ -146,6 +148,7 @@ public class AdminMDataController {
 
 	@PostMapping("/addBanner")
 	public GlobalResponse addBanner(@Valid @RequestBody BannerEntity bannerEntity) {
+		LOGGER.info("Inside - AdminMDataController.addBanner()");
 		try {
 			return this.adminMService.addBanner(bannerEntity);
 		} catch (Exception e) {
@@ -153,9 +156,10 @@ public class AdminMDataController {
 		}
 	}
 
-	@PostMapping("/updateBanner/{id}")
+	@PutMapping("/updateBanner/{id}")
 	public GlobalResponse updateBanner(@Valid @RequestBody BannerEntity bannerEntity,
 			@PathVariable(value = "id") Long id) {
+		LOGGER.info("Inside - AdminMDataController.updateBanner()");
 		try {
 			return this.adminMService.updateBanners(bannerEntity, id);
 		} catch (Exception e) {
@@ -163,9 +167,11 @@ public class AdminMDataController {
 		}
 	}
 
-	@GetMapping("/deleteBanner/{id}")
+	@PutMapping("/deleteBanner/{id}")
 	public GlobalResponse deleteBanner(@PathVariable(value = "id") Long id) {
+		LOGGER.info("Inside - AdminMDataController.deleteBanner()");
 		try {
+
 			return this.adminMService.deleteBanner(id);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -174,6 +180,8 @@ public class AdminMDataController {
 
 	@PutMapping("/addDesignerCategory")
 	public GlobalResponse addDesignerCaregory(@RequestBody DesignerCategoryEntity designerCategoryEntity) {
+		LOGGER.info("Inside - AdminMDataController.addDesignerCaregory()");
+
 		try {
 			return this.adminMService.addDesignerCategory(designerCategoryEntity);
 		} catch (Exception e) {
@@ -184,6 +192,7 @@ public class AdminMDataController {
 	@PutMapping("/updateDesignerLevels/{name}")
 	public GlobalResponse updateDesignerCaregorys(@RequestBody DesignerCategoryEntity designerCategoryEntity,
 			@PathVariable(value = "name") String name) {
+		LOGGER.info("Inside - AdminMDataController.updateDesignerCaregorys()");
 		try {
 			return this.adminMService.updateDesignerLevels(designerCategoryEntity, name);
 		} catch (Exception e) {
@@ -193,6 +202,7 @@ public class AdminMDataController {
 
 	@DeleteMapping("/deleteDesignerLevels/{name}")
 	public GlobalResponse deleteDesignerCaregory(@PathVariable(value = "name") String name) {
+		LOGGER.info("Inside - AdminMDataController.deleteDesignerCaregory()");
 		try {
 			return this.adminMService.deleteDesignerLevels(name);
 		} catch (Exception e) {
@@ -211,6 +221,7 @@ public class AdminMDataController {
 
 	@GetMapping("/getDesignerCategory/{name}")
 	public Map<String, String> getDesignerCategorybyname(@PathVariable(value = "name") String name) {
+		LOGGER.info("Inside - AdminMDataController.getDesignerCategorybyname()");
 		try {
 			return this.adminMService.getDesignerCategorybyname(name);
 		} catch (Exception e) {
@@ -228,6 +239,28 @@ public class AdminMDataController {
 
 		try {
 			return this.adminMService.bannerListing(page, limit, sort, sortName, isDeleted, keyword, sortBy);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@GetMapping("/getBanner/{id}")
+	public BannerEntity getBanner(@PathVariable(value = "id") Long id) {
+		LOGGER.info("Inside - AdminMDataController.getBanner()");
+		try {
+
+			return this.adminMService.getBanner(id);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@PutMapping("/changeBannerStatus/{id}")
+	public GlobalResponse changeBannerStatus(@PathVariable(value = "id") Long id) {
+		LOGGER.info("Inside - AdminMDataController.changeBannerStatus()");
+		try {
+
+			return this.adminMService.changeBannerStatus(id);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

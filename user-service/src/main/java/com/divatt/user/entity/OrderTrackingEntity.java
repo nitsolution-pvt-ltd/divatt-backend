@@ -3,8 +3,6 @@ package com.divatt.user.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -63,7 +61,6 @@ public class OrderTrackingEntity {
 
 	public OrderTrackingEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public OrderTrackingEntity(Integer id, String trackingId, String trackingUrl, String orderId, int productId,

@@ -2,19 +2,11 @@ package com.divatt.auth.entity;
 
 import java.util.Date;
 
-
-
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "tbl_password_reset")
 public class PasswordResetEntity {
-	
-
-	
-	
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_password_reset";
 
@@ -28,7 +20,6 @@ public class PasswordResetEntity {
 	private String link;
 	public PasswordResetEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public PasswordResetEntity(Integer id, Object user_id, String prtoken, String user_type, Date created_on,
@@ -106,9 +97,4 @@ public class PasswordResetEntity {
 	public void setLink(String link) {
 		this.link = link;
 	}
-	
-	
-	
-	
-
 }

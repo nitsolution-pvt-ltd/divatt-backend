@@ -6,81 +6,119 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DesignerProfile {
-	
+
 	@NotNull
 	@Field(name = "email")
 	private String email;
+	
+	@JsonProperty(access = Access.WRITE_ONLY)
 	@NotNull
 	@Field(name = "password")
 	private String password;
 	@NotNull
-	@Field(name = "first_name")
-	private String firstName;
+	@Field(name = "first_name1")
+	private String firstName1;
 	@NotNull
-	@Field(name = "last_name")
-	private String lastName;
+	@Field(name = "last_name1")
+	private String lastName1;
+
+	@Field(name = "first_name2")
+	private String firstName2;
+
+	@Field(name = "last_name2")
+	private String lastName2;
 	@NotNull
 	@Field(name = "display_name")
 	private String displayName;
 	@NotNull
 	@Field(name = "mobile_no")
 	private String mobileNo;
-	
+
 	@Field(name = "alt_mobile_no")
 	private String altMobileNo;
+
+	@Field(name = "digital_signature")
+	private String digitalSignature;
+
+	@Field(name = "country")
+	private String country;
+
+	@Field(name = "state")
+	private String state;
+
+	@Field(name = "city")
+	private String city;
+
 	@NotNull
-	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
+
 	@Field(name = "dob")
 	private String dob;
-	@NotNull 
+	@NotNull
+
 	@Field(name = "gender")
 	private String gender;
-	@NotNull
-	@Field(name = "marital_status")
-	private String maritalStatus;
-	@Field(name = "qualification")
-	private String qualification;
-	
-	@NotNull(message = "User's profile_pic must not be null")
+
+	@NotNull(message = "User profile picture must not be null")
 	@Field(name = "profile_pic")
 	private String profilePic;
-	
-	@Field(name="designer_category")
+
+	@Field(name = "designer_category")
 	private String designerCategory;
+
+	@Field(name = "pin_code")
+	private String pinCode;
+	
+	@Field(name = "uid")
+	private String uid;
 
 	public DesignerProfile() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public DesignerProfile(@NotNull String email, @NotNull String password, @NotNull String firstName,
-			@NotNull String lastName, @NotNull String displayName, @NotNull String mobileNo, String altMobileNo,
-			@NotNull String dob, @NotNull String gender, @NotNull String maritalStatus, String qualification,
-			@NotNull(message = "User's profile_pic must not be null") String profilePic, String designerCategory) {
+	public DesignerProfile(@NotNull String email, @NotNull String password, @NotNull String firstName1,
+			@NotNull String lastName1, String firstName2, String lastName2, @NotNull String displayName,
+			@NotNull String mobileNo, String altMobileNo, String digitalSignature, String country, String state,
+			String city, @NotNull String dob, @NotNull String gender,
+			@NotNull(message = "User profile picture must not be null") String profilePic, String designerCategory,
+			String pinCode, String uid) {
 		super();
 		this.email = email;
 		this.password = password;
-		this.firstName = firstName;
-		this.lastName = lastName;
+		this.firstName1 = firstName1;
+		this.lastName1 = lastName1;
+		this.firstName2 = firstName2;
+		this.lastName2 = lastName2;
 		this.displayName = displayName;
 		this.mobileNo = mobileNo;
 		this.altMobileNo = altMobileNo;
+		this.digitalSignature = digitalSignature;
+		this.country = country;
+		this.state = state;
+		this.city = city;
 		this.dob = dob;
 		this.gender = gender;
-		this.maritalStatus = maritalStatus;
-		this.qualification = qualification;
 		this.profilePic = profilePic;
 		this.designerCategory = designerCategory;
+		this.pinCode = pinCode;
+		this.uid = uid;
 	}
 
 	@Override
 	public String toString() {
-		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName=" + firstName + ", lastName="
-				+ lastName + ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
-				+ ", dob=" + dob + ", gender=" + gender + ", maritalStatus=" + maritalStatus + ", qualification="
-				+ qualification + ", profilePic=" + profilePic + ", designerCategory=" + designerCategory + "]";
+		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
+				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
+				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
+				+ ", digitalSignature=" + digitalSignature + ", country=" + country + ", state=" + state + ", city="
+				+ city + ", dob=" + dob + ", gender=" + gender + ", profilePic=" + profilePic + ", designerCategory="
+				+ designerCategory + ", pinCode=" + pinCode + ", uid=" + uid + "]";
 	}
 
 	public String getEmail() {
@@ -99,20 +137,36 @@ public class DesignerProfile {
 		this.password = password;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getFirstName1() {
+		return firstName1;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setFirstName1(String firstName1) {
+		this.firstName1 = firstName1;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getLastName1() {
+		return lastName1;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setLastName1(String lastName1) {
+		this.lastName1 = lastName1;
+	}
+
+	public String getFirstName2() {
+		return firstName2;
+	}
+
+	public void setFirstName2(String firstName2) {
+		this.firstName2 = firstName2;
+	}
+
+	public String getLastName2() {
+		return lastName2;
+	}
+
+	public void setLastName2(String lastName2) {
+		this.lastName2 = lastName2;
 	}
 
 	public String getDisplayName() {
@@ -139,6 +193,38 @@ public class DesignerProfile {
 		this.altMobileNo = altMobileNo;
 	}
 
+	public String getDigitalSignature() {
+		return digitalSignature;
+	}
+
+	public void setDigitalSignature(String digitalSignature) {
+		this.digitalSignature = digitalSignature;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
 	public String getDob() {
 		return dob;
 	}
@@ -153,22 +239,6 @@ public class DesignerProfile {
 
 	public void setGender(String gender) {
 		this.gender = gender;
-	}
-
-	public String getMaritalStatus() {
-		return maritalStatus;
-	}
-
-	public void setMaritalStatus(String maritalStatus) {
-		this.maritalStatus = maritalStatus;
-	}
-
-	public String getQualification() {
-		return qualification;
-	}
-
-	public void setQualification(String qualification) {
-		this.qualification = qualification;
 	}
 
 	public String getProfilePic() {
@@ -186,6 +256,23 @@ public class DesignerProfile {
 	public void setDesignerCategory(String designerCategory) {
 		this.designerCategory = designerCategory;
 	}
+
+	public String getPinCode() {
+		return pinCode;
+	}
+
+	public void setPinCode(String pinCode) {
+		this.pinCode = pinCode;
+	}
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+
 	
-	
+
 }

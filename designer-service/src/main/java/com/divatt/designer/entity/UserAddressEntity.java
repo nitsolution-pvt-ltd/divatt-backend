@@ -1,15 +1,5 @@
 package com.divatt.designer.entity;
 
-import javax.validation.constraints.NotNull;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-
 public class UserAddressEntity {
 	private Long id;
 	private Long userId;
@@ -28,7 +18,6 @@ public class UserAddressEntity {
 	private String createdOn;
 	public UserAddressEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public UserAddressEntity(Long id, Long userId, String fullName, String email, int postalCode, String mobile,
 			String addressType, String address1, String address2, String landmark, String city, String state,

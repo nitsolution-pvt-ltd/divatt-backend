@@ -22,30 +22,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-//import org.json.JSONObject;
+
 import com.divatt.designer.entity.OrderSKUDetailsEntity;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
+import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.ProductService;
-import com.divatt.designer.services.ProductServiceImp;
 
 @RestController
 @RequestMapping("/designerProduct")
-public class ProductController implements ProductServiceImp {
+public class ProductController{
 
 	@Autowired
 	private ProductService productService;
-	
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
-	
-	
-	@GetMapping("/test")
-	public String test() {
-		return "Hii";
-	}
 
 	@GetMapping("/allList")
 	public Map<String, Object> allProductList(@RequestParam(defaultValue = "0") int page,
@@ -60,6 +53,18 @@ public class ProductController implements ProductServiceImp {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
+	}
+
+	@GetMapping("/getColour/{colourValue}")
+	public Boolean getColour(@PathVariable(value = "colourValue") String colourValue) {
+
+		try {
+			LOGGER.info("Inside- ProductController.getColour()");
+			return productService.getColourlist(colourValue);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
 	}
 
 	@PostMapping("/add")
@@ -162,18 +167,17 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@PostMapping("/getCartProductList")
 	public ResponseEntity<?> CartProductList(@RequestBody JSONObject productIdList) {
 		try {
 			LOGGER.info("Inside-ProductController.productList()");
-			
+
 			String productId = productIdList.get("productId").toString();
-			
+
 			JSONParser jsonParser = new JSONParser();
 			Object object = (Object) jsonParser.parse(productId);
 			JSONArray jsonArray = (JSONArray) object;
-			
 
 			List<Integer> list = new ArrayList<Integer>();
 			for (int i = 0; i < jsonArray.size(); i++) {
@@ -181,7 +185,6 @@ public class ProductController implements ProductServiceImp {
 				int a = Integer.parseInt(object2.toString());
 				list.add(a);
 			}
-			
 
 			return productService.allCartProductData(list);
 		} catch (Exception e) {
@@ -191,13 +194,16 @@ public class ProductController implements ProductServiceImp {
 
 	@GetMapping("/designerProductList/{designerId}")
 	public Map<String, Object> designerProductList(@PathVariable Integer designerId,
+			@RequestParam(defaultValue = "live") String status, @RequestParam(defaultValue = "true") Boolean isActive,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
-			@RequestParam Optional<String> sortBy) {
+			@RequestParam Optional<String> sortBy, @RequestParam(defaultValue = "") String sortDateType) {
 		try {
-			return this.productService.designerIdListPage(designerId, sortBy, page, sort, sortName, isDeleted, limit,
-					keyword);
+			LOGGER.info("Status Datata={}", status);
+			return this.productService.designerIdListPage(designerId, status, sortBy, page, sort, sortName, isDeleted,
+					limit, keyword, isActive, sortDateType);
+
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -268,7 +274,7 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/getPerDesignerProductUser/{designerId}")
 	public ResponseEntity<?> getPerDesignerProductUser(@PathVariable Integer designerId,
 			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer limit,
@@ -283,16 +289,12 @@ public class ProductController implements ProductServiceImp {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/UserDesignerProductList/{designerId}")
-	public List<ProductMasterEntity>UserDesignerProductList (@PathVariable Integer designerId)
-	{
-		try
-		{
+	public List<ProductMasterEntity2> UserDesignerProductList(@PathVariable Integer designerId) {
+		try {
 			return this.productService.UserDesignerProductList(designerId);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -301,114 +303,111 @@ public class ProductController implements ProductServiceImp {
 	public ResponseEntity<?> getProductListById(@RequestBody List<Integer> productIdList) {
 		try {
 			LOGGER.info("Inside-ProductController.getProductListById()");
-//			String productId = productIdList.get("productId").toString();
-			
-//			JSONParser jsonParser = new JSONParser();
-//			Object object = (Object) jsonParser.parse(productId);
-//			JSONArray jsonArray = (JSONArray) object;
-//		
-//
-//			List<Integer> list = new ArrayList<Integer>();
-//			for (int i = 0; i < jsonArray.size(); i++) {
-//				Object object2 = jsonArray.get(i);
-//				int a = Integer.parseInt(object2.toString());
-//				list.add(a);
-//			}
-			
-//			System.out.println(productIdList);
+
 			return productService.ProductListByIdService(productIdList);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
-			
+
 		}
 
-}
+	}
+
 	@PutMapping("/approval/{productId}")
-	public GlobalResponce approvaladmin(@PathVariable Integer productId,@RequestBody ProductMasterEntity masterEntity)
-	{
+	public GlobalResponce approvaladmin(@PathVariable Integer productId,
+			@RequestBody ProductMasterEntity masterEntity) {
 		try {
-			return this.productService.adminApproval(productId,masterEntity);
-		}
-		catch(Exception e)
-		{
+			return this.productService.adminApproval(productId, masterEntity);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
 
 	@PutMapping("/multipleDelete")
-	public GlobalResponce multipleDelete(@RequestBody List<Integer> productIdList)
-	{
+	public GlobalResponce multipleDelete(@RequestBody List<Integer> productIdList) {
 		try {
 			return this.productService.multiDelete(productIdList);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
 
 	@PutMapping("/stockClearence")
-	public GlobalResponce stockClearence(@RequestBody List<OrderSKUDetailsEntity> jsonObject)
-	{
+	public GlobalResponce stockClearence(@RequestBody List<OrderSKUDetailsEntity> jsonObject) {
 		try {
 			return this.productService.stockClearenceService(jsonObject);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@GetMapping("/productList/{categoryName}/{subCategoryName}")
-	public List<ProductMasterEntity> productList(@PathVariable String  categoryName,@PathVariable String subcategoryName)
-	{
+	public List<ProductMasterEntity> productList(@PathVariable String categoryName,
+			@PathVariable String subcategoryName) {
 		try {
 			return this.productService.productListCategorySubcategory(categoryName, subcategoryName);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@GetMapping("/viewProductByCategorySubcategory/{categoryName}/{subCategoryName}")
-	public List<ProductMasterEntity> viewProductByCategorySubcategory(@PathVariable String categoryName, @PathVariable String subCategoryName){
+	public List<ProductMasterEntity> viewProductByCategorySubcategory(@PathVariable String categoryName,
+			@PathVariable String subCategoryName) {
 		try {
-			return this.productService.viewProductByCategorySubcategoryService(categoryName,subCategoryName);
-		}
-		catch(Exception e) {
+			return this.productService.viewProductByCategorySubcategoryService(categoryName, subCategoryName);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
+
 	@GetMapping("/getProductReminder")
-	public Map<String, Object> getProductReminder(
-			@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer limit,
-			@RequestParam(defaultValue = "DESC") String sort, @RequestParam(defaultValue = "productId") String sortName,
+	public Map<String, Object> getProductReminder(@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "productId") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy) {
 		try {
 			LOGGER.info("Inside-ProductController.getProductReminder()");
 //return null;
-			return productService.getProductReminderService(page, limit, sortBy, sort, sortName, keyword,isDeleted);
+			return productService.getProductReminderService(page, limit, sortBy, sort, sortName, keyword, isDeleted);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
+
 	@GetMapping("/designerNotification")
 	public GlobalResponce designerNotification() {
 		try {
 			return this.productService.designerNotification();
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
 	@PutMapping("/stockRecoverService")
 	public GlobalResponce stockRecoverService(@RequestBody OrderSKUDetailsEntity orderDetails) {
 		try {
 			return this.productService.stockRecovereService(orderDetails);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
 		}
-		catch(Exception e) {
+	}
+
+	@GetMapping("/searching")
+	public List<ProductMasterEntity> productSearching(@RequestParam(defaultValue = "") String searchBy,
+			@RequestParam(defaultValue = "") String designerId, @RequestParam(defaultValue = "") String categoryId,
+			@RequestParam(defaultValue = "") String subCategoryId, @RequestParam(defaultValue = "") String colour,
+			@RequestParam(defaultValue = "") Boolean cod, @RequestParam(defaultValue = "") Boolean customization,
+			@RequestParam(defaultValue = "") String priceType, @RequestParam(defaultValue = "") Boolean returnStatus,
+			@RequestParam(defaultValue = "-1") String maxPrice, @RequestParam(defaultValue = "-1") String minPrice,
+			@RequestParam(defaultValue = "") String size, @RequestParam(defaultValue = "") Boolean giftWrap,
+			@RequestParam(defaultValue = "") String searchKey) {
+		try {
+			LOGGER.info("Inside- ProductController.productSearching()");
+			LOGGER.info("COD data = {}", cod);
+			return this.productService.productSearching(searchBy, designerId, categoryId, subCategoryId, colour, cod,
+					customization, priceType, returnStatus, maxPrice, minPrice, size, giftWrap, searchKey);
+		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}

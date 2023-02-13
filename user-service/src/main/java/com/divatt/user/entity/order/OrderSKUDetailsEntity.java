@@ -1,103 +1,167 @@
 package com.divatt.user.entity.order;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "tbl_order_sku_details_new")
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+
+@Document(collection = "tbl_order_sku_details")
 public class OrderSKUDetailsEntity {
-	
+
 	@Transient
-	public static final String SEQUENCE_NAME = "tbl_order_sku_details_new";
-	 
+	public static final String SEQUENCE_NAME = "tbl_order_sku_details";
+
 	@Id
 	private Integer id;
-	
+
 	@NotNull(message = "Username is required!")
-	@Field(name = "user_id") 
+	@Field(name = "user_id")
 	private Long userId;
-	
-	@Field(name = "order_id") 
+
+	@Field(name = "order_id")
 	private String orderId;
-	
-//	@Field(name = "invoice_id") 
-//	private String invoiceId;
-	
-	
+
+	@NotNull(message = "HSN is required!")
+	@Field(name = "hsn")
+	private Object hsn;
+
 	@NotNull(message = "Designer is required!")
-	@Field(name = "designer_id") 
+	@Field(name = "designer_id")
 	private int designerId;
-	
+
 	@NotNull(message = "Product is required!")
-	@Field(name = "productId") 
+	@Field(name = "productId")
 	private int productId;
-	
+
 	@NotNull(message = "Product name is required!")
-	@Field(name = "productName") 
+	@Field(name = "productName")
 	private String productName;
-	
+
 	@NotNull(message = "Product Sku is required!")
-	@Field(name = "productSku") 
+	@Field(name = "productSku")
 	private String productSku;
-	
+
 	@NotNull(message = "Size is required!")
-	@Field(name = "size") 
+	@Field(name = "size")
 	private String size;
-	
+
 	@NotNull(message = "Image is required!")
-	@Field(name = "images") 
+	@Field(name = "images")
 	private String images;
-	
+
 	@NotNull(message = "Colour is required!")
-	@Field(name = "colour") 
+	@Field(name = "colour")
 	private String colour;
-	
+
 	@NotNull(message = "Units is required!")
-	@Field(name = "units") 
+	@Field(name = "units")
 	private Long units;
-	
+
 	@NotNull(message = "mrp is required!")
-	@Field(name = "mrp") 
+	@Field(name = "mrp")
 	private Long mrp;
-	
+
 	@NotNull(message = "Sales price is required!")
-	@Field(name = "salesPrice") 
+	@Field(name = "salesPrice")
 	private Long salesPrice;
-	
+
 	@NotNull(message = "Discount is required!")
-	@Field(name = "discount") 
+	@Field(name = "discount")
 	private Long discount;
-	
+
 	@NotNull(message = "Tax amount is required!")
-	@Field(name = "tax_amount") 
+	@Field(name = "tax_amount")
 	private Long taxAmount;
-	
-	@Field(name = "taxType") 
+
+	@Field(name = "cgst")
+	private Double cgst;
+
+	@Field(name = "sgst")
+	private Double sgst;
+
+	@Field(name = "igst")
+	private Double igst;
+
+	@Field(name = "shipping_charge")
+	private Double shippingCharge;
+
+	@Field(name = "shipping_cgst")
+	private Double shippingCGST;
+
+	@Field(name = "shipping_sgst")
+	private Double shippingSGST;
+
+	@Field(name = "shipping_igst")
+	private Double shippingIGST;
+
+	@Field(name = "taxType")
 	private String taxType;
 
-	@Field(name= "order_item_status")
+	@Field(name = "order_item_status")
 	private String orderItemStatus;
-	
-	@Field(name= "reached_central_hub")
+
+	@Field(name = "reached_central_hub")
 	private String reachedCentralHub;
-	
-	@Field(name = "created_on") 
+
+	@Field(name = "created_on")
+	@JsonFormat(shape = Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
 	private String createdOn;
-	
-	@Field(name = "updated_on") 
+
+	@Field(name = "updated_on")
 	private String updatedOn;
+
+	private OrderStatusDetails orderStatusDetails;
+
+	@Field(name = "designer_Customization")
+	private JSONObject customObject;
+
+	@Field(name = "customization_status")
+	private Boolean customizationStatus;
+
+	@Field(name = "giftwrap_status")
+	private Boolean giftwrapStatus;
+
+	private Boolean cancelAcceptable;
+
+	private JSONObject giftWrapObject;
+
+	private String userComment;
+
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/dd/MM HH:mm:ss")
+	private String shippingDate;
+
+	private String status;
+
+	private HsnData hsnData;
+
+	private JSONObject measurementObject;
+
+	@Field(name = "gift_wrap_amount")
+	private Long giftWrapAmount;
+
+	@Field(name = "return_acceptable")
+	private Boolean returnAcceptable;
+	
+	@Field(name = "displayName")
+	private String displayName;
+	
+	private UserInfo userInfo;
+	
+	private DesignerInfo designerInfo;
+	
 
 	public OrderSKUDetailsEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public OrderSKUDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
+			@NotNull(message = "HSN is required!") Object hsn,
 			@NotNull(message = "Designer is required!") int designerId,
 			@NotNull(message = "Product is required!") int productId,
 			@NotNull(message = "Product name is required!") String productName,
@@ -107,12 +171,18 @@ public class OrderSKUDetailsEntity {
 			@NotNull(message = "Units is required!") Long units, @NotNull(message = "mrp is required!") Long mrp,
 			@NotNull(message = "Sales price is required!") Long salesPrice,
 			@NotNull(message = "Discount is required!") Long discount,
-			@NotNull(message = "Tax amount is required!") Long taxAmount, String taxType, String orderItemStatus,
-			String reachedCentralHub, String createdOn, String updatedOn) {
+			@NotNull(message = "Tax amount is required!") Long taxAmount, Double cgst, Double sgst, Double igst,
+			Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST, String taxType,
+			String orderItemStatus, String reachedCentralHub, String createdOn, String updatedOn,
+			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
+			Boolean giftwrapStatus, Boolean cancelAcceptable, JSONObject giftWrapObject, String userComment,
+			String shippingDate, String status, HsnData hsnData, JSONObject measurementObject, Long giftWrapAmount,
+			Boolean returnAcceptable, String displayName, UserInfo userInfo, DesignerInfo designerInfo) {
 		super();
 		this.id = id;
 		this.userId = userId;
 		this.orderId = orderId;
+		this.hsn = hsn;
 		this.designerId = designerId;
 		this.productId = productId;
 		this.productName = productName;
@@ -125,21 +195,52 @@ public class OrderSKUDetailsEntity {
 		this.salesPrice = salesPrice;
 		this.discount = discount;
 		this.taxAmount = taxAmount;
+		this.cgst = cgst;
+		this.sgst = sgst;
+		this.igst = igst;
+		this.shippingCharge = shippingCharge;
+		this.shippingCGST = shippingCGST;
+		this.shippingSGST = shippingSGST;
+		this.shippingIGST = shippingIGST;
 		this.taxType = taxType;
 		this.orderItemStatus = orderItemStatus;
 		this.reachedCentralHub = reachedCentralHub;
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
+		this.orderStatusDetails = orderStatusDetails;
+		this.customObject = customObject;
+		this.customizationStatus = customizationStatus;
+		this.giftwrapStatus = giftwrapStatus;
+		this.cancelAcceptable = cancelAcceptable;
+		this.giftWrapObject = giftWrapObject;
+		this.userComment = userComment;
+		this.shippingDate = shippingDate;
+		this.status = status;
+		this.hsnData = hsnData;
+		this.measurementObject = measurementObject;
+		this.giftWrapAmount = giftWrapAmount;
+		this.returnAcceptable = returnAcceptable;
+		this.displayName = displayName;
+		this.userInfo = userInfo;
+		this.designerInfo = designerInfo;
 	}
 
 	@Override
 	public String toString() {
-		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", designerId="
-				+ designerId + ", productId=" + productId + ", productName=" + productName + ", productSku="
-				+ productSku + ", size=" + size + ", images=" + images + ", colour=" + colour + ", units=" + units
-				+ ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount + ", taxAmount=" + taxAmount
-				+ ", taxType=" + taxType + ", orderItemStatus=" + orderItemStatus + ", reachedCentralHub="
-				+ reachedCentralHub + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn + "]";
+		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", hsn=" + hsn
+				+ ", designerId=" + designerId + ", productId=" + productId + ", productName=" + productName
+				+ ", productSku=" + productSku + ", size=" + size + ", images=" + images + ", colour=" + colour
+				+ ", units=" + units + ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount
+				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
+				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
+				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", taxType=" + taxType + ", orderItemStatus="
+				+ orderItemStatus + ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn
+				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + ", customObject="
+				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
+				+ ", cancelAcceptable=" + cancelAcceptable + ", giftWrapObject=" + giftWrapObject + ", userComment="
+				+ userComment + ", shippingDate=" + shippingDate + ", status=" + status + ", hsnData=" + hsnData
+				+ ", measurementObject=" + measurementObject + ", giftWrapAmount=" + giftWrapAmount
+				+ ", returnAcceptable=" + returnAcceptable + ", displayName=" + displayName + ", userInfo=" + userInfo + ", designerInfo" + designerInfo +"]";
 	}
 
 	public Integer getId() {
@@ -164,6 +265,14 @@ public class OrderSKUDetailsEntity {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
+	}
+
+	public Object getHsn() {
+		return hsn;
+	}
+
+	public void setHsn(Object hsn) {
+		this.hsn = hsn;
 	}
 
 	public int getDesignerId() {
@@ -262,6 +371,62 @@ public class OrderSKUDetailsEntity {
 		this.taxAmount = taxAmount;
 	}
 
+	public Double getCgst() {
+		return cgst;
+	}
+
+	public void setCgst(Double cgst) {
+		this.cgst = cgst;
+	}
+
+	public Double getSgst() {
+		return sgst;
+	}
+
+	public void setSgst(Double sgst) {
+		this.sgst = sgst;
+	}
+
+	public Double getIgst() {
+		return igst;
+	}
+
+	public void setIgst(Double igst) {
+		this.igst = igst;
+	}
+
+	public Double getShippingCharge() {
+		return shippingCharge;
+	}
+
+	public void setShippingCharge(Double shippingCharge) {
+		this.shippingCharge = shippingCharge;
+	}
+
+	public Double getShippingCGST() {
+		return shippingCGST;
+	}
+
+	public void setShippingCGST(Double shippingCGST) {
+		this.shippingCGST = shippingCGST;
+	}
+
+	public Double getShippingSGST() {
+		return shippingSGST;
+	}
+
+	public void setShippingSGST(Double shippingSGST) {
+		this.shippingSGST = shippingSGST;
+	}
+
+	public Double getShippingIGST() {
+		return shippingIGST;
+	}
+
+	public void setShippingIGST(Double shippingIGST) {
+		this.shippingIGST = shippingIGST;
+	}
+
 	public String getTaxType() {
 		return taxType;
 	}
@@ -302,14 +467,142 @@ public class OrderSKUDetailsEntity {
 		this.updatedOn = updatedOn;
 	}
 
+	public OrderStatusDetails getOrderStatusDetails() {
+		return orderStatusDetails;
+	}
+
+	public void setOrderStatusDetails(OrderStatusDetails orderStatusDetails) {
+		this.orderStatusDetails = orderStatusDetails;
+	}
+
+	public JSONObject getCustomObject() {
+		return customObject;
+	}
+
+	public void setCustomObject(JSONObject customObject) {
+		this.customObject = customObject;
+	}
+
+	public Boolean getCustomizationStatus() {
+		return customizationStatus;
+	}
+
+	public void setCustomizationStatus(Boolean customizationStatus) {
+		this.customizationStatus = customizationStatus;
+	}
+
+	public Boolean getGiftwrapStatus() {
+		return giftwrapStatus;
+	}
+
+	public void setGiftwrapStatus(Boolean giftwrapStatus) {
+		this.giftwrapStatus = giftwrapStatus;
+	}
+
+	public Boolean getCancelAcceptable() {
+		return cancelAcceptable;
+	}
+
+	public void setCancelAcceptable(Boolean cancelAcceptable) {
+		this.cancelAcceptable = cancelAcceptable;
+	}
+
+	public JSONObject getGiftWrapObject() {
+		return giftWrapObject;
+	}
+
+	public void setGiftWrapObject(JSONObject giftWrapObject) {
+		this.giftWrapObject = giftWrapObject;
+	}
+
+	public String getUserComment() {
+		return userComment;
+	}
+
+	public void setUserComment(String userComment) {
+		this.userComment = userComment;
+	}
+
+	public String getShippingDate() {
+		return shippingDate;
+	}
+
+	public void setShippingDate(String shippingDate) {
+		this.shippingDate = shippingDate;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public HsnData getHsnData() {
+		return hsnData;
+	}
+
+	public void setHsnData(HsnData hsnData) {
+		this.hsnData = hsnData;
+	}
+
+	public JSONObject getMeasurementObject() {
+		return measurementObject;
+	}
+
+	public void setMeasurementObject(JSONObject measurementObject) {
+		this.measurementObject = measurementObject;
+	}
+
+	public Long getGiftWrapAmount() {
+		return giftWrapAmount;
+	}
+
+	public void setGiftWrapAmount(Long giftWrapAmount) {
+		this.giftWrapAmount = giftWrapAmount;
+	}
+
+	public Boolean getReturnAcceptable() {
+		return returnAcceptable;
+	}
+
+	public void setReturnAcceptable(Boolean returnAcceptable) {
+		this.returnAcceptable = returnAcceptable;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+	
+	public UserInfo getUserInfo() {
+		return userInfo;
+	}
+
+	public void setUserInfo(UserInfo userInfo) {
+		this.userInfo = userInfo;
+	}
+
+	public DesignerInfo getDesignerInfo() {
+		return designerInfo;
+	}
+
+	public void setDesignerInfo(DesignerInfo designerInfo) {
+		this.designerInfo = designerInfo;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
 	
-	
-	
-	
-	
 
+	
+	
+	
+	
 }

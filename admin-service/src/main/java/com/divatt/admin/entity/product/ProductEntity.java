@@ -5,13 +5,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.google.gson.JsonObject;
 
 @Document(collection = "tbl_products")
 public class ProductEntity {
@@ -60,7 +57,6 @@ public class ProductEntity {
 	private String designerName;
 	public ProductEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public ProductEntity(Integer productId, Integer designerId, Integer categoryId, Integer subCategoryId,

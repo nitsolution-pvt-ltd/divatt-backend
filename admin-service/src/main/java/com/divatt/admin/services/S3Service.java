@@ -1,5 +1,6 @@
 package com.divatt.admin.services;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,22 +8,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
-
-import java.io.File;
-
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -80,7 +74,6 @@ public class S3Service {
         		file.delete();
 				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -132,7 +125,7 @@ public class S3Service {
     public ResponseEntity<?> getPublicUrl(String key) {
 //    	amazonS3Client.setObjectAcl(defaultBucketName,key,CannedAccessControlList.PublicRead);
     	URL url = amazonS3Client.getUrl(defaultBucketName, key);
-    	String path = url.getPath();
+    	url.getPath();
     	return ResponseEntity.ok(url);
     }
     

@@ -11,32 +11,11 @@ public class GlobalEntity {
 	private String accessToken;
 	private String oldPass;
 	private String newPass;
+	private String userType;
 
 	public GlobalEntity() {
 		super();
 		// TODO Auto-generated constructor stub
-	}
-
-	public GlobalEntity(int uid, String firstName, String lastName, String email, String userName, String password,
-			String ppic, String accessToken, String oldPass, String newPass) {
-		super();
-		this.uid = uid;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.userName = userName;
-		this.password = password;
-		this.ppic = ppic;
-		this.accessToken = accessToken;
-		this.oldPass = oldPass;
-		this.newPass = newPass;
-	}
-
-	@Override
-	public String toString() {
-		return "GlobalEntity [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", userName=" + userName + ", password=" + password + ", ppic=" + ppic + ", accessToken="
-				+ accessToken + ", oldPass=" + oldPass + ", newPass=" + newPass + "]";
 	}
 
 	public int getUid() {
@@ -119,4 +98,13 @@ public class GlobalEntity {
 		this.newPass = newPass;
 	}
 
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+
+	
 }

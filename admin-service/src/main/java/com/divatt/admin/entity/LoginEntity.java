@@ -1,65 +1,54 @@
 package com.divatt.admin.entity;
 
-
-
-
-
-import javax.annotation.Generated;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.NumberFormat;
 
-import com.mongodb.lang.Nullable;
-
-
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Document(collection = "tbl_admin")
 public class LoginEntity {
-	
+
 	@Transient
 	public static final String SEQUENCE_NAME = "tbl_admin";
 
 	@Id
 	private Long uid;
-	@NotNull(message = "User's first name must not be null")
+	@NotNull(message = "Admin first name must not be null")
 	@Field(name = "first_name")
 	private String firstName;
-	@NotNull(message = "User's last name must not be null")
+	@NotNull(message = "Admin last name must not be null")
 	@Field(name = "last_name")
 	private String lastName;
 //	@Email
-	@NotNull(message = "User's email must not be null")
+	@NotNull(message = "Admin email must not be null")
 	private String email;
-	@NotNull(message = "User's password must not be null")
+	@JsonProperty(access = Access.WRITE_ONLY)
+	@NotNull(message = "Admin password must not be null")
 	private String password;
 //	@NumberFormat
-	@NotNull(message = "User's mobile_no must not be null")
+	@NotNull(message = "Admin mobile_no must not be null")
 	@Field(name = "mobile_no")
 	private String mobileNo;
 //	@DateTimeFormat()
-	@NotNull(message = "User's dob must not be null")
+	@NotNull(message = "Admin dob must not be null")
 	private String dob;
-	
+
 	@Field(name = "is_active")
 	private boolean isActive;
 
 	@Field(value = "is_deleted")
 	private boolean isDeleted;
-	@NotNull(message = "User's role must not be null")
+	@NotNull(message = "Admin role must not be null")
 	private Long role;
-	
+
 	@Field(name = "roel_name")
-	@NotNull(message = "User's role must not be null")
+	@NotNull(message = "Admin role must not be null")
 	private String roleName;
 
 	@Field(name = "auth_token")
@@ -73,25 +62,34 @@ public class LoginEntity {
 
 	@Field(name = "modified_by")
 	private String modifiedBy;
-	
+
 	@Field(name = "gender")
 	private String gender;
 
 	@Field(name = "modified_on")
 	private String modifiedOn;
-	
-	@NotNull(message = "User's profile_pic must not be null")
+
+	@NotNull(message = "Admin profile_pic must not be null")
 	@Field(name = "profile_pic")
 	private String profilePic;
-	
+
 	private JSONObject logins;
+
+	private String gstIn;
+
+	private String pan;
+
+	private String city;
+
+	private String country;
+
+	private String state;
+
+	private String pin;
 
 	public LoginEntity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
-
-	
 
 	public LoginEntity(Long uid, @NotNull(message = "User's first name must not be null") String firstName,
 			@NotNull(message = "User's last name must not be null") String lastName,
@@ -102,7 +100,8 @@ public class LoginEntity {
 			@NotNull(message = "User's role must not be null") Long role,
 			@NotNull(message = "User's role must not be null") String roleName, String authToken, String createdBy,
 			String createdOn, String modifiedBy, String gender, String modifiedOn,
-			@NotNull(message = "User's profile_pic must not be null") String profilePic, JSONObject logins) {
+			@NotNull(message = "User's profile_pic must not be null") String profilePic, JSONObject logins,
+			String gstIn, String pan, String city, String country, String state, String pin) {
 		super();
 		this.uid = uid;
 		this.firstName = firstName;
@@ -123,34 +122,13 @@ public class LoginEntity {
 		this.modifiedOn = modifiedOn;
 		this.profilePic = profilePic;
 		this.logins = logins;
+		this.gstIn = gstIn;
+		this.pan = pan;
+		this.city = city;
+		this.country = country;
+		this.state = state;
+		this.pin = pin;
 	}
-
-
-
-	
-
-	@Override
-	public String toString() {
-		return "LoginEntity [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", isActive=" + isActive
-				+ ", isDeleted=" + isDeleted + ", role=" + role + ", roleName=" + roleName + ", authToken=" + authToken
-				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", modifiedBy=" + modifiedBy + ", gender="
-				+ gender + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic + ", logins=" + logins + "]";
-	}
-
-
-
-	public String getGender() {
-		return gender;
-	}
-
-
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-
 
 	public Long getUid() {
 		return uid;
@@ -272,6 +250,14 @@ public class LoginEntity {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
 	public String getModifiedOn() {
 		return modifiedOn;
 	}
@@ -296,14 +282,67 @@ public class LoginEntity {
 		this.logins = logins;
 	}
 
+	public String getGstIn() {
+		return gstIn;
+	}
+
+	public void setGstIn(String gstIn) {
+		this.gstIn = gstIn;
+	}
+
+	public String getPan() {
+		return pan;
+	}
+
+	public void setPan(String pan) {
+		this.pan = pan;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getPin() {
+		return pin;
+	}
+
+	public void setPin(String pin) {
+		this.pin = pin;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
-	
-	
 
-	
-	
+	@Override
+	public String toString() {
+		return "LoginEntity [uid=" + uid + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+				+ ", password=" + password + ", mobileNo=" + mobileNo + ", dob=" + dob + ", isActive=" + isActive
+				+ ", isDeleted=" + isDeleted + ", role=" + role + ", roleName=" + roleName + ", authToken=" + authToken
+				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", modifiedBy=" + modifiedBy + ", gender="
+				+ gender + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic + ", logins=" + logins
+				+ ", gstIn=" + gstIn + ", pan=" + pan + ", city=" + city + ", country=" + country + ", state=" + state
+				+ ", pin=" + pin + "]";
+	}
 
 }

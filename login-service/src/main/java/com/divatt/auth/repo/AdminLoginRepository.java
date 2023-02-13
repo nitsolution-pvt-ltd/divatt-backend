@@ -14,7 +14,7 @@ import com.divatt.auth.entity.AdminLoginEntity;
 public interface AdminLoginRepository extends MongoRepository<AdminLoginEntity, Object> {
 
 //	Optional<LoginEntity> findByUserName(String userName);
-
+	
 	public Optional<AdminLoginEntity> findByEmail(String email);
 	
 	

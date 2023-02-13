@@ -26,6 +26,9 @@ public class BannerEntity {
 	@Field(name = "title")
 	private String title;
 	
+	@Field(name = "url")
+	private String url;
+	
 	@Field(name = "description")
 	private String description;
 	
@@ -35,11 +38,11 @@ public class BannerEntity {
 	
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	@Field(name = "start_date")
-	private Date startDate;
+	private String startDate;
 	
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd")
 	@Field(name = "end_date")
-	private Date endDate;
+	private String endDate;
 	
 	@Field(name = "is_active")
 	private Boolean isActive;
@@ -53,28 +56,6 @@ public class BannerEntity {
 	public BannerEntity() {
 		super();
 		// TODO Auto-generated constructor stub
-	}
-
-	public BannerEntity(Long id, @NotNull(message = "Title is requried!") String title, String description,
-			@NotNull(message = "Image is requried!") String image, Date startDate, Date endDate, Boolean isActive,
-			Boolean isDeleted, Date createdOn) {
-		super();
-		this.id = id;
-		this.title = title;
-		this.description = description;
-		this.image = image;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.isActive = isActive;
-		this.isDeleted = isDeleted;
-		this.createdOn = createdOn;
-	}
-
-	@Override
-	public String toString() {
-		return "BannerEntity [id=" + id + ", title=" + title + ", description=" + description + ", image=" + image
-				+ ", startDate=" + startDate + ", endDate=" + endDate + ", isActive=" + isActive + ", isDeleted="
-				+ isDeleted + ", createdOn=" + createdOn + "]";
 	}
 
 	public Long getId() {
@@ -93,6 +74,14 @@ public class BannerEntity {
 		this.title = title;
 	}
 
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -109,19 +98,19 @@ public class BannerEntity {
 		this.image = image;
 	}
 
-	public Date getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public String getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
 
@@ -152,7 +141,14 @@ public class BannerEntity {
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "BannerEntity [id=" + id + ", title=" + title + ", url=" + url + ", description=" + description
+				+ ", image=" + image + ", startDate=" + startDate + ", endDate=" + endDate + ", isActive=" + isActive
+				+ ", isDeleted=" + isDeleted + ", createdOn=" + createdOn + "]";
+	}
+
 	
 	
 	

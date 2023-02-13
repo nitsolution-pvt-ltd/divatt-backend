@@ -2,15 +2,12 @@ package com.divatt.admin.entity;
 
 import java.util.ArrayList;
 
-import org.json.JSONArray;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.mongodb.BasicDBList;
-
-import springfox.documentation.spring.web.json.Json;
 
 @Document(collection = "tbl_admin_mdata")
 public class AdminModules {
@@ -39,7 +36,6 @@ public class AdminModules {
 	
 	public AdminModules() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public AdminModules(Long id, String metaKey, BasicDBList adminModules, String roleName,

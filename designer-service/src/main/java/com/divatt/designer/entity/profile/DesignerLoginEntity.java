@@ -4,9 +4,13 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import springfox.documentation.spring.web.json.Json;
 
@@ -23,7 +27,10 @@ public class DesignerLoginEntity {
 	
 	@NotNull
 	@Field(name = "email") private String email;
-	@Field(name = "password") private String password;
+	@Field(name = "user_exist") private String userExist;
+	@JsonProperty(access = Access.WRITE_ONLY)
+	@Field(name = "password") 
+	private String password;
 	@Field(name = "auth_token") private String authToken;
 	@NotNull
 	@Field(name = "is_deleted") private Boolean isDeleted;
@@ -43,9 +50,22 @@ public class DesignerLoginEntity {
 	
 	private Integer follwerCount = 0;
 
+	private Boolean isFollowing;
 	
 	private String categories;
-
+	
+	private String designerCurrentStatus;
+	
+	private String displayName;
+	
+	private String designerCategory;
+	
+	private Boolean isProfileCompleted;
+    
+	@Indexed(unique = true)
+	private String uid;
+	
+	
 
 	public DesignerLoginEntity() {
 		super();
@@ -53,13 +73,16 @@ public class DesignerLoginEntity {
 	}
 
 
-	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String password, String authToken,
-			@NotNull Boolean isDeleted, @NotNull String profileStatus, String accountStatus, String adminComment,
-			Json logins, DesignerProfileEntity designerProfileEntity, Integer productCount, Integer follwerCount,
-			String categories) {
+
+	public DesignerLoginEntity(@NotNull Long dId, @NotNull String email, String userExist, String password,
+			String authToken, @NotNull Boolean isDeleted, @NotNull String profileStatus, String accountStatus,
+			String adminComment, Json logins, DesignerProfileEntity designerProfileEntity, Integer productCount,
+			Integer follwerCount, Boolean isFollowing, String categories, String designerCurrentStatus,
+			String displayName, String designerCategory, Boolean isProfileCompleted, String uid) {
 		super();
 		this.dId = dId;
 		this.email = email;
+		this.userExist = userExist;
 		this.password = password;
 		this.authToken = authToken;
 		this.isDeleted = isDeleted;
@@ -70,18 +93,29 @@ public class DesignerLoginEntity {
 		this.designerProfileEntity = designerProfileEntity;
 		this.productCount = productCount;
 		this.follwerCount = follwerCount;
+		this.isFollowing = isFollowing;
 		this.categories = categories;
+		this.designerCurrentStatus = designerCurrentStatus;
+		this.displayName = displayName;
+		this.designerCategory = designerCategory;
+		this.isProfileCompleted = isProfileCompleted;
+		this.uid = uid;
 	}
+
 
 
 	@Override
 	public String toString() {
-		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", password=" + password + ", authToken="
-				+ authToken + ", isDeleted=" + isDeleted + ", profileStatus=" + profileStatus + ", accountStatus="
-				+ accountStatus + ", adminComment=" + adminComment + ", logins=" + logins + ", designerProfileEntity="
-				+ designerProfileEntity + ", productCount=" + productCount + ", follwerCount=" + follwerCount
-				+ ", categories=" + categories + "]";
+		return "DesignerLoginEntity [dId=" + dId + ", email=" + email + ", userExist=" + userExist + ", password="
+				+ password + ", authToken=" + authToken + ", isDeleted=" + isDeleted + ", profileStatus="
+				+ profileStatus + ", accountStatus=" + accountStatus + ", adminComment=" + adminComment + ", logins="
+				+ logins + ", designerProfileEntity=" + designerProfileEntity + ", productCount=" + productCount
+				+ ", follwerCount=" + follwerCount + ", isFollowing=" + isFollowing + ", categories=" + categories
+				+ ", designerCurrentStatus=" + designerCurrentStatus + ", displayName=" + displayName
+				+ ", designerCategory=" + designerCategory + ", isProfileCompleted=" + isProfileCompleted + ", uid="
+				+ uid + "]";
 	}
+
 
 
 	public Long getdId() {
@@ -89,9 +123,11 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setdId(Long dId) {
 		this.dId = dId;
 	}
+
 
 
 	public String getEmail() {
@@ -99,9 +135,23 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+
+
+	public String getUserExist() {
+		return userExist;
+	}
+
+
+
+	public void setUserExist(String userExist) {
+		this.userExist = userExist;
+	}
+
 
 
 	public String getPassword() {
@@ -109,9 +159,11 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 
 
 	public String getAuthToken() {
@@ -119,9 +171,11 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setAuthToken(String authToken) {
 		this.authToken = authToken;
 	}
+
 
 
 	public Boolean getIsDeleted() {
@@ -129,9 +183,11 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setIsDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
+
 
 
 	public String getProfileStatus() {
@@ -139,9 +195,11 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setProfileStatus(String profileStatus) {
 		this.profileStatus = profileStatus;
 	}
+
 
 
 	public String getAccountStatus() {
@@ -149,9 +207,11 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setAccountStatus(String accountStatus) {
 		this.accountStatus = accountStatus;
 	}
+
 
 
 	public String getAdminComment() {
@@ -159,9 +219,11 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setAdminComment(String adminComment) {
 		this.adminComment = adminComment;
 	}
+
 
 
 	public Json getLogins() {
@@ -169,9 +231,11 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setLogins(Json logins) {
 		this.logins = logins;
 	}
+
 
 
 	public DesignerProfileEntity getDesignerProfileEntity() {
@@ -179,9 +243,11 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setDesignerProfileEntity(DesignerProfileEntity designerProfileEntity) {
 		this.designerProfileEntity = designerProfileEntity;
 	}
+
 
 
 	public Integer getProductCount() {
@@ -189,9 +255,11 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setProductCount(Integer productCount) {
 		this.productCount = productCount;
 	}
+
 
 
 	public Integer getFollwerCount() {
@@ -199,9 +267,23 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setFollwerCount(Integer follwerCount) {
 		this.follwerCount = follwerCount;
 	}
+
+
+
+	public Boolean getIsFollowing() {
+		return isFollowing;
+	}
+
+
+
+	public void setIsFollowing(Boolean isFollowing) {
+		this.isFollowing = isFollowing;
+	}
+
 
 
 	public String getCategories() {
@@ -209,13 +291,79 @@ public class DesignerLoginEntity {
 	}
 
 
+
 	public void setCategories(String categories) {
 		this.categories = categories;
 	}
 
 
+
+	public String getDesignerCurrentStatus() {
+		return designerCurrentStatus;
+	}
+
+
+
+	public void setDesignerCurrentStatus(String designerCurrentStatus) {
+		this.designerCurrentStatus = designerCurrentStatus;
+	}
+
+
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+
+
+	public String getDesignerCategory() {
+		return designerCategory;
+	}
+
+
+
+	public void setDesignerCategory(String designerCategory) {
+		this.designerCategory = designerCategory;
+	}
+
+
+
+	public Boolean getIsProfileCompleted() {
+		return isProfileCompleted;
+	}
+
+
+
+	public void setIsProfileCompleted(Boolean isProfileCompleted) {
+		this.isProfileCompleted = isProfileCompleted;
+	}
+
+
+
+	public String getUid() {
+		return uid;
+	}
+
+
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+
+
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+
+
+	
+
 	
 }

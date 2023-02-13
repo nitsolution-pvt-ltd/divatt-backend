@@ -5,8 +5,8 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.divatt.user.entity.order.OrderDetailsEntity;
+import com.divatt.user.entity.order.OrderPaymentEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
-import com.divatt.user.entity.orderPayment.OrderPaymentEntity;
 
 public class OrderAndPaymentGlobalEntity {
 	
@@ -48,8 +48,10 @@ public class OrderAndPaymentGlobalEntity {
 		this.orderSKUDetailsEntity = orderSKUDetailsEntity;
 	}
 
-	
-	
-	
+	@Override
+	public String toString() {
+		return "OrderAndPaymentGlobalEntity [orderPaymentEntity=" + orderPaymentEntity + ", orderDetailsEntity="
+				+ orderDetailsEntity + ", orderSKUDetailsEntity=" + orderSKUDetailsEntity + "]";
+	}
 
 }

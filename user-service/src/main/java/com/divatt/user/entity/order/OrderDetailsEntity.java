@@ -1,7 +1,5 @@
 package com.divatt.user.entity.order;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
@@ -10,102 +8,116 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.divatt.user.entity.BillingAddressEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
-@Document(collection = "tbl_order_details_new")
+@Document(collection = "tbl_order_details")
 public class OrderDetailsEntity {
 	@Transient
-	public static final String SEQUENCE_NAME = "tbl_order_details_new";
-	
+	public static final String SEQUENCE_NAME = "tbl_order_details";
+
 	@Id
 	private Integer id;
-	
+
 	@NotNull(message = "Username is required!")
-	@Field(name = "user_id") 
+	@Field(name = "user_id")
 	private Long userId;
-	
-	@Field(name = "order_id") 
+
+	@Field(name = "order_id")
 	private String orderId;
-	
-	@Field(name = "invoice_id") 
-	private String invoiceId;
-	
+
 	@NotNull(message = "Shipping address is required!")
-	@Field(name = "shipping_address") 
+	@Field(name = "shipping_address")
 	private Object shippingAddress;
-	
+
 	@NotNull(message = "Billing address is required!")
-	@Field(name = "billing_address") 
+	@Field(name = "billing_address")
 	private BillingAddressEntity billingAddress;
-	
+
 	@NotNull(message = "Total amount is required!")
-	@Field(name = "total_amount") 
-	private Double totalAmount;	
-	
-	@Field(name = "order_date") 
+	@Field(name = "total_amount")
+	private Double totalAmount;
+
+	@Field(name = "order_date")
 	private String orderDate;
 
-	@Field(name= "order_status")
+	@Field(name = "order_status")
 	private String orderStatus;
-	
-	@Field(name= "delivery_status")
+
+	@Field(name = "delivery_status")
 	private String deliveryStatus;
-	
-	@Field(name= "delivery_mode")
+
+	@Field(name = "delivery_mode")
 	private String deliveryMode;
-	
-	@Field(name = "delivery_date") 
+
+	@Field(name = "delivery_date")
+	@JsonFormat(shape = Shape.STRING, pattern = "dd/MM/yyyy")
 	private String deliveryDate;
-	
-	@Field(name = "delivery_check_url") 
+
+	@Field(name = "delivery_check_url")
 	private String deliveryCheckUrl;
-	
-	@Field(name = "shipping_charges") 
+
+	@Field(name = "shipping_charges")
 	private Double shippingCharges;
-	
-	@Field(name = "discount") 
+
+	@Field(name = "discount")
 	private Double discount;
-	
-	@Field(name = "mrp") 
+
+	@Field(name = "mrp")
 	private Double mrp;
 
-	@Field(name = "tax_amount") 
+	@Field(name = "tax_amount")
 	private Double taxAmount;
-	
-	
-	@Field(name = "created_on") 
+
+	@Field(name = "cgst")
+	private Double cgst;
+
+	@Field(name = "sgst")
+	private Double sgst;
+
+	@Field(name = "igst")
+	private Double igst;
+
+	@Field(name = "shipping_charge")
+	private Double shippingCharge;
+
+	@Field(name = "shipping_cgst")
+	private Double shippingCGST;
+
+	@Field(name = "shipping_sgst")
+	private Double shippingSGST;
+
+	@Field(name = "shipping_igst")
+	private Double shippingIGST;
+
+	@Field(name = "created_on")
+	@JsonFormat(shape = Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
 	private String createdOn;
-	
-	@Field(name = "razorpay_order_id") 
+
+	@Field(name = "razorpay_order_id")
 	private String razorpayOrderId;
+	@Field(name = "netPrice")
+	private Double netPrice;
+	
+	@Field(name = "gift_wrap_amount")
+	private String giftWrapAmount;
 
 	public OrderDetailsEntity() {
 		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	public String toString() {
-		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", invoiceId="
-				+ invoiceId + ", shippingAddress=" + shippingAddress + ", billingAddress=" + billingAddress
-				+ ", totalAmount=" + totalAmount + ", orderDate=" + orderDate + ", orderStatus=" + orderStatus
-				+ ", deliveryStatus=" + deliveryStatus + ", deliveryMode=" + deliveryMode + ", deliveryDate="
-				+ deliveryDate + ", deliveryCheckUrl=" + deliveryCheckUrl + ", shippingCharges=" + shippingCharges
-				+ ", discount=" + discount + ", mrp=" + mrp + ", taxAmount=" + taxAmount + ", createdOn=" + createdOn
-				+ ", razorpayOrderId=" + razorpayOrderId + "]";
 	}
 
 	public OrderDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
-			String invoiceId, @NotNull(message = "Shipping address is required!") Object shippingAddress,
+			@NotNull(message = "Shipping address is required!") Object shippingAddress,
 			@NotNull(message = "Billing address is required!") BillingAddressEntity billingAddress,
 			@NotNull(message = "Total amount is required!") Double totalAmount, String orderDate, String orderStatus,
 			String deliveryStatus, String deliveryMode, String deliveryDate, String deliveryCheckUrl,
-			Double shippingCharges, Double discount, Double mrp, Double taxAmount, String createdOn,
-			String razorpayOrderId) {
+			Double shippingCharges, Double discount, Double mrp, Double taxAmount, Double cgst, Double sgst,
+			Double igst, Double shippingCharge, Double shippingCGST, Double shippingSGST, Double shippingIGST,
+			String createdOn, String razorpayOrderId, Double netPrice, String giftWrapAmount) {
 		super();
 		this.id = id;
 		this.userId = userId;
 		this.orderId = orderId;
-		this.invoiceId = invoiceId;
 		this.shippingAddress = shippingAddress;
 		this.billingAddress = billingAddress;
 		this.totalAmount = totalAmount;
@@ -119,8 +131,30 @@ public class OrderDetailsEntity {
 		this.discount = discount;
 		this.mrp = mrp;
 		this.taxAmount = taxAmount;
+		this.cgst = cgst;
+		this.sgst = sgst;
+		this.igst = igst;
+		this.shippingCharge = shippingCharge;
+		this.shippingCGST = shippingCGST;
+		this.shippingSGST = shippingSGST;
+		this.shippingIGST = shippingIGST;
 		this.createdOn = createdOn;
 		this.razorpayOrderId = razorpayOrderId;
+		this.netPrice = netPrice;
+		this.giftWrapAmount = giftWrapAmount;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", shippingAddress="
+				+ shippingAddress + ", billingAddress=" + billingAddress + ", totalAmount=" + totalAmount
+				+ ", orderDate=" + orderDate + ", orderStatus=" + orderStatus + ", deliveryStatus=" + deliveryStatus
+				+ ", deliveryMode=" + deliveryMode + ", deliveryDate=" + deliveryDate + ", deliveryCheckUrl="
+				+ deliveryCheckUrl + ", shippingCharges=" + shippingCharges + ", discount=" + discount + ", mrp=" + mrp
+				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
+				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
+				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", createdOn=" + createdOn + ", razorpayOrderId="
+				+ razorpayOrderId + ", netPrice=" + netPrice + ", giftWrapAmount=" + giftWrapAmount + "]";
 	}
 
 	public Integer getId() {
@@ -145,14 +179,6 @@ public class OrderDetailsEntity {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
-	}
-
-	public String getInvoiceId() {
-		return invoiceId;
-	}
-
-	public void setInvoiceId(String invoiceId) {
-		this.invoiceId = invoiceId;
 	}
 
 	public Object getShippingAddress() {
@@ -259,6 +285,62 @@ public class OrderDetailsEntity {
 		this.taxAmount = taxAmount;
 	}
 
+	public Double getCgst() {
+		return cgst;
+	}
+
+	public void setCgst(Double cgst) {
+		this.cgst = cgst;
+	}
+
+	public Double getSgst() {
+		return sgst;
+	}
+
+	public void setSgst(Double sgst) {
+		this.sgst = sgst;
+	}
+
+	public Double getIgst() {
+		return igst;
+	}
+
+	public void setIgst(Double igst) {
+		this.igst = igst;
+	}
+
+	public Double getShippingCharge() {
+		return shippingCharge;
+	}
+
+	public void setShippingCharge(Double shippingCharge) {
+		this.shippingCharge = shippingCharge;
+	}
+
+	public Double getShippingCGST() {
+		return shippingCGST;
+	}
+
+	public void setShippingCGST(Double shippingCGST) {
+		this.shippingCGST = shippingCGST;
+	}
+
+	public Double getShippingSGST() {
+		return shippingSGST;
+	}
+
+	public void setShippingSGST(Double shippingSGST) {
+		this.shippingSGST = shippingSGST;
+	}
+
+	public Double getShippingIGST() {
+		return shippingIGST;
+	}
+
+	public void setShippingIGST(Double shippingIGST) {
+		this.shippingIGST = shippingIGST;
+	}
+
 	public String getCreatedOn() {
 		return createdOn;
 	}
@@ -275,9 +357,29 @@ public class OrderDetailsEntity {
 		this.razorpayOrderId = razorpayOrderId;
 	}
 
+	public Double getNetPrice() {
+		return netPrice;
+	}
+
+	public void setNetPrice(Double netPrice) {
+		this.netPrice = netPrice;
+	}
+
+	public String getGiftWrapAmount() {
+		return giftWrapAmount;
+	}
+
+	public void setGiftWrapAmount(String giftWrapAmount) {
+		this.giftWrapAmount = giftWrapAmount;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
+	
+	
+	
+	
 	
 }

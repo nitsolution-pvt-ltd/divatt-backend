@@ -2,30 +2,24 @@ spring:
   profiles: default
   application: 
      name: Designer 
-#  jpa:
-#    show-sql: true
-#    generate-ddl: true
-#    hibernate:
-#      ddl-auto: update
-#      format_sql: true
-#  datasource:
-#    driverClassName: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://15.207.103.249:3306/divatt
-#    username: divatt_user
-#    password: P@ssw0rd123
   data:
     mongodb:
-      authentication-database: admin
       database: divatt
-      host: 65.1.190.195  #65.1.190.195:27017,,,,, 65.0.194.170
-      password: word_pass
+      host: localhost
       port: 27017
-      username: dbuser 
+      username: test
  
 server: 
   port: 8083
   servlet: 
     contextPath: /default
+  ssl:
+    key-store: classpath:local-ssl.p12
+    key-store-type: PKCS12
+    key-alias: local_ssl
+    key-password: Divatt
+    key-store-password: Divatt
+    enabled: true
 name: default-yml
 environment: default
 enabled: true
@@ -35,7 +29,7 @@ servers:
    - www.default1.com
 logging: 
       file: 
-        name: logs/default_logs.log
+        name: logs/designer_default_logs.log
       pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
         file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
@@ -45,29 +39,18 @@ logging:
         org.hibernate: ERROR
         
 jwt.secret.key: c2VjcmV0
-jwt.token.validity: 1296000000
+jwt.token.validity: 2592000000
 
 ---
 spring:
   profiles: dev
   application: 
-     name: Designer 
-#  jpa:
-#    show-sql: true
-#    generate-ddl: true
-#    hibernate:
-#      ddl-auto: update
-#      format_sql: true
-#  datasource:
-#    driverClassName: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://15.207.103.249:3306/divatt
-#    username: divatt_user
-#    password: P@ssw0rd123
+     name: Designer
   data:
     mongodb:
       authentication-database: admin
       database: divatt
-      host: 65.1.190.195 #13.234.240.158  #65.1.190.195:27017,,,,, 65.0.194.170
+      host: 65.1.190.195
       password: word_pass
       port: 27017
       username: dbuser 
@@ -77,11 +60,12 @@ server:
   servlet: 
     contextPath: /dev
   ssl:
-    key-store: classpath:gateway-server.jks
-    key-store-type: JKS
-    key-store-password: Dapp@1234
-    key-alias: gateway-server
-    key-password: Dapp@1234
+    key-store: classpath:local-ssl.p12
+    key-store-type: PKCS12
+    key-alias: local_ssl
+    key-password: Divatt
+    key-store-password: Divatt
+    enabled: true
 name: dev-yml
 environment: dev
 enabled: true
@@ -91,7 +75,7 @@ servers:
    - www.dev1.com
 logging: 
       file: 
-        name: logs/dev_logs.log
+        name: logs/designer_dev_logs.log
       pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
         file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
@@ -101,7 +85,7 @@ logging:
         org.hibernate: ERROR
         
 jwt.secret.key: c2VjcmV0
-jwt.token.validity: 1296000000
+jwt.token.validity: 2592000000
 
 connection: 
   pool: 
@@ -137,31 +121,27 @@ application:
 spring:
   profiles: prod
   application: 
-     name: Designer 
-#  jpa:
-#    show-sql: true
-#    generate-ddl: true
-#    hibernate:
-#      ddl-auto: update
-#      format_sql: true
-#  datasource:
-#    driverClassName: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://15.207.103.249:3306/divatt
-#    username: divatt_user
-#    password: P@ssw0rd123
+     name: Designer
   data:
     mongodb:
       authentication-database: admin
       database: divatt
-      host: 65.1.190.195  #65.1.190.195:27017,,,,, 65.0.194.170
+      host: 65.1.190.195
       password: word_pass
       port: 27017
       username: dbuser 
  
 server: 
-  port: 8083
+  port: 9094
   servlet: 
     contextPath: /prod
+  ssl:
+    key-store: classpath:local-ssl.p12
+    key-store-type: PKCS12
+    key-alias: local_ssl
+    key-password: Divatt
+    key-store-password: Divatt
+    enabled: true
 name: prod-yml
 environment: prod
 enabled: true
@@ -171,7 +151,7 @@ servers:
    - www.prod1.com
 logging: 
       file: 
-        name: logs/prod_logs.log
+        name: logs/designer_prod_logs.log
       pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
         file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
@@ -181,8 +161,35 @@ logging:
         org.hibernate: ERROR
         
 jwt.secret.key: c2VjcmV0
-jwt.token.validity: 1296000000
+jwt.token.validity: 2592000000
+
+connection: 
+  pool: 
+    initialPoolSize: 5
+    minPoolSize: 10
+    maxPoolSize: 20
+    maxIdleTime: 3000
+    
+spring.servlet.multipart:
+  enabled: true
+  max-file-size: 100MB
+#file.upload-path: C:\\Users\\shant\\Desktop\\uploadfile\\
+file.upload-path: /home/ubuntu/Attachment/
 
 
 
+#AWS properties
+cloud:
+  aws:
+    region:
+      static: ap-south-1
+    stack:
+      auto: false
+    credentials:
+      accessKey: AKIA3UEGY4UHZ77545ME
+      secretKey: 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
 
+application:
+  bucket:
+    name: divatt-uat
+    basepath: D-App
