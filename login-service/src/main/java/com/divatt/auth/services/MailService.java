@@ -15,29 +15,12 @@ import com.divatt.auth.exception.CustomException;
 @Service
 public class MailService {
 	@Autowired
-	JavaMailSender mailSender;
+	private JavaMailSender mailSender;
 	
 	@Value("${mail.from}")
 	private String mail;
 
-//	public void sendEmail(String to, String subject, String body,Boolean enableHtml) {
-//
-//		try {
-//
-//			MimeMessage message = mailSender.createMimeMessage();
-//			MimeMessageHelper helper = new MimeMessageHelper(message);
-//
-//			helper.setSubject(subject);
-//			helper.setFrom("no-reply@nitsolution.in");
-//			helper.setTo(to);
-//			helper.setText(body, enableHtml);
-////			helper.addAttachment(body, null);
-//			mailSender.send(message);
-//		} catch (Exception e) {
-//			throw new CustomException(e.getMessage());
-//		}
-//
-//	}
+
 	public void sendEmail(String to, String subject, String body,Boolean enableHtml) {
 
 		try {
@@ -49,7 +32,6 @@ public class MailService {
 			helper.setFrom(mail);
 			helper.setTo(to);
 			helper.setText(body, enableHtml);
-//			helper.addAttachment(body, null);
 			mailSender.send(message);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
