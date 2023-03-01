@@ -41,6 +41,16 @@ logging:
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
 mail.from: no-reply@divatt.com
+cloud:
+  aws:
+    region:
+      static: ap-south-1
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key: AKIA3UEGY4UH7Z5FE3KU
+      secret-key: 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
 
 ---
 spring:
@@ -88,6 +98,16 @@ logging:
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
 mail.from: no-reply@divatt.com
+cloud:
+  aws:
+    region:
+      static: ap-south-1
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key: AKIA3UEGY4UH7Z5FE3KU
+      secret-key: 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
 
 ---
 spring:
@@ -134,3 +154,13 @@ logging:
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
 mail.from: no-reply@divatt.com
+cloud:
+  aws:
+    region:
+      static: ap-south-1
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key: AKIA3UEGY4UH7Z5FE3KU
+      secret-key: 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
