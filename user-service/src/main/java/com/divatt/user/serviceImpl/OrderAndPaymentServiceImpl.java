@@ -519,7 +519,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderSKUDetailsEntity> orderSKUDetails = new ArrayList<>();
 			orderSKUDetails = this.orderSKUDetailsRepo.findAll();
 
-			if (!orderStatus.isBlank() && !orderStatus.equals("All")) {
+			if (orderStatus != "" && !orderStatus.equals("All")) {
 				List<String> collect = orderSKUDetails.stream().filter(e -> e.getOrderItemStatus().equals(orderStatus))
 						.map(e -> e.getOrderId()).collect(Collectors.toList());
 				findAll = orderDetailsRepo.findByOrderIdIn(collect, pagingSort);
@@ -543,7 +543,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				String writeValueAsString = null;
 				JSONObject payRow = null;
-				if (!OrderPaymentRow.isEmpty()) {
+				if (OrderPaymentRow.isPresent()) {
 					try {
 						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
 					} catch (JsonProcessingException e1) {
@@ -673,7 +673,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				String writeValueAsString = null;
 				JSONObject payJson = null;
-				if (!OrderPaymentRow.isEmpty()) {
+				if (OrderPaymentRow.isPresent()) {
 					try {
 						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
 					} catch (JsonProcessingException e1) {
@@ -765,7 +765,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				JsonNode paymentJson = null;
 				JSONObject payJson = null;
 
-				if (!OrderPaymentRow.isEmpty()) {
+				if (OrderPaymentRow.isPresent()) {
 					try {
 						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
 					} catch (JsonProcessingException e1) {
@@ -848,9 +848,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				List<String> OrderId1 = OrderSKUDetailsData.stream()
 
 						.filter(e -> orderItemStatus.equals(e.getOrderItemStatus()))
-						.filter(e -> !keyword.isBlank() ? e.getOrderId().startsWith(keyword.toUpperCase()) : true)
+						.filter(e -> keyword != "" ? e.getOrderId().startsWith(keyword.toUpperCase()) : true)
 						.filter(e -> {
-							if (!startDate.isBlank() && !endDate.isBlank()) {
+							if (startDate != "" && endDate != "") {
 								try {
 									SimpleDateFormat dateFormat = new SimpleDateFormat(
 											MessageConstant.DATA_TYPE_FORMAT.getMessage());
@@ -880,9 +880,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			} else {
 				List<String> OrderId = OrderSKUDetailsData.stream().filter(
-						e -> !keyword.isBlank() ? e.getOrderId().toUpperCase().startsWith(keyword.toUpperCase()) : true)
+						e -> keyword != "" ? e.getOrderId().toUpperCase().startsWith(keyword.toUpperCase()) : true)
 						.filter(e -> {
-							if (!startDate.isBlank() && !endDate.isBlank()) {
+							if (startDate != "" && endDate != "") {
 								try {
 									SimpleDateFormat dateFormat = new SimpleDateFormat(
 											MessageConstant.DATA_TYPE_FORMAT.getMessage());
@@ -928,7 +928,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				JSONObject object = pJN.getObject();
 				String writeValueAsString = null;
 				JSONObject payRow = null;
-				if (!OrderPaymentRow.isEmpty()) {
+				if (OrderPaymentRow.isPresent()) {
 					try {
 						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
 					} catch (JsonProcessingException e1) {
@@ -1190,7 +1190,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			int payId = sequenceGenerator.getNextSequence(OrderPaymentEntity.SEQUENCE_NAME);
 			OrderPaymentEntity filterCatDetails = null;
 
-			if (PaymentRow.isEmpty()) {
+			if (!PaymentRow.isPresent()) {
 				filterCatDetails = new OrderPaymentEntity();
 			} else {
 				filterCatDetails = PaymentRow.get();
@@ -1256,7 +1256,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			Optional<OrderTrackingEntity> OrderTrackingRow = orderTrackingRepo.findByTrackingId(trackingId);
 
-			if (!OrderTrackingRow.isEmpty()) {
+			if (OrderTrackingRow.isPresent()) {
 
 				OrderTrackingEntity filterCatDetails = OrderTrackingRow.get();
 
@@ -2553,7 +2553,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 				String writeValueAsString = null;
 				JSONObject payRow = null;
-				if (!OrderPaymentRow.isEmpty()) {
+				if (OrderPaymentRow.isPresent()) {
 					try {
 						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
 					} catch (JsonProcessingException e1) {
@@ -2708,8 +2708,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					element.setIgst(element.getIgst() == null ? "0" : element.getIgst());
 					tCgst = tCgst + Double.parseDouble(element.getCgst() == null ? "0" : element.getCgst());
 					tSgst = tSgst + Double.parseDouble(element.getSgst() == null ? "0" : element.getSgst());
-					tDis = tDis + Double.parseDouble(
-							Optional.ofNullable(element.getDiscount()).isEmpty() ? "0" : element.getDiscount());
+					tDis = tDis + Double.parseDouble(Optional.ofNullable(element.getDiscount()).isPresent() ? "0" : element.getDiscount());
 					tQty = tQty + Integer.parseInt(element.getQty() == null ? "0" : element.getQty());
 					tIgst = tIgst + Double.parseDouble(element.getIgst() == null ? "0" : element.getIgst());
 					tGross = tGross

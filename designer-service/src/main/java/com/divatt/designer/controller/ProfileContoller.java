@@ -598,7 +598,7 @@ public class ProfileContoller {
 					.findByIsDeletedAndIsProfileCompletedAndProfileStatusOrProfileStatus(isDeleted, true, "SUBMITTED",
 							"COMPLETED", pagingSort);
 
-			if (!profileStatus.isBlank()) {
+			if (profileStatus != "") {
 				if (profileStatus.equals("changeRequest")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true,
 							"SUBMITTED", pagingSort);
@@ -611,7 +611,7 @@ public class ProfileContoller {
 					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(isDeleted,
 							profileStatus, "ACTIVE", pagingSort);
 				}
-			} else if (profileStatus.isBlank() || keyword.isBlank()) {
+			} else if (profileStatus == "" || keyword == "") {
 				findAll = designerLoginRepo.findDesignerisDeleted(isDeleted, pagingSort);
 			} else {
 				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted, profileStatus,
@@ -619,7 +619,7 @@ public class ProfileContoller {
 			}
 
 			List<Long> collect = findAll.getContent().stream()
-					.filter(e -> !keyword.isBlank() ? e.getEmail().startsWith(keyword.toLowerCase()) : true)
+					.filter(e -> keyword != "" ? e.getEmail().startsWith(keyword.toLowerCase()) : true)
 					.map(e -> e.getdId()).collect(Collectors.toList());
 			findAll = designerLoginRepo.findBydIdIn(collect, pagingSort);
 
@@ -768,7 +768,7 @@ public class ProfileContoller {
 						dRow.setFollwerCount(Integer.parseInt(followerCount));
 					});
 				}
-				if (usermail.isBlank()) {
+				if (usermail == "") {
 					return designerData;
 				} else {
 					UserDesignerEntity[] userDesignerEntity = restTemplate
@@ -805,7 +805,7 @@ public class ProfileContoller {
 					designerRow.setFollwerCount(Integer.parseInt(followerCount));
 				});
 
-				if (usermail.isBlank()) {
+				if (usermail == "") {
 					return designerData;
 				} else {
 
