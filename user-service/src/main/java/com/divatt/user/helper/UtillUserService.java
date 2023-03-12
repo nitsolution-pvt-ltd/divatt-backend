@@ -62,7 +62,7 @@ public class UtillUserService {
 //				DesignerProfileEntity.class).getBody().getDesignerName());
 		invoiceUpdatedModel.setSellerAddress(invoiceEntity.getDesignerDetails().getAddress() + ",");
 		String address2 = invoiceEntity.getUserDetails().getShipping_address().getAddress2();
-		if (!address2.isBlank()) {
+		if (address2 != "") {
 			invoiceUpdatedModel
 					.setShippingAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2() + ",");
 		} else {

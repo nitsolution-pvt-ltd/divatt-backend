@@ -149,7 +149,8 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 		
 		if (loginEntity.getType().equals("USER")) {
 			UserLoginEntity entity = new UserLoginEntity();
-			if (userLoginRepo.findByEmail(loginEntity.getEmail()).isEmpty()) {
+			Optional<UserLoginEntity> findByEmail = userLoginRepo.findByEmail(loginEntity.getEmail());
+			if (!findByEmail.isPresent()) {
                
 				try {
 					String s = loginEntity.getName().trim();

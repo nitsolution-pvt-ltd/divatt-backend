@@ -222,8 +222,10 @@ public class ProfileContoller {
 				throw new CustomException(MessageConstant.NO_UPDATE_PERMISSION.getMessage());
 			if (loginEntity.getUid() == null || loginEntity.getUid().equals(""))
 				throw new CustomException(MessageConstant.ID_NOT_EXIST.getMessage());
-			if (!loginRepository.findByEmail(loginEntity.getEmail()).stream()
-					.anyMatch(e -> e.getUid() == loginEntity.getUid()))
+			
+//			if (!loginRepository.findByEmail(loginEntity.getEmail()).stream().anyMatch(e -> e.getUid() == loginEntity.getUid()))
+			Optional<LoginEntity> findByEmail = loginRepository.findByEmail(loginEntity.getEmail());
+			if (findByEmail.isPresent() && findByEmail.get().getUid()==loginEntity.getUid())
 				throw new CustomException(MessageConstant.EMAIL_ALREADY_PRESENT.getMessage());
 			if (!mongoOperations.exists(query(where("uid").is(loginEntity.getUid())), LoginEntity.class)) {
 				throw new CustomException(MessageConstant.ID_NOT_EXIST.getMessage());

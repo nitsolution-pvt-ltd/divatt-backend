@@ -85,7 +85,7 @@ public class AccountController {
 		try {
 			String extractUsername = config.extractUsername(token.substring(7));
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
-			if (!findByEmail.isEmpty()) {
+			if (findByEmail.isPresent()) {
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
 							interfaceId, host + contextPath + "/designerAccount/add", "Success", HttpStatus.OK);
@@ -126,7 +126,7 @@ public class AccountController {
 		try {
 			String extractUsername = config.extractUsername(token.substring(7));
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
-			if (!findByEmail.isEmpty()) {
+			if (findByEmail.isPresent()) {
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
 							interfaceId, host + contextPath + "/designerAccount/view/" + accountId, "Success",
@@ -172,7 +172,7 @@ public class AccountController {
 		try {
 			String extractUsername = config.extractUsername(token.substring(7));
 			Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(extractUsername);
-			if (!findByEmail.isEmpty()) {
+			if (findByEmail.isPresent()) {
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Application name: {},Request URL: {},Response message: {},Response code: {}",
 							interfaceId, host + contextPath + "/designerAccount/update/" + accountId, "Success",
