@@ -13,23 +13,27 @@ public class DesignerDocuments {
 	
 	@NotNull
 	@Field(name = "voidCheck") private String void_check;
+	
+	@NotNull
+	@Field(name = "cancel_check")
+	private String cancelCheck;
+	
+	@NotNull
+	@Field(name = "gst_certificate")
+	private String gstCertificate;
 
 	public DesignerDocuments() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	public DesignerDocuments(@NotNull String aadharCard, @NotNull String panCard, @NotNull String void_check) {
+	public DesignerDocuments(@NotNull String aadharCard, @NotNull String panCard, @NotNull String void_check,
+			@NotNull String cancelCheck, @NotNull String gstCertificate) {
 		super();
 		this.aadharCard = aadharCard;
 		this.panCard = panCard;
 		this.void_check = void_check;
-	}
-
-	@Override
-	public String toString() {
-		return "DesignerDocuments [aadharCard=" + aadharCard + ", panCard=" + panCard + ", void_check=" + void_check
-				+ "]";
+		this.cancelCheck = cancelCheck;
+		this.gstCertificate = gstCertificate;
 	}
 
 	public String getAadharCard() {
@@ -55,6 +59,29 @@ public class DesignerDocuments {
 	public void setVoid_check(String void_check) {
 		this.void_check = void_check;
 	}
+
+	public String getCancelCheck() {
+		return cancelCheck;
+	}
+
+	public void setCancelCheck(String cancelCheck) {
+		this.cancelCheck = cancelCheck;
+	}
+
+	public String getGstCertificate() {
+		return gstCertificate;
+	}
+
+	public void setGstCertificate(String gstCertificate) {
+		this.gstCertificate = gstCertificate;
+	}
+
+	@Override
+	public String toString() {
+		return "DesignerDocuments [aadharCard=" + aadharCard + ", panCard=" + panCard + ", void_check=" + void_check
+				+ ", cancelCheck=" + cancelCheck + ", gstCertificate=" + gstCertificate + "]";
+	}
+
 	
 	
 }
