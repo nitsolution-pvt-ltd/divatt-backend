@@ -1,0 +1,59 @@
+version: '1'
+# docker network
+networks:
+  app-nw:
+# for admin
+service:
+  admin:
+    build:
+      contest:./admin-service
+      dockerfile: Dockerfile.admin
+  port:
+   - "8084:8084"
+  networks:
+   - app-nw
+# for designer
+  designer:
+    build:
+      contest:./admin-service
+      dockerfile: Dockerfile.designer
+  port:
+   - "8083:8083"
+  networks:
+   - app-nw
+# for gateway
+  gateway:
+    build:
+      contest:./admin-service
+      dockerfile: Dockerfile.gateway
+  port:
+   - "9095:9095"
+  networks:
+   - app-nw
+# for login
+  login:
+    build:
+      contest:./admin-service
+      dockerfile: Dockerfile.login
+  port:
+   - "8080:8080"
+  networks:
+   - app-nw
+# for registry
+  registry:
+    build:
+      contest:./admin-service
+      dockerfile: Dockerfile.registry
+  port:
+   - "8761:8761"
+  networks:
+   - app-nw
+# for user
+  user:
+    build:
+      contest:./admin-service
+      dockerfile: Dockerfile.user
+  port:
+   - "8082:8082"
+  networks:
+   - app-nw
