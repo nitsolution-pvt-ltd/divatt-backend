@@ -6,7 +6,7 @@ networks:
 service:
   admin:
     build:
-      contest:./admin-service
+      contest: admin-service
       dockerfile: Dockerfile.admin
   port:
    - "8084:8084"
@@ -15,7 +15,7 @@ service:
 # for designer
   designer:
     build:
-      contest:./admin-service
+      contest: admin-service
       dockerfile: Dockerfile.designer
   port:
    - "8083:8083"
@@ -24,7 +24,7 @@ service:
 # for gateway
   gateway:
     build:
-      contest:./admin-service
+      contest: admin-service
       dockerfile: Dockerfile.gateway
   port:
    - "9095:9095"
@@ -33,7 +33,7 @@ service:
 # for login
   login:
     build:
-      contest:./admin-service
+      contest: admin-service
       dockerfile: Dockerfile.login
   port:
    - "8080:8080"
@@ -42,7 +42,7 @@ service:
 # for registry
   registry:
     build:
-      contest:./admin-service
+      contest: admin-service
       dockerfile: Dockerfile.registry
   port:
    - "8761:8761"
@@ -51,7 +51,7 @@ service:
 # for user
   user:
     build:
-      contest:./admin-service
+      contest: admin-service
       dockerfile: Dockerfile.user
   port:
    - "8082:8082"
