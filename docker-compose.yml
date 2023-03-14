@@ -3,7 +3,7 @@ version: '1'
 networks:
   app-nw:
 # for admin
-service:
+services:
   admin:
     build:
       contest: admin-service
