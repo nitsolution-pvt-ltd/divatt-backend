@@ -499,7 +499,7 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 			byte[] decodedBytesUserType = Base64.getDecoder().decode(userType);
 			byte[] decodedBytesUserType2 = Base64.getDecoder().decode(decodedBytesUserType);
 			String decodedStringUserType = new String(decodedBytesUserType2);
-			
+				
 			Optional<PasswordResetEntity> findByPrToken = loginResetRepo.findByPrtoken(link + "/" + linkTime+ "/" + userType);
 			
 			

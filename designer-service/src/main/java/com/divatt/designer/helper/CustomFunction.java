@@ -377,7 +377,8 @@ public class CustomFunction {
 			boutiqueProfile.setBoutiqueName(body.getBoutiqueProfile().getBoutiqueName());
 			boutiqueProfile.setExperience(body.getBoutiqueProfile().getExperience());
 			boutiqueProfile.setFirmName(body.getBoutiqueProfile().getFirmName());
-			boutiqueProfile.setOperatingCity(body.getBoutiqueProfile().getOperatingCity());
+//			boutiqueProfile.setOperatingCity(body.getBoutiqueProfile().getOperatingCity());
+			boutiqueProfile.setArea(body.getBoutiqueProfile().getArea());
 			boutiqueProfile.setProfessionalCategory(body.getBoutiqueProfile().getProfessionalCategory());
 			boutiqueProfile.setYearOfOperation(body.getBoutiqueProfile().getYearOfOperation());
 			if ((designerLoginEntity.getProfileStatus().equals("SUBMITTED")
