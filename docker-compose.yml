@@ -8,7 +8,7 @@ services:
     build:
       contest: admin-service
       dockerfile: Dockerfile.admin
-  port:
+  ports:
    - "8084:8084"
   networks:
    - app-nw
@@ -17,7 +17,7 @@ services:
     build:
       contest: admin-service
       dockerfile: Dockerfile.designer
-  port:
+  ports:
    - "8083:8083"
   networks:
    - app-nw
@@ -26,7 +26,7 @@ services:
     build:
       contest: admin-service
       dockerfile: Dockerfile.gateway
-  port:
+  ports:
    - "9095:9095"
   networks:
    - app-nw
@@ -35,7 +35,7 @@ services:
     build:
       contest: admin-service
       dockerfile: Dockerfile.login
-  port:
+  ports:
    - "8080:8080"
   networks:
    - app-nw
@@ -44,7 +44,7 @@ services:
     build:
       contest: admin-service
       dockerfile: Dockerfile.registry
-  port:
+  ports:
    - "8761:8761"
   networks:
    - app-nw
@@ -53,7 +53,7 @@ services:
     build:
       contest: admin-service
       dockerfile: Dockerfile.user
-  port:
+  ports:
    - "8082:8082"
   networks:
    - app-nw
