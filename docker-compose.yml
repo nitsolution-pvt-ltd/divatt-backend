@@ -10,8 +10,8 @@ services:
       dockerfile: Dockerfile.admin
     ports:
      - "8084:8084"
-  networks:
-   - app-nw
+    networks:
+    - app-nw
 # for designer
   designer:
     build:
@@ -19,8 +19,8 @@ services:
       dockerfile: Dockerfile.designer
     ports:
     - "8083:8083"
-  networks:
-   - app-nw
+    networks:
+    - app-nw
 # for gateway
   gateway:
     build:
@@ -28,8 +28,8 @@ services:
       dockerfile: Dockerfile.gateway
     ports:
     - "9095:9095"
-  networks:
-   - app-nw
+    networks:
+    - app-nw
 # for login
   login:
     build:
@@ -37,8 +37,8 @@ services:
       dockerfile: Dockerfile.login
     ports:
     - "8080:8080"
-  networks:
-   - app-nw
+    networks:
+    - app-nw
 # for registry
   registry:
     build:
@@ -46,8 +46,8 @@ services:
       dockerfile: Dockerfile.registry
     ports:
     - "8761:8761"
-  networks:
-   - app-nw
+    networks:
+    - app-nw
 # for user
   user:
     build:
@@ -55,5 +55,5 @@ services:
       dockerfile: Dockerfile.user
     ports:
     - "8082:8082"
-  networks:
-   - app-nw
+    networks:
+    - app-nw
