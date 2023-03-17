@@ -24,7 +24,7 @@ services:
 # for gateway
   gateway:
     build:
-      context: gateway
+      context: gateway-server
       dockerfile: Dockerfile.gateway
     ports:
     - "9095:9095"
@@ -33,7 +33,7 @@ services:
 # for login
   login:
     build:
-      context: auth
+      context: login-service
       dockerfile: Dockerfile.login
     ports:
     - "8080:8080"
@@ -42,7 +42,7 @@ services:
 # for registry
   registry:
     build:
-      context: registry
+      context: registry-sever
       dockerfile: Dockerfile.registry
     ports:
     - "8761:8761"
