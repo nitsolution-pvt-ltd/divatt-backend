@@ -25,7 +25,7 @@ services:
   gateway-server:
     build: 
     # container_name: gateway-server
-    context: .../gateway-server
+    context: gateway-server
     dockerfile: Dockerfile.gateway
     ports:
     - "9095:9095"
