@@ -22,7 +22,7 @@ services:
     networks:
     - app-nw
 # for gateway
-  gateway:
+  gateway-server:
     build:
       context: gateway-server
       dockerfile: Dockerfile.gateway
