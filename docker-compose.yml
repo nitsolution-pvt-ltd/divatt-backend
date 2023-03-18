@@ -24,7 +24,7 @@ services:
 # for gateway
   gateway-server:
     build: 
-    container_name: gateway-server
+    # container_name: gateway-server
     context: .../gateway-server
     dockerfile: Dockerfile.gateway
     ports:
