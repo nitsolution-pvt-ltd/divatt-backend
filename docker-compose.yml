@@ -15,7 +15,7 @@ services:
 # for designer
   designer:
     build: 
-      context: designer-service
+      context: esigner-service
       dockerfile: Dockerfile.designer
     ports:
     - "8083:8083"
