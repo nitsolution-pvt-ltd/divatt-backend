@@ -15,17 +15,17 @@ services:
 # for designer
   designer:
     build: 
-      context: esigner-service
-      dockerfile: Dockerfile.esigner
+      context: designer-service
+      dockerfile: Dockerfile.designer
     ports:
     - "8083:8083"
     networks:
     - app-nw
 # for gateway
   gateway-server:
-    build:
-      context: gateway-server
-      dockerfile: Dockerfile.gateway
+    build: 
+      context: /home/ubuntu/divatt-backend/gateway-server
+      dockerfile: /home/ubuntu/divatt-backend/gateway-server/Dockerfile.gateway
     ports:
     - "9095:9095"
     networks:
