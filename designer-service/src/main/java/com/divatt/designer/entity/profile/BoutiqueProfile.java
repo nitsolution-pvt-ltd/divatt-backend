@@ -13,8 +13,8 @@ public class BoutiqueProfile {
 	@Field(name = "boutique_name")
 	private String boutiqueName;
 	@NotNull
-	@Field(name = "operating_city")
-	private String operatingCity;
+	@Field(name = "area")
+	private String area;
 	@NotNull
 	@Field(name = "professional_category")
 	private String professionalCategory;
@@ -31,22 +31,17 @@ public class BoutiqueProfile {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public BoutiqueProfile(String firmName, String boutiqueName, String operatingCity, String professionalCategory,
-			String yearOfOperation, String experience, String gSTIN) {
+	public BoutiqueProfile(@NotNull String firmName, @NotNull String boutiqueName, @NotNull String area,
+			@NotNull String professionalCategory, @NotNull String yearOfOperation, @NotNull String experience,
+			@NotNull String gSTIN) {
 		super();
 		this.firmName = firmName;
 		this.boutiqueName = boutiqueName;
-		this.operatingCity = operatingCity;
+		this.area = area;
 		this.professionalCategory = professionalCategory;
 		this.yearOfOperation = yearOfOperation;
 		this.experience = experience;
 		GSTIN = gSTIN;
-	}
-	@Override
-	public String toString() {
-		return "BoutiqueProfile [firmName=" + firmName + ", boutiqueName=" + boutiqueName + ", operatingCity="
-				+ operatingCity + ", professionalCategory=" + professionalCategory + ", yearOfOperation="
-				+ yearOfOperation + ", experience=" + experience + ", GSTIN=" + GSTIN + "]";
 	}
 	public String getFirmName() {
 		return firmName;
@@ -60,11 +55,11 @@ public class BoutiqueProfile {
 	public void setBoutiqueName(String boutiqueName) {
 		this.boutiqueName = boutiqueName;
 	}
-	public String getOperatingCity() {
-		return operatingCity;
+	public String getArea() {
+		return area;
 	}
-	public void setOperatingCity(String operatingCity) {
-		this.operatingCity = operatingCity;
+	public void setArea(String area) {
+		this.area = area;
 	}
 	public String getProfessionalCategory() {
 		return professionalCategory;
@@ -90,9 +85,11 @@ public class BoutiqueProfile {
 	public void setGSTIN(String gSTIN) {
 		GSTIN = gSTIN;
 	}
+	@Override
+	public String toString() {
+		return "BoutiqueProfile [firmName=" + firmName + ", boutiqueName=" + boutiqueName + ", area=" + area
+				+ ", professionalCategory=" + professionalCategory + ", yearOfOperation=" + yearOfOperation
+				+ ", experience=" + experience + ", GSTIN=" + GSTIN + "]";
+	}
 	
-	
-	
-	
-
 }
