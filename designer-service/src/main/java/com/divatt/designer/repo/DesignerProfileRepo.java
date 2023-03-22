@@ -47,7 +47,7 @@ public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEnti
 //	Page<DesignerProfileEntity> findbyCountry(String country,Pageable pagingSort);
 //	
 //	@Query("{'designer_profile.state':?0}")
-//	Page<DesignerProfileEntity> findbyState(String state,Pageable pagingSort);
+//	List<DesignerProfileEntity> findbyState(String state);
 //	
 //	@Query("{'designer_profile.city':?0}")
 //	Page<DesignerProfileEntity> findbyCity(String city,Pageable pagingSort);
