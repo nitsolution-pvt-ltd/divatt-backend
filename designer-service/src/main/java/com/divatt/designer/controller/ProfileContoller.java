@@ -788,7 +788,7 @@ public class ProfileContoller {
 						dRow.setFollwerCount(Integer.parseInt(followerCount));
 					});
 				}
-				if (usermail == "") {
+				if (usermail.equals("")) {
 					return designerData;
 				} else {
 					UserDesignerEntity[] userDesignerEntity = restTemplate
