@@ -70,6 +70,8 @@ public interface OrderDetailsRepo extends MongoRepository<OrderDetailsEntity, Lo
     Page<OrderDetailsEntity> findByUserIdAndKeyword(Integer userId,String keyword, Pageable pageable);
     @Query("{ 'orderId' : ?0}")
 	OrderDetailsEntity findByOrderIds(String orderId);	
+    @Query("{ 'orderId' : ?0}")
+	Optional<OrderDetailsEntity> findByOrderid(String orderId);	
     
     
 }
