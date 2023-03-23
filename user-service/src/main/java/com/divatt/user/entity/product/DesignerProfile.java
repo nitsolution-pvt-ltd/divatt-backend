@@ -20,6 +20,7 @@ public class DesignerProfile {
 
 	public DesignerProfile() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	public DesignerProfile(String email, String displayName, String mobileNo, String dob, String gender, String country,
@@ -104,5 +105,7 @@ public class DesignerProfile {
 		return "DesignerProfile [email=" + email + ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", dob="
 				+ dob + ", gender=" + gender + ", country=" + country + ", state=" + state + ", city=" + city + "]";
 	}
+	
+	
 
 }

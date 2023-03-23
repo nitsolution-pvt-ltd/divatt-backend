@@ -749,9 +749,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
 				OrderSKUDetailsRow.forEach(order -> {
 					try {
-						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(DESIGNER_SERVICE+
-								RestTemplateConstants.DESIGNER_PRODUCT + order.getProductId(),
+						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(
+								DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_PRODUCT + order.getProductId(),
 								org.json.simple.JSONObject.class);
+						LOGGER.info("getProductByID"+getProductByID.getBody());
 						order.setHsn(getProductByID.getBody().get("hsnData"));
 					} catch (Exception e2) {
 						e2.printStackTrace();
