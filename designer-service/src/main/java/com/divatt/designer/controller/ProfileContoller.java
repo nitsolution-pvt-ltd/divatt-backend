@@ -34,6 +34,7 @@ import org.springframework.data.geo.GeoResults;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
@@ -106,6 +107,9 @@ public class ProfileContoller {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -1055,8 +1059,8 @@ public class ProfileContoller {
 			@RequestParam(defaultValue = "") String area, @RequestParam(defaultValue = "") String city,
 			@RequestParam(defaultValue = "") String state, @RequestParam(defaultValue = "") String country,
 			@RequestParam(defaultValue = "") String pinCode, 
-			@RequestParam(defaultValue = "") String longitude,
-			@RequestParam(defaultValue = "") String latitude) {
+			@RequestParam(defaultValue = "") double longitude,
+			@RequestParam(defaultValue = "") double latitude) {
 		try {
 			double distanceInMeters = 1000000;
 			int CountData = (int) designerProfileRepo.count();
@@ -1064,98 +1068,119 @@ public class ProfileContoller {
 			if (limit == 0) {
 				limit = CountData;
 			}
+			
+//			final NearQuery query = NearQuery.near(new Point(longitude, latitude), Metrics.KILOMETERS)
+//			        .num(100)
+//			        .minDistance(1)
+//			        .maxDistance(1000)
+//			        .spherical(true);
+			NearQuery geoNear = NearQuery.near(99.0860632, 10.4678685, Metrics.KILOMETERS).maxDistance(new Distance(1000.0, Metrics.KILOMETERS)).minDistance(0).spherical(true);
 
-			if (sort.equals("ASC")) {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
-			} else {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-			}
-
-			Page<DesignerProfileEntity> findAll = null;
-			MatchOperation match = null;
-			MatchOperation matchOp = null;
-			MatchOperation nearDistanceMatch = null;
-//			if(!area.equals("")) {
-//				match = Aggregation.match(new Criteria()
-//						.andOperator(Criteria.where("boutique_profile.area").is(area)));
-//			}else if(!pinCode.equals("")) {
-//				match = Aggregation.match(new Criteria()
-//						.andOperator(Criteria.where("designer_profile.pin_code").is(pinCode)));
-//			}else if(!city.equals("")) {
-//				match = Aggregation.match(new Criteria()
-//						.andOperator(Criteria.where("designer_profile.city").is(city)));
-//			}else if(!state.equals("")) {
-//				match = Aggregation.match(new Criteria()
-//						.andOperator(Criteria.where("designer_profile.state").is(state)));
-//			}else if(!country.equals("")) {
-//				match = Aggregation.match(new Criteria()
-//						.andOperator(Criteria.where("designer_profile.country").is(country)));	
+			Aggregation agg = Aggregation.newAggregation(Aggregation.geoNear(geoNear, "coordinates"));
+			AggregationResults<StateEntity> result = mongoTemplate.aggregate(agg, StateEntity.class, StateEntity.class);
+			
+//			Point point = new Point(99.0860632,10.4678685);
+//			List<StateEntity> venues =
+//					mongoTemplate.find(new Query(Criteria.where("geometry.coordinates").near(point).maxDistance(1000.10)), StateEntity.class);
+//
+//			final Aggregation a = Aggregation.newAggregation(Aggregation.geoNear(query, "1"));
+//
+//			final AggregationResults<StateEntity> results = mongoOperations.aggregate(a, StateEntity.class, StateEntity.class);
+//
+//			final List<StateEntity> measurements = new ArrayList<StateEntity>(results.getMappedResults());
+//
+//			
+//			if (sort.equals("ASC")) {
+//				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+//			} else {
+//				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 //			}
-//			else {
-//				
-//			}			
-			match = Aggregation.match(
-					new Criteria().andOperator(Criteria.where("designer_profile.country").regex(country.toString())
-							.orOperator(Criteria.where("designer_profile.state").regex(state.toString()),
-									Criteria.where("designer_profile.city").regex(city.toString()),
-									Criteria.where("designer_profile.pin_code").regex(pinCode.toString()),
-									Criteria.where("boutique_profile.area").regex(area.toString()))));
-
-			if (!longitude.equals("") && !latitude.equals("")) {
-				matchOp = Aggregation
-						.match(new Criteria().andOperator(Criteria.where("latitude").regex(latitude.toString())
-								.andOperator(Criteria.where("longitude").regex(longitude.toString()))));
-			}
-			Aggregation aggregation = Aggregation.newAggregation(matchOp);
-			final AggregationResults<StateEntity> result = mongoOperations.aggregate(aggregation, StateEntity.class,
-					StateEntity.class);
-			List<StateEntity> mappedResultByState = result.getMappedResults();
-			LOGGER.info("state name<><><><><>" + mappedResultByState.get(0).getName());
-
-			Aggregation aggregations = Aggregation.newAggregation(match);
-			final AggregationResults<DesignerProfileEntity> results = mongoOperations.aggregate(aggregations,
-					DesignerProfileEntity.class, DesignerProfileEntity.class);
-			List<DesignerProfileEntity> mappedResultsByDesigner = results.getMappedResults();
-			LOGGER.info("mappedResultsByDesigner" + mappedResultsByDesigner);
-
-			List<DesignerProfileEntity> collect = mappedResultsByDesigner.stream()
-					.filter(e -> mappedResultByState.stream().map(a -> a.getName())
-							.allMatch(i -> i.equalsIgnoreCase(e.getDesignerProfile().getState())))
-					.collect(Collectors.toList());
-			LOGGER.info("Collect data using Stream!!!!!->" + collect);
-			
-			
-
-//			Point basePoint = new Point(Double.parseDouble(longitude), Double.parseDouble(latitude));
-//			LOGGER.info("basePoint" + basePoint);
-//			Distance radius = new Distance(distanceInMeters, Metrics.KILOMETERS);
-//			LOGGER.info("radius" + radius);
-//			Circle circle = new Circle(basePoint, radius);
-//			LOGGER.info("circle" + circle);
-//			Query query = new Query(Criteria.where("location")
-//                    .withinSphere(new Circle(basePoint, radius)));
-//			List<Document> documents = mongoOperations.find(query, Document.class, "tbl_states");
-//			LOGGER.info("documents>>>>>>"+documents);
-			
-						
-			int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
-			int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), collect.size());
-
-			List<DesignerProfileEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
-					: collect.subList(startOfPage, endOfPage);
-			findAll = new PageImpl<DesignerProfileEntity>(subList, pagingSort, collect.size());
-
-			int totalPage = findAll.getTotalPages() - 1;
-			if (totalPage < 0) {
-				totalPage = 0;
-			}
+//
+//			Page<DesignerProfileEntity> findAll = null;
+//			MatchOperation match = null;
+//			MatchOperation matchOp = null;
+//			MatchOperation nearDistanceMatch = null;
+////			if(!area.equals("")) {
+////				match = Aggregation.match(new Criteria()
+////						.andOperator(Criteria.where("boutique_profile.area").is(area)));
+////			}else if(!pinCode.equals("")) {
+////				match = Aggregation.match(new Criteria()
+////						.andOperator(Criteria.where("designer_profile.pin_code").is(pinCode)));
+////			}else if(!city.equals("")) {
+////				match = Aggregation.match(new Criteria()
+////						.andOperator(Criteria.where("designer_profile.city").is(city)));
+////			}else if(!state.equals("")) {
+////				match = Aggregation.match(new Criteria()
+////						.andOperator(Criteria.where("designer_profile.state").is(state)));
+////			}else if(!country.equals("")) {
+////				match = Aggregation.match(new Criteria()
+////						.andOperator(Criteria.where("designer_profile.country").is(country)));	
+////			}
+////			else {
+////				
+////			}			
+//			match = Aggregation.match(
+//					new Criteria().andOperator(Criteria.where("designer_profile.country").regex(country.toString())
+//							.orOperator(Criteria.where("designer_profile.state").regex(state.toString()),
+//									Criteria.where("designer_profile.city").regex(city.toString()),
+//									Criteria.where("designer_profile.pin_code").regex(pinCode.toString()),
+//									Criteria.where("boutique_profile.area").regex(area.toString()))));
+//
+//			if (!longitude.equals("") && !latitude.equals("")) {
+//				matchOp = Aggregation
+//						.match(new Criteria().andOperator(Criteria.where("latitude").regex(latitude.toString())
+//								.andOperator(Criteria.where("longitude").regex(longitude.toString()))));
+//			}
+//			Aggregation aggregation = Aggregation.newAggregation(matchOp);
+//			final AggregationResults<StateEntity> result = mongoOperations.aggregate(aggregation, StateEntity.class,
+//					StateEntity.class);
+//			List<StateEntity> mappedResultByState = result.getMappedResults();
+//			LOGGER.info("state name<><><><><>" + mappedResultByState.get(0).getName());
+//
+//			Aggregation aggregations = Aggregation.newAggregation(match);
+//			final AggregationResults<DesignerProfileEntity> results = mongoOperations.aggregate(aggregations,
+//					DesignerProfileEntity.class, DesignerProfileEntity.class);
+//			List<DesignerProfileEntity> mappedResultsByDesigner = results.getMappedResults();
+//			LOGGER.info("mappedResultsByDesigner" + mappedResultsByDesigner);
+//
+//			List<DesignerProfileEntity> collect = mappedResultsByDesigner.stream()
+//					.filter(e -> mappedResultByState.stream().map(a -> a.getName())
+//							.allMatch(i -> i.equalsIgnoreCase(e.getDesignerProfile().getState())))
+//					.collect(Collectors.toList());
+//			LOGGER.info("Collect data using Stream!!!!!->" + collect);
+//			
+//			
+//
+////			Point basePoint = new Point(Double.parseDouble(longitude), Double.parseDouble(latitude));
+////			LOGGER.info("basePoint" + basePoint);
+////			Distance radius = new Distance(distanceInMeters, Metrics.KILOMETERS);
+////			LOGGER.info("radius" + radius);
+////			Circle circle = new Circle(basePoint, radius);
+////			LOGGER.info("circle" + circle);
+////			Query query = new Query(Criteria.where("location")
+////                    .withinSphere(new Circle(basePoint, radius)));
+////			List<Document> documents = mongoOperations.find(query, Document.class, "tbl_states");
+////			LOGGER.info("documents>>>>>>"+documents);
+//			
+//						
+//			int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+//			int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), collect.size());
+//
+//			List<DesignerProfileEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
+//					: collect.subList(startOfPage, endOfPage);
+//			findAll = new PageImpl<DesignerProfileEntity>(subList, pagingSort, collect.size());
+//
+//			int totalPage = findAll.getTotalPages() - 1;
+//			if (totalPage < 0) {
+//				totalPage = 0;
+//			}
 			Map<String, Object> response = new HashMap<>();
-			response.put("data", findAll.getContent());
-			response.put("currentPage", findAll.getNumber());
-			response.put("total", findAll.getTotalElements());
-			response.put("totalPage", totalPage);
-			response.put("perPage", findAll.getSize());
-			response.put("perPageElement", findAll.getNumberOfElements());
+			response.put("data", result.getMappedResults());
+//			response.put("currentPage", findAll.getNumber());
+//			response.put("total", findAll.getTotalElements());
+//			response.put("totalPage", totalPage);
+//			response.put("perPage", findAll.getSize());
+//			response.put("perPageElement", findAll.getNumberOfElements());
 			return response;
 
 		} catch (Exception e) {
