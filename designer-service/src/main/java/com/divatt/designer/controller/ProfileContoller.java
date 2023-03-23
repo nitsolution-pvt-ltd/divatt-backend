@@ -592,7 +592,7 @@ public class ProfileContoller {
 					o.printStackTrace();
 				}
 				return e;
-			});
+			}).filter(e-> e.getDesignerProfileEntity().getDesignerProfile().getDesignerCategory().equals("Pop"));
 			return ResponseEntity.ok(map);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

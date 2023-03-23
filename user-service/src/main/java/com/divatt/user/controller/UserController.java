@@ -471,9 +471,9 @@ public class UserController {
 	public ResponseEntity<?> updateUser(@Valid @RequestBody UserLoginEntity userLoginEntityParam, Errors error) {
 		LOGGER.info("Inside - UserController.addUser()");
 		try {
-			if (error.hasErrors()) {
-				throw new CustomException(MessageConstant.CHECK_FIELDS.getMessage());
-			}
+//			if (error.hasErrors()) {
+//				throw new CustomException(MessageConstant.CHECK_FIELDS.getMessage());
+//			}
 
 			Optional<UserLoginEntity> findById = userLoginRepo.findById(userLoginEntityParam.getId());
 

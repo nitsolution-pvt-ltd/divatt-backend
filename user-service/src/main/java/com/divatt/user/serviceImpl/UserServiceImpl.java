@@ -46,6 +46,7 @@ import com.divatt.user.entity.UserLoginEntity;
 import com.divatt.user.entity.WishlistEntity;
 import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
+import com.divatt.user.entity.product.DesignerProfile;
 import com.divatt.user.entity.product.DesignerProfileEntity;
 import com.divatt.user.entity.product.ProductMasterEntity;
 import com.divatt.user.exception.CustomException;
@@ -734,8 +735,7 @@ public class UserServiceImpl implements UserService {
 
 			String body = restTemplate.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.USER_DESIGNER_LIST, String.class)
 					.getBody();
-
-			Json js = new Json(body);
+			Json js = new Json(body);	
 			return ResponseEntity.ok(js);
 
 		} catch (Exception e) {

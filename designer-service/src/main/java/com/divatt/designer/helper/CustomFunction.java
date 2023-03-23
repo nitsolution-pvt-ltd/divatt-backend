@@ -494,7 +494,9 @@ public class CustomFunction {
 				.filter(product -> !subCategoryId.equals("") ? Arrays.asList(subCategoryId.split(",")).stream()
 						.anyMatch(subCategory -> subCategory.equals(product.getSubCategoryId().toString())) : true)
 				.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
-						.anyMatch(dId -> Integer.parseInt(dId) == product.getDesignerId()) : true).filter(e->e.getSoh()!=0)
+						.anyMatch(dId -> Integer.parseInt(dId) == product.getDesignerId()) : true)
+				.filter(e->e.getSoh()!=0)
+				.filter(product-> product.getIsActive().equals(true))
 				.collect(Collectors.toList());
 
 		if (sortDateType.equalsIgnoreCase("new")) {
@@ -528,7 +530,7 @@ public class CustomFunction {
 			});
 		}
 		list.removeIf(element -> element.getDesignerProfile() == null);
-
+        list.removeIf(e-> e.getDesignerProfile().getDesignerCategory().equals("Neo"));
 		return list;
 	}
 }

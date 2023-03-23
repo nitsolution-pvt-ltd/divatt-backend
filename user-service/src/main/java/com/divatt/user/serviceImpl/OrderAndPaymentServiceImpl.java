@@ -712,7 +712,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			String sortName, String keyword, Optional<String> sortBy, String token) {
 
 		try {
-			int CountData = (int) orderDetailsRepo.count();
+			int CountData = (int) userOrderPaymentRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
 				limit = CountData;
@@ -723,21 +723,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			} else {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
-
-			Page<OrderDetailsEntity> findAll = null;
+			Page<OrderPaymentEntity> findAll = null;
+			
 			if (keyword.isEmpty()) {
-				findAll = orderDetailsRepo.findByUserId(userId, pagingSort);
-
+				findAll = this.userOrderPaymentRepo.findByUserIdAndPaymentStatus(Long.parseLong(userId.toString()),
+						"COMPLETED", pagingSort);
 			} else {
-				findAll = orderDetailsRepo.findByUserIdAndKeyword(userId, keyword, pagingSort);
+				findAll = this.userOrderPaymentRepo.findByUserIdAndPaymentStatusAndKeyword(
+						Long.parseLong(userId.toString()), "COMPLETED", keyword, pagingSort);
 			}
-			List<OrderDetailsEntity> findById = findAll.getContent();
+			List<OrderPaymentEntity> findById = findAll.getContent();
 			if (findById.size() <= 0) {
 				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
 			List<Object> productId = new ArrayList<>();
-
-			findById.forEach(e -> {
+			findById.forEach(e-> {
 				ObjectMapper obj = new ObjectMapper();
 				String productIdFilter = null;
 				try {
@@ -745,36 +745,33 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
-				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
+				Optional<OrderDetailsEntity> ordersDetailsRow = this.orderDetailsRepo.findByOrderid(e.getOrderId());
 				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
-
 				OrderSKUDetailsRow.forEach(order -> {
 					try {
-						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(DESIGNER_SERVICE+
-								RestTemplateConstants.DESIGNER_PRODUCT + order.getProductId(),
+						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(
+								DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_PRODUCT + order.getProductId(),
 								org.json.simple.JSONObject.class);
+						LOGGER.info("getProductByID"+getProductByID.getBody());
 						order.setHsn(getProductByID.getBody().get("hsnData"));
 					} catch (Exception e2) {
 						e2.printStackTrace();
 					}
 				});
-
 				String writeValueAsString = null;
 				JsonNode pJN = new JsonNode(productIdFilter);
 				JSONObject object = pJN.getObject();
-				JsonNode paymentJson = null;
-				JSONObject payJson = null;
-
-				if (OrderPaymentRow.isPresent()) {
+				JsonNode orderJson = null;
+				JSONObject orderdetailsJson = null;
+				if(ordersDetailsRow.isPresent()) {
 					try {
-						writeValueAsString = obj.writeValueAsString(OrderPaymentRow.get());
+						writeValueAsString = obj.writeValueAsString(ordersDetailsRow.get());
 					} catch (JsonProcessingException e1) {
 						e1.printStackTrace();
 					}
-					paymentJson = new JsonNode(writeValueAsString);
-					payJson = paymentJson.getObject();
+					orderJson = new JsonNode(writeValueAsString);
+					orderdetailsJson = orderJson.getObject();
 				}
-
 				String OrderSKUD = null;
 				try {
 					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
@@ -783,11 +780,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 
 				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
-
-				object.put("paymentData", payJson);
-				object.put("OrderSKUDetails", OrderSKUDJson.getArray());
-				productId.add(object);
-
+				orderdetailsJson.put("paymentData", object);
+				orderdetailsJson.put("OrderSKUDetails", OrderSKUDJson.getArray());
+				productId.add(orderdetailsJson);
 			});
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
