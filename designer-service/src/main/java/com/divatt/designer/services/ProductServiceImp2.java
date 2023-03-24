@@ -1111,6 +1111,84 @@ public class ProductServiceImp2 implements ProductService2 {
 	}
 
 	@Override
+	public Map<String, Object> productSearchingDetails(Integer page, Integer limit, String sort, String sortName,
+			Optional<String> sortBy, String searchBy, String designerId, String categoryId, String subCategoryId,
+			String colour, Boolean cod, Boolean customization, String priceType, Boolean returnStatus, String maxPrice,
+			String minPrice, String size, Boolean giftWrap, String searchKey, String sortDateType, String sortPrice,
+			String labelType) {
+
+		try {
+			LOGGER.info("Inside ProductServiceImpl.productSearching()");
+			int CountData = (int) productRepo2.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+			Page<ProductMasterEntity2> findAll = null;
+
+			List<ProductMasterEntity2> productMasterData = new ArrayList<>();
+			List<DesignerProfileEntity> findByDesignerByCurrentStatus = designerProfileRepo
+					.findByDesignerCurrentStatus("Online");
+
+			findByDesignerByCurrentStatus.forEach(designerRow -> {
+				if (designerRow.getDesignerCurrentStatus().equals("Online")) {
+					List<ProductMasterEntity2> findProduct = new ArrayList<>();
+					if (!searchKey.equals("")) {
+						findProduct = productRepo2.findbySearchKeyAndDesignerId(searchKey, designerRow.getDesignerId());
+						if (findProduct.isEmpty()) {
+							List<DesignerProfileEntity> displayName = designerProfileRepo
+									.findbySearchKeyAndDesignerId(searchKey, designerRow.getDesignerId());
+							for (DesignerProfileEntity did : displayName) {
+								Integer designerIds = Integer.parseInt(did.getDesignerId().toString());
+								List<ProductMasterEntity2> findByDesignerId = productRepo2
+										.findByDesignerId(designerIds);
+								for (ProductMasterEntity2 prod : findByDesignerId) {
+									prod.setDesignerProfile(did.getDesignerProfile());
+								}
+								findProduct = findByDesignerId;
+							}
+						}
+					} else {
+						findProduct = productRepo2.findByIsDeletedAndAdminStatusAndIsActiveAndDesignerId(false,
+								"Approved", true, designerRow.getDesignerId());
+					}
+					productMasterData.addAll(findProduct);
+
+				}
+			});
+
+			List<ProductMasterEntity2> filterProduct = customFunction.filterProductsDetalis(productMasterData, searchBy,
+					designerId, categoryId, subCategoryId, colour, cod, customization, priceType, returnStatus,
+					maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice, labelType);
+			int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+			int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), filterProduct.size());
+
+			List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
+					: filterProduct.subList(startOfPage, endOfPage);
+			findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, filterProduct.size());
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+			return response;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@Override
 	public ProductMasterEntity2 getProducts(Integer productId) {
 		try {
 

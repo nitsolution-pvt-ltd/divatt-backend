@@ -35,7 +35,8 @@ public interface DesignerProfileRepo extends MongoRepository<DesignerProfileEnti
 	@Query(value = "{$or: [ { 'designerProfile.displayName' : {$regex:?0,$options:'i'} },{ 'boutiqueProfile.boutiqueName' : {$regex:?0,$options:'i'} } ]"
 			+ "$and: [{'designerId':?1}]}")
 	List<DesignerProfileEntity> findbySearchKeyAndDesignerId(String searchKey, Long designerId);
- 
-
+	
+//	@Query("{'designer_profile.designer_category':?0}")
+//	List<DesignerProfileEntity> findByDesignerCurrentStatusAndDesignerCategory(String D,String designerCategory);
 
 }

@@ -107,7 +107,7 @@ public class ProfileContoller {
 
 	@Autowired
 	private SequenceGenerator sequenceGenerator;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
@@ -241,8 +241,9 @@ public class ProfileContoller {
 				designerLoginEntity = findById.get();
 				designerLoginEntity.setDesignerProfileEntity(designerProfileRepo
 						.findBydesignerId(Long.parseLong(designerLoginEntity.getdId().toString())).get());
-				designerLoginEntity.setProductCount(productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(
-						false, "Approved", findById.get().getdId().intValue(), true));
+				designerLoginEntity.setProductCount(
+						this.productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActiveAndSohNot(false,
+								"Approved", findById.get().getdId().intValue(), true, 0));
 			}
 			return ResponseEntity.ok(designerLoginEntity);
 		} catch (Exception e) {
@@ -592,7 +593,7 @@ public class ProfileContoller {
 					o.printStackTrace();
 				}
 				return e;
-			}).filter(e-> e.getDesignerProfileEntity().getDesignerProfile().getDesignerCategory().equals("Pop"));
+			}).filter(e -> e.getDesignerProfileEntity().getDesignerProfile().getDesignerCategory().equals("Pop"));
 			return ResponseEntity.ok(map);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -1058,8 +1059,7 @@ public class ProfileContoller {
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam Optional<String> sortBy,
 			@RequestParam(defaultValue = "") String area, @RequestParam(defaultValue = "") String city,
 			@RequestParam(defaultValue = "") String state, @RequestParam(defaultValue = "") String country,
-			@RequestParam(defaultValue = "") String pinCode, 
-			@RequestParam(defaultValue = "") double longitude,
+			@RequestParam(defaultValue = "") String pinCode, @RequestParam(defaultValue = "") double longitude,
 			@RequestParam(defaultValue = "") double latitude) {
 		try {
 			double distanceInMeters = 1000000;
@@ -1068,17 +1068,18 @@ public class ProfileContoller {
 			if (limit == 0) {
 				limit = CountData;
 			}
-			
+
 //			final NearQuery query = NearQuery.near(new Point(longitude, latitude), Metrics.KILOMETERS)
 //			        .num(100)
 //			        .minDistance(1)
 //			        .maxDistance(1000)
 //			        .spherical(true);
-			NearQuery geoNear = NearQuery.near(99.0860632, 10.4678685, Metrics.KILOMETERS).maxDistance(new Distance(1000.0, Metrics.KILOMETERS)).minDistance(0).spherical(true);
+			NearQuery geoNear = NearQuery.near(99.0860632, 10.4678685, Metrics.KILOMETERS)
+					.maxDistance(new Distance(1000.0, Metrics.KILOMETERS)).minDistance(0).spherical(true);
 
 			Aggregation agg = Aggregation.newAggregation(Aggregation.geoNear(geoNear, "coordinates"));
 			AggregationResults<StateEntity> result = mongoTemplate.aggregate(agg, StateEntity.class, StateEntity.class);
-			
+
 //			Point point = new Point(99.0860632,10.4678685);
 //			List<StateEntity> venues =
 //					mongoTemplate.find(new Query(Criteria.where("geometry.coordinates").near(point).maxDistance(1000.10)), StateEntity.class);

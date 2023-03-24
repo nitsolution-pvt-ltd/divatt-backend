@@ -495,8 +495,7 @@ public class CustomFunction {
 						.anyMatch(subCategory -> subCategory.equals(product.getSubCategoryId().toString())) : true)
 				.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
 						.anyMatch(dId -> Integer.parseInt(dId) == product.getDesignerId()) : true)
-				.filter(e->e.getSoh()!=0)
-				.filter(product-> product.getIsActive().equals(true))
+				.filter(e -> e.getSoh() != 0).filter(product -> product.getIsActive().equals(true))
 				.collect(Collectors.toList());
 
 		if (sortDateType.equalsIgnoreCase("new")) {
@@ -514,23 +513,90 @@ public class CustomFunction {
 							: product.getDeal().getSalePrice()));
 			Collections.reverse(list);
 		}
-		if(labelType.equals("")) {
-		list.forEach(element -> {
-			DesignerProfile designerProfile = designerProfileRepo
-					.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get().getDesignerProfile();
-			if (designerProfile.getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
-				element.setDesignerProfile(designerProfile);
-			}
-		});
-		}else {
+		if (labelType.equals("")) {
 			list.forEach(element -> {
 				DesignerProfile designerProfile = designerProfileRepo
-						.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get().getDesignerProfile();
+						.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get()
+						.getDesignerProfile();
+				if (designerProfile.getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
 					element.setDesignerProfile(designerProfile);
+				}
+			});
+		} else {
+			list.forEach(element -> {
+				DesignerProfile designerProfile = designerProfileRepo
+						.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get()
+						.getDesignerProfile();
+				element.setDesignerProfile(designerProfile);
 			});
 		}
 		list.removeIf(element -> element.getDesignerProfile() == null);
-        list.removeIf(e-> e.getDesignerProfile().getDesignerCategory().equals("Neo"));
+		//list.removeIf(e -> e.getDesignerProfile().getDesignerCategory().equals("Neo"));
+		return list;
+	}
+
+	public List<ProductMasterEntity2> filterProductsDetalis(List<ProductMasterEntity2> unFilterList, String searchBy,
+			String designerId, String categoryId, String subCategoryId, String colour, Boolean cod,
+			Boolean customization, String priceType, Boolean returnStatus, String maxPrice, String minPrice,
+			String size, Boolean giftWrap, String searchKey, String sortDateType, String sortPrice, String labelType) {
+		List<ProductMasterEntity2> list = unFilterList.stream()
+				.filter(product -> cod != null ? product.getCod() == cod : true)
+				.filter(product -> customization != null ? product.getWithCustomization() == customization : true)
+				.filter(product -> !priceType.equals("") ? product.getPriceType().equals(priceType) : true)
+				.filter(product -> giftWrap != null ? product.getWithGiftWrap() == giftWrap
+						: true)
+				.filter(product -> !maxPrice.equals("-1") ? product.getMrp() <= Long.parseLong(maxPrice) : true)
+				.filter(product -> !minPrice.equals("-1") ? product.getMrp() >= Long.parseLong(minPrice) : true)
+				.filter(product -> !size.equals("") ? Arrays.asList(size.split(",")).stream()
+						.anyMatch(s -> product.getSizes().stream().anyMatch(sizee -> sizee.equals(s))) : true)
+				.filter(product -> !colour.equals("")
+						? Arrays.asList(colour.split(",")).stream().anyMatch(color -> product.getColour().equals(color))
+						: true)
+				.filter(product -> !categoryId.equals("")
+						? Arrays.asList(categoryId.split(",")).stream()
+								.anyMatch(category -> category.equals(product.getCategoryId().toString()))
+						: true)
+				.filter(product -> !subCategoryId.equals("") ? Arrays.asList(subCategoryId.split(",")).stream()
+						.anyMatch(subCategory -> subCategory.equals(product.getSubCategoryId().toString())) : true)
+				.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
+						.anyMatch(dId -> Integer.parseInt(dId) == product.getDesignerId()) : true)
+				.filter(e -> e.getSoh() != 0).filter(product -> product.getIsActive().equals(true))
+				.filter(product-> !product.getAdminStatus().equals("Rejected"))
+				.collect(Collectors.toList());
+
+		if (sortDateType.equalsIgnoreCase("new")) {
+			Collections.sort(list, Comparator.comparing(ProductMasterEntity2::getCreatedOn).reversed());
+		} else if (sortDateType.equalsIgnoreCase("old")) {
+			Collections.sort(list, Comparator.comparing(ProductMasterEntity2::getCreatedOn));
+		}
+		if (sortPrice.equalsIgnoreCase("lowToHigh")) {
+			Collections.sort(list,
+					Comparator.comparing(product -> product.getDeal().getSalePrice() == null ? product.getMrp()
+							: product.getDeal().getSalePrice()));
+		} else if (sortPrice.equalsIgnoreCase("highToLow")) {
+			Collections.sort(list,
+					Comparator.comparing(product -> product.getDeal().getSalePrice() == null ? product.getMrp()
+							: product.getDeal().getSalePrice()));
+			Collections.reverse(list);
+		}
+		if (labelType.equals("")) {
+			list.forEach(element -> {
+				DesignerProfile designerProfile = designerProfileRepo
+						.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get()
+						.getDesignerProfile();
+				if (designerProfile.getDesignerCategory().toLowerCase().equals(MessageConstant.POP.getMessage())) {
+					element.setDesignerProfile(designerProfile);
+				}
+			});
+		} else {
+			list.forEach(element -> {
+				DesignerProfile designerProfile = designerProfileRepo
+						.findBydesignerId(Long.parseLong(element.getDesignerId().toString())).get()
+						.getDesignerProfile();
+				element.setDesignerProfile(designerProfile);
+			});
+		}
+		list.removeIf(element -> element.getDesignerProfile() == null);
 		return list;
 	}
 }

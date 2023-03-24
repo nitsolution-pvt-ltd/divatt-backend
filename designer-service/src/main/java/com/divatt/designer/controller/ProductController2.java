@@ -83,7 +83,6 @@ public class ProductController2 {
 		}
 	}
 
-
 	@GetMapping("/productList/{productId}")
 	public ProductMasterEntity2 getProduct(@RequestHeader("Authorization") String token,
 			@PathVariable Integer productId) {
@@ -101,7 +100,6 @@ public class ProductController2 {
 		}
 	}
 
-
 	@GetMapping("/getProductDetailsallStatus")
 	public Map<String, Object> getProductDetailsallStatus(@RequestParam(defaultValue = "all") String adminStatus,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit,
@@ -116,7 +114,6 @@ public class ProductController2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 
 	@GetMapping("/getDesignerProductByDesignerId/{designerId}")
 	public Map<String, Object> getDesignerProductByDesignerId(@PathVariable Integer designerId,
@@ -136,7 +133,6 @@ public class ProductController2 {
 		}
 	}
 
-
 	@PutMapping("/delete/{productId}")
 	public GlobalResponce productDeleteByproductId(@PathVariable Integer productId) {
 		try {
@@ -146,7 +142,6 @@ public class ProductController2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 
 	@PutMapping("/approvalUpdate/{productId}")
 	public GlobalResponce adminApprovalUpdate(@PathVariable Integer productId,
@@ -160,7 +155,6 @@ public class ProductController2 {
 
 	}
 
-
 	@PutMapping("/changeAdminStatus/{productId}")
 	public GlobalResponce changeAdminStatus(@PathVariable Integer productId) {
 		try {
@@ -170,7 +164,6 @@ public class ProductController2 {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 
 	@GetMapping("/productListUser")
 	public ResponseEntity<?> productListUser() {
@@ -255,6 +248,29 @@ public class ProductController2 {
 			return this.productService2.productSearching(page, limit, sort, sortName, sortBy, searchBy, designerId,
 					categoryId, subCategoryId, colour, cod, customization, priceType, returnStatus, maxPrice, minPrice,
 					size, giftWrap, searchKey, sortDateType, sortPrice, labelType);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@GetMapping("/productSearching")
+	public Map<String, Object> productSearchingDetails(@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer limit, @RequestParam(defaultValue = "DESC") String sort,
+			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam Optional<String> sortBy,
+			@RequestParam(defaultValue = "") String searchBy, @RequestParam(defaultValue = "") String designerId,
+			@RequestParam(defaultValue = "") String categoryId, @RequestParam(defaultValue = "") String subCategoryId,
+			@RequestParam(defaultValue = "") String colour, @RequestParam(defaultValue = "") Boolean cod,
+			@RequestParam(defaultValue = "") Boolean customization, @RequestParam(defaultValue = "") String priceType,
+			@RequestParam(defaultValue = "") Boolean returnStatus, @RequestParam(defaultValue = "-1") String maxPrice,
+			@RequestParam(defaultValue = "-1") String minPrice, @RequestParam(defaultValue = "") String size,
+			@RequestParam(defaultValue = "") Boolean giftWrap, @RequestParam(defaultValue = "") String searchKey,
+			@RequestParam(defaultValue = "") String sortDateType, @RequestParam(defaultValue = "") String sortPrice,
+			@RequestParam(defaultValue = "") String labelType) {
+		try {
+			LOGGER.info("Inside- ProductController.productSearching()");
+			return this.productService2.productSearchingDetails(page, limit, sort, sortName, sortBy, searchBy,
+					designerId, categoryId, subCategoryId, colour, cod, customization, priceType, returnStatus,
+					maxPrice, minPrice, size, giftWrap, searchKey, sortDateType, sortPrice, labelType);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}

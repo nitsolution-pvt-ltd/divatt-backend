@@ -102,5 +102,9 @@ public interface ProductRepo2 extends MongoRepository<ProductMasterEntity2, Inte
 
 	List<ProductMasterEntity2> findByDesignerId(Integer designerId);
 	
+	Integer countByIsDeletedAndAdminStatusAndDesignerIdAndIsActiveAndSohNot(Boolean isDeleted, String adminStatus,
+			Integer designerId, Boolean isActive, Integer soh);
+
+	
 	
 }
