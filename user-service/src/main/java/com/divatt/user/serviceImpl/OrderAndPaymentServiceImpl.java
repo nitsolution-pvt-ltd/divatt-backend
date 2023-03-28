@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jcajce.provider.symmetric.DES;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -844,7 +845,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 						.filter(e -> orderItemStatus.equals(e.getOrderItemStatus()))
 						.filter(e -> keyword != "" ? e.getOrderId().startsWith(keyword.toUpperCase()) : true)
 						.filter(e -> {
-							if (!startDate.isBlank() && !endDate.isBlank()) {
+							if (!StringUtils.isEmpty(startDate) && !StringUtils.isEmpty(endDate)) {
 								try {
 									SimpleDateFormat dateFormat = new SimpleDateFormat(
 											MessageConstant.DATA_TYPE_FORMAT.getMessage());
@@ -876,7 +877,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				List<String> OrderId = OrderSKUDetailsData.stream().filter(
 						e -> keyword != "" ? e.getOrderId().toUpperCase().startsWith(keyword.toUpperCase()) : true)
 						.filter(e -> {
-							if (!startDate.isBlank() && !endDate.isBlank()) {
+							if (!StringUtils.isEmpty(startDate) && !StringUtils.isEmpty(endDate)) {
 								try {
 									SimpleDateFormat dateFormat = new SimpleDateFormat(
 											MessageConstant.DATA_TYPE_FORMAT.getMessage());
