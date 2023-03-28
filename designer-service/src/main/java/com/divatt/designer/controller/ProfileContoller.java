@@ -16,29 +16,21 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.bson.Document;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.GeoResult;
-import org.springframework.data.geo.GeoResults;
 import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.NearQuery;
 import org.springframework.data.mongodb.core.query.Query;
@@ -65,7 +57,6 @@ import com.divatt.designer.entity.LoginEntity;
 import com.divatt.designer.entity.Measurement;
 import com.divatt.designer.entity.StateEntity;
 import com.divatt.designer.entity.UserDesignerEntity;
-import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
@@ -88,10 +79,6 @@ import com.divatt.designer.services.SequenceGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.JsonNode;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
 
 @RestController
 @RequestMapping("/designer")
@@ -160,6 +147,9 @@ public class ProfileContoller {
 
 	@Value("${redirectURL}")
 	private String redirectURL;
+	
+	@Value("${GOOGLE_MAP_APIKEY}")
+	private String GOOGLE_MAP_APIKEY;
 
 	protected String getRandomString() {
 		String SALTCHARS = "1234567890";
@@ -1050,7 +1040,7 @@ public class ProfileContoller {
 					}
 				}
 			}
-			return new ResponseEntity<>(findByEmail, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -1192,5 +1182,30 @@ public class ProfileContoller {
 			throw new CustomException(e.getMessage());
 		}
 	}
+	
+	
+//	@GetMapping("/getGeoAddress")
+//	public ResponseEntity<?> getGoogleAddress(@RequestHeader("Authorization") String token,
+//			@RequestParam(value = "address", required = false) String address) {
+//
+//		Optional<DesignerLoginEntity> findByEmail = Optional.empty();
+//		ResponseEntity<Object> getAddress = null;
+//		try {
+//			if (!token.isEmpty() && token != "") {
+//
+//				findByEmail = designerLoginRepo.findByEmail(jwtConfig.extractUsername(token.substring(7)));
+//
+//				if (findByEmail.isPresent()) {
+//					getAddress = restTemplate.getForEntity(RestTemplateConstants.GOOGLE_GEOCODING_URL + "address="
+//							+ address + "&key=" + GOOGLE_MAP_APIKEY, Object.class);
+//
+//					return new ResponseEntity<>(getAddress.getBody(), HttpStatus.OK);
+//				}
+//			}
+//			return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+//		} catch (Exception e) {
+//			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
 
 }

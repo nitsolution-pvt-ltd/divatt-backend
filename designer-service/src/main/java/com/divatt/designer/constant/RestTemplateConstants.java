@@ -38,6 +38,7 @@ public class RestTemplateConstants {
 //	public static final String USER_DESIGNER_DETAILS_URL="https://localhost:8082/dev/user/getUserDesignerDetails/";
 	public static final String GET_ALL_CATEGORYDETAILS="category/getAllCategoryDetails";
 	public static final String DESIGNER_BY_ID="designer/";
+	public static final String GOOGLE_GEOCODING_URL="https://maps.googleapis.com/maps/api/geocode/json?";
 
 }
 

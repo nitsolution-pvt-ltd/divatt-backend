@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
@@ -123,6 +124,10 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 	
 	@Value("${ADMIN_RESET_PASSWORD_LINK}")
 	private String ADMIN_RESET_PASSWORD_LINK;
+	
+	@Value("${GOOGLE_MAP_APIKEY}")
+	private String GOOGLE_MAP_APIKEY;
+
 	
 	
 
@@ -739,6 +744,47 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 
 		return ResponseEntity.ok(new Json(jsObj.toString()));
 	}
+	
+	@GetMapping("/getGeoAddress")
+	public ResponseEntity<?> getGoogleAddress(@RequestHeader("Authorization") String token,
+			@RequestParam(value = "address", required = false) String address) {
+
+		Optional<DesignerLoginEntity> findByDesigner = Optional.empty();
+		Optional<AdminLoginEntity> findByAdmin = Optional.empty();
+		Optional<UserLoginEntity> findByUser = Optional.empty();
+		ResponseEntity<Object> getAddress = null;
+		try {
+			if (!token.isEmpty() && token != "") {
+
+				findByDesigner = designerLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
+				findByAdmin = loginRepository.findByEmail(token.substring(7));
+				findByUser = userLoginRepo.findByEmail(token.substring(7));
+
+				if (findByAdmin.isPresent()) {
+					getAddress = restTemplate.getForEntity(RestTemplateConstants.GOOGLE_GEOCODING_URL + "address="
+							+ address + "&key=" + GOOGLE_MAP_APIKEY, Object.class);
+
+					return new ResponseEntity<>(getAddress.getBody(), HttpStatus.OK);
+				}
+				if (findByUser.isPresent()) {
+					getAddress = restTemplate.getForEntity(RestTemplateConstants.GOOGLE_GEOCODING_URL + "address="
+							+ address + "&key=" + GOOGLE_MAP_APIKEY, Object.class);
+
+					return new ResponseEntity<>(getAddress.getBody(), HttpStatus.OK);
+				}
+				if (findByDesigner.isPresent()) {
+					getAddress = restTemplate.getForEntity(RestTemplateConstants.GOOGLE_GEOCODING_URL + "address="
+							+ address + "&key=" + GOOGLE_MAP_APIKEY, Object.class);
+
+					return new ResponseEntity<>(getAddress.getBody(), HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 
 	@GetMapping("/admin/testapi")
 	public String test() throws ClassNotFoundException {
