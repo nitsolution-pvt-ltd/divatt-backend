@@ -35,9 +35,16 @@ public interface UserOrderPaymentRepo extends MongoRepository<OrderPaymentEntity
 	Page<OrderPaymentEntity> findByPaymentStatus(String paymentStatus, Pageable pagingSort);
 	
 	@Query(value = "{'user_id' : ?0, 'payment_status': ?1 }")
-	Page<OrderPaymentEntity> findByUserIdAndPaymentStatusAndKeyword(Long userId ,String paymentStatus, String keyword, Pageable pageable);
+	Page<OrderPaymentEntity> findByUserIdAndKeywordAndPaymentStatusNot(Long userId , String keyword,String paymentStatus, Pageable pageable);
 	
-	@Query(value = "{'user_id' : ?0, 'payment_status': ?1 }")
-	Page<OrderPaymentEntity> findByUserIdAndPaymentStatus(Long userId ,String paymentStatus, Pageable pagingSort);
+	//@Query(value = "{'user_id' : ?0, 'payment_status': ?1 }")
+	Page<OrderPaymentEntity> findByUserIdAndPaymentStatusNot(Long userId ,String paymentStatus, Pageable pagingSort);
+
+	List<OrderPaymentEntity> findByOrderIdAndPaymentStatus(String orderId, String string);
+	
+	List<OrderPaymentEntity> findByPaymentStatusNot(String paymentStatus);
+	
+	
+	Page<OrderPaymentEntity> findByOrderIdInAndPaymentStatusNot(List<String> orderId, String paymentStatus, Pageable pagingSort);
 	
 }

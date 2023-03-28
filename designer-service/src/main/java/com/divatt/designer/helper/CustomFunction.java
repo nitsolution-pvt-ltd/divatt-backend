@@ -404,6 +404,7 @@ public class CustomFunction {
 
 			designerProfileEntity.setDesignerProfile(designerProfile);
 			designerProfileEntity.setBoutiqueProfile(boutiqueProfile);
+			designerProfileEntity.setGeometry(body.getGeometry());
 
 			return designerProfileEntity;
 		} catch (Exception e) {

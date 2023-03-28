@@ -69,5 +69,12 @@ public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEnti
 	Page<OrderSKUDetailsEntity> Searching(String sortKey, Pageable pageable);
 
 	Page<OrderSKUDetailsEntity> findByOrderIdIn(List<String> collect, Pageable pagingSort);
+	
+	
+	@Query("{'designerId': ?0,'orderItemStatus' : ?1,'orderId' : ?2 }")
+	List<OrderSKUDetailsEntity> findByTotalOrder(int designerId, String orderIteamStatus, String orderId);
+//	@Query("{'orderId': ?0,'designerId': ?1}")
+	List<OrderSKUDetailsEntity> findByDesignerIdAndOrderId(int designerId, String orderId);
+	
 
 }

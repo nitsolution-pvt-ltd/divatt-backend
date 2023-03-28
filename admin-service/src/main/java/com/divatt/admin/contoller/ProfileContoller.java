@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -89,6 +90,9 @@ public class ProfileContoller {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Value("${AUTH}")
+	private String AUTH_SERVICE;
 
 	Logger LOGGER = LoggerFactory.getLogger(ProfileContoller.class);
 
@@ -159,21 +163,24 @@ public class ProfileContoller {
 		LOGGER.info("Inside - ProfileContoller.addProfile()");
 		String pass = loginEntity.getPassword();
 		try {
-			if (error.hasErrors()) {
-				throw new CustomException(MessageConstant.CHECK_ALL_FIELDS.getMessage());
-			}
-			ResponseEntity<String> forEntity = restTemplate.getForEntity(
-					RestTemplateConstants.AUTH_PRESENT + loginEntity.getEmail(), String.class);
-			JSONObject jsonObject = new JSONObject(forEntity.getBody());
-			if ((boolean) jsonObject.get("isPresent"))
+//			if (error.hasErrors()) {
+//				throw new CustomException(MessageConstant.CHECK_ALL_FIELDS.getMessage());
+//			}
+//			LOGGER.info("data"+AUTH_SERVICE+
+//					RestTemplateConstants.PRESENT_AUTH +""+ loginEntity.getRoleName().toUpperCase()+"/"+loginEntity.getEmail());
+//			ResponseEntity<String> forEntity = restTemplate.getForEntity(AUTH_SERVICE+
+//					RestTemplateConstants.PRESENT_AUTH + loginEntity.getEmail(), String.class);
+//			JSONObject jsonObject = new JSONObject(forEntity.getBody());
+//			if ((boolean) jsonObject.get("isPresent")) {
+			if(this.loginRepository.findByEmailAndRoleName(loginEntity.getEmail(), loginEntity.getRoleName()).isPresent()) {
 				throw new CustomException(MessageConstant.EMAIL_ALREADY_PRESENT.getMessage());
+			}
 			if (!checkPermission(token, "module7", "create"))
 				throw new CustomException(MessageConstant.NO_CREATE_PERMISSION.getMessage());
 			Optional<LoginEntity> findByEmail = loginRepository.findByEmail(loginEntity.getEmail());
 			if (findByEmail.isPresent()) {
 				throw new CustomException(MessageConstant.EMAIL_ALREADY_PRESENT.getMessage());
 			}
-
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
 			Date date = new Date();
 			formatter.format(date);
@@ -194,7 +201,7 @@ public class ProfileContoller {
 
 			try {
 				restTemplate
-						.postForEntity(RestTemplateConstants.AUTH_SEND_MAIL, mail, String.class);
+						.postForEntity(AUTH_SERVICE+RestTemplateConstants.MAIL_SEND, mail, String.class);
 			} catch (Exception e) {
 				throw new CustomException(e.getMessage());
 			}

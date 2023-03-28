@@ -273,13 +273,22 @@ public class UserServiceImpl implements UserService {
 			UserCartEntity filterCatDetails = new UserCartEntity();
 
 			for (UserCartEntity getRow : userCartEntity) {
-				Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(getRow.getProductId(),
-						getRow.getUserId());
+				Optional<UserCartEntity> findByCategory = userCartRepo.findByProductIdAndUserIdAndSelectedSize(
+						getRow.getProductId(), getRow.getUserId(), getRow.getSelectedSize());
 
-				if (userCartEntity.size() <= 1 && findByCat.isPresent()) {
-					throw new CustomException(MessageConstant.PRODUCT_ALREDY_CART.getMessage());
+				if (userCartEntity.size() <= 1 && findByCategory.isPresent()) {
+
+					Integer qty = getRow.getQty() + findByCategory.get().getQty();
+					getRow.setId(getRow.getId());
+					getRow.setQty(qty);
+					getRow.setAddedOn(new Date());
+
+					userCartRepo.save(getRow);
+
+					throw new CustomException(MessageConstant.CART_QUANTITY_UPDATE.getMessage());
+
 				} else {
-					if (!findByCat.isPresent() && !getRow.getUserId().equals(null)
+					if (!findByCategory.isPresent() && !getRow.getUserId().equals(null)
 							&& !getRow.getProductId().equals(null)) {
 						filterCatDetails.setId(sequenceGenerator.getNextSequence(UserCartEntity.SEQUENCE_NAME));
 						filterCatDetails.setUserId(getRow.getUserId());

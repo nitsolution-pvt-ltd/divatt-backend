@@ -19,5 +19,6 @@ public interface UserCartRepo extends MongoRepository<UserCartEntity, Integer> {
 	List<UserCartEntity> findByUserIdAndProductId(Integer userId, Integer productId);
 
 	void deleteByUserId(Integer userId);
+	Optional<UserCartEntity> findByProductIdAndUserIdAndSelectedSize(Integer productId, Integer userId, String selectedSize);
 
 }

@@ -70,6 +70,7 @@ import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
+import com.divatt.designer.entity.profile.Geometry;
 import com.divatt.designer.entity.profile.ProfileImage;
 import com.divatt.designer.entity.profile.SocialProfile;
 import com.divatt.designer.exception.CustomException;
@@ -314,8 +315,11 @@ public class ProfileContoller {
 					designerProfile.setPassword(
 							bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 					designerProfileEntity.setDesignerProfile(designerProfile);
-					designerProfileEntity.setDesignerCurrentStatus("Online");
+					designerProfileEntity.setDesignerCurrentStatus("Online");					
 					designerProfileEntity.setUid(uid);
+					Geometry geometry = designerProfileEntity.getGeometry();
+					geometry.setType("Point");
+					designerProfileEntity.setGeometry(geometry);
 					if (findByBoutiqueName.isPresent()) {
 						designerProfileEntity.setId(findByBoutiqueName.get().getId());
 					}

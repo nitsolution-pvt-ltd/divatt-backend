@@ -16,6 +16,7 @@ public interface LoginRepository extends MongoRepository<LoginEntity, Object> {
 //	Optional<LoginEntity> findByUserName(String userName);
 
 	public Optional<LoginEntity> findByEmail(String email);
+	Optional<LoginEntity> findByEmailAndRoleName(String email, String roleName);
 
 	public Optional<LoginEntity> findByRole(String role);
 
