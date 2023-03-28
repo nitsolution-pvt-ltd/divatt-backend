@@ -34,5 +34,6 @@ public class RestTemplateConstants {
 //	public static String DESIGNER_RESET_PASSWORD_LINK=DESIGNER_RESET_PASSWORD_LINK_LIVE;
 //	public static String USER_RESET_PASSWORD_LINK=USER_RESET_PASSWORD_LINK_LIVE;
 	public static String MAIL_SEND="auth/sendMail";
+	public static final String GOOGLE_GEOCODING_URL="https://maps.googleapis.com/maps/api/geocode/json?";
 	
 }
