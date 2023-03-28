@@ -28,7 +28,7 @@ public enum MessageConstant {
 	REVIEW_STATUS("Reviewed status "), SUCCESSFULLY(" successfully"), REVIEW_REMOVED("Reviewed removed succesfully"),
 	DESIGNER_FOLLOWING("Following designer"), DESIGNER_UNFOLLOWING("Unfollowing designer"), ERROR("Error"),
 	CART_DATA_DELETED("Cart data deleted successfully"), INVOICE_NOT_FOUND("Invoice not found"),
-	PRODUCT_OUT_STOCK("Product is out of stock"),
+	PRODUCT_OUT_STOCK("Product is out of stock"),CART_QUANTITY_UPDATE("Cart quantity updated successfully"),
 
 	// ORDER & PAYMENT CONTROLLER
 

@@ -2,7 +2,7 @@ package com.divatt.admin.entity;
 
 import java.io.File;
 
-public class SendMail {
+public class SendMail  {
 
 	String senderMailId;
 	String subject;
