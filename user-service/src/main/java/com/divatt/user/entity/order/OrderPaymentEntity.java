@@ -52,18 +52,20 @@ public class OrderPaymentEntity {
 	@JsonFormat(shape = Shape.STRING,pattern = "yyyy/MM/dd HH:mm:ss")
 	@Field(value = "created_on")
 	private String createdOn;
-
+	
+	@Field(value = "dateTime")
+	private String dateTime;
 
 	public OrderPaymentEntity() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
-
 
 	public OrderPaymentEntity(Integer id, String orderId, @NotNull(message = "Username is required!") Long userId,
 			@NotNull(message = "Payment mode is required!") String paymentMode,
 			@NotNull(message = "Payment details is required!") Object paymentDetails,
 			@NotNull(message = "Payment response is required!") Object paymentResponse, Object refund,
-			@NotNull(message = "Payment status is required!") String paymentStatus, String createdOn) {
+			@NotNull(message = "Payment status is required!") String paymentStatus, String createdOn, String dateTime) {
 		super();
 		this.id = id;
 		this.orderId = orderId;
@@ -74,110 +76,101 @@ public class OrderPaymentEntity {
 		this.refund = refund;
 		this.paymentStatus = paymentStatus;
 		this.createdOn = createdOn;
+		this.dateTime = dateTime;
 	}
-
-
-	@Override
-	public String toString() {
-		return "OrderPaymentEntity [id=" + id + ", orderId=" + orderId + ", userId=" + userId + ", paymentMode="
-				+ paymentMode + ", paymentDetails=" + paymentDetails + ", paymentResponse=" + paymentResponse
-				+ ", refund=" + refund + ", paymentStatus=" + paymentStatus + ", createdOn=" + createdOn + "]";
-	}
-
 
 	public Integer getId() {
 		return id;
 	}
 
-
 	public void setId(Integer id) {
 		this.id = id;
 	}
-
 
 	public String getOrderId() {
 		return orderId;
 	}
 
-
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
-
 
 	public Long getUserId() {
 		return userId;
 	}
 
-
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-
 
 	public String getPaymentMode() {
 		return paymentMode;
 	}
 
-
 	public void setPaymentMode(String paymentMode) {
 		this.paymentMode = paymentMode;
 	}
-
 
 	public Object getPaymentDetails() {
 		return paymentDetails;
 	}
 
-
 	public void setPaymentDetails(Object paymentDetails) {
 		this.paymentDetails = paymentDetails;
 	}
-
 
 	public Object getPaymentResponse() {
 		return paymentResponse;
 	}
 
-
 	public void setPaymentResponse(Object paymentResponse) {
 		this.paymentResponse = paymentResponse;
 	}
-
 
 	public Object getRefund() {
 		return refund;
 	}
 
-
 	public void setRefund(Object refund) {
 		this.refund = refund;
 	}
-
 
 	public String getPaymentStatus() {
 		return paymentStatus;
 	}
 
-
 	public void setPaymentStatus(String paymentStatus) {
 		this.paymentStatus = paymentStatus;
 	}
-
 
 	public String getCreatedOn() {
 		return createdOn;
 	}
 
-
 	public void setCreatedOn(String createdOn) {
 		this.createdOn = createdOn;
 	}
 
+	public String getDateTime() {
+		return dateTime;
+	}
+
+	public void setDateTime(String dateTime) {
+		this.dateTime = dateTime;
+	}
 
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
+
+	@Override
+	public String toString() {
+		return "OrderPaymentEntity [id=" + id + ", orderId=" + orderId + ", userId=" + userId + ", paymentMode="
+				+ paymentMode + ", paymentDetails=" + paymentDetails + ", paymentResponse=" + paymentResponse
+				+ ", refund=" + refund + ", paymentStatus=" + paymentStatus + ", createdOn=" + createdOn + ", dateTime="
+				+ dateTime + "]";
+	}
+
 
 
 	

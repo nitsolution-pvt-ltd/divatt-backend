@@ -340,6 +340,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				filterCatDetails.setPaymentResponse(map);
 				filterCatDetails.setPaymentStatus(payStatus);
 				filterCatDetails.setUserId(orderPaymentEntity.getUserId());
+				filterCatDetails.setDateTime(orderPaymentEntity.getDateTime());
 				filterCatDetails.setCreatedOn(format);
 				userOrderPaymentRepo.save(filterCatDetails);
 				commonUtility.userOrder(orderPaymentEntity);
@@ -822,10 +823,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			if (!sortDateType.equals(null)) {
 
 				if (sortDateType.equalsIgnoreCase("new")) {
-					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, "createdOn");
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, "dateTime");
 
 				} else if (sortDateType.equalsIgnoreCase("old")) {
-					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, "createdOn");
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, "dateTime");
 
 				}
 			}
@@ -2164,9 +2165,10 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 										jsonObject3.put("withCustomization", false);
 										jsonObject3.put("withDesignCustomization", false);
 										jsonObject3.put("ordersTime", format);
-										map.put("with Customization", fromJson.get("withCustomization"));
-										map.put("with DesignCustomization", fromJson.get("withDesignCustomization"));
-										map.put("Orders Time", format);
+//										map.put("with Customization", "No");
+//										map.put("with DesignCustomization", "No");
+//										map.put("Orders Time", format);
+										map.put("on ", format + ", with Customization: No and with DesignCustomization: No.");
 										item.setOrderItemStatus(orderItemStatus);
 										if (item.getOrderStatusDetails() != null) {
 											orderStatusDetails.setOrdersDetails(jsonObject3);
