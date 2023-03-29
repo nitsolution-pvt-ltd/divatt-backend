@@ -282,7 +282,6 @@ public class OrderAndPaymentContoller {
 					orderSKUDetailsEntityRow.setId(sequenceGenerator.getNextSequence(OrderSKUDetailsEntity.SEQUENCE_NAME));
 					orderSKUDetailsEntityRow.setOrderId(OrderData.getOrderId());
 					orderSKUDetailsEntityRow.setCreatedOn(format);
-					LOGGER.info("Store data into tbl_order_sku_details");
 					this.postOrderSKUDetails(token, orderSKUDetailsEntityRow);
 				}
 				map.put("orderId", OrderData.getOrderId());
@@ -388,7 +387,7 @@ public class OrderAndPaymentContoller {
 	public Map<String, Object> getOrderByDesigner(@RequestHeader("Authorization") String token,
 			@PathVariable int designerId, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
-			@RequestParam(defaultValue = "createdOn") String sortName, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam(defaultValue = "dateTime") String sortName, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam Optional<String> sortBy, @RequestParam(defaultValue = "") String orderItemStatus,
 			@RequestParam(defaultValue = "") String sortDateType, @RequestParam(defaultValue = "") String startDate,
 			@RequestParam(defaultValue = "") String endDate) {

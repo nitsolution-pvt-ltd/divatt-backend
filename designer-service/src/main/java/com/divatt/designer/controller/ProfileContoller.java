@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -482,8 +483,11 @@ public class ProfileContoller {
 			designerProfileEntityDB.setBoutiqueProfile(designerProfileEntity.getBoutiqueProfile());
 			designerProfileEntityDB.setDesignerProfile(designerProfile);
 			designerProfileEntityDB.setSocialProfile(designerProfileEntity.getSocialProfile());
-			designerProfileEntityDB.setUid(designerProfileEntity.getUid());
-
+			designerProfileEntityDB.setUid(designerProfileEntity.getUid());	
+			Geometry geometry = designerProfileEntity.getGeometry();
+			geometry.setType("Point");
+			designerProfileEntityDB.setGeometry(geometry);
+			
 			designerProfileRepo.save(designerProfileEntityDB);
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setProfileStatus(designerProfileEntity.getProfileStatus());
@@ -824,10 +828,9 @@ public class ProfileContoller {
 					designerRow.setFollwerCount(Integer.parseInt(followerCount));
 				});
 
-				if (usermail == "") {
+				if (usermail.equals("")) {
 					return designerData;
 				} else {
-
 					UserDesignerEntity[] userDesignerEntity = restTemplate
 							.getForEntity(USER_SERVICES + RestTemplateConstants.USER_DESIGNER_DETAILS + usermail,
 									UserDesignerEntity[].class)
