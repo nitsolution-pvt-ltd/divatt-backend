@@ -1072,7 +1072,7 @@ public class ProfileContoller {
 					.maxDistance(new Distance(1000.0, Metrics.KILOMETERS)).minDistance(0).spherical(true);
 
 			Aggregation agg = Aggregation.newAggregation(Aggregation.geoNear(geoNear, "coordinates"));
-			AggregationResults<StateEntity> result = mongoTemplate.aggregate(agg, StateEntity.class, StateEntity.class);
+			AggregationResults<DesignerProfileEntity> result = mongoTemplate.aggregate(agg, DesignerProfileEntity.class, DesignerProfileEntity.class);
 
 //			Point point = new Point(99.0860632,10.4678685);
 //			List<StateEntity> venues =
