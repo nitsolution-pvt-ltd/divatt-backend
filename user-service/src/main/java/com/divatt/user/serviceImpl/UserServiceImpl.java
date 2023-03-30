@@ -279,7 +279,7 @@ public class UserServiceImpl implements UserService {
 				if (userCartEntity.size() <= 1 && findByCategory.isPresent()) {
 
 					Integer qty = getRow.getQty() + findByCategory.get().getQty();
-					getRow.setId(getRow.getId());
+					getRow.setId(findByCategory.get().getId());
 					getRow.setQty(qty);
 					getRow.setAddedOn(new Date());
 
