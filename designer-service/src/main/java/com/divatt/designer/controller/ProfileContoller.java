@@ -16,13 +16,13 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -56,8 +56,8 @@ import com.divatt.designer.constant.MessageConstant;
 import com.divatt.designer.constant.RestTemplateConstants;
 import com.divatt.designer.entity.LoginEntity;
 import com.divatt.designer.entity.Measurement;
-import com.divatt.designer.entity.StateEntity;
 import com.divatt.designer.entity.UserDesignerEntity;
+import com.divatt.designer.entity.product.ProductMasterEntity2;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
@@ -148,9 +148,12 @@ public class ProfileContoller {
 
 	@Value("${redirectURL}")
 	private String redirectURL;
-	
+
 	@Value("${GOOGLE_MAP_APIKEY}")
 	private String GOOGLE_MAP_APIKEY;
+	
+	@Value("${DISTANCE}")
+	private String Max_Map_Distance;
 
 	protected String getRandomString() {
 		String SALTCHARS = "1234567890";
@@ -306,7 +309,7 @@ public class ProfileContoller {
 					designerProfile.setPassword(
 							bCryptPasswordEncoder.encode(designerProfileEntity.getDesignerProfile().getPassword()));
 					designerProfileEntity.setDesignerProfile(designerProfile);
-					designerProfileEntity.setDesignerCurrentStatus("Online");					
+					designerProfileEntity.setDesignerCurrentStatus("Online");
 					designerProfileEntity.setUid(uid);
 					Geometry geometry = designerProfileEntity.getGeometry();
 					geometry.setType("Point");
@@ -483,11 +486,11 @@ public class ProfileContoller {
 			designerProfileEntityDB.setBoutiqueProfile(designerProfileEntity.getBoutiqueProfile());
 			designerProfileEntityDB.setDesignerProfile(designerProfile);
 			designerProfileEntityDB.setSocialProfile(designerProfileEntity.getSocialProfile());
-			designerProfileEntityDB.setUid(designerProfileEntity.getUid());	
+			designerProfileEntityDB.setUid(designerProfileEntity.getUid());
 			Geometry geometry = designerProfileEntity.getGeometry();
 			geometry.setType("Point");
 			designerProfileEntityDB.setGeometry(geometry);
-			
+
 			designerProfileRepo.save(designerProfileEntityDB);
 			DesignerLoginEntity designerLoginEntityDB = findById.get();
 			designerLoginEntityDB.setProfileStatus(designerProfileEntity.getProfileStatus());
@@ -1052,141 +1055,66 @@ public class ProfileContoller {
 	@GetMapping("/getDesignerByArea")
 	public Map<String, Object> getDesignerByArea(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
-			@RequestParam(defaultValue = "designerId") String sortName,
+			@RequestParam(defaultValue = "createdOn") String sortName,
 			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam Optional<String> sortBy,
-			@RequestParam(defaultValue = "") String area, @RequestParam(defaultValue = "") String city,
-			@RequestParam(defaultValue = "") String state, @RequestParam(defaultValue = "") String country,
-			@RequestParam(defaultValue = "") String pinCode, @RequestParam(defaultValue = "") double longitude,
-			@RequestParam(defaultValue = "") double latitude) {
+			@RequestParam(defaultValue = "") double longitude, @RequestParam(defaultValue = "") double latitude) {
 		try {
-			double distanceInMeters = 1000000;
 			int CountData = (int) designerProfileRepo.count();
 			Pageable pagingSort = null;
 			if (limit == 0) {
 				limit = CountData;
 			}
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
 
-//			final NearQuery query = NearQuery.near(new Point(longitude, latitude), Metrics.KILOMETERS)
-//			        .num(100)
-//			        .minDistance(1)
-//			        .maxDistance(1000)
-//			        .spherical(true);
-			NearQuery geoNear = NearQuery.near(99.0860632, 10.4678685, Metrics.KILOMETERS)
-					.maxDistance(new Distance(10000.0, Metrics.KILOMETERS)).minDistance(0).spherical(true);
+			Page<ProductMasterEntity2> findAll = null;
+			NearQuery geoNear = NearQuery.near(longitude, latitude, Metrics.KILOMETERS)
+					.maxDistance(new Distance(Long.parseLong(Max_Map_Distance), Metrics.KILOMETERS)).minDistance(0)
+					.spherical(true);
 
 			Aggregation agg = Aggregation.newAggregation(Aggregation.geoNear(geoNear, "coordinates"));
-			AggregationResults<DesignerProfileEntity> result = mongoTemplate.aggregate(agg, DesignerProfileEntity.class, DesignerProfileEntity.class);
+			AggregationResults<DesignerProfileEntity> result = mongoTemplate.aggregate(agg, DesignerProfileEntity.class,
+					DesignerProfileEntity.class);
+			List<DesignerProfileEntity> mappedResults = result.getMappedResults();
+			List<ProductMasterEntity2> products = new ArrayList<>();
+			mappedResults.forEach(e -> {
+				List<ProductMasterEntity2> filterProduct = this.productRepo2
+						.findByDesignerId(Integer.parseInt(e.getDesignerId().toString())).stream()
+						.filter(prod -> prod.getSoh() != 0).filter(prod -> prod.getIsActive().equals(true))
+						.filter(prod -> prod.getIsDeleted().equals(false))
+						.filter(prod -> !prod.getAdminStatus().equals("Rejected")).collect(Collectors.toList());
+				products.addAll(filterProduct);
+			});
 
-//			Point point = new Point(99.0860632,10.4678685);
-//			List<StateEntity> venues =
-//					mongoTemplate.find(new Query(Criteria.where("geometry.coordinates").near(point).maxDistance(1000.10)), StateEntity.class);
-//
-//			final Aggregation a = Aggregation.newAggregation(Aggregation.geoNear(query, "1"));
-//
-//			final AggregationResults<StateEntity> results = mongoOperations.aggregate(a, StateEntity.class, StateEntity.class);
-//
-//			final List<StateEntity> measurements = new ArrayList<StateEntity>(results.getMappedResults());
-//
-//			
-//			if (sort.equals("ASC")) {
-//				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
-//			} else {
-//				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-//			}
-//
-//			Page<DesignerProfileEntity> findAll = null;
-//			MatchOperation match = null;
-//			MatchOperation matchOp = null;
-//			MatchOperation nearDistanceMatch = null;
-////			if(!area.equals("")) {
-////				match = Aggregation.match(new Criteria()
-////						.andOperator(Criteria.where("boutique_profile.area").is(area)));
-////			}else if(!pinCode.equals("")) {
-////				match = Aggregation.match(new Criteria()
-////						.andOperator(Criteria.where("designer_profile.pin_code").is(pinCode)));
-////			}else if(!city.equals("")) {
-////				match = Aggregation.match(new Criteria()
-////						.andOperator(Criteria.where("designer_profile.city").is(city)));
-////			}else if(!state.equals("")) {
-////				match = Aggregation.match(new Criteria()
-////						.andOperator(Criteria.where("designer_profile.state").is(state)));
-////			}else if(!country.equals("")) {
-////				match = Aggregation.match(new Criteria()
-////						.andOperator(Criteria.where("designer_profile.country").is(country)));	
-////			}
-////			else {
-////				
-////			}			
-//			match = Aggregation.match(
-//					new Criteria().andOperator(Criteria.where("designer_profile.country").regex(country.toString())
-//							.orOperator(Criteria.where("designer_profile.state").regex(state.toString()),
-//									Criteria.where("designer_profile.city").regex(city.toString()),
-//									Criteria.where("designer_profile.pin_code").regex(pinCode.toString()),
-//									Criteria.where("boutique_profile.area").regex(area.toString()))));
-//
-//			if (!longitude.equals("") && !latitude.equals("")) {
-//				matchOp = Aggregation
-//						.match(new Criteria().andOperator(Criteria.where("latitude").regex(latitude.toString())
-//								.andOperator(Criteria.where("longitude").regex(longitude.toString()))));
-//			}
-//			Aggregation aggregation = Aggregation.newAggregation(matchOp);
-//			final AggregationResults<StateEntity> result = mongoOperations.aggregate(aggregation, StateEntity.class,
-//					StateEntity.class);
-//			List<StateEntity> mappedResultByState = result.getMappedResults();
-//			LOGGER.info("state name<><><><><>" + mappedResultByState.get(0).getName());
-//
-//			Aggregation aggregations = Aggregation.newAggregation(match);
-//			final AggregationResults<DesignerProfileEntity> results = mongoOperations.aggregate(aggregations,
-//					DesignerProfileEntity.class, DesignerProfileEntity.class);
-//			List<DesignerProfileEntity> mappedResultsByDesigner = results.getMappedResults();
-//			LOGGER.info("mappedResultsByDesigner" + mappedResultsByDesigner);
-//
-//			List<DesignerProfileEntity> collect = mappedResultsByDesigner.stream()
-//					.filter(e -> mappedResultByState.stream().map(a -> a.getName())
-//							.allMatch(i -> i.equalsIgnoreCase(e.getDesignerProfile().getState())))
-//					.collect(Collectors.toList());
-//			LOGGER.info("Collect data using Stream!!!!!->" + collect);
-//			
-//			
-//
-////			Point basePoint = new Point(Double.parseDouble(longitude), Double.parseDouble(latitude));
-////			LOGGER.info("basePoint" + basePoint);
-////			Distance radius = new Distance(distanceInMeters, Metrics.KILOMETERS);
-////			LOGGER.info("radius" + radius);
-////			Circle circle = new Circle(basePoint, radius);
-////			LOGGER.info("circle" + circle);
-////			Query query = new Query(Criteria.where("location")
-////                    .withinSphere(new Circle(basePoint, radius)));
-////			List<Document> documents = mongoOperations.find(query, Document.class, "tbl_states");
-////			LOGGER.info("documents>>>>>>"+documents);
-//			
-//						
-//			int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
-//			int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), collect.size());
-//
-//			List<DesignerProfileEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
-//					: collect.subList(startOfPage, endOfPage);
-//			findAll = new PageImpl<DesignerProfileEntity>(subList, pagingSort, collect.size());
-//
-//			int totalPage = findAll.getTotalPages() - 1;
-//			if (totalPage < 0) {
-//				totalPage = 0;
-//			}
+			int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+			int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), products.size());
+
+			List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
+					: products.subList(startOfPage, endOfPage);
+			findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, products.size());
+
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+
 			Map<String, Object> response = new HashMap<>();
-			response.put("data", result.getMappedResults());
-//			response.put("currentPage", findAll.getNumber());
-//			response.put("total", findAll.getTotalElements());
-//			response.put("totalPage", totalPage);
-//			response.put("perPage", findAll.getSize());
-//			response.put("perPageElement", findAll.getNumberOfElements());
+			response.put("data", findAll.getContent());
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
 			return response;
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
-	
-	
+
 //	@GetMapping("/getGeoAddress")
 //	public ResponseEntity<?> getGoogleAddress(@RequestHeader("Authorization") String token,
 //			@RequestParam(value = "address", required = false) String address) {

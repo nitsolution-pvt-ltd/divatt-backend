@@ -44,7 +44,8 @@ public enum MessageConstant {
     ADMIN_ROLES("SADMIN"),
     POP("pop"),
     UNCHECKED("unchecked"),
-    PRODUCT_IS_OUT_OF_STOCK("Product is already out of stock")
+    PRODUCT_IS_OUT_OF_STOCK("Product is already out of stock"),
+    DISTANCE("100000")
     ;
 	private String message;
 
