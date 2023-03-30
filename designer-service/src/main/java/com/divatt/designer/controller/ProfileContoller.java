@@ -1072,7 +1072,7 @@ public class ProfileContoller {
 //			        .maxDistance(1000)
 //			        .spherical(true);
 			NearQuery geoNear = NearQuery.near(99.0860632, 10.4678685, Metrics.KILOMETERS)
-					.maxDistance(new Distance(1000.0, Metrics.KILOMETERS)).minDistance(0).spherical(true);
+					.maxDistance(new Distance(10000.0, Metrics.KILOMETERS)).minDistance(0).spherical(true);
 
 			Aggregation agg = Aggregation.newAggregation(Aggregation.geoNear(geoNear, "coordinates"));
 			AggregationResults<DesignerProfileEntity> result = mongoTemplate.aggregate(agg, DesignerProfileEntity.class, DesignerProfileEntity.class);
