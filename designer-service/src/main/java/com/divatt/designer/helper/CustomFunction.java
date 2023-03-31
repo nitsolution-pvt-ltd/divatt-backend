@@ -497,6 +497,7 @@ public class CustomFunction {
 				.filter(product -> !designerId.equals("") ? Arrays.asList(designerId.split(",")).stream()
 						.anyMatch(dId -> Integer.parseInt(dId) == product.getDesignerId()) : true)
 				.filter(e -> e.getSoh() != 0).filter(product -> product.getIsActive().equals(true))
+				.filter(product-> !product.getAdminStatus().equals("Rejected"))
 				.collect(Collectors.toList());
 
 		if (sortDateType.equalsIgnoreCase("new")) {
@@ -532,7 +533,7 @@ public class CustomFunction {
 			});
 		}
 		list.removeIf(element -> element.getDesignerProfile() == null);
-		//list.removeIf(e -> e.getDesignerProfile().getDesignerCategory().equals("Neo"));
+		list.removeIf(e -> e.getDesignerProfile().getDesignerCategory().equals("Neo"));
 		return list;
 	}
 

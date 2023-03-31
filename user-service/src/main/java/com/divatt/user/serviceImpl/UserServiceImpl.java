@@ -379,13 +379,12 @@ public class UserServiceImpl implements UserService {
 		LOGGER.info("Inside - UserServiceImpl.getUserCartDetailsService()");
 		try {
 
-			List<UserCartEntity> findByUserId = userCartRepo.findByUserId(userId);
+			List<UserCartEntity> findByUserId = userCartRepo.findByUserId(userId);		
 			List<Integer> productIds = new ArrayList<>();
 
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
-
 			Map<String, Object> maps = new HashMap<>();
 			maps.put("productId", productIds.toString());
 			maps.put("limit", limit);
@@ -409,10 +408,9 @@ public class UserServiceImpl implements UserService {
 
 				response1 = restTemplate.postForEntity(DESIGNER_SERVICE+RestTemplateConstants.CART_PRODUCTLIST, entity,
 						String.class);
-
 				String body = response1.getBody();
 				Arrays.asList(body);
-
+				LOGGER.info("body"+body);
 				JsonNode jn1 = new JsonNode(body);
 				JSONArray object1 = jn1.getArray();
 
@@ -423,12 +421,13 @@ public class UserServiceImpl implements UserService {
 					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity(DESIGNER_SERVICE+
 							RestTemplateConstants.DESIGNER_BYID + object.get("designerId"),
 							org.json.simple.JSONObject.class);
-					UserCartEntity cart = userCartRepo
-							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
-							.get(0);
-					String selectedSize = userCartRepo
-							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
-							.get(0).getSelectedSize();
+
+					List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(userId,
+							Integer.parseInt(object.get("productId").toString()));
+//					String selectedSize = userCartRepo
+//							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
+//							.get(0).getSelectedSize();
+
 					ObjectMapper obj = new ObjectMapper();
 					String writeValueAsString = null;
 					try {
@@ -437,9 +436,14 @@ public class UserServiceImpl implements UserService {
 						e1.printStackTrace();
 					}
 					JsonNode cartJN = new JsonNode(writeValueAsString);
-					JSONObject cartObject = cartJN.getObject();
-					object.put("cartData", cartObject);
-					object.put("selectedSize", selectedSize);
+//					JSONObject cartObject = cartJN.getObject();					
+					Map<Integer, List<String>> cartItemsByProductId = cart.stream()
+			                .collect(Collectors.groupingBy(UserCartEntity::getProductId,
+			                        Collectors.mapping(UserCartEntity::getSelectedSize, Collectors.toList())));
+					cartItemsByProductId.forEach((a,b)->{
+					object.put("selectedSize", b);
+					});
+					object.put("cartData", cartJN.getArray());
 					object.put("designerProfile", getDesignerById.getBody().get("designerProfile"));
 					l1.add(object);
 				});
