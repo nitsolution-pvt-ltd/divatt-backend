@@ -311,9 +311,9 @@ public class ProfileContoller {
 					designerProfileEntity.setDesignerProfile(designerProfile);
 					designerProfileEntity.setDesignerCurrentStatus("Online");
 					designerProfileEntity.setUid(uid);
-					Geometry geometry = designerProfileEntity.getGeometry();
-					geometry.setType("Point");
-					designerProfileEntity.setGeometry(geometry);
+//					Geometry geometry = designerProfileEntity.getGeometry();
+//					geometry.setType("Point");
+//					designerProfileEntity.setGeometry(geometry);
 					if (findByBoutiqueName.isPresent()) {
 						designerProfileEntity.setId(findByBoutiqueName.get().getId());
 					}

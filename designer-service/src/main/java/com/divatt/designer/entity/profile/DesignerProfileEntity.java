@@ -60,7 +60,7 @@ public class DesignerProfileEntity {
 	
 	@Indexed(unique = true)
 	private String uid;
-	@NotNull
+	//@NotNull
 	@Field(name = "geometry")
 	public Geometry geometry;
 	public DesignerProfileEntity() {
