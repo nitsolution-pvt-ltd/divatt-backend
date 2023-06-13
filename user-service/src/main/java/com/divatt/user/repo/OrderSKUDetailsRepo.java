@@ -76,5 +76,19 @@ public interface OrderSKUDetailsRepo extends MongoRepository<OrderSKUDetailsEnti
 //	@Query("{'orderId': ?0,'designerId': ?1}")
 	List<OrderSKUDetailsEntity> findByDesignerIdAndOrderId(int designerId, String orderId);
 	
+	List<OrderSKUDetailsEntity> findByProductIdAndOrderIdAndSize(Integer parseInt, String orderId, String size);
+	List<OrderSKUDetailsEntity> findByProductIdAndDesignerIdAndOrderIdAndSize(Integer productId, Integer designerId, String orderId,String size);
+	
+	@Query("{'productId': ?0,'designerId' : ?1,'orderId' : ?2 ,'orderItemStatus' : ?3 ,'size' :?4 }")
+	List<OrderSKUDetailsEntity> findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatusAndSize(Integer productId,
+			Integer designerId, String orderId, String orderItemStatus, String size);
+
+	@Query("{'user_id': ?0,'productId' : ?1,'designer_id' : ?2 }")
+	List<OrderSKUDetailsEntity> findByUserIdAndProductIdAndDesignerId(long l, int productId,
+			Integer designerId);
+	@Query("{'productId' : ?0,'designer_id' : ?1 }")
+	List<OrderSKUDetailsEntity> findByProductIdAndDesignerId(int productId, Integer designerId);
+	
+	
 
 }

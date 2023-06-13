@@ -211,9 +211,10 @@ public class AccountController {
 			@RequestParam(defaultValue = "") String designerReturn,
 			@RequestParam(defaultValue = "") String serviceCharge, @RequestParam(defaultValue = "") String govtCharge,
 			@RequestParam(defaultValue = "") String userOrder, @RequestParam(defaultValue = "") String ReturnStatus,
-			@RequestParam Optional<String> sortBy, @RequestParam(defaultValue = "") String settlement,
+			@RequestParam(defaultValue = "_id") String sortBy, @RequestParam(defaultValue = "") String settlement,
 			@RequestParam(defaultValue = "0") int year, @RequestParam(defaultValue = "0") int month,
-			@RequestHeader("Authorization") String token) {
+			@RequestHeader("Authorization") String token,
+			@RequestParam(defaultValue = "") String sortDateType) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.getAccountDetails()");
@@ -236,7 +237,7 @@ public class AccountController {
 				}
 				return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword,
 						designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, sortBy, settlement, year,
-						month, findByEmail.get().getdId().toString());
+						month, findByEmail.get().getdId().toString(), sortDateType);
 			} else {
 				Map<String, Object> map = new HashMap<>();
 				map.put("reason", "Error");

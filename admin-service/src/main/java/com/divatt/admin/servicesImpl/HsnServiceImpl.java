@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -38,6 +39,8 @@ import com.divatt.admin.exception.CustomException;
 import com.divatt.admin.repo.HsnRepo;
 import com.divatt.admin.services.HsnService;
 import com.divatt.admin.services.SequenceGenerator;
+
+;
 
 @Service
 public class HsnServiceImpl implements HsnService {
@@ -151,25 +154,37 @@ public class HsnServiceImpl implements HsnService {
 			}
 
 			if (sort.equals("ASC")) {
-				pagingSort = PageRequest.of(page, limit).withSort(Sort.Direction.ASC, sortBy.orElse(sortName));
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
-				pagingSort = PageRequest.of(page, limit).withSort(Sort.Direction.DESC, sortBy.orElse(sortName));
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
 			}
 
 			Page<HsnEntity> findAll = null;
 
-			if (keyword.isEmpty()) {
-				findAll = hsnRepo.findByIsDelete(isDelete, "0", pagingSort);
-			} else {
-				findAll = hsnRepo.Search(keyword, isDelete, "0", pagingSort);
-
+			if (keyword.toString().isEmpty()) {
+				findAll = hsnRepo.findByIsDelete(isDelete,pagingSort);
 			}
+			else {
+				findAll = hsnRepo.findByIsDelete(isDelete,pagingSort);
 
+				List<HsnEntity> collectList = findAll.getContent().stream()
+						.filter(e ->
+                        e.getDescription().contains(keyword) ||
+                        String.valueOf(e.getTaxValue()).equals(keyword) ||
+                        String.valueOf(e.getHsnCode()).equals(keyword))
+						.collect(Collectors.toList());
+				int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+				int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(),
+						collectList.size());
+				List<HsnEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
+						: collectList.subList(startOfPage, endOfPage);	
+				findAll = new PageImpl<HsnEntity>(subList, pagingSort,
+						subList.size());
+			}
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
 			}
-
 			Map<String, Object> response = new HashMap<>();
 			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
@@ -187,7 +202,6 @@ public class HsnServiceImpl implements HsnService {
 			throw new CustomException(e.getMessage());
 		}
 	}
-
 	public Optional<HsnEntity> viewByHsnCode(Integer hsnCode) {
 		LOGGER.info("Inside - HsnServiceImpl.viewByHsnCode()");
 

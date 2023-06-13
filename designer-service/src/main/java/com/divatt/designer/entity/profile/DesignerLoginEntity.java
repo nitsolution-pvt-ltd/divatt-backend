@@ -31,7 +31,9 @@ public class DesignerLoginEntity {
 	@JsonProperty(access = Access.WRITE_ONLY)
 	@Field(name = "password") 
 	private String password;
-	@Field(name = "auth_token") private String authToken;
+	@JsonProperty(access = Access.WRITE_ONLY)
+	@Field(name = "auth_token")
+	private String authToken;
 	@NotNull
 	@Field(name = "is_deleted") private Boolean isDeleted;
 	@NotNull
@@ -46,7 +48,6 @@ public class DesignerLoginEntity {
 	private DesignerProfileEntity designerProfileEntity;
 	
 	private Integer productCount = 0;
-	
 	
 	private Integer follwerCount = 0;
 

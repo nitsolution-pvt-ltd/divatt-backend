@@ -192,6 +192,7 @@ public class ProfileContoller {
 			loginEntity.setDeleted(false);
 			loginEntity.setCreatedOn(date.toString());
 			loginEntity.setModifiedOn(date.toString());
+			loginEntity.setRazorpayXAccountNo(loginEntity.getRazorpayXAccountNo());
 
 			SendMail mail = new SendMail(loginEntity.getEmail(), MessageConstant.REGISTER_SUCCESSFULL.getMessage(),
 					MessageConstant.WELCOME.getMessage() + loginEntity.getFirstName() + "" + ",\n   "
@@ -256,6 +257,7 @@ public class ProfileContoller {
 			loginEntity.setPin(loginEntity.getPin());
 			loginEntity.setPassword(findById.getPassword());
 			loginEntity.setRoleName(adminModulesRepo.findById(loginEntity.getRole()).get().getRoleName().toUpperCase());
+			loginEntity.setRazorpayXAccountNo(loginEntity.getRazorpayXAccountNo());
 			loginRepository.save(loginEntity);
 			return new ResponseEntity<>(new GlobalResponse(MessageConstant.SUCCESS.getMessage(),
 					MessageConstant.UPDATED_SUCCESSFULLY.getMessage(), 200), HttpStatus.OK);
@@ -442,11 +444,10 @@ public class ProfileContoller {
 	}
 
 	@GetMapping("/getRoleName/{rolename}")
-	public LoginEntity getRoleName(@PathVariable String rolename) {
+	public List<LoginEntity> getRoleName(@PathVariable String rolename) {
 		try {
 			LOGGER.info("Inside getRoleName");
-			LoginEntity findByRoleName = this.loginRepository.findByRoleName(rolename);
-			LOGGER.info(findByRoleName + "inside");
+			List<LoginEntity> findByRoleName = this.loginRepository.findByRoleName(rolename);
 			return findByRoleName;
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());

@@ -22,13 +22,14 @@ public enum MessageConstant {
 	WISHLIST_NOT_FOUND("Wishlist not found!"), PRODUCT_ALREDY_CART("Product already added to the cart."),
 	CART_ADDED("Cart added succesfully"), PRODUCT_NOT_FOUND_IN_CART("Product not found in the cart."),
 	CART_UPDATED_SUCESSFULLY("Cart updated succesfully"), CART_NOT_EXIST("Cart not exists!"),
-	CART_REMOVED("Cart removed succesfully"), PRODUCT_NOT_FOUND("Product not found"),
+	CART_REMOVED("Cart removed succesfully"), PRODUCT_NOT_FOUND("Product not found !"),
 	REVIEWED_EXIST("Reviewed already exist!"), REVIEWED_ADDED("Reviewed added succesfully"),
 	REVIEW_NOT_EXIST("Reviewed not exists!"), REVIEW_UPDATE("Reviewed updated succesfully"),
 	REVIEW_STATUS("Reviewed status "), SUCCESSFULLY(" successfully"), REVIEW_REMOVED("Reviewed removed succesfully"),
 	DESIGNER_FOLLOWING("Following designer"), DESIGNER_UNFOLLOWING("Unfollowing designer"), ERROR("Error"),
 	CART_DATA_DELETED("Cart data deleted successfully"), INVOICE_NOT_FOUND("Invoice not found"),
 	PRODUCT_OUT_STOCK("Product is out of stock"),CART_QUANTITY_UPDATE("Cart quantity updated successfully"),
+	CART_QUANTITY_CHECK("Can not add to cart more than maximum purches Quantuty !"),
 
 	// ORDER & PAYMENT CONTROLLER
 
@@ -42,18 +43,21 @@ public enum MessageConstant {
 	SOMETHING_WENT_WRONG("Something went to wrong! from order related"),
 	PRODUCT_ALREADY_CANCEL("Product is already cancelled "), INVOICE_EXIST("Invoice already exists!"),
 	BAD_REQUEST("Bad request"), INVOICE_ADDED("Invoice added succesfully"),
-	INVOICE_UPDATED("Invoice updated succesfully"), CANCELATION_REQUEST("Cancelation request send successfully"),
-	ORDER_CANCEL_FROM_DESIGNER("Order cnacelled from designer side"),
-	ORDER_CANCEL_REQUEST_REJECTED("Order cancelation request rejected successfully"),
+	INVOICE_UPDATED("Invoice updated succesfully"), CANCELATION_REQUEST("Cancellation request send successfully"),
+	ORDER_CANCEL_FROM_DESIGNER("Order cancelled from designer side"),
+	ORDER_CANCEL_REQUEST_REJECTED("Order cancellation request rejected successfully"),
 	YOU_CANNOT_SKIP_STATUS("You can't skip any status"), PRODUCT_STATUS("The product is already "),
 	ADMIN_CANNOT_CHANGE_STATUS_NOW("Admin can't change this Status Now"), ITEM_STATUS_CHANGE("Item status changed "),
-	TO(" to "), ORDER_CANCELATION_REJECTED("Order cancelation rejected"), RANDOM_STRING("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+	TO(" to "), ORDER_CANCELATION_REJECTED("Order cancellation rejected"), RANDOM_STRING("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 	RANDOM_STRING_INT("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"), RANDOM_INT("1234567890"),
 	DATE_FORMAT_TYPE("dd/MM/yyyy"), DATA_TYPE_FORMAT("dd/MM/yyyy"),
 	PRODUCT_ALREADY_DELIVERED("The product is already delivered"), PRODUCT_PLACED("Your product has been ordered by "),
 	ADMIN_ROLES("SADMIN"), PLEASE_FILL_UP_REQUIRED_FIELDS("Please fill up the required fields"),
 	INVALID_TOKEN("Invalid token"),ORDER_RECEIVED("Order received"),
-	PRODUCT_SHIPPED_SUCCESSFULLY("Product shipped successfully");
+	CHANGES_ADDED("Changes added successfully"),
+	PRODUCT_SHIPPED_SUCCESSFULLY("Product shipped successfully"), 
+	DATE_TIME_FORMAT_TYPE("yyyy-MM-dd HH:mm:ss");
+
 
 	private String message;
 

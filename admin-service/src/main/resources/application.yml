@@ -54,12 +54,12 @@ spring.servlet.multipart:
   max-file-size: -1
   max-request-size: -1
 
-#spring.servlet.multipart.max-file-size:-1
-  
-#file.upload-path: C:\\Users\\shant\\Desktop\\uploadfile\\
 file.upload-path: /home/ubuntu/Attachment/
 
-
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
 
 #AWS properties
 cloud:
@@ -94,7 +94,7 @@ spring:
 server: 
   port: 8084
   servlet: 
-    contextPath: /dev
+    contextPath: /dev/
   ssl:
     key-store: classpath:local-ssl.p12
     key-store-type: PKCS12
@@ -105,7 +105,7 @@ server:
 name: dev-yml
 environment: dev
 enabled: true
-contextpath: /dev
+contextpath: /admin
 servers: 
    - www.dev.com
    - www.dev1.com
@@ -135,9 +135,6 @@ spring.servlet.multipart:
   max-file-size: -1
   max-request-size: -1
 
-#spring.servlet.multipart.max-file-size:-1
-  
-#file.upload-path: C:\\Users\\shant\\Desktop\\uploadfile\\
 file.upload-path: /home/ubuntu/Attachment/
 
 
@@ -157,6 +154,10 @@ application:
   bucket:
     name: divatt-uat
     basepath: D-App
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
 ---
 spring:
   profiles: prod
@@ -172,7 +173,7 @@ spring:
       username: dbuser 
  
 server: 
-  port: 9093
+  port: 8084
   servlet: 
     contextPath: /prod
   ssl:
@@ -214,10 +215,12 @@ spring.servlet.multipart:
   enabled: true
   max-file-size: -1
   max-request-size: -1
-#file.upload-path: C:\\Users\\shant\\Desktop\\uploadfile\\
 file.upload-path: /home/ubuntu/Attachment/
 
-
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
 
 #AWS properties
 cloud:

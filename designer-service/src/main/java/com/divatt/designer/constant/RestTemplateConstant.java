@@ -31,7 +31,7 @@ public enum RestTemplateConstant {
 	ADMIN_ROLE_NAME("https://localhost:8084/dev/admin/profile/getRoleName/"),
 	USER_DESIGNER_DETAILS("https://localhost:8082/dev/user/getUserDesignerDetails/"),
 	GET_ALL_CATEGORYDETAILS("https://localhost:8084/dev/category/getAllCategoryDetails"),
-	DESIGNER_BY_ID("https://localhost:8083/dev/designer/");
+	DESIGNER_BY_ID("https://localhost:8083/dev/designer/"), STOCK_CLEARANCE("https://localhost:8083/dev/designerProducts/productLists/");
 
 	// FOR PROD
 //	 USERORDER_GET_ORDER("https://localhost:9092/prod/userOrder/getOrder/"),

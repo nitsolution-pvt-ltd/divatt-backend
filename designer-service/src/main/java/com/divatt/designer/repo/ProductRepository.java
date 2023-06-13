@@ -18,7 +18,7 @@ public interface ProductRepository extends MongoRepository<ProductMasterEntity, 
 
 	Optional<ProductMasterEntity> findByProductName(String productName);
 
-	Optional<ProductMasterEntity> findById(Integer productId);
+//	Optional<ProductMasterEntity> findById(Integer productId);
 
 	@Query(value = "{ $or: [ { 'productId' : {$regex:?0,$options:'i'} } ] }")
 	List<ProductMasterEntity> findProductData(Integer productId);

@@ -6,33 +6,33 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 public class BoutiqueProfile {
 	
-	@NotNull
+	
 	@Field(name = "firm_name")
 	private String firmName;
-	@NotNull
+	@NotNull (message = "Boutique name is required!")
 	@Field(name = "boutique_name")
 	private String boutiqueName;
-	@NotNull
+	@NotNull (message = "Area is required!")
 	@Field(name = "area")
 	private String area;
-	@NotNull
+
 	@Field(name = "professional_category")
 	private String professionalCategory;
-	@NotNull
+
 	@Field(name = "year_of_operation")
 	private String yearOfOperation;
-	@NotNull
+	
 	@Field(name = "experience")
 	private String experience;
-	@NotNull
+	@NotNull(message = "GSTIN is required!")
 	@Field(name = "GSTIN")
 	private String GSTIN;
 	public BoutiqueProfile() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public BoutiqueProfile(@NotNull String firmName, @NotNull String boutiqueName, @NotNull String area,
-			@NotNull String professionalCategory, @NotNull String yearOfOperation, @NotNull String experience,
+	public BoutiqueProfile( String firmName, @NotNull String boutiqueName, @NotNull String area,
+			 String professionalCategory,  String yearOfOperation,String experience,
 			@NotNull String gSTIN) {
 		super();
 		this.firmName = firmName;

@@ -748,17 +748,17 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 	@GetMapping("/getGeoAddress")
 	public ResponseEntity<?> getGoogleAddress(@RequestHeader("Authorization") String token,
 			@RequestParam(value = "address", required = false) String address) {
-
+		LOGGER.info(" user name   "+jwtUtil.extractUsername(token.substring(7)));
 		Optional<DesignerLoginEntity> findByDesigner = Optional.empty();
 		Optional<AdminLoginEntity> findByAdmin = Optional.empty();
 		Optional<UserLoginEntity> findByUser = Optional.empty();
 		ResponseEntity<Object> getAddress = null;
 		try {
 			if (!token.isEmpty() && token != "") {
-
 				findByDesigner = designerLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
-				findByAdmin = loginRepository.findByEmail(token.substring(7));
-				findByUser = userLoginRepo.findByEmail(token.substring(7));
+				LOGGER.info("findByDesigner "+findByDesigner);
+				findByAdmin = loginRepository.findByEmail(jwtUtil.extractUsername(token.substring(7)));
+				findByUser = userLoginRepo.findByEmail(jwtUtil.extractUsername(token.substring(7)));
 
 				if (findByAdmin.isPresent()) {
 					getAddress = restTemplate.getForEntity(RestTemplateConstants.GOOGLE_GEOCODING_URL + "address="
@@ -777,9 +777,12 @@ public class EcomAuthController implements EcomAuthContollerMethod {
 							+ address + "&key=" + GOOGLE_MAP_APIKEY, Object.class);
 
 					return new ResponseEntity<>(getAddress.getBody(), HttpStatus.OK);
+				}else {
+					return new ResponseEntity<>(null, HttpStatus.OK);	
 				}
-			}
+			}else {
 			return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+			}
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}

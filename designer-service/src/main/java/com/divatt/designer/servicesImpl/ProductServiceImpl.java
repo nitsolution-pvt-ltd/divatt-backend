@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ import com.divatt.designer.entity.StockEntity;
 import com.divatt.designer.entity.UserProfile;
 import com.divatt.designer.entity.UserProfileInfo;
 import com.divatt.designer.entity.UserResponseEntity;
+import com.divatt.designer.entity.product.ImageEntity;
 import com.divatt.designer.entity.product.ImagesEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
@@ -59,6 +61,10 @@ import com.divatt.designer.response.GlobalResponce;
 import com.divatt.designer.services.ProductService;
 import com.divatt.designer.services.SequenceGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -98,6 +104,8 @@ public class ProductServiceImpl implements ProductService{
 
 	@Value("${USERS}")
 	private String USER_SERVICE;
+	
+	
 	
 	
 
@@ -983,11 +991,45 @@ public class ProductServiceImpl implements ProductService{
 
 	public GlobalResponce stockClearenceService(List<OrderSKUDetailsEntity> orderSKUDetailsEntities) {
 		try {
+			
 			for (int i = 0; i < orderSKUDetailsEntities.size(); i++) {
 				int productId = orderSKUDetailsEntities.get(i).getProductId();
-				int productQty = orderSKUDetailsEntities.get(i).getUnits().intValue();
-				String productSize = orderSKUDetailsEntities.get(i).getSize();				
-				ProductMasterEntity2 productMasterEntity = productRepo2.findById(productId).get();
+			int productQty = orderSKUDetailsEntities.get(i).getUnits().intValue();
+			String productSize = orderSKUDetailsEntities.get(i).getSize();			
+			ProductMasterEntity2 productMasterEntity = productRepo2.findById(productId).get();
+			
+			List<ProductMasterEntity2> data = productRepo2.findByIsDeletedAndDesignerIdAndAdminStatusAndIsActive(
+					false, productMasterEntity.getDesignerId(), "Approved", true);
+			Integer designerId = productMasterEntity.getDesignerId();
+			Optional<DesignerProfileEntity> findBydesignerId = designerProfileRepo.findBydesignerId( designerId.longValue());
+			String email = findBydesignerId.get().getDesignerProfile().getEmail();					
+			LOGGER.info("adminStatus" + data);
+			if (productMasterEntity.getSoh() == productMasterEntity.getNotify()
+					|| productMasterEntity.getSoh() <= productMasterEntity.getNotify()) {
+				List<ProductMasterEntity2> filter = data.stream()
+						.filter(e -> e.getSoh() == e.getNotify() || e.getSoh() <= e.getNotify())
+						.filter(e -> e.getSoh() > 0).collect(Collectors.toList());
+				LOGGER.info("adminStatus" + filter);
+				ImageEntity[] images = productMasterEntity.getImages();
+				String image1 = images[0].getLarge();
+				LOGGER.info("adminStatus"+image1);
+				Map<String, Object> data2 = new HashMap<String, Object>();
+				String productName = productMasterEntity.getProductDetails().getProductName();                  
+				String price = productMasterEntity.getMrp().toString();
+				String designerName = orderSKUDetailsEntities.get(i).getDisplayName();
+		        String  stock= productMasterEntity.getSoh().toString();
+				Context context = new Context();
+				context.setVariable("designerName", designerName);
+				context.setVariable("image1", image1);
+				context.setVariable("productName", productName);
+				context.setVariable("price", price);
+				context.setVariable("stock", stock);
+				String htmlContent = templateEngine.process("lowStockEmailToDesigner.html", context);
+				EmailSenderThread emailSenderThread = new EmailSenderThread(email, "Stock Alert !!",
+						htmlContent, true, null, restTemplate, AUTH_SERVICE);
+				emailSenderThread.start();
+				}			
+			
 				if(productSize.equals("Custom") && productMasterEntity.getWithCustomization()) {	
 					productRepo2.save(new CustomFunction().setProduDetails(productMasterEntity, productQty));
 				}

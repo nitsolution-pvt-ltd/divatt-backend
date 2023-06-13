@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +31,11 @@ import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.amazonaws.services.sagemaker.model.ContentClassifier;
 import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.AccountMapEntity;
+import com.divatt.admin.entity.DesignerReturnAmount;
 import com.divatt.admin.entity.GlobalResponse;
 import com.divatt.admin.entity.PaymentCharges;
 import com.divatt.admin.entity.ServiceCharge;
@@ -228,7 +232,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Map<String, Object> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder,
-			String ReturnStatus, String settlement, int year, int month, String designerId, Optional<String> sortBy) {
+			String ReturnStatus, String settlement, int year, int month, String designerId, Optional<String> sortBy, String sortDateType) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.getAccountDetails()");
@@ -243,6 +247,16 @@ public class AccountServiceImpl implements AccountService {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
 			} else {
 				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+			if (!sortDateType.equals(null)) {
+
+				if (sortDateType.equalsIgnoreCase("new")) {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, "_id");
+
+				} else if (sortDateType.equalsIgnoreCase("old")) {
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, "_id");
+
+				}
 			}
 
 			Page<AccountEntity> findAll = null;
@@ -261,7 +275,7 @@ public class AccountServiceImpl implements AccountService {
 			if (keyword.isEmpty()) {
 				/***findAll = accountRepo.findAllByOrderByIdDesc(pagingSort);***/
 				findAll = accountTemplateRepo.getAccountData(designerReturn, serviceCharge, govtCharge, userOrder,
-						ReturnStatus, settlement, year, month, designerId, pagingSort);
+						ReturnStatus, settlement, year, month, designerId, pagingSort);				
 			} else {
 				findAll = accountTemplateRepo.AccountSearchByKeywords(keyword, pagingSort);
 				/***findAll = accountRepo.AccountSearchByKeywords(keyword, pagingSort);***/
@@ -283,6 +297,10 @@ public class AccountServiceImpl implements AccountService {
 			double designerGstAmount = 0.00;
 			double totalServicGst = 0.00;
 			double totalGiftWrapAmount = 0.00;
+		   Integer returnStatus =0;
+		   Integer notReturnStatus =0;
+		   double totalPaybleForReturn=0.00;
+		   double totalPaybleForNotReturn=0.00;
 			
 
 			if (getServiceFee.size() > 0) {
@@ -318,8 +336,48 @@ public class AccountServiceImpl implements AccountService {
 			if (getGiftWrapAmount.size() > 0) {
 				totalGiftWrapAmount = getGiftWrapAmount.get(0).getGiftWrapAmount();
 			}
-			
-
+			if (findAll.getContent().size()>0) {
+				List<String> statusList = findAll.getContent().stream()
+				        .map(AccountEntity::getDesigner_return_amount) 
+				        .filter(Objects::nonNull)
+				        .flatMap(List::stream) 
+				        .map(DesignerReturnAmount::getStatus) 
+				        .filter(e->e.equalsIgnoreCase("RETURN"))
+				        .collect(Collectors.toList());     
+				returnStatus = statusList.size();	
+			}
+			if (findAll.getContent().size()>0) {
+				List<String> statusList = findAll.getContent().stream()
+				        .map(AccountEntity::getDesigner_return_amount) 
+				        .filter(Objects::nonNull)
+				        .flatMap(List::stream) 
+				        .map(DesignerReturnAmount::getStatus) 
+				        .filter(e->e.equalsIgnoreCase("NOT RETURN"))
+				        .collect(Collectors.toList());     
+				notReturnStatus = statusList.size();
+			}
+			if (findAll.getContent().size()>0) {
+			List<Float> netPayableList = findAll.getContent().stream()
+			        .map(AccountEntity::getDesigner_return_amount) 
+			        .filter(Objects::nonNull) 
+			        .flatMap(List::stream) 
+			        .filter(amount -> amount.getStatus().equalsIgnoreCase("RETURN")) 
+			        .map(DesignerReturnAmount::getNet_payable_designer)
+			        .collect(Collectors.toList())
+			        ;
+			totalPaybleForReturn = netPayableList.stream().mapToDouble(Float::doubleValue).sum();
+			}
+			if (findAll.getContent().size()>0) {
+				List<Float> netPayableList = findAll.getContent().stream()
+				        .map(AccountEntity::getDesigner_return_amount) 
+				        .filter(Objects::nonNull) 
+				        .flatMap(List::stream) 
+				        .filter(amount -> amount.getStatus().equalsIgnoreCase("NOT RETURN")) 
+				        .map(DesignerReturnAmount::getNet_payable_designer)
+				        .collect(Collectors.toList())
+				        ;
+				totalPaybleForNotReturn = netPayableList.stream().mapToDouble(Float::doubleValue).sum();
+				}
 			final Map<String, Object> response = new HashMap<>();
 			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
@@ -338,7 +396,11 @@ public class AccountServiceImpl implements AccountService {
 			response.put("pendingAmount", Double.valueOf(df.format(pendingAmount)));
 			response.put("servicGst", Double.valueOf(df.format(totalServicGst)));
 			response.put("giftWrapAmount", Double.valueOf(df.format(totalGiftWrapAmount)));
-
+			response.put("returnStatus",returnStatus);
+			response.put("notReturnStatus",notReturnStatus);
+			response.put("totalPaybleForReturn",totalPaybleForReturn);
+			response.put("totalPaybleForNotReturn",totalPaybleForNotReturn);
+			
 			if (findAll.getSize() < 1) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}",

@@ -51,6 +51,10 @@ cloud:
     credentials:
       access-key: AKIA3UEGY4UH7Z5FE3KU
       secret-key: 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
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
 
 ---
 spring:
@@ -68,15 +72,15 @@ spring:
  
 server: 
   port: 8080
+  servlet: 
+    contextPath: /dev
   ssl:
     key-store: classpath:local-ssl.p12
     key-store-type: PKCS12
     key-alias: local_ssl
     key-password: Divatt
     key-store-password: Divatt
-    enabled: true
-  servlet: 
-    contextPath: /dev
+
 name: dev-yml
 environment: dev
 enabled: true
@@ -108,7 +112,10 @@ cloud:
     credentials:
       access-key: AKIA3UEGY4UH7Z5FE3KU
       secret-key: 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
-
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
 ---
 spring:
   profiles: prod
@@ -124,15 +131,16 @@ spring:
       username: dbuser 
  
 server: 
-  port: 9091
+  port: 8080
+  servlet: 
+    contextPath: /prod
   ssl:
     key-store: classpath:local-ssl.p12
     key-store-type: PKCS12
     key-alias: local_ssl
     key-password: Divatt
     key-store-password: Divatt
-  servlet: 
-    contextPath: /prod
+
 name: prod-yml
 environment: prod
 enabled: true
@@ -164,3 +172,7 @@ cloud:
     credentials:
       access-key: AKIA3UEGY4UH7Z5FE3KU
       secret-key: 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
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka

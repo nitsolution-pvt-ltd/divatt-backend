@@ -1,5 +1,7 @@
 package com.divatt.designer.entity.profile;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Transient;
@@ -23,11 +25,11 @@ public class DesignerProfileEntity {
 	@Field(name = "designer_id")
 	private Long designerId;
 	
-	@NotNull
+
 	@Field(name = "designer_profile")
 	private DesignerProfile designerProfile;
 	
-	@NotNull
+
 	@Field(name = "boutique_profile")
 	private BoutiqueProfile boutiqueProfile;
 	
@@ -60,19 +62,22 @@ public class DesignerProfileEntity {
 	
 	@Indexed(unique = true)
 	private String uid;
-	//@NotNull
 	@Field(name = "geometry")
-	public Geometry geometry;
+	private Geometry geometry;
+	@Field(name="RazorpayX")
+	private RazorpayX razorpayX;
+	
 	public DesignerProfileEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public DesignerProfileEntity(Long id, Long designerId, @NotNull DesignerProfile designerProfile,
-			@NotNull BoutiqueProfile boutiqueProfile, SocialProfile socialProfile, String designerName,
-			String profileStatus, String accountStatus, Boolean isDeleted,
-			DesignerPersonalInfoEntity designerPersonalInfoEntity, String designerLevel, Integer followerCount,
-			Integer productCount, String designerCurrentStatus, Boolean isProfileCompleted, Measurement menChartData,
-			Measurement womenChartData, String uid, @NotNull Geometry geometry) {
+	public DesignerProfileEntity(Long id, Long designerId,
+			 DesignerProfile designerProfile,
+		 BoutiqueProfile boutiqueProfile,
+			SocialProfile socialProfile, String designerName, String profileStatus, String accountStatus,
+			Boolean isDeleted, DesignerPersonalInfoEntity designerPersonalInfoEntity, String designerLevel,
+			Integer followerCount, Integer productCount, String designerCurrentStatus, Boolean isProfileCompleted,
+			Measurement menChartData, Measurement womenChartData, String uid, Geometry geometry, RazorpayX razorpayX) {
 		super();
 		this.id = id;
 		this.designerId = designerId;
@@ -93,6 +98,7 @@ public class DesignerProfileEntity {
 		this.womenChartData = womenChartData;
 		this.uid = uid;
 		this.geometry = geometry;
+		this.razorpayX = razorpayX;
 	}
 	public Long getId() {
 		return id;
@@ -208,6 +214,12 @@ public class DesignerProfileEntity {
 	public void setGeometry(Geometry geometry) {
 		this.geometry = geometry;
 	}
+	public RazorpayX getRazorpayX() {
+		return razorpayX;
+	}
+	public void setRazorpayX(RazorpayX razorpayX) {
+		this.razorpayX = razorpayX;
+	}
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
@@ -220,8 +232,9 @@ public class DesignerProfileEntity {
 				+ ", designerLevel=" + designerLevel + ", followerCount=" + followerCount + ", productCount="
 				+ productCount + ", designerCurrentStatus=" + designerCurrentStatus + ", isProfileCompleted="
 				+ isProfileCompleted + ", menChartData=" + menChartData + ", womenChartData=" + womenChartData
-				+ ", uid=" + uid + ", geometry=" + geometry + "]";
+				+ ", uid=" + uid + ", geometry=" + geometry + ", razorpayX=" + razorpayX + "]";
 	}
-
 	
+	
+		
 }

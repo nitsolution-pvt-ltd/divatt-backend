@@ -128,7 +128,8 @@ public class CommonUtility {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("id").is(orderAndPaymentGlobalEntity.getUserId()));
 		UserLoginEntity userLoginEntity = mongoOperations.findOne(query, UserLoginEntity.class);
-		String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
+		//String userName = userLoginEntity.getFirstName() + " " + userLoginEntity.getLastName();
+		String userName = orderAndPaymentGlobalEntity.getBillingAddress().getFullName();
 		dto.setUserName(userName);
 		dto.setOrderId(orderAndPaymentGlobalEntity.getOrderId());
 		dto.setOrderDate(orderAndPaymentGlobalEntity.getOrderDate());
@@ -262,6 +263,7 @@ public class CommonUtility {
 	public void userOrder(OrderPaymentEntity orderPaymentEntity) {
 		try {
 			OrderDetailsEntity orderDetailsEntity = orderDetailsRepo.findByOrderIds(orderPaymentEntity.getOrderId());
+			String fullName = orderDetailsEntity.getBillingAddress().getFullName();
 			List<OrderSKUDetailsEntity> orderSKUDetailsEntity = orderSKUDetailsRepo
 					.findByOrderId(orderPaymentEntity.getOrderId());
 
@@ -376,6 +378,7 @@ public class CommonUtility {
 			data.put("tgrandTotal", orderDetailsEntity.getTotalAmount());
 			data.put("tDiscount", orderDetailsEntity.getDiscount());
 			data.put("totalGiftWrapAmount", orderDetailsEntity.getGiftWrapAmount());
+			data.put("fullName",fullName);
 
 			String dis = "";
 			data.put("tgrossGrandTotal", orderDetailsEntity.getNetPrice());
@@ -403,7 +406,7 @@ public class CommonUtility {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			designerEmail(byDesigner, orderId, userName, ordersdata);
+			designerEmail(byDesigner, orderId, userName,fullName,ordersdata);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -550,7 +553,7 @@ public class CommonUtility {
 		}
 	}
 
-	public void designerEmail(Set<Integer> set, String orderId, String userName, List<OrderPlacedDTO> ordersdata) {
+	public void designerEmail(Set<Integer> set, String orderId, String userName,String fullName, List<OrderPlacedDTO> ordersdata) {
 		for (Integer value : set) {
 			List<OrderPlacedDTO> orders = new ArrayList<>();
 			Map<String, Object> data = new HashMap<>();
@@ -643,6 +646,7 @@ public class CommonUtility {
 			data.put("totalGiftWrapAmount", totalGiftWrapAmount);
 			data.put("tgrossGrandTotal", tgrossGrandTotal);
 			data.put("displayName", displayName);
+			data.put("fullName", fullName);
 			Context context = new Context();
 			context.setVariables(data);
 			String htmlContent = templateEngine.process("orderPlacedDesigner.html", context);

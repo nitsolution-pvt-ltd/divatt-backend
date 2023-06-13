@@ -1,5 +1,8 @@
 package com.divatt.user.entity.order;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import org.json.simple.JSONObject;
@@ -8,6 +11,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.divatt.user.dto.DialogBoxDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
@@ -155,9 +159,11 @@ public class OrderSKUDetailsEntity {
 	
 	private DesignerInfo designerInfo;
 	
+	private List<DialogBoxDTO> dialogbox=new ArrayList<>();
 
 	public OrderSKUDetailsEntity() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	public OrderSKUDetailsEntity(Integer id, @NotNull(message = "Username is required!") Long userId, String orderId,
@@ -177,7 +183,8 @@ public class OrderSKUDetailsEntity {
 			OrderStatusDetails orderStatusDetails, JSONObject customObject, Boolean customizationStatus,
 			Boolean giftwrapStatus, Boolean cancelAcceptable, JSONObject giftWrapObject, String userComment,
 			String shippingDate, String status, HsnData hsnData, JSONObject measurementObject, Long giftWrapAmount,
-			Boolean returnAcceptable, String displayName, UserInfo userInfo, DesignerInfo designerInfo) {
+			Boolean returnAcceptable, String displayName, UserInfo userInfo, DesignerInfo designerInfo,
+			List<DialogBoxDTO> dialogbox) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -223,24 +230,7 @@ public class OrderSKUDetailsEntity {
 		this.displayName = displayName;
 		this.userInfo = userInfo;
 		this.designerInfo = designerInfo;
-	}
-
-	@Override
-	public String toString() {
-		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", hsn=" + hsn
-				+ ", designerId=" + designerId + ", productId=" + productId + ", productName=" + productName
-				+ ", productSku=" + productSku + ", size=" + size + ", images=" + images + ", colour=" + colour
-				+ ", units=" + units + ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount
-				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
-				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
-				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", taxType=" + taxType + ", orderItemStatus="
-				+ orderItemStatus + ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn
-				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + ", customObject="
-				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
-				+ ", cancelAcceptable=" + cancelAcceptable + ", giftWrapObject=" + giftWrapObject + ", userComment="
-				+ userComment + ", shippingDate=" + shippingDate + ", status=" + status + ", hsnData=" + hsnData
-				+ ", measurementObject=" + measurementObject + ", giftWrapAmount=" + giftWrapAmount
-				+ ", returnAcceptable=" + returnAcceptable + ", displayName=" + displayName + ", userInfo=" + userInfo + ", designerInfo" + designerInfo +"]";
+		this.dialogbox = dialogbox;
 	}
 
 	public Integer getId() {
@@ -578,7 +568,7 @@ public class OrderSKUDetailsEntity {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-	
+
 	public UserInfo getUserInfo() {
 		return userInfo;
 	}
@@ -595,14 +585,36 @@ public class OrderSKUDetailsEntity {
 		this.designerInfo = designerInfo;
 	}
 
+	public List<DialogBoxDTO> getDialogbox() {
+		return dialogbox;
+	}
+
+	public void setDialogbox(List<DialogBoxDTO> dialogbox) {
+		this.dialogbox = dialogbox;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "OrderSKUDetailsEntity [id=" + id + ", userId=" + userId + ", orderId=" + orderId + ", hsn=" + hsn
+				+ ", designerId=" + designerId + ", productId=" + productId + ", productName=" + productName
+				+ ", productSku=" + productSku + ", size=" + size + ", images=" + images + ", colour=" + colour
+				+ ", units=" + units + ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount
+				+ ", taxAmount=" + taxAmount + ", cgst=" + cgst + ", sgst=" + sgst + ", igst=" + igst
+				+ ", shippingCharge=" + shippingCharge + ", shippingCGST=" + shippingCGST + ", shippingSGST="
+				+ shippingSGST + ", shippingIGST=" + shippingIGST + ", taxType=" + taxType + ", orderItemStatus="
+				+ orderItemStatus + ", reachedCentralHub=" + reachedCentralHub + ", createdOn=" + createdOn
+				+ ", updatedOn=" + updatedOn + ", orderStatusDetails=" + orderStatusDetails + ", customObject="
+				+ customObject + ", customizationStatus=" + customizationStatus + ", giftwrapStatus=" + giftwrapStatus
+				+ ", cancelAcceptable=" + cancelAcceptable + ", giftWrapObject=" + giftWrapObject + ", userComment="
+				+ userComment + ", shippingDate=" + shippingDate + ", status=" + status + ", hsnData=" + hsnData
+				+ ", measurementObject=" + measurementObject + ", giftWrapAmount=" + giftWrapAmount
+				+ ", returnAcceptable=" + returnAcceptable + ", displayName=" + displayName + ", userInfo=" + userInfo
+				+ ", designerInfo=" + designerInfo + ", dialogbox=" + dialogbox + "]";
+	}
 
-	
-	
-	
 	
 }

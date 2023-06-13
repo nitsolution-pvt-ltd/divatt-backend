@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 public class Measurement {
 
     @Id
-    @Field(name ="_id")
+   @Field(name ="_id")
     private Integer _id;
     @Transient
     public static final String SEQUENCE_NAME = "tbl_designer_measurements";

@@ -88,7 +88,10 @@ spring:
         uri: https://localhost:8083/dev/designerAccount
         id: Designer
         predicates[0]: Path=/dev/designerAccount/**
-        
+      routes[20]:
+        uri: https://localhost:8084/dev/payOutDetails
+        id: Admin
+        predicates[0]: Path=/dev/payOutDetails/**
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -201,6 +204,10 @@ spring:
         uri: https://localhost:8083/prod/designerAccount
         id: Designer
         predicates[0]: Path=/prod/designerAccount/**
+      routes[20]:
+        uri: https://localhost:8084/prod/payOutDetails
+        id: Admin
+        predicates[0]: Path=/prod/payOutDetails/**
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -212,7 +219,7 @@ spring:
   application:
     name: ApiGatway
 server:
-  port: 9090
+  port: 9095
   ssl:
     key-store: classpath:local-ssl.p12
     key-store-type: PKCS12
@@ -318,7 +325,10 @@ spring:
         uri: https://localhost:8083/default/designerAccount
         id: Designer
         predicates[0]: Path=/default/designerAccount/**
-        
+      routes[20]:
+        uri: https://localhost:8084/default/payOutDetails
+        id: Admin
+        predicates[0]: Path=/default/payOutDetails/**
       globalcors:
         corsConfigurations:
           '[/**]':

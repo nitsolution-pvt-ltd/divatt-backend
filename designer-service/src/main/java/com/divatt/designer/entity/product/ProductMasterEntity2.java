@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.data.annotation.Id;
@@ -67,6 +69,8 @@ public class ProductMasterEntity2 implements Cloneable {
 	private String colour;
 	@Field(name = "sizes")
 	private List<String> sizes;
+	@Min(value=0)
+	@Max(value=1000000)
 	@Field(name = "soh")
 	private Integer soh;
 	@Field(name = "oos")

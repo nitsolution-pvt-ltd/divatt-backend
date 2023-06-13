@@ -1,5 +1,6 @@
 package com.divatt.admin.servicesImpl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,15 +18,23 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.constant.RestTemplateConstants;
+import com.divatt.admin.entity.DesignerProfileEntity;
 import com.divatt.admin.entity.GlobalResponse;
+import com.divatt.admin.entity.SendMail;
+import com.divatt.admin.entity.product.ImageEntity;
 import com.divatt.admin.entity.product.ProductEntity;
 import com.divatt.admin.entity.product.ProductEntity2;
 import com.divatt.admin.exception.CustomException;
+import com.divatt.admin.helper.EmailSenderThread;
 import com.divatt.admin.repo.ProductRepo;
 import com.divatt.admin.services.ProductService;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -34,6 +43,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private ProductRepo productRepo;
+	
+	@Autowired
+	private TemplateEngine templateEngine;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -70,7 +82,46 @@ public class ProductServiceImpl implements ProductService {
 
 				restTemplate.put(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_PRODUCTS_APPROVAL_UPDATE + productId, productdata,
 						String.class);
-
+				try {
+					DesignerProfileEntity body = restTemplate
+							.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_IDD + designerId,
+									DesignerProfileEntity.class)
+							.getBody();
+					String designerName = body.getDesignerProfile().getFirstName1();
+					String email = body.getDesignerProfile().getEmail();
+					//String email = "krishnendusamanta761@gmail.com";
+					Object productDetails = productdata.getProductDetails();
+					Gson gson = new Gson();
+					String jsonString = gson.toJson(productDetails);
+					JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+					String product = jsonObject.get("productName").toString();
+					String productName = product.replace("\"", "");
+					ImageEntity[] images = productdata.getImages();
+					ArrayList<ImageEntity> arrayList = new ArrayList<>();
+					for (ImageEntity element : images) {
+					    arrayList.add(element);
+					}
+					String imageSize = arrayList.get(0).getLarge();
+					LOGGER.info(""+productName);
+					Context context = new Context();
+					context.setVariable("designerName", designerName);
+					context.setVariable("adminStatus", adminStatus);
+					context.setVariable("imageSize", imageSize);
+					context.setVariable("productName", productName);
+					context.setVariable("productId", productId);
+					String htmlContent = templateEngine.process("adminAccountUpdate2.html", context);
+					SendMail mail = new SendMail(email, "Product Status Changed", htmlContent,
+							true);
+					try {
+						restTemplate
+								.postForEntity(AUTH_SERVICE+RestTemplateConstants.MAIL_SEND, mail, String.class);
+					} catch (Exception e) {
+						throw new CustomException(e.getMessage());
+					}
+					
+				}catch (Exception e1) {
+					throw new CustomException(e1.getMessage());
+				}
 				return new GlobalResponse(MessageConstant.STATUS_UPDATED.getMessage(), MessageConstant.PRODUCT_STATUS_UPDATED.getMessage(), 200);
 			} else {
 				return new GlobalResponse(MessageConstant.BAD_REQUEST.getMessage(), MessageConstant.PRODUCT_AND_DESIGNER_ID_MISMATCH.getMessage(), 400);

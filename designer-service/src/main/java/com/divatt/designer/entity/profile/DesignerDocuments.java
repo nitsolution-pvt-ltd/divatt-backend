@@ -5,20 +5,20 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class DesignerDocuments {
-	@NotNull
+	@NotNull(message = "Adhar card is required!")
 	@Field(name = "aadhar_card") private String aadharCard;
 	
-	@NotNull
+	@NotNull(message = "Pan card is required!")
 	@Field(name = "pan_card") private String panCard;
 	
-	@NotNull
+	@NotNull (message = "Void check is required!")
 	@Field(name = "voidCheck") private String void_check;
 	
-	@NotNull
+	@NotNull(message = "Cancel check is required!")
 	@Field(name = "cancel_check")
 	private String cancelCheck;
 	
-	@NotNull
+	@NotNull(message = "gst certificate is required!") 
 	@Field(name = "gst_certificate")
 	private String gstCertificate;
 

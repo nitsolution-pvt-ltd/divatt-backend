@@ -52,7 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/auth/mailForgotPasswordLink/{email}").permitAll()
 				.antMatchers(HttpMethod.GET, "/auth/Present/{role}/{email}").permitAll().antMatchers("/auth/admin/**")
 				.hasAuthority("ADMIN").antMatchers("/auth/designer/**").hasAnyAuthority("DESIGNER", "ADMIN")
-				.antMatchers("/auth/user/**").hasAnyAuthority("ADMIN", "USER").anyRequest().authenticated().and()
+				.antMatchers("/auth/user/**").hasAnyAuthority("ADMIN", "USER")
+				.anyRequest().authenticated().and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
 				.accessDeniedPage("/403");
 

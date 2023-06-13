@@ -3,7 +3,6 @@ package com.divatt.user.serviceImpl;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.jcajce.provider.symmetric.DES;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -28,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -41,11 +40,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
@@ -59,6 +61,7 @@ import com.divatt.user.dto.CancelationRequestApproveAndRejectDTO;
 import com.divatt.user.dto.CancelationRequestDTO;
 import com.divatt.user.dto.DesignerReceivedProductDTO;
 import com.divatt.user.dto.DesignerRequestDTO;
+import com.divatt.user.dto.DialogBoxDTO;
 import com.divatt.user.dto.ForceReturnOnDTO;
 import com.divatt.user.dto.ForceReturnOnDTO;
 import com.divatt.user.dto.InvoiceUpdatedModel;
@@ -604,14 +607,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	}
 
 	@Override
-	public ResponseEntity<?> getOrderDetailsService(String orderId) {
+	public ResponseEntity<?> getOrdersDetailsService(String orderId,Integer productId,String size) {
 		try {
 
 			List<OrderDetailsEntity> findById = this.orderDetailsRepo.findByOrderId(orderId);
 			if (findById.size() <= 0) {
 				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
 			}
-			List<Object> productId = new ArrayList<>();
+			List<Object> prodId = new ArrayList<>();
 			List<Object> productIds = new ArrayList<>();
 
 			findById.forEach(e -> {
@@ -624,7 +627,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				}
 
 				Optional<OrderPaymentEntity> OrderPaymentRow = this.userOrderPaymentRepo.findByOrderId(e.getOrderId());
-				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
+				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = new ArrayList<>();
+				if (StringUtils.isEmpty(size) && productId == 0) {
+					OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
+				} else {
+					OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByProductIdAndOrderIdAndSize(productId, e.getOrderId(), size);
+
+				}
+		
 				OrderSKUDetailsRow.forEach(D -> {
 					ObjectMapper objs = new ObjectMapper();
 					String productIdFilters = null;
@@ -689,9 +699,11 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				JSONObject objects = cartJN.getObject();
 				objects.put("paymentData", payJson);
 				objects.put("OrderSKUDetails", productIds);
-				productId.add(objects);
+				prodId.add(objects);
+				
+				
 			});
-			return ResponseEntity.ok(new Json(productId.get(0).toString()));
+			return ResponseEntity.ok(new Json(prodId.get(0).toString()));
 		} catch (HttpStatusCodeException ex) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("<Application name:{}>,<Request URL:{}>,<Response message:{}>,<Response code:{}>",
@@ -708,10 +720,103 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			throw new CustomException(exception.getLocalizedMessage());
 		}
 	}
-
+	
 	@Override
 	public Map<String, Object> getUserOrderDetailsService(Integer userId, int page, int limit, String sort,
 			String sortName, String keyword, Optional<String> sortBy, String token) {
+
+		try {
+			int CountData = (int) userOrderPaymentRepo.count();
+			Pageable pagingSort = null;
+			if (limit == 0) {
+				limit = CountData;
+			}
+			if (sort.equals("ASC")) {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+			} else {
+				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+			}
+			Page<OrderPaymentEntity> findAll = null;
+
+			if (keyword.isEmpty()) {
+				findAll = this.userOrderPaymentRepo.findByUserIdAndPaymentStatusNot(Long.parseLong(userId.toString()),
+						"FAILED", pagingSort);
+			} else {
+				findAll = this.userOrderPaymentRepo.findByUserIdAndKeywordAndPaymentStatusNot(
+						Long.parseLong(userId.toString()), keyword, "FAILED", pagingSort);
+			}
+			List<OrderPaymentEntity> findById = findAll.getContent();
+			if (findById.size() <= 0) {
+				throw new CustomException(MessageConstant.ORDER_NOT_FOUND.getMessage());
+			}
+			List<Object> productId = new ArrayList<>();
+			findById.forEach(e -> {
+				ObjectMapper obj = new ObjectMapper();
+				String productIdFilter = null;
+				try {
+					productIdFilter = obj.writeValueAsString(e);
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
+				}
+				Optional<OrderDetailsEntity> ordersDetailsRow = this.orderDetailsRepo.findByOrderid(e.getOrderId());
+				List<OrderSKUDetailsEntity> OrderSKUDetailsRow = this.orderSKUDetailsRepo.findByOrderId(e.getOrderId());
+				OrderSKUDetailsRow.forEach(order -> {
+					try {
+						ResponseEntity<org.json.simple.JSONObject> getProductByID = restTemplate.getForEntity(
+								DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_PRODUCT + order.getProductId(),
+								org.json.simple.JSONObject.class);
+						LOGGER.info("getProductByID" + getProductByID.getBody());
+						order.setHsn(getProductByID.getBody().get("hsnData"));
+					} catch (Exception e2) {
+						e2.printStackTrace();
+					}
+				});
+				String writeValueAsString = null;
+				JsonNode pJN = new JsonNode(productIdFilter);
+				JSONObject object = pJN.getObject();
+				JsonNode orderJson = null;
+				JSONObject orderdetailsJson = null;
+				if (ordersDetailsRow.isPresent()) {
+					try {
+						writeValueAsString = obj.writeValueAsString(ordersDetailsRow.get());
+					} catch (JsonProcessingException e1) {
+						e1.printStackTrace();
+					}
+					orderJson = new JsonNode(writeValueAsString);
+					orderdetailsJson = orderJson.getObject();
+				}
+				String OrderSKUD = null;
+				try {
+					OrderSKUD = obj.writeValueAsString(OrderSKUDetailsRow);
+				} catch (JsonProcessingException e2) {
+					e2.printStackTrace();
+				}
+
+				JsonNode OrderSKUDJson = new JsonNode(OrderSKUD);
+				orderdetailsJson.put("paymentData", object);
+				orderdetailsJson.put("OrderSKUDetails", OrderSKUDJson.getArray());
+				productId.add(orderdetailsJson);
+			});
+			int totalPage = findAll.getTotalPages() - 1;
+			if (totalPage < 0) {
+				totalPage = 0;
+			}
+			Map<String, Object> response = new HashMap<>();
+			response.put("data", new Json(productId.toString()));
+			response.put("currentPage", findAll.getNumber());
+			response.put("total", findAll.getTotalElements());
+			response.put("totalPage", totalPage);
+			response.put("perPage", findAll.getSize());
+			response.put("perPageElement", findAll.getNumberOfElements());
+			return response;
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+	////////for internal rest call
+	@Override
+	public Map<String, Object> getUserOrderDetailsService(Integer userId, int page, int limit, String sort,
+			String sortName, String keyword, Optional<String> sortBy) {
 
 		try {
 			int CountData = (int) userOrderPaymentRepo.count();
@@ -803,6 +908,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 		}
 	}
 
+	
+	
+	
 	@Override
 	public Map<String, Object> getDesigerOrders(int designerId, int page, int limit, String sort, String sortName,
 			String keyword, Optional<String> sortBy, String orderItemStatus, String sortDateType, String startDate,
@@ -823,14 +931,15 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			if (!sortDateType.equals(null)) {
 
 				if (sortDateType.equalsIgnoreCase("new")) {
-					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, "dateTime");
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, "id");
 
 				} else if (sortDateType.equalsIgnoreCase("old")) {
-					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, "dateTime");
+					pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, "id");
 
 				}
 			}
-			List<OrderPaymentEntity> findByPaymentStatusNot = this.userOrderPaymentRepo.findByPaymentStatusNot("FAILED");
+			List<OrderPaymentEntity> findByPaymentStatusNot = this.userOrderPaymentRepo
+					.findByPaymentStatusNot("FAILED");
 			Page<OrderPaymentEntity> findAll = null;
 			List<OrderSKUDetailsEntity> OrderSKUDetailsData = new ArrayList<>();
 
@@ -950,14 +1059,14 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				orderdetailsJson.put("OrderSKUDetails", OrderSKUDJson.getArray());
 				orderdetailsJson.put("paymentData", object);
 				productId.add(orderdetailsJson);
-				
+
 			});
 			int totalPage = findAll.getTotalPages() - 1;
 			if (totalPage < 0) {
 				totalPage = 0;
 			}
 			Map<String, Object> response = new HashMap<>();
-			List<OrderSKUDetailsEntity> dataByNew = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "New");			
+			List<OrderSKUDetailsEntity> dataByNew = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "New");
 			List<OrderSKUDetailsEntity> collectNew = findByPaymentStatusNot.stream()
 					.flatMap(d -> dataByNew.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
@@ -969,87 +1078,100 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 					.collect(Collectors.toList());
 			response.put("Packed", collectPacked.size());
 
-			List<OrderSKUDetailsEntity> dataByShipped = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "Shipped");
+			List<OrderSKUDetailsEntity> dataByShipped = this.orderSKUDetailsRepo.findByOrderTotal(designerId,
+					"Shipped");
 			List<OrderSKUDetailsEntity> collectShipped = findByPaymentStatusNot.stream()
 					.flatMap(d -> dataByShipped.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("Shipped", collectShipped.size());
 
-			List<OrderSKUDetailsEntity> dataByDelivered = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "Delivered");
+			List<OrderSKUDetailsEntity> dataByDelivered = this.orderSKUDetailsRepo.findByOrderTotal(designerId,
+					"Delivered");
 			List<OrderSKUDetailsEntity> collectDelivered = findByPaymentStatusNot.stream()
 					.flatMap(d -> dataByDelivered.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("Delivered", collectDelivered.size());
 
-			List<OrderSKUDetailsEntity> dataByReturnRefund = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRefund");
+			List<OrderSKUDetailsEntity> dataByReturnRefund = this.orderSKUDetailsRepo.findByOrderTotal(designerId,
+					"returnRefund");
 			List<OrderSKUDetailsEntity> collectReturnRefund = findByPaymentStatusNot.stream()
 					.flatMap(d -> dataByReturnRefund.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("Return", collectReturnRefund.size());
-			
+
 			List<OrderSKUDetailsEntity> dataByActive = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "Active");
 			List<OrderSKUDetailsEntity> collectActive = findByPaymentStatusNot.stream()
 					.flatMap(d -> dataByActive.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("Active", collectActive.size());
-			
-			List<OrderSKUDetailsEntity> dataByRequestForCancelation = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation");
-			List<OrderSKUDetailsEntity> collectRequestForCancelation = findByPaymentStatusNot.stream()
-					.flatMap(d -> dataByRequestForCancelation.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
+
+			List<OrderSKUDetailsEntity> dataByRequestForCancelation = this.orderSKUDetailsRepo
+					.findByOrderTotal(designerId, "Request for cancelation");
+			List<OrderSKUDetailsEntity> collectRequestForCancelation = findByPaymentStatusNot.stream().flatMap(
+					d -> dataByRequestForCancelation.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("cancelRequest", collectRequestForCancelation.size());
-			
+
 			List<OrderSKUDetailsEntity> dataByOrders = this.orderSKUDetailsRepo.findByDesignerId(designerId);
 			List<OrderSKUDetailsEntity> collectOrders = findByPaymentStatusNot.stream()
 					.flatMap(d -> dataByOrders.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("Orders", collectOrders.size());
-			
-			List<OrderSKUDetailsEntity> dataByCancelled = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "cancelled");
+
+			List<OrderSKUDetailsEntity> dataByCancelled = this.orderSKUDetailsRepo.findByOrderTotal(designerId,
+					"cancelled");
 			List<OrderSKUDetailsEntity> collectCancelled = findByPaymentStatusNot.stream()
 					.flatMap(d -> dataByCancelled.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("Canceled", collectCancelled.size());
-			
-			List<OrderSKUDetailsEntity> dataByReturnRequest = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "returnRequest");
+
+			List<OrderSKUDetailsEntity> dataByReturnRequest = this.orderSKUDetailsRepo.findByOrderTotal(designerId,
+					"returnRequest");
 			List<OrderSKUDetailsEntity> collectReturnRequest = findByPaymentStatusNot.stream()
 					.flatMap(d -> dataByReturnRequest.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("returnRequest", collectReturnRequest.size());
-			
-			List<OrderSKUDetailsEntity> dataByRejected = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "Rejected");
+
+			List<OrderSKUDetailsEntity> dataByRejected = this.orderSKUDetailsRepo.findByOrderTotal(designerId,
+					"Rejected");
 			List<OrderSKUDetailsEntity> collectRejected = findByPaymentStatusNot.stream()
 					.flatMap(d -> dataByRejected.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("rejected", collectRejected.size());
-			
-			List<OrderSKUDetailsEntity> dataByRequestCancelation = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "Request for cancelation");
+
+			List<OrderSKUDetailsEntity> dataByRequestCancelation = this.orderSKUDetailsRepo.findByOrderTotal(designerId,
+					"Request for cancelation");
 			List<OrderSKUDetailsEntity> collectRequestCancelation = findByPaymentStatusNot.stream()
-					.flatMap(d -> dataByRequestCancelation.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
+					.flatMap(
+							d -> dataByRequestCancelation.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("requestCancelation", collectRequestCancelation.size());
-			
-			List<OrderSKUDetailsEntity> dataByReturnRequestApproved = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "Return request approved");
-			List<OrderSKUDetailsEntity> collectReturnRequestApproved = findByPaymentStatusNot.stream()
-					.flatMap(d -> dataByReturnRequestApproved.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
+
+			List<OrderSKUDetailsEntity> dataByReturnRequestApproved = this.orderSKUDetailsRepo
+					.findByOrderTotal(designerId, "Return request approved");
+			List<OrderSKUDetailsEntity> collectReturnRequestApproved = findByPaymentStatusNot.stream().flatMap(
+					d -> dataByReturnRequestApproved.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("returnRequestApproved", collectReturnRequestApproved.size());
-			
-			List<OrderSKUDetailsEntity> dataByProductShippedByUser = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "Product shipped by user");
-			List<OrderSKUDetailsEntity> collectProductShippedByUser = findByPaymentStatusNot.stream()
-					.flatMap(d -> dataByProductShippedByUser.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
+
+			List<OrderSKUDetailsEntity> dataByProductShippedByUser = this.orderSKUDetailsRepo
+					.findByOrderTotal(designerId, "Product shipped by user");
+			List<OrderSKUDetailsEntity> collectProductShippedByUser = findByPaymentStatusNot.stream().flatMap(
+					d -> dataByProductShippedByUser.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("returnRequestApproved", collectProductShippedByUser.size());
-			
-			List<OrderSKUDetailsEntity> dataByProductReceivedFromUser = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "Product received from user");
-			List<OrderSKUDetailsEntity> collectProductReceivedFromUser = findByPaymentStatusNot.stream()
-					.flatMap(d -> dataByProductReceivedFromUser.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
+
+			List<OrderSKUDetailsEntity> dataByProductReceivedFromUser = this.orderSKUDetailsRepo
+					.findByOrderTotal(designerId, "Product received from user");
+			List<OrderSKUDetailsEntity> collectProductReceivedFromUser = findByPaymentStatusNot.stream().flatMap(
+					d -> dataByProductReceivedFromUser.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("productReceivedFromUser", collectProductReceivedFromUser.size());
-			
-			List<OrderSKUDetailsEntity> dataByReturnRejectedByAdmin = this.orderSKUDetailsRepo.findByOrderTotal(designerId, "Return rejected by admin");
-			List<OrderSKUDetailsEntity> collectReturnRejectedByAdmin = findByPaymentStatusNot.stream()
-					.flatMap(d -> dataByReturnRejectedByAdmin.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
+
+			List<OrderSKUDetailsEntity> dataByReturnRejectedByAdmin = this.orderSKUDetailsRepo
+					.findByOrderTotal(designerId, "Return rejected by admin");
+			List<OrderSKUDetailsEntity> collectReturnRejectedByAdmin = findByPaymentStatusNot.stream().flatMap(
+					d -> dataByReturnRejectedByAdmin.stream().filter(d1 -> d1.getOrderId().equals(d.getOrderId())))
 					.collect(Collectors.toList());
 			response.put("returnRejectedByAdmin", collectReturnRejectedByAdmin.size());
 
@@ -1849,7 +1971,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public GlobalResponse cancelOrderService(String orderId, String productId, String token,
-			CancelationRequestDTO cancelationRequestDTO) {
+			CancelationRequestDTO cancelationRequestDTO, String size) {
 		try {
 			String designerEmail = jwtconfig.extractUsername(token.substring(7));
 
@@ -1875,7 +1997,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			List<OrderSKUDetailsEntity> orderDetails = orderSKUDetailsRepo.findAll().stream()
 					.filter(e -> e.getDesignerId() == Long.parseLong(designerId))
 					.filter(e -> e.getOrderId().equals(orderId))
-					.filter(e -> e.getProductId() == Integer.parseInt(productId)).collect(Collectors.toList());
+					.filter(e -> e.getProductId() == Integer.parseInt(productId))
+					.filter(e-> e.getSize().equals(size)).collect(Collectors.toList());
 			String orderItemStatus = orderDetails.get(0).getOrderItemStatus();
 			orderDetails.get(0).setStatus(orderItemStatus);
 
@@ -1925,14 +2048,21 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				throw new CustomException(MessageConstant.PRODUCT_ALREADY_DELIVERED.getMessage());
 			}
 			try {
-				org.json.simple.JSONObject body = restTemplate
-						.getForEntity(ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME
-								+ MessageConstant.ADMIN_ROLES.getMessage(), org.json.simple.JSONObject.class)
-						.getBody();
-				String adminMail = body.get("email").toString();
+//				org.json.simple.JSONObject body = restTemplate
+//						.getForEntity(ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME
+//								+ MessageConstant.ADMIN_ROLES.getMessage(), org.json.simple.JSONObject.class)
+//						.getBody();
+//				
+				ResponseEntity<List<org.json.simple.JSONObject>> responseData = restTemplate.exchange(
+						ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME
+								+ MessageConstant.ADMIN_ROLES.getMessage(),
+						HttpMethod.GET, null, new ParameterizedTypeReference<List<org.json.simple.JSONObject>>() {
+						});
+				List<org.json.simple.JSONObject> loginData = responseData.getBody();
+				String adminMail = loginData.get(0).get("email").toString();
 				String designerName = firstName + " " + lastName;
-				String adminFirstName = body.get("firstName").toString();
-				String adminLastName = body.get("lastName").toString();
+				String adminFirstName = loginData.get(0).get("firstName").toString();
+				String adminLastName = loginData.get(0).get("lastName").toString();
 				String adminName = adminFirstName + " " + adminLastName;
 				String orderId2 = orderDetails.get(0).getOrderId();
 				Long userId = orderDetails.get(0).getUserId();
@@ -1979,19 +2109,22 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public GlobalResponse cancelApproval(String designerId, String orderId, String productId,
-			CancelationRequestApproveAndRejectDTO cancelationRequestApproveAndRejectDTO) {
+			CancelationRequestApproveAndRejectDTO cancelationRequestApproveAndRejectDTO, String size) {
 		try {
 			List<OrderSKUDetailsEntity> orderDetails = orderSKUDetailsRepo
-					.findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatus(Integer.parseInt(productId),
-							Integer.parseInt(designerId), orderId, "Request for cancelation");
-
+					.findByProductIdAndDesignerIdAndOrderIdAndOrderItemStatusAndSize(Integer.parseInt(productId),
+							Integer.parseInt(designerId), orderId, "Request for cancelation", size);
 			String username = userloginRepo.findById(orderDetails.get(0).getUserId()).get().getFirstName();
+			LOGGER.info("username"+username);
 			String userEmail = userloginRepo.findById(orderDetails.get(0).getUserId()).get().getEmail();
 			DesignerRequestDTO designerResponse = restTemplate
 					.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BYID + designerId,
 							DesignerRequestDTO.class)
 					.getBody();
-			String designerName = designerResponse.getDesignerId().toString();
+			String firstName = designerResponse.getDesignerProfile().get("firstName1").toString();
+			String lastName = designerResponse.getDesignerProfile().get("lastName1").toString();
+			String designerName1 = firstName + " " + lastName;
+			String designerName = designerResponse.getDesignerProfile().get("displayName").toString();
 			String designerEmail = designerResponse.getDesignerProfile().get("email").toString();
 			SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT_TYPE.getMessage());
 			Date dates = new Date();
@@ -2010,7 +2143,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				cancelEmailJSON.setDesignerName(designerName);
 				cancelEmailJSON.setComment(cancelationRequestApproveAndRejectDTO.getComment());
 				orderDetails.get(0).setOrderItemStatus("cancelled");
-
+///
 				OrderStatusDetails details = orderDetails.get(0).getOrderStatusDetails();
 				org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 				jsonObject.put("cancellationTime", format);
@@ -2087,7 +2220,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 	@SuppressWarnings("all")
 	@Override
 	public GlobalResponse itemStatusChange(String token, String orderId, String productId,
-			org.json.simple.JSONObject statusChange, String orderItemStatus) {
+			org.json.simple.JSONObject statusChange, String orderItemStatus,String size) {
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - OrderAndPaymentServiceImpl.itemStatusChange()");
 		}
@@ -2112,13 +2245,13 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				Map<String, Object> map = new HashMap<>();
 
 				OrderSKUDetailsEntity item1 = orderSKUDetailsRepo
-						.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
+						.findByProductIdAndOrderIdAndSize(Integer.parseInt(productId), orderId,size).get(0);
 				String designerId2 = item1.getDesignerId() + "";
 
 				if (designerId.equals(designerId2)) {
 					try {
-						OrderSKUDetailsEntity item = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderId(
-								Integer.parseInt(productId), Integer.parseInt(designerId), orderId).get(0);
+						OrderSKUDetailsEntity item = orderSKUDetailsRepo.findByProductIdAndDesignerIdAndOrderIdAndSize(
+								Integer.parseInt(productId), Integer.parseInt(designerId), orderId,size).get(0);
 						OrderStatusDetails orderStatusDetails = item.getOrderStatusDetails();
 						String itemStatus = item.getOrderItemStatus();
 						if (LOGGER.isInfoEnabled()) {
@@ -2168,7 +2301,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 //										map.put("with Customization", "No");
 //										map.put("with DesignCustomization", "No");
 //										map.put("Orders Time", format);
-										map.put("on ", format + ", with Customization: No and with DesignCustomization: No.");
+										map.put("on ",
+												format + ", Customization: No and DesignCustomization: No.");
 										item.setOrderItemStatus(orderItemStatus);
 										if (item.getOrderStatusDetails() != null) {
 											orderStatusDetails.setOrdersDetails(jsonObject3);
@@ -2340,19 +2474,28 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public GlobalResponse itemStatusChangefromAdmin(String token, String orderId, String productId,
+	public GlobalResponse itemStatusChangefromAdmin(String token, String orderId, String productId, String size,
 			org.json.simple.JSONObject statusChange, String orderItemStatus) {
 
 		try {
 			String extractUsername = jwtconfig.extractUsername(token.substring(7));
 			Map<String, Object> map = new HashMap<>();
 			try {
-				ResponseEntity<org.json.simple.JSONObject> forEntity = restTemplate.getForEntity(ADMIN_SERVICE
-						+ RestTemplateConstants.ADMIN_ROLE_NAME + MessageConstant.ADMIN_ROLES.getMessage(),
-						org.json.simple.JSONObject.class);
+				
+				ResponseEntity<List<org.json.simple.JSONObject>> responseData = restTemplate.exchange(
+						ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME
+								+ MessageConstant.ADMIN_ROLES.getMessage(),
+						HttpMethod.GET, null, new ParameterizedTypeReference<List<org.json.simple.JSONObject>>() {
+						});
+				List<org.json.simple.JSONObject> loginData = responseData.getBody();
+//				String email2 = loginData.get(0).get("email").toString();
+				
+//				ResponseEntity<org.json.simple.JSONObject> forEntity = restTemplate.getForEntity(ADMIN_SERVICE
+//						+ RestTemplateConstants.ADMIN_ROLE_NAME + MessageConstant.ADMIN_ROLES.getMessage(),
+//						org.json.simple.JSONObject.class);
 				String adminEmail = null;
-				if (!forEntity.getBody().equals(null)) {
-					adminEmail = forEntity.getBody().get("email").toString();
+				if (loginData.size() >0) {
+					adminEmail = loginData.get(0).get("email").toString();
 				}
 				if (!extractUsername.equals(adminEmail)) {
 					throw new CustomException(MessageConstant.UNAUTHORIZED.getMessage());
@@ -2362,7 +2505,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			}
 
 			OrderSKUDetailsEntity item = orderSKUDetailsRepo
-					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
+					.findByProductIdAndOrderIdAndSize(Integer.parseInt(productId), orderId, size).get(0);
 			OrderStatusDetails orderStatusDetails = item.getOrderStatusDetails();
 			String itemStatus = item.getOrderItemStatus();
 			int designerId = item.getDesignerId();
@@ -2547,17 +2690,22 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public GlobalResponse adminCancelation(String orderId, String productId, String token,
+	public GlobalResponse adminCancelation(String orderId, String productId, String size, String token,
 			CancelationRequestDTO cancelationRequestDTO) {
 		try {
 			OrderSKUDetailsEntity findByProductIdAndOrderId = this.orderSKUDetailsRepo
-					.findByProductIdAndOrderId(Integer.parseInt(productId), orderId).get(0);
+					.findByProductIdAndOrderIdAndSize(Integer.parseInt(productId), orderId, size).get(0);
 			String orderItemStatus = findByProductIdAndOrderId.getOrderItemStatus();
 			if (!orderItemStatus.equals("Delivered")) {
+				SimpleDateFormat dateFormate = new SimpleDateFormat(MessageConstant.DATE_TIME_FORMAT_TYPE.getMessage());
+				Date dates = new Date();
+				String dateTimeformate = dateFormate.format(dates);
+
 				if (!orderItemStatus.equals("New")) {
+
 					org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 					jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
-					jsonObject.put("cancelationTime", new Date());
+					jsonObject.put("cancelationTime", dateTimeformate);
 					OrderStatusDetails orderStatusDetails = findByProductIdAndOrderId.getOrderStatusDetails();
 					try {
 						orderStatusDetails.setCancelOrderDetails(jsonObject);
@@ -2573,7 +2721,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				} else {
 					org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
 					jsonObject.put("cancelComment", cancelationRequestDTO.getComment());
-					jsonObject.put("cancelationTime", new Date());
+					jsonObject.put("cancelationTime", dateTimeformate);
 					OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
 					try {
 						orderStatusDetails.setCancelOrderDetails(jsonObject);
@@ -2619,6 +2767,8 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 
 			if (!orderItemStatus.equals("All") && keyword.isEmpty()) {
 				findAll = orderSKUDetailsRepo.findOrderStatus(orderItemStatus, pagingSort);
+//				findAll = orderSKUDetailsRepo.findOrderStatusAndSize(orderItemStatus,orderSKUDetailsRepo.s, pagingSort);
+
 			} else if (keyword.isEmpty()) {
 				findAll = orderSKUDetailsRepo.findAll(pagingSort);
 			} else {
@@ -2635,6 +2785,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				} catch (JsonProcessingException e1) {
 					e1.printStackTrace();
 				}
+
 				List<OrderInvoiceEntity> invoiceData = this.orderInvoiceRepo.findByOrder(e.getOrderId());
 				ResponseEntity<DesignerProfileEntity> forEntity = restTemplate.getForEntity(
 						DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BYID + e.getDesignerId(),
@@ -2785,6 +2936,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				String total = null;
 				String displayName = null;
 				String designerName = null;
+				String digitalSignature=null;
 				String taxableValue = null;
 
 				invoiceUpdatedModels.stream().forEach(entity -> {
@@ -2835,6 +2987,9 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 								.getBody();
 						displayName = forEntity.getDesignerProfile().getDisplayName();
 						designerName = forEntity.getDesignerName();
+						digitalSignature= forEntity.getDesignerProfile().getDigitalSignature();
+						
+						
 					}
 				}
 
@@ -2849,6 +3004,7 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 				data.put("total", total);
 				data.put("displayName", displayName);
 				data.put("designerName", designerName);
+				data.put("digitalSignature", digitalSignature);
 				data.put("totalTaxableValue", taxableValue);
 				Context context = new Context();
 				context.setVariables(data);
@@ -2982,6 +3138,42 @@ public class OrderAndPaymentServiceImpl implements OrderAndPaymentService {
 			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+
+	@Override
+	public ResponseEntity<?> updateDialogBox(String token, String orderId, Integer productId, String size,
+			OrderSKUDetailsEntity skuDetailsEntity) {
+		try {
+			List<OrderSKUDetailsEntity> orderSKUDetailsEntity = this.orderSKUDetailsRepo
+					.findByProductIdAndOrderIdAndSize(productId, orderId, size);
+
+			if (orderSKUDetailsEntity.size() <= 0) {
+				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
+			}
+			if (orderSKUDetailsEntity.size() > 0) {
+				if (orderSKUDetailsEntity.get(0).getOrderItemStatus().equals("New")) {
+					List<DialogBoxDTO> dialogbox = skuDetailsEntity.getDialogbox();
+
+					if (orderSKUDetailsEntity.size() > 0) {
+						List<DialogBoxDTO> list = orderSKUDetailsEntity.get(0).getDialogbox();
+						list.addAll(dialogbox);
+						OrderSKUDetailsEntity detailsEntity = orderSKUDetailsEntity.get(0);
+						detailsEntity.setDialogbox(list);
+						orderSKUDetailsRepo.save(detailsEntity);
+					} else {
+						orderSKUDetailsEntity.get(0).setDialogbox(skuDetailsEntity.getDialogbox());
+						orderSKUDetailsRepo.save(orderSKUDetailsEntity.get(0));
+					}
+				}
+			}
+			Map<String, Object> map = new HashMap<>();
+			map.put("reason", MessageConstant.SUCCESS.getMessage());
+			map.put("message", MessageConstant.CHANGES_ADDED.getMessage());
+			map.put("status", 200);
+			return ResponseEntity.ok(map);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }

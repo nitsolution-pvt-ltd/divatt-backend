@@ -41,6 +41,10 @@ logging:
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
 mail.from: no-reply@divatt.com
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
 
 ---
 spring:
@@ -88,7 +92,10 @@ logging:
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
 mail.from: no-reply@divatt.com
-
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
 
 ---
 spring:
@@ -105,7 +112,7 @@ spring:
       username: dbuser 
  
 server: 
-  port: 9092
+  port: 8082
   servlet: 
     contextPath: /prod
   ssl:
@@ -136,3 +143,7 @@ logging:
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
 mail.from: no-reply@divatt.com
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka

@@ -611,6 +611,7 @@ public class UserController {
 				throw new CustomException("User "+MessageConstant.ID_NOT_FOUND.getMessage());
 			}
 			List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(findByEmail.get().getId());
+			LOGGER.info("findByUserId"+findByEmail.get().getId());
 			if (findByUserId.size() <= 0)
 				throw new CustomException(MessageConstant.NO_ADDRESS_FOUND.getMessage());
 			return ResponseEntity.ok(findByUserId);
@@ -673,7 +674,7 @@ public class UserController {
 		try {
 			List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(userAddressEntity.getUserId());
 			if (findByUserId.size() == 0) {
-				userAddressEntity.setPrimary(true);
+				userAddressEntity.setPrimary(userAddressEntity.getPrimary());
 			} else {
 				if (userAddressEntity.getPrimary()) {
 					List<UserAddressEntity> list = findByUserId.stream().map(e -> {
@@ -702,12 +703,13 @@ public class UserController {
 			List<UserAddressEntity> findByUserId = userAddressRepo.findByUserId(userAddressEntity.getUserId());
 			if (!findById.isPresent())
 				throw new CustomException(MessageConstant.ID_NOT_FOUND.getMessage());
-			if (findById.get().getPrimary())
-				userAddressEntity.setPrimary(true);
+//			if(findById.get().getPrimary()) {
+//				userAddressEntity.setPrimary(true);
+//			}
+			userAddressEntity.setPrimary(userAddressEntity.getPrimary());	
 			userAddressEntity.setId(findById.get().getId());
 			userAddressEntity.setCreatedOn(findById.get().getCreatedOn());
 			userAddressRepo.save(userAddressEntity);
-
 			findByUserId = userAddressRepo.findByUserId(userAddressEntity.getUserId());
 			if (userAddressEntity.getPrimary()) {
 
@@ -899,5 +901,6 @@ public class UserController {
 
 	        // some other code
 	    }
+	
 
 }

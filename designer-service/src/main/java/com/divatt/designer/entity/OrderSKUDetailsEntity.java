@@ -21,8 +21,9 @@ public class OrderSKUDetailsEntity {
 	private String reachedCentralHub;
 	private String createdOn;
 	private String updatedOn;
+	private String displayName;
 	private String shippingDate;
-
+	
 	public OrderSKUDetailsEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -31,7 +32,7 @@ public class OrderSKUDetailsEntity {
 	public OrderSKUDetailsEntity(Integer id, Long userId, String orderId, int designerId, int productId,
 			String productName, String productSku, String size, String images, String colour, Long units, Long mrp,
 			Long salesPrice, Long discount, Long taxAmount, String taxType, String orderItemStatus,
-			String reachedCentralHub, String createdOn, String updatedOn, String shippingDate) {
+			String reachedCentralHub, String createdOn, String updatedOn, String displayName, String shippingDate) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -53,6 +54,7 @@ public class OrderSKUDetailsEntity {
 		this.reachedCentralHub = reachedCentralHub;
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
+		this.displayName = displayName;
 		this.shippingDate = shippingDate;
 	}
 
@@ -216,6 +218,14 @@ public class OrderSKUDetailsEntity {
 		this.updatedOn = updatedOn;
 	}
 
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
 	public String getShippingDate() {
 		return shippingDate;
 	}
@@ -231,17 +241,9 @@ public class OrderSKUDetailsEntity {
 				+ productSku + ", size=" + size + ", images=" + images + ", colour=" + colour + ", units=" + units
 				+ ", mrp=" + mrp + ", salesPrice=" + salesPrice + ", discount=" + discount + ", taxAmount=" + taxAmount
 				+ ", taxType=" + taxType + ", orderItemStatus=" + orderItemStatus + ", reachedCentralHub="
-				+ reachedCentralHub + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn + ", shippingDate="
-				+ shippingDate + ", getId()=" + getId() + ", getUserId()=" + getUserId() + ", getOrderId()="
-				+ getOrderId() + ", getDesignerId()=" + getDesignerId() + ", getProductId()=" + getProductId()
-				+ ", getProductName()=" + getProductName() + ", getProductSku()=" + getProductSku() + ", getSize()="
-				+ getSize() + ", getImages()=" + getImages() + ", getColour()=" + getColour() + ", getUnits()="
-				+ getUnits() + ", getMrp()=" + getMrp() + ", getSalesPrice()=" + getSalesPrice() + ", getDiscount()="
-				+ getDiscount() + ", getTaxAmount()=" + getTaxAmount() + ", getTaxType()=" + getTaxType()
-				+ ", getOrderItemStatus()=" + getOrderItemStatus() + ", getReachedCentralHub()="
-				+ getReachedCentralHub() + ", getCreatedOn()=" + getCreatedOn() + ", getUpdatedOn()=" + getUpdatedOn()
-				+ ", getShippingDate()=" + getShippingDate() + ", getClass()=" + getClass() + ", hashCode()="
-				+ hashCode() + ", toString()=" + super.toString() + "]";
+				+ reachedCentralHub + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn + ", displayName="
+				+ displayName + ", shippingDate=" + shippingDate + "]";
 	}
 
+	
 }

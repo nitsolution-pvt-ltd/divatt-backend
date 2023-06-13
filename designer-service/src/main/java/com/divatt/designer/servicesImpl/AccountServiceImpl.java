@@ -39,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private Gson gson;
-	
+
 	@Value("${DESIGNER}")
 	private String DESIGNER_SERVICE;
 
@@ -80,7 +80,7 @@ public class AccountServiceImpl implements AccountService {
 							interfaceId, host + contextPath + "/designerAccount/add", gson.toJson(accountEntity),
 							HttpStatus.OK);
 				}
-				restTemplate.postForObject(ADMIN_SERVICE+RestTemplateConstants.ACCOUNT_ADD, accountEntity,
+				restTemplate.postForObject(ADMIN_SERVICE + RestTemplateConstants.ACCOUNT_ADD, accountEntity,
 						AccountEntity.class);
 				return ResponseEntity.ok().body(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ACCOUNT_ADDED_MESSAGE.getMessage(), HttpStatus.OK.value()));
@@ -123,8 +123,8 @@ public class AccountServiceImpl implements AccountService {
 							interfaceId, host + contextPath + "/designerAccount/view/" + accountId, "Success",
 							HttpStatus.OK);
 				}
-				ResponseEntity<AccountEntity> accountEntity = restTemplate.getForEntity(ADMIN_SERVICE+
-						RestTemplateConstants.ACCOUNT_VIEW_BY_ID + accountId, AccountEntity.class);
+				ResponseEntity<AccountEntity> accountEntity = restTemplate.getForEntity(
+						ADMIN_SERVICE + RestTemplateConstants.ACCOUNT_VIEW_BY_ID + accountId, AccountEntity.class);
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Application name: {},Request URL: {},Response message: {},Response code: {}",
 							interfaceId, host + contextPath + "/designerAccount/view/" + accountId,
@@ -180,7 +180,7 @@ public class AccountServiceImpl implements AccountService {
 							interfaceId, host + contextPath + "/designerAccount/update/" + accountId,
 							gson.toJson(accountEntity), HttpStatus.OK);
 				}
-				restTemplate.put(ADMIN_SERVICE+RestTemplateConstants.ACCOUNT_UPDATE_BY_ID + accountId, accountEntity);
+				restTemplate.put(ADMIN_SERVICE + RestTemplateConstants.ACCOUNT_UPDATE_BY_ID + accountId, accountEntity);
 				return ResponseEntity.ok().body(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.ACCOUNT_UPDATED_MESSAGE.getMessage(), HttpStatus.OK.value()));
 			} catch (Exception e) {
@@ -204,7 +204,8 @@ public class AccountServiceImpl implements AccountService {
 
 	public ResponseEntity<?> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder,
-			String ReturnStatus, Optional<String> sortBy, String settlement, int year, int month, String designerId) {
+			String ReturnStatus, String sortBy, String settlement, int year, int month, String designerId,
+			String sortDateType) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountServiceImpl.getAccountDetails()");
@@ -213,11 +214,12 @@ public class AccountServiceImpl implements AccountService {
 			LOGGER.debug("Inside - AccountServiceImpl.getAccountDetails()");
 		}
 		try {
-			String url = ADMIN_SERVICE+RestTemplateConstants.ACCOUNT_LIST + "?page=" + page + "&limit=" + limit + "&sort="
-					+ sort + "&sortName=" + sortName + "&isDeleted=" + isDeleted + "&keyword=" + keyword
+			String url = ADMIN_SERVICE + RestTemplateConstants.ACCOUNT_LIST + "?page=" + page + "&limit=" + limit
+					+ "&sort=" + sort + "&sortName=" + sortName + "&isDeleted=" + isDeleted + "&keyword=" + keyword
 					+ "&designerReturn=" + designerReturn + "&serviceCharge=" + serviceCharge + "&govtCharge="
 					+ govtCharge + "&userOrder=" + userOrder + "&ReturnStatus=" + ReturnStatus + "&sortBy=" + sortBy
-					+ "&settlement=" + settlement + "&year=" + year + "&month=" + month + "&designerId=" + designerId;
+					+ "&settlement=" + settlement + "&year=" + year + "&month=" + month + "&designerId=" + designerId
+					+ "&sortDateType=" + sortDateType;
 			try {
 				ResponseEntity<String> exchange = restTemplate.getForEntity(url, String.class);
 				if (LOGGER.isInfoEnabled()) {

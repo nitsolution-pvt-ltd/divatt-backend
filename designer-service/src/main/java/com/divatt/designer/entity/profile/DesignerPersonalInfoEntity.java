@@ -20,10 +20,10 @@ public class DesignerPersonalInfoEntity {
 	@NotNull
 	@Field(name = "designer_id") private Long designerId;
 	
-	@NotNull
+	@NotNull(message = "Bank Details is required!")
 	@Field(name = "bank_details") private BankDetails bankDetails;
 	
-	@NotNull
+	@NotNull (message = " Designer all Documents is required!")
 	@Field(name = "documents") private DesignerDocuments designerDocuments;
 
 	public DesignerPersonalInfoEntity() {

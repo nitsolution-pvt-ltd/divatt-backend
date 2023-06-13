@@ -45,7 +45,13 @@ public enum MessageConstant {
     POP("pop"),
     UNCHECKED("unchecked"),
     PRODUCT_IS_OUT_OF_STOCK("Product is already out of stock"),
-    DISTANCE("100000")
+    DISTANCE("100000"),
+    EMAIL_ALREADY_EXIST("This email already exists"),
+    STATUS_ACTIVE("Status changed to Active"),
+    STATUS_INACTIVE("Status changed to Inactive"),
+    EMAIL_EXIST("This email already exists"),
+    EMAIL_AND_BOUTIQUE_EXIST("This email and boutique name already exists"),
+    
     ;
 	private String message;
 

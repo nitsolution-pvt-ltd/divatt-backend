@@ -37,7 +37,7 @@ public interface OrderAndPaymentService {
 	public Map<String, Object> getOrders(int page, int limit, String sort, String sortName, String keyword,
 			Optional<String> sortBy, String token, String orderStatus);
 
-	public ResponseEntity<?> getOrderDetailsService(String orderId);
+	public ResponseEntity<?> getOrdersDetailsService(String orderId,Integer productId,String size);
 
 	public Map<String, Object> getUserOrderDetailsService(Integer userId, int page, int limit, String sort, String sortName,
 			String keyword, Optional<String> sortBy, String token);
@@ -92,22 +92,22 @@ public interface OrderAndPaymentService {
 	public Object getDesignerSideOrderListService(String token, String orderStatus);
 
 	public GlobalResponse cancelOrderService(String orderId, String productId, String token,
-			CancelationRequestDTO cancelationRequestDTO);
+			CancelationRequestDTO cancelationRequestDTO, String size);
 
 	public GlobalResponse cancelApproval(String designerId, String orderId, String productId,
-			CancelationRequestApproveAndRejectDTO cancelationRequestApproveAndRejectDTO);
+			CancelationRequestApproveAndRejectDTO cancelationRequestApproveAndRejectDTO, String size);
 
 	public GlobalResponse itemStatusChange(String token, String orderId, String productId, JSONObject statusChange,
-			String orderItemStatus);
+			String orderItemStatus,String size);
 
-	public GlobalResponse itemStatusChangefromAdmin(String token, String orderId, String productId,
+	public GlobalResponse itemStatusChangefromAdmin(String token, String orderId, String productId, String size,
 			JSONObject statusChange, String orderItemStatus);
 
-	public GlobalResponse adminCancelation(String orderId, String productId, String token,
+	public GlobalResponse adminCancelation(String orderId, String productId, String size, String token,
 			CancelationRequestDTO cancelationRequestDTO);
 
 	public Map<String, Object> getOrdersItemstatus(int page, int limit, String sort, String sortName, String keyword,
-			Optional<String> sortBy, String token, String orderStatus);
+		Optional<String> sortBy, String token, String orderStatus);
 
 	public Optional<OrderInvoiceEntity> getInvoiceByOrderId(String orderId);
 	
@@ -117,5 +117,14 @@ public interface OrderAndPaymentService {
 
 	public ResponseEntity<?> getTransactionsService(int page, int limit, String sort, String sortName, String keyword,
 			String paymentStatus, Optional<String> sortBy);
+	
+	public ResponseEntity<?> updateDialogBox(String token, String orderId, Integer productId, String size,
+			OrderSKUDetailsEntity skuDetailsEntity);
+//
+//	public Map<String, Object> getOrdersItemstatus(int page, int limit, String sort, String sortName, String keyword,
+//			Optional<String> sortBy, String token, String orderStatus,String size);
+
+	public Map<String, Object> getUserOrderDetailsService(Integer userId, int page, int limit, String sort,
+			String sortName, String keyword, Optional<String> sortBy);
 
 }

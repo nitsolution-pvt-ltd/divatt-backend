@@ -19,14 +19,26 @@ public interface HsnRepo extends MongoRepository<HsnEntity, Integer>{
 	@Query("{'hsnCode': ?0}")
 	HsnEntity findByHsn(Integer hsnCode);
 	
+//	@Query("{'isDelete': ?0}")
+//	Page<HsnEntity> findByIsDelete(Boolean isDelete, String string, Pageable pagingSort);
+	
 	@Query("{'isDelete': ?0}")
-	Page<HsnEntity> findByIsDelete(Boolean isDelete, String string, Pageable pagingSort);
-
+	Page<HsnEntity> findByIsDelete(Boolean isDelete, Pageable pagingSort);
 	
-	@Query(value = "{ $or: [ { 'id' : {$regex:?0,$options:'i'} }, { 'hsnCode' : {$regex:?0,$options:'i'} },{ 'sgst' : {$regex:?0,$options:'i'} },{ 'cgst' : {$regex:?0,$options:'i'} },{ 'igst' : {$regex:?0,$options:'i'} },{ 'taxValue' : {$regex:?0,$options:'i'} } ], $and: [ { 'isDelete' : ?1 }]}")
+//	 @Query(value = "{ $or: [ { 'id' : { $regex: ?0, $options: 'i' } }, { 'hsn_code' : { $regex: ?0, $options: 'i' } }, { 'sgst' : { $regex: ?0, $options: 'i' } }, { 'cgst' : { $regex: ?0, $options: 'i' } }, { 'igst' : { $regex: ?0, $options: 'i' } }, { 'tax_value' : { $regex: ?0, $options: 'i' } } ], 'isDelete' : ?1 }")
+//	    Page<HsnEntity> search(String keyword, Boolean isDelete, Pageable pagingSort);
+	    
 
+	 
+//	@Query(value = "{$or: [ { 'hsn_code' : {$regex:?0,$options:'i'} }, { 'description' : {$regex:?0,$options:'i'} },{ 'taxValue' : {$regex:?0,$options:'i'} },{ 'sgst' : {$regex:?0,$options:'i'} }, { 'cgst' : {$regex:?0,$options:'i'} },{ 'igst' : {$regex:?0,$options:'i'} } ]"
+//			+ "$and: [{'isDelete':?1}]}")  
+//	Page<HsnEntity> search(String keyword, Boolean isDelete, Pageable pageable);
 	
-	Page<HsnEntity> Search(String keyword, Boolean isDelete, String string, Pageable pagingSort);
+	@Query("{'hsnCode': ?0}")
+	Page<HsnEntity> findByHsnCode(Integer keyword, Pageable pagingSort);
+	
+
+
 	/*
 	 * @Query("{'descriptiion': ?0}") List<HsnEntity> findByDescriptiion(String
 	 * descriptiion);

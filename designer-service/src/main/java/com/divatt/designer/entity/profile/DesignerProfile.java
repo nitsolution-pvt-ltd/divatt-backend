@@ -111,16 +111,6 @@ public class DesignerProfile {
 		this.uid = uid;
 	}
 
-	@Override
-	public String toString() {
-		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
-				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
-				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
-				+ ", digitalSignature=" + digitalSignature + ", country=" + country + ", state=" + state + ", city="
-				+ city + ", dob=" + dob + ", gender=" + gender + ", profilePic=" + profilePic + ", designerCategory="
-				+ designerCategory + ", pinCode=" + pinCode + ", uid=" + uid + "]";
-	}
-
 	public String getEmail() {
 		return email;
 	}
@@ -272,6 +262,18 @@ public class DesignerProfile {
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
+
+	@Override
+	public String toString() {
+		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
+				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
+				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
+				+ ", digitalSignature=" + digitalSignature + ", country=" + country + ", state=" + state + ", city="
+				+ city + ", dob=" + dob + ", gender=" + gender + ", profilePic=" + profilePic + ", designerCategory="
+				+ designerCategory + ", pinCode=" + pinCode + ", uid=" + uid + "]";
+	}
+	
+	
 
 	
 

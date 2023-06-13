@@ -3,15 +3,25 @@ package com.divatt.user.helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.divatt.user.constant.RestTemplateConstants;
 import com.divatt.user.dto.InvoiceUpdatedModel;
 import com.divatt.user.entity.OrderInvoiceEntity;
+import com.divatt.user.entity.order.OrderDetailsEntity;
 import com.divatt.user.entity.order.OrderSKUDetailsEntity;
+import com.divatt.user.entity.product.DesignerProfileEntity;
 
 @Service
 public class UtillUserService {
+//	@Autowired
+//	private static MongoOperations mongoOperations;
+
 
 //	@Autowired
 //	private RestTemplate restTemplate;
@@ -38,11 +48,11 @@ public class UtillUserService {
 		invoiceUpdatedModel.setBillingCity(invoiceEntity.getUserDetails().getBilling_address().getCity() + ",");
 		invoiceUpdatedModel.setBillingMobile(invoiceEntity.getUserDetails().getBilling_address().getMobile());
 		invoiceUpdatedModel.setBillingState(invoiceEntity.getUserDetails().getBilling_address().getState() + ",");
-		invoiceUpdatedModel.setBllingAddress(invoiceEntity.getUserDetails().getBilling_address().getAddress2() + ",");
+		invoiceUpdatedModel.setBllingAddress(invoiceEntity.getUserDetails().getBilling_address().getAddress1() + ",");
 		invoiceUpdatedModel.setBillingCountry(invoiceEntity.getUserDetails().getBilling_address().getCountry() + ",");
 		invoiceUpdatedModel
 				.setBillingPinCode(invoiceEntity.getUserDetails().getBilling_address().getPostalCode() + ",");
-		invoiceUpdatedModel.setShippingCountry(invoiceEntity.getUserDetails().getShipping_address().getCountry());
+		invoiceUpdatedModel.setShippingCountry(invoiceEntity.getUserDetails().getShipping_address().getCountry()+",");
 		invoiceUpdatedModel
 				.setShippingPincode(invoiceEntity.getUserDetails().getShipping_address().getPostalCode() + ",");
 		invoiceUpdatedModel.setSellerGSTNO(invoiceEntity.getDesignerDetails().getGSTIN());
@@ -55,23 +65,29 @@ public class UtillUserService {
 		invoiceUpdatedModel.setProductName(invoiceEntity.getProductDetails().getProductName());
 		invoiceUpdatedModel.setQty(invoiceEntity.getProductDetails().getUnits() + "");
 		invoiceUpdatedModel.setSellerAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2() + ",");
-		invoiceUpdatedModel.setSellerCity(invoiceEntity.getUserDetails().getShipping_address().getCity() + ",");
+		invoiceUpdatedModel.setSellerCity(invoiceEntity.getDesignerDetails().getCity()+",");
+		invoiceUpdatedModel.setSellerState(invoiceEntity.getDesignerDetails().getState()+",");
+
 		invoiceUpdatedModel.setSellerMobile(invoiceEntity.getDesignerDetails().getMobile() + ",");
 //		invoiceUpdatedModel.setSellerName(restTemplate.getForEntity(
 //				RestTemplateConstant.DESIGNER_BYID.getLink() + invoiceEntity.getProductDetails().getDesignerId(),
 //				DesignerProfileEntity.class).getBody().getDesignerName());
 		invoiceUpdatedModel.setSellerAddress(invoiceEntity.getDesignerDetails().getAddress() + ",");
-		String address2 = invoiceEntity.getUserDetails().getShipping_address().getAddress2();
-		if (address2 != "") {
-			invoiceUpdatedModel
-					.setShippingAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2() + ",");
-		} else {
-			invoiceUpdatedModel.setShippingAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2());
-		}
+//		String address2 = invoiceEntity.getUserDetails().getShipping_address().getAddress2();
+//		if (address2 != "") {
+//			invoiceUpdatedModel
+//					.setShippingAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2() + ",");
+//		} else {
+//			invoiceUpdatedModel.setShippingAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress2());
+//		}
+		invoiceUpdatedModel.setShippingAddress(invoiceEntity.getUserDetails().getShipping_address().getAddress1()+",");
+//		invoiceUpdatedModel.setShippingPincode(invoiceEntity);
+		
 		invoiceUpdatedModel
 				.setShippingUserName(invoiceEntity.getUserDetails().getShipping_address().getFullName() + ",");
 		invoiceUpdatedModel.setShippingCity(invoiceEntity.getUserDetails().getShipping_address().getCity() + ",");
-		invoiceUpdatedModel.setShippingPincode(invoiceEntity.getUserDetails().getBilling_address().getMobile() + ",");
+		invoiceUpdatedModel.setShippingPincode(invoiceEntity.getUserDetails().getBilling_address().getPostalCode() + ",");
+		invoiceUpdatedModel.setShippingMobile(invoiceEntity.getUserDetails().getBilling_address().getMobile());
 		invoiceUpdatedModel.setShippingState(invoiceEntity.getUserDetails().getShipping_address().getState() + ",");
 		invoiceUpdatedModel.setTotal(invoiceEntity.getProductDetails().getSalesPrice() + "");
 		invoiceUpdatedModel.setDiscount(invoiceEntity.getProductDetails().getDiscount() + "");

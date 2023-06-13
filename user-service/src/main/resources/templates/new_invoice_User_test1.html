@@ -59,13 +59,17 @@
                                                 <span th:text="${data1.billedUserName}"></span>
                                             </div>
                                             <div>
-                                                <span  ></span>
+                                                <span th:text="${data1.bllingAddress}"></span>
                                             </div>
                                             <div>
-                                                <span th:text="${data1.billingCity}" ></span> <span th:text="${data1.billingPinCode}" ></span>
+                                                <span ></span>
                                             </div>
                                             <div>
-                                                <span th:text="${data1.billingState}"></span> <span th:text="${data1.billingCountry}"></span>
+                                                <span th:text="${data1.billingCity}" ></span> <span th:text="${data1.billingState}"></span>
+                                            </div>
+                                            <div>
+                                            <span th:text="${data1.billingPinCode}" ></span>
+                                                 <span th:text="${data1.billingCountry}"></span>
                                             </div>
                                             <div>
                                               <span th:text="${data1.billingMobile}"></span>
@@ -100,11 +104,12 @@
                                             </div>   
                                             <div>
                                                 <span style="color: #000;font-family: 'Roboto', sans-serif;" th:text="${data1.shippingCity}"></span>
-                                                
-                                                <span style="color: #000;font-family: 'Roboto', sans-serif;" th:text="${data1.shippingPincode}"></span>
+                                                <span style="color: #000;font-family: 'Roboto', sans-serif;" th:text="${data1.shippingState}"></span>
+                                               
                                             </div> 
                                             <div>
-                                                <span style="color: #000;font-family: 'Roboto', sans-serif;" th:text="${data1.shippingState}"></span>
+                                                
+                                                 <span style="color: #000;font-family: 'Roboto', sans-serif;" th:text="${data1.shippingPincode}"></span>
                                                 
                                                 <span style="color: #000;font-family: 'Roboto', sans-serif;" th:text="${data1.shippingCountry}"></span>
                                             </div>
@@ -301,6 +306,10 @@
             Name of seller
             <br>
             <span th:text="${designerName}"></span>
+            
+        </div>
+        <div style="text-align: right;padding-right: 20px; margin-top:20px;">
+        	<img th:src="@{${digitalSignature}}" style="width: 200px; height: 100px; object-fit: contain">
         </div>
         <!-- <table>
             <tbody>

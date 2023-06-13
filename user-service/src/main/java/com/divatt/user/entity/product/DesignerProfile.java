@@ -17,6 +17,8 @@ public class DesignerProfile {
 	private String state;
 
 	private String city;
+	
+	private String digitalSignature;
 
 	public DesignerProfile() {
 		super();
@@ -24,7 +26,7 @@ public class DesignerProfile {
 	}
 
 	public DesignerProfile(String email, String displayName, String mobileNo, String dob, String gender, String country,
-			String state, String city) {
+			String state, String city, String digitalSignature) {
 		super();
 		this.email = email;
 		this.displayName = displayName;
@@ -34,6 +36,7 @@ public class DesignerProfile {
 		this.country = country;
 		this.state = state;
 		this.city = city;
+		this.digitalSignature = digitalSignature;
 	}
 
 	public String getEmail() {
@@ -100,12 +103,20 @@ public class DesignerProfile {
 		this.city = city;
 	}
 
+	public String getDigitalSignature() {
+		return digitalSignature;
+	}
+
+	public void setDigitalSignature(String digitalSignature) {
+		this.digitalSignature = digitalSignature;
+	}
+
 	@Override
 	public String toString() {
 		return "DesignerProfile [email=" + email + ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", dob="
-				+ dob + ", gender=" + gender + ", country=" + country + ", state=" + state + ", city=" + city + "]";
+				+ dob + ", gender=" + gender + ", country=" + country + ", state=" + state + ", city=" + city
+				+ ", digitalSignature=" + digitalSignature + "]";
 	}
-	
-	
 
+	
 }

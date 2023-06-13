@@ -1,6 +1,9 @@
 package com.divatt.user.serviceImpl;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -8,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -28,6 +32,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -49,6 +54,7 @@ import com.divatt.user.entity.order.OrderSKUDetailsEntity;
 import com.divatt.user.entity.product.DesignerProfile;
 import com.divatt.user.entity.product.DesignerProfileEntity;
 import com.divatt.user.entity.product.ProductMasterEntity;
+import com.divatt.user.exception.CustomErrorMessage;
 import com.divatt.user.exception.CustomException;
 import com.divatt.user.helper.JwtUtil;
 import com.divatt.user.repo.OrderDetailsRepo;
@@ -65,6 +71,8 @@ import com.divatt.user.services.SequenceGenerator;
 import com.divatt.user.services.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mashape.unirest.http.JsonNode;
 
 import springfox.documentation.spring.web.json.Json;
@@ -271,37 +279,88 @@ public class UserServiceImpl implements UserService {
 
 		try {
 			UserCartEntity filterCatDetails = new UserCartEntity();
+			AtomicReference<GlobalResponse> responseHolder = new AtomicReference<>(null);
 
 			for (UserCartEntity getRow : userCartEntity) {
 				Optional<UserCartEntity> findByCategory = userCartRepo.findByProductIdAndUserIdAndSelectedSize(
 						getRow.getProductId(), getRow.getUserId(), getRow.getSelectedSize());
+				List<UserCartEntity> findByUserId = userCartRepo.findByUserId(getRow.getUserId());
+				List<Integer> productIds = new ArrayList<>();
+				findByUserId.forEach((e) -> {
+					productIds.add(e.getProductId());
+				});
+
+				Map<String, Object> maps = new HashMap<>();
+				maps.put("productIdList", productIds);
+				Integer productId = getRow.getProductId();
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				org.json.simple.JSONObject body = restTemplate
+						.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_PRODUCT + productId,
+								org.json.simple.JSONObject.class)
+						.getBody();
 
 				if (userCartEntity.size() <= 1 && findByCategory.isPresent()) {
 
 					Integer qty = getRow.getQty() + findByCategory.get().getQty();
-					getRow.setId(findByCategory.get().getId());
-					getRow.setQty(qty);
-					getRow.setAddedOn(new Date());
-
-					userCartRepo.save(getRow);
-
-					throw new CustomException(MessageConstant.CART_QUANTITY_UPDATE.getMessage());
-
-				} else {
+						Integer userId = getRow.getUserId();
+					String soh = body.get("soh").toString();
+					int soh1 = Integer.parseInt(soh);
+					
+						String purchaseMaxQuantity = body.get("purchaseMaxQuantity").toString();
+						int maxQuantity = Integer.parseInt(purchaseMaxQuantity);
+						List<UserCartEntity> findByUserIdAndProductId = userCartRepo.findByUserIdAndProductId(userId,
+								productId);
+						int totalUnits = 0;
+						for (UserCartEntity entity1 : findByUserIdAndProductId) {
+							totalUnits += entity1.getQty();
+						}
+						if (maxQuantity >= qty && soh1 > qty && totalUnits < maxQuantity) {
+							getRow.setId(findByCategory.get().getId());
+							getRow.setQty(qty);
+							getRow.setAddedOn(new Date());
+							userCartRepo.save(getRow);
+							throw new CustomException(MessageConstant.CART_QUANTITY_UPDATE.getMessage());
+						}
+						else if (soh1< totalUnits) {
+							throw new CustomException(MessageConstant.PRODUCT_NOT_EXIST.getMessage());
+						} 
+						else {
+							throw new CustomException(MessageConstant.CART_QUANTITY_CHECK.getMessage());
+						}
+				}
+				
+			 else {
 					if (!findByCategory.isPresent() && !getRow.getUserId().equals(null)
 							&& !getRow.getProductId().equals(null)) {
-						filterCatDetails.setId(sequenceGenerator.getNextSequence(UserCartEntity.SEQUENCE_NAME));
-						filterCatDetails.setUserId(getRow.getUserId());
-						filterCatDetails.setProductId(getRow.getProductId());
-						filterCatDetails.setQty(getRow.getQty());
-						filterCatDetails.setAddedOn(new Date());
-						filterCatDetails.setSelectedSize(getRow.getSelectedSize());
-						filterCatDetails.setCustomization(getRow.getCustomization());
-						if (getRow.getCustomization()) {
-							filterCatDetails.setMeasurementObject(getRow.getMeasurementObject());
-						}
+							String designerIdd = body.get("designerId").toString();
+							int designerId = Integer.parseInt(designerIdd);
+							String purchaseMaxQuantity = body.get("purchaseMaxQuantity").toString();
+							int maxQuantity = Integer.parseInt(purchaseMaxQuantity);
+							Integer userId = getRow.getUserId();
+							List<UserCartEntity> findByUserIdAndProductId = userCartRepo
+									.findByUserIdAndProductId(userId, productId);
+							int totalUnits = 0;
+							for (UserCartEntity entity1 : findByUserIdAndProductId) {
+								totalUnits += entity1.getQty();
+							}
+							if (totalUnits < maxQuantity) {
+								filterCatDetails.setId(sequenceGenerator.getNextSequence(UserCartEntity.SEQUENCE_NAME));
+								filterCatDetails.setUserId(getRow.getUserId());
+								filterCatDetails.setProductId(getRow.getProductId());
+								filterCatDetails.setQty(getRow.getQty());
+								filterCatDetails.setAddedOn(new Date());
+								filterCatDetails.setSelectedSize(getRow.getSelectedSize());
+								filterCatDetails.setCustomization(getRow.getCustomization());
+								if (getRow.getCustomization()) {
+									filterCatDetails.setMeasurementObject(getRow.getMeasurementObject());
+								}
+							} else {
+								throw new CustomException(MessageConstant.CART_QUANTITY_CHECK.getMessage());
+							}
+						
 						userCartRepo.save(filterCatDetails);
-					}
+			}		
 				}
 			}
 			return new GlobalResponse(MessageConstant.SUCCESS.getMessage(), MessageConstant.CART_ADDED.getMessage(),
@@ -310,7 +369,6 @@ public class UserServiceImpl implements UserService {
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-
 	}
 
 	@Override
@@ -320,35 +378,54 @@ public class UserServiceImpl implements UserService {
 		try {
 			Map<String, Object> map = new HashMap<>();
 
-			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserId(userCartEntity.getProductId(),
-					userCartEntity.getUserId());
-			org.json.simple.JSONObject body = restTemplate
-					.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.DESIGNER_PRODUCT + userCartEntity.getProductId(),
-							org.json.simple.JSONObject.class)
-					.getBody();
+			Optional<UserCartEntity> findByCat = userCartRepo.findByProductIdAndUserIdAndSelectedSize(
+					userCartEntity.getProductId(), userCartEntity.getUserId(), userCartEntity.getSelectedSize());
+			org.json.simple.JSONObject body = restTemplate.getForEntity(
+					DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_PRODUCT + userCartEntity.getProductId(),
+					org.json.simple.JSONObject.class).getBody();
 			String soh = body.get("soh").toString();
-			if (Integer.parseInt(soh) < userCartEntity.getQty()) {
-				throw new CustomException(MessageConstant.PRODUCT_OUT_STOCK.getMessage());
+			String purchaseMaxQuantity = body.get("purchaseMaxQuantity").toString();
+            int newQuantity = userCartEntity.getQty(); 
+	          
+			int maxQuantity = Integer.parseInt(purchaseMaxQuantity);
+			String productId = body.get("productId").toString();
+			LOGGER.info("body" + purchaseMaxQuantity);
+			List<UserCartEntity> findByUserIdAndProductId = userCartRepo
+					.findByUserIdAndProductId(userCartEntity.getUserId(), userCartEntity.getProductId());
+			int totalUnits = 0;
+			for (UserCartEntity entity1 : findByUserIdAndProductId) {
+				totalUnits += entity1.getQty();
+			}
+			 int totalQuantity = totalUnits - findByCat.get().getQty();
+			if (Integer.parseInt(soh) < userCartEntity.getQty() || userCartEntity.getQty() == 0) {
+			throw new CustomException(MessageConstant.PRODUCT_OUT_STOCK.getMessage());
+			
+			} 
+	        if (newQuantity > maxQuantity || (totalQuantity + newQuantity) > maxQuantity) {
+	        	throw new CustomException(MessageConstant.CART_QUANTITY_CHECK.getMessage());
+	        }
+			else {
+				if (!findByCat.isPresent()) {
+					throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND_IN_CART.getMessage());
+				} else {
+     				UserCartEntity RowsDetails = findByCat.get();
+					RowsDetails.setUserId(userCartEntity.getUserId());
+					RowsDetails.setProductId(userCartEntity.getProductId());
+					RowsDetails.setQty(userCartEntity.getQty());
+//					RowsDetails.setCustomization(userCartEntity.getCustomization());
+//					RowsDetails.setSelectedSize(userCartEntity.getSelectedSize());
+					RowsDetails.setAddedOn(new Date());
+
+					UserCartEntity getdata = userCartRepo.save(RowsDetails);
+
+					map.put("reason", MessageConstant.SUCCESS.getMessage());
+					map.put("message", MessageConstant.CART_UPDATED_SUCESSFULLY.getMessage());
+					map.put("status", 200);
+					map.put("qty", getdata.getQty());
+					return ResponseEntity.ok(map);
+				}
 			}
 
-			if (!findByCat.isPresent()) {
-				throw new CustomException(MessageConstant.PRODUCT_NOT_FOUND_IN_CART.getMessage());
-			} else {
-
-				UserCartEntity RowsDetails = findByCat.get();
-				RowsDetails.setUserId(userCartEntity.getUserId());
-				RowsDetails.setProductId(userCartEntity.getProductId());
-				RowsDetails.setQty(userCartEntity.getQty());
-				RowsDetails.setAddedOn(new Date());
-
-				UserCartEntity getdata = userCartRepo.save(RowsDetails);
-
-				map.put("reason", MessageConstant.SUCCESS.getMessage());
-				map.put("message", MessageConstant.CART_UPDATED_SUCESSFULLY.getMessage());
-				map.put("status", 200);
-				map.put("qty", getdata.getQty());
-				return ResponseEntity.ok(map);
-			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
@@ -378,13 +455,15 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> getUserCartDetailsService(Integer userId, Integer page, Integer limit) {
 		LOGGER.info("Inside - UserServiceImpl.getUserCartDetailsService()");
 		try {
+			AtomicReference<ResponseEntity<?>> responseEntity = new AtomicReference<>(null);
 
-			List<UserCartEntity> findByUserId = userCartRepo.findByUserId(userId);		
+			List<UserCartEntity> findByUserId = userCartRepo.findByUserId(userId);
 			List<Integer> productIds = new ArrayList<>();
 
 			findByUserId.forEach((e) -> {
 				productIds.add(e.getProductId());
 			});
+
 			Map<String, Object> maps = new HashMap<>();
 			maps.put("productId", productIds.toString());
 			maps.put("limit", limit);
@@ -398,36 +477,70 @@ public class UserServiceImpl implements UserService {
 			if (productIds.isEmpty()) {
 				return ResponseEntity.ok(map);
 			}
-
 			try {
 				ResponseEntity<String> response1 = null;
 
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(maps, headers);
-
-				response1 = restTemplate.postForEntity(DESIGNER_SERVICE+RestTemplateConstants.CART_PRODUCTLIST, entity,
-						String.class);
+				response1 = restTemplate.postForEntity(DESIGNER_SERVICE + RestTemplateConstants.CART_PRODUCTLIST,
+						entity, String.class);
 				String body = response1.getBody();
 				Arrays.asList(body);
-				LOGGER.info("body"+body);
 				JsonNode jn1 = new JsonNode(body);
 				JSONArray object1 = jn1.getArray();
-
 				List<Object> l1 = new ArrayList<>();
 				object1.forEach(e -> {
 					JsonNode jn = new JsonNode(e.toString());
 					JSONObject object = jn.getObject();
-					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity(DESIGNER_SERVICE+
-							RestTemplateConstants.DESIGNER_BYID + object.get("designerId"),
+					ResponseEntity<org.json.simple.JSONObject> getDesignerById = restTemplate.getForEntity(
+							DESIGNER_SERVICE + RestTemplateConstants.DESIGNER_BYID + object.get("designerId"),
 							org.json.simple.JSONObject.class);
+
+					JSONObject dealObject = object.getJSONObject("deal");
+					String dealName = dealObject.getString("dealName");
+					String dealType = dealObject.getString("dealType");
+					double dealValue = dealObject.optDouble("dealValue");
+					String dealStart = dealObject.optString("dealStart");
+					Object mrp = object.get("mrp");
+					Double salePrice = dealObject.optDouble("salePrice");
+					String dealEnd = dealObject.optString("dealEnd");
+					if (dealObject != null || dealValue != 0.0 || !dealType.equals("None") || !dealStart.isEmpty()) {
+						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+						Date startDeal = null;
+						Date endDeal = null;
+						if (!dealStart.isEmpty() && !dealEnd.isEmpty()) {
+							try {
+								startDeal = dateFormat.parse(dealStart);
+								endDeal = dateFormat.parse(dealEnd);
+							} catch (ParseException e1) {
+								e1.printStackTrace();
+							}
+							Date currentDate = new Date();
+							if (currentDate != null && dealStart != null && dealEnd != null) {
+								if (currentDate.equals(startDeal) && currentDate.equals(endDeal)) {
+									object.put("mrp", JSONObject.NULL);
+								} else if (currentDate.after(startDeal) && currentDate.before(endDeal)) {
+									object.put("mrp", JSONObject.NULL);
+								} else if (currentDate.equals(startDeal) || currentDate.equals(endDeal)) {
+									object.put("mrp", JSONObject.NULL);
+								} else if (currentDate.equals(endDeal)) {
+									object.put("mrp", JSONObject.NULL);
+								} else {
+									dealObject.put("salePrice", JSONObject.NULL);
+								}
+							} else {
+								LOGGER.error("Invalid dates found: currentDate={}, dealStart={}, dealEnd={}",
+										currentDate, dealStart, dealEnd);
+							}
+						} else {
+							object.put("mrp", mrp);
+
+						}
+					}
 
 					List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(userId,
 							Integer.parseInt(object.get("productId").toString()));
-//					String selectedSize = userCartRepo
-//							.findByUserIdAndProductId(userId, Integer.parseInt(object.get("productId").toString()))
-//							.get(0).getSelectedSize();
-
 					ObjectMapper obj = new ObjectMapper();
 					String writeValueAsString = null;
 					try {
@@ -436,19 +549,22 @@ public class UserServiceImpl implements UserService {
 						e1.printStackTrace();
 					}
 					JsonNode cartJN = new JsonNode(writeValueAsString);
-//					JSONObject cartObject = cartJN.getObject();					
 					Map<Integer, List<String>> cartItemsByProductId = cart.stream()
-			                .collect(Collectors.groupingBy(UserCartEntity::getProductId,
-			                        Collectors.mapping(UserCartEntity::getSelectedSize, Collectors.toList())));
-					cartItemsByProductId.forEach((a,b)->{
-					object.put("selectedSize", b);
+							.collect(Collectors.groupingBy(UserCartEntity::getProductId,
+									Collectors.mapping(UserCartEntity::getSelectedSize, Collectors.toList())));
+					cartItemsByProductId.forEach((a, b) -> {
+						object.put("selectedSize", b);
 					});
 					object.put("cartData", cartJN.getArray());
 					object.put("designerProfile", getDesignerById.getBody().get("designerProfile"));
 					l1.add(object);
-				});
 
-				return ResponseEntity.ok(new Json(l1.toString()));
+				});
+				if (responseEntity.get() != null) {
+					return responseEntity.get();
+				} else {
+					return ResponseEntity.ok(new Json(l1.toString()));
+				}
 			} catch (Exception e2) {
 				return ResponseEntity.ok(e2.getMessage());
 			}
@@ -583,11 +699,21 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public ResponseEntity<?> getProductUser() {
-		try {
-			
-			String body = restTemplate.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.PRODUCT_LIST_USER, String.class)
-					.getBody();
-
+		try {	
+			ResponseEntity<String> body1 = restTemplate
+					.getForEntity(DESIGNER_SERVICE + RestTemplateConstants.PRODUCT_LIST_USER, String.class);
+			String body = body1.getBody();
+			ObjectMapper objectMapper = new ObjectMapper();
+			com.fasterxml.jackson.databind.JsonNode jsonNode = objectMapper.readTree(body);
+			if (jsonNode.isArray()) {
+				for (com.fasterxml.jackson.databind.JsonNode productNode : jsonNode) {
+					com.fasterxml.jackson.databind.JsonNode productIdNode = productNode.get("productId");
+					com.fasterxml.jackson.databind.JsonNode designerIdNode = productNode.get("designerId");
+					if (productIdNode == null && designerIdNode == null) {
+						return new ResponseEntity<>(MessageConstant.PRODUCT_NOT_FOUND.getMessage(), HttpStatus.OK);
+					} 
+				}
+			}	
 			Json js = new Json(body);
 			return ResponseEntity.ok(js);
 
@@ -648,18 +774,24 @@ public class UserServiceImpl implements UserService {
 			LOGGER.info("Inside - UserServiceImpl.productDetails()");
 			ResponseEntity<String> exchange = restTemplate.exchange(DESIGNER_SERVICE+
 					RestTemplateConstants.DESIGNER_PRODUCT + productId, HttpMethod.GET, null, String.class);
-
+		
+                 String body = exchange.getBody();
+                 ObjectMapper obj1 = new ObjectMapper();
+              com.fasterxml.jackson.databind.JsonNode readTree = obj1.readTree(body);
+              String productIdd = readTree.get("productId").asText();
+              String designerId = readTree.get("designerId").asText();
+          	if(productIdd.equals("null") && designerId.equals("null")) {
+//          		 return new ResponseEntity<>(MessageConstant.PRODUCT_NOT_FOUND.getMessage(),HttpStatus.OK);
+          		return ResponseEntity.ok(MessageConstant.PRODUCT_NOT_FOUND.getMessage());
+          		 
+          	}
 			Json js = new Json(exchange.getBody());
-
 			if (!userId.equals("")) {
 				List<UserCartEntity> cart = userCartRepo.findByUserIdAndProductId(Integer.parseInt(userId), productId);
-
 				if (!cart.isEmpty()) {
-
 					try {
 						JsonNode jn = new JsonNode(exchange.getBody().toString());
 						JSONObject object = jn.getObject();
-
 						ObjectMapper obj = new ObjectMapper();
 						String writeValueAsString = null;
 						ResponseEntity<org.json.simple.JSONObject> categoryById = restTemplate.getForEntity(ADMIN_SERVICE+
@@ -671,8 +803,7 @@ public class UserServiceImpl implements UserService {
 							writeValueAsString = obj.writeValueAsString(cart);
 						} catch (JsonProcessingException e1) {
 							e1.printStackTrace();
-						}
-						
+						}					
 						JsonNode cartJN = new JsonNode(writeValueAsString);
 						JSONObject cartObject = cartJN.getObject();
 						object.put("cartData", cartObject);
@@ -746,7 +877,7 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> getDesignerUser() {
 		try {
 
-			String body = restTemplate.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.USER_DESIGNER_LIST, String.class)
+			String body = restTemplate.getForEntity(DESIGNER_SERVICE+RestTemplateConstants.USER_DESIGNER_POP_LIST, String.class)
 					.getBody();
 			Json js = new Json(body);	
 			return ResponseEntity.ok(js);

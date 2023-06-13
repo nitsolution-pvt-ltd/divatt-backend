@@ -15,7 +15,7 @@ public interface AccountService {
 
 	public Map<String, Object> getAccountDetails(int page, int limit, String sort, String sortName, Boolean isDeleted,
 			String keyword, String designerReturn, String serviceCharge, String govtCharge, String userOrder, String ReturnStatus, 
-			String settlement, int year, int month, String designerId, Optional<String> sortBy);
+			String settlement, int year, int month, String designerId, Optional<String> sortBy, String sortDateType);
 
 	public GlobalResponse postAccountDetails(AccountEntity accountEntity);
 

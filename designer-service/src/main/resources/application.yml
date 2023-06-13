@@ -41,6 +41,11 @@ logging:
 jwt.secret.key: c2VjcmV0
 jwt.token.validity: 2592000000
 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
 ---
 spring:
   profiles: dev
@@ -97,10 +102,12 @@ connection:
 spring.servlet.multipart:
   enabled: true
   max-file-size: 100MB
-#file.upload-path: C:\\Users\\shant\\Desktop\\uploadfile\\
 file.upload-path: /home/ubuntu/Attachment/
 
-
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
 
 #AWS properties
 cloud:
@@ -173,10 +180,12 @@ connection:
 spring.servlet.multipart:
   enabled: true
   max-file-size: 100MB
-#file.upload-path: C:\\Users\\shant\\Desktop\\uploadfile\\
 file.upload-path: /home/ubuntu/Attachment/
 
-
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
 
 #AWS properties
 cloud:

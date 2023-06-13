@@ -1,9 +1,11 @@
 package com.divatt.admin.repo;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.divatt.admin.constant.MessageConstant;
 import com.divatt.admin.entity.AccountEntity;
 import com.divatt.admin.entity.AccountMapEntity;
 import com.divatt.admin.entity.DesignerReturnAmount;
@@ -262,6 +265,9 @@ public class AccountTemplateRepo {
 
 		DesignerReturnAmount designerReturnAmount = new DesignerReturnAmount();
 		ArrayList<DesignerReturnAmount> DesignerReturnAmountList = new ArrayList<>();
+		SimpleDateFormat formatter = new SimpleDateFormat(MessageConstant.DATE_FORMAT.getMessage());
+		Date dates = new Date();
+		String format = formatter.format(dates);
 
 		findByRows.getDesigner_return_amount().forEach(value -> {
 
@@ -290,9 +296,11 @@ public class AccountTemplateRepo {
 			designerReturnAmount.setTotal_amount_received(value.getTotal_amount_received());
 			designerReturnAmount.setTotal_tax_amount(value.getTotal_tax_amount());
 			designerReturnAmount.setUnits(value.getUnits());
-			designerReturnAmount.setPayment_datetime(value.getPayment_datetime());
+//			designerReturnAmount.setPayment_datetime(value.getPayment_datetime());
 			designerReturnAmount.setBasic_amount(value.getBasic_amount());
-
+			designerReturnAmount.setRazorpayXPaymentId(value.getRazorpayXPaymentId());
+			designerReturnAmount.setPayOutDateTime(format);
+			designerReturnAmount.setRole(value.getRole());
 			DesignerReturnAmountList.add(designerReturnAmount);
 		});
 		findOne.setDesigner_return_amount(DesignerReturnAmountList);
@@ -328,16 +336,16 @@ public class AccountTemplateRepo {
 			
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} 
 		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
@@ -354,14 +362,14 @@ public class AccountTemplateRepo {
 
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
@@ -409,16 +417,16 @@ public class AccountTemplateRepo {
 			
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} 
 		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
@@ -435,14 +443,14 @@ public class AccountTemplateRepo {
 
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
@@ -491,16 +499,16 @@ public class AccountTemplateRepo {
 			
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} 
 		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
@@ -517,14 +525,14 @@ public class AccountTemplateRepo {
 
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
@@ -572,9 +580,10 @@ public class AccountTemplateRepo {
 			lengthOfMonth = yearMonth.lengthOfMonth();
 			dayDivide = lengthOfMonth / 2;
 
-			match = Aggregation.match(new Criteria().andOperator(Criteria.where("filter_date").lte(today.toString())
+			match = Aggregation.match(new Criteria()
+//							.andOperator(Criteria.where("filter_date").lte(today.toString())
 							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
 					.match(new Criteria()
@@ -623,16 +632,16 @@ public class AccountTemplateRepo {
 			
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} 
 		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
@@ -649,14 +658,14 @@ public class AccountTemplateRepo {
 
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
@@ -707,16 +716,16 @@ public class AccountTemplateRepo {
 			
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} 
 		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
@@ -733,14 +742,14 @@ public class AccountTemplateRepo {
 
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
@@ -790,16 +799,16 @@ public class AccountTemplateRepo {
 			
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} 
 		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
@@ -816,14 +825,14 @@ public class AccountTemplateRepo {
 			
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			} 
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
@@ -874,16 +883,16 @@ public class AccountTemplateRepo {
 			
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} 
 		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
@@ -900,14 +909,14 @@ public class AccountTemplateRepo {
 
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
@@ -976,16 +985,16 @@ public class AccountTemplateRepo {
 			
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} 
 		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
@@ -1002,14 +1011,14 @@ public class AccountTemplateRepo {
 
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
@@ -1061,16 +1070,16 @@ public class AccountTemplateRepo {
 			
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId)))))));
+						.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId))))));
 			} 
 		} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 			match = Aggregation.match(new Criteria()
@@ -1087,14 +1096,14 @@ public class AccountTemplateRepo {
 
 			if (settlement.equals("firstSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement")) {
 				match = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			}
 		} else if (year != 0 && month != 0) {
 			match = Aggregation
@@ -1161,16 +1170,16 @@ public class AccountTemplateRepo {
 				
 				if (!designerId.isEmpty() && settlement.equals("firstSettlement")) {
 					filterByCondition = Aggregation.match(new Criteria()
-							.andOperator(Criteria.where("filter_date").lte(today.toString())
+//							.andOperator(Criteria.where("filter_date").lte(today.toString())
 							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())))))));
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim()))))));
 				} else if (!designerId.isEmpty() && settlement.equals("secondSettlement")) {
 					filterByCondition = Aggregation.match(new Criteria()
-							.andOperator(Criteria.where("filter_date").lte(today.toString())
+//							.andOperator(Criteria.where("filter_date").lte(today.toString())
 							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())))))));
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim()))))));
 				} 
 			} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 				filterByCondition = Aggregation.match(new Criteria()
@@ -1183,14 +1192,14 @@ public class AccountTemplateRepo {
 			
 			} else if (settlement.equals("firstSettlement") && year != 0 && month != 0) {
 				filterByCondition = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement") && year != 0 && month != 0) {
 				filterByCondition = Aggregation.match(new Criteria()
-						.andOperator(Criteria.where("filter_date").lte(today.toString())
+//						.andOperator(Criteria.where("filter_date").lte(today.toString())
 						.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+						.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			} else if (year != 0 && month != 0) {
 				filterByCondition = Aggregation.match(new Criteria()
 						.andOperator(Criteria.where("filter_date").gte(startDate.toString())
@@ -1272,16 +1281,16 @@ public class AccountTemplateRepo {
 				
 				if (!designerId.isEmpty() && settlement.equals("firstSettlement")) {
 					filterByCondition = Aggregation.match(new Criteria()
-							.andOperator(Criteria.where("filter_date").lte(today.toString())
+//							.andOperator(Criteria.where("filter_date").lte(today.toString())
 							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
 							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())
-							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())))))));
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim()))))));
 				} else if (!designerId.isEmpty() && settlement.equals("secondSettlement")) {
 					filterByCondition = Aggregation.match(new Criteria()
-							.andOperator(Criteria.where("filter_date").lte(today.toString())
+//							.andOperator(Criteria.where("filter_date").lte(today.toString())
 							.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
 							.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())
-							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim())))))));
+							.andOperator(Criteria.where("designer_details.designer_id").is(Long.parseLong(designerId.trim()))))));
 				} 
 			} else if (!designerId.isEmpty() && year != 0 && month != 0) {
 				filterByCondition = Aggregation.match(new Criteria()
@@ -1294,15 +1303,15 @@ public class AccountTemplateRepo {
 			
 			} else if (settlement.equals("firstSettlement") && year != 0 && month != 0) {
 				filterByCondition = Aggregation.match(new Criteria()
-								.andOperator(Criteria.where("filter_date").lte(today.toString())
+//								.andOperator(Criteria.where("filter_date").lte(today.toString())
 								.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(1).toString())
-								.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString())))));
+								.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(dayDivide).toString()))));
 			} else if (settlement.equals("secondSettlement") && year != 0 && month != 0) {
 				filterByCondition = Aggregation
 						.match(new Criteria()
-								.andOperator(Criteria.where("filter_date").lte(today.toString())
+//								.andOperator(Criteria.where("filter_date").lte(today.toString())
 								.andOperator(Criteria.where("filter_date").gte(yearMonth.atDay(dayDivide).toString())
-								.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString())))));
+								.andOperator(Criteria.where("filter_date").lte(yearMonth.atDay(lengthOfMonth).toString()))));
 			}else if (year != 0 && month != 0) {
 				filterByCondition = Aggregation
 						.match(new Criteria()

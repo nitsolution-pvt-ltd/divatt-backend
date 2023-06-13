@@ -7,16 +7,28 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.divatt.designer.constant.MessageConstant;
+import com.divatt.designer.constant.RestTemplateConstant;
+import com.divatt.designer.entity.OrderSKUDetailsEntity;
 import com.divatt.designer.entity.ProductEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
@@ -34,6 +46,7 @@ import com.divatt.designer.services.SequenceGenerator;
 @Service
 public class CustomFunction {
 
+
 	@Autowired
 	private SequenceGenerator sequenceGenarator;
 
@@ -45,14 +58,22 @@ public class CustomFunction {
 
 	@Autowired
 	private ProductRepo2 productRepo2;
+	
+	@Autowired
+	private MongoOperations mongoOperations;
 
 	@Autowired
 	private DesignerProfileRepo designerProfileRepo;
 
-	ProductMasterEntity2 productMasterEntity2;
+	ProductMasterEntity2 productMasterEntity2 = new ProductMasterEntity2();
+	
+
 
 	RestTemplate restTemplate = new RestTemplate();
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomFunction.class);
+	
+	@Value("${DESIGNER}")
+	private String DESIGNER_SERVICE;
 
 	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
 	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
@@ -434,12 +455,16 @@ public class CustomFunction {
 			this.productMasterEntity2.setPriceType(productMasterEntity2.getPriceType());
 			this.productMasterEntity2.setColour(productMasterEntity2.getColour());
 			this.productMasterEntity2.setSizes(productMasterEntity2.getSizes());
-			if (productMasterEntity2.getSoh() == 0) {
+			Integer productId = productMasterEntity2.getProductId();
+		
+		
+			if (productMasterEntity2.getSoh() == 0 && productMasterEntity2.getSoh()==qty ) {
 				throw new CustomException(MessageConstant.PRODUCT_IS_OUT_OF_STOCK.getMessage());
 			} else {
 				this.productMasterEntity2.setSoh(productMasterEntity2.getSoh() - qty);
 				this.productMasterEntity2.setOos(productMasterEntity2.getOos() + qty);
 			}
+		
 			this.productMasterEntity2.setNotify(productMasterEntity2.getNotify());
 			this.productMasterEntity2.setPriceCode(productMasterEntity2.getPriceCode());
 			this.productMasterEntity2.setMrp(productMasterEntity2.getMrp());

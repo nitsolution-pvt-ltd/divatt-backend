@@ -6,19 +6,24 @@ public class DesignerDetails {
 	public String mobile;
 	public String address;
 	public String boutiqueName;
-
+	public String city="";
+	public String state="";
+	
 	public DesignerDetails() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public DesignerDetails(String gSTIN, String pAN, String mobile, String address, String boutiqueName) {
+	public DesignerDetails(String gSTIN, String pAN, String mobile, String address, String boutiqueName, String city,
+			String state) {
 		super();
 		GSTIN = gSTIN;
 		PAN = pAN;
 		this.mobile = mobile;
 		this.address = address;
 		this.boutiqueName = boutiqueName;
+		this.city = city;
+		this.state = state;
 	}
 
 	public String getGSTIN() {
@@ -61,9 +66,26 @@ public class DesignerDetails {
 		this.boutiqueName = boutiqueName;
 	}
 
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
 	@Override
 	public String toString() {
 		return "DesignerDetails [GSTIN=" + GSTIN + ", PAN=" + PAN + ", mobile=" + mobile + ", address=" + address
-				+ ", boutiqueName=" + boutiqueName + "]";
+				+ ", boutiqueName=" + boutiqueName + ", city=" + city + ", state=" + state + "]";
 	}
+
 }

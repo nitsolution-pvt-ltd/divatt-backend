@@ -86,22 +86,25 @@ public class LoginEntity {
 	private String state;
 
 	private String pin;
+	
+	private String razorpayXAccountNo;
 
 	public LoginEntity() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	public LoginEntity(Long uid, @NotNull(message = "User's first name must not be null") String firstName,
-			@NotNull(message = "User's last name must not be null") String lastName,
-			@NotNull(message = "User's email must not be null") String email,
-			@NotNull(message = "User's password must not be null") String password,
-			@NotNull(message = "User's mobile_no must not be null") String mobileNo,
-			@NotNull(message = "User's dob must not be null") String dob, boolean isActive, boolean isDeleted,
-			@NotNull(message = "User's role must not be null") Long role,
-			@NotNull(message = "User's role must not be null") String roleName, String authToken, String createdBy,
+	public LoginEntity(Long uid, @NotNull(message = "Admin first name must not be null") String firstName,
+			@NotNull(message = "Admin last name must not be null") String lastName,
+			@NotNull(message = "Admin email must not be null") String email,
+			@NotNull(message = "Admin password must not be null") String password,
+			@NotNull(message = "Admin mobile_no must not be null") String mobileNo,
+			@NotNull(message = "Admin dob must not be null") String dob, boolean isActive, boolean isDeleted,
+			@NotNull(message = "Admin role must not be null") Long role,
+			@NotNull(message = "Admin role must not be null") String roleName, String authToken, String createdBy,
 			String createdOn, String modifiedBy, String gender, String modifiedOn,
-			@NotNull(message = "User's profile_pic must not be null") String profilePic, JSONObject logins,
-			String gstIn, String pan, String city, String country, String state, String pin) {
+			@NotNull(message = "Admin profile_pic must not be null") String profilePic, JSONObject logins, String gstIn,
+			String pan, String city, String country, String state, String pin, String razorpayXAccountNo) {
 		super();
 		this.uid = uid;
 		this.firstName = firstName;
@@ -128,6 +131,7 @@ public class LoginEntity {
 		this.country = country;
 		this.state = state;
 		this.pin = pin;
+		this.razorpayXAccountNo = razorpayXAccountNo;
 	}
 
 	public Long getUid() {
@@ -330,6 +334,14 @@ public class LoginEntity {
 		this.pin = pin;
 	}
 
+	public String getRazorpayXAccountNo() {
+		return razorpayXAccountNo;
+	}
+
+	public void setRazorpayXAccountNo(String razorpayXAccountNo) {
+		this.razorpayXAccountNo = razorpayXAccountNo;
+	}
+
 	public static String getSequenceName() {
 		return SEQUENCE_NAME;
 	}
@@ -342,7 +354,8 @@ public class LoginEntity {
 				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", modifiedBy=" + modifiedBy + ", gender="
 				+ gender + ", modifiedOn=" + modifiedOn + ", profilePic=" + profilePic + ", logins=" + logins
 				+ ", gstIn=" + gstIn + ", pan=" + pan + ", city=" + city + ", country=" + country + ", state=" + state
-				+ ", pin=" + pin + "]";
+				+ ", pin=" + pin + ", razorpayXAccountNo=" + razorpayXAccountNo + "]";
 	}
 
+	
 }

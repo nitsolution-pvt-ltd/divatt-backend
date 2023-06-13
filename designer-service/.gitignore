@@ -12,6 +12,8 @@ target/
 .settings
 .springBeans
 .sts4-cache
+*.log*
+*.DS_Store
 
 ### IntelliJ IDEA ###
 .idea

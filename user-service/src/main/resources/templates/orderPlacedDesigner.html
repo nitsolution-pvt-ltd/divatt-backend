@@ -166,21 +166,21 @@
 								<td colspan="3"
 									style="width: 23%; margin-left: 10px; text-align: left; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Product</td>
 								<td colspan="3"
-									style="width: 30%; margin-left: 10px; text-align: left; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Description</td>
+									style="width: 30%; margin-left: 10px; text-align: left; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Product Name</td>
 								<td
 									style="width: 10%; padding: 5px; text-align: center; border-bottom: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">QUANTITY</td>
 								<td colspan="3"
 									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Gross
 									Amount (Rs.)</td>
 								<td colspan="3"
-									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Gift
-									wrap Amount (Rs.)</td>
-								<td colspan="3"
 									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Discount
 									(Rs.)</td>
 								<td colspan="3"
 									style="width: 10%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">TAX
 									(Rs.)</td>
+									<td colspan="3"
+									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Gift
+									wrap Amount (Rs.)</td>
 								<td colspan="3"
 									style="width: 20%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">Total
 									(Rs.)</td>
@@ -221,15 +221,15 @@
 								</td>
 								<td colspan="3"
 									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
-									<th:block th:text="${data1.giftWrapAmount}"></th:block>
-								</td>
-								<td colspan="3"
-									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
 									<th:block th:text="${data1.discount}"></th:block>
 								</td>
 								<td colspan="3"
 									style="width: 10%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
 									<th:block th:text="${data1.taxAmount}"></th:block>
+								</td>
+								<td colspan="3"
+									style="width: 12%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
+									<th:block th:text="${data1.giftWrapAmount}"></th:block>
 								</td>
 								<td colspan="3"
 									style="width: 20%; margin-left: 10px; text-align: center; padding: 5px; border-bottom: 1.6px solid; border-left: 1.6px solid; border-right: 1.6px solid; color: #000; font-size: 14px;">
@@ -247,15 +247,15 @@
 								</td>
 								<td colspan="3"
 									style="width: 12%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
-									<th:block th:text="${totalGiftWrapAmount}"></th:block>
-								</td>
-								<td colspan="3"
-									style="width: 12%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
 									<th:block th:text="${tDiscount}"></th:block>
 								</td>
 								<td colspan="3"
 									style="width: 10%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
 									<th:block th:text="${ttaxAmount}"></th:block>
+								</td>
+								<td colspan="3"
+									style="width: 12%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">
+									<th:block th:text="${totalGiftWrapAmount}"></th:block>
 								</td>
 								<td colspan="3"
 									style="width: 20%; text-align: right; padding: 5px; border-right: 1.6px solid; border-bottom: 1.6px solid; font-weight: 500; border-left: 1.6px solid; border-right: 1.6px solid; font-size: 14px;">

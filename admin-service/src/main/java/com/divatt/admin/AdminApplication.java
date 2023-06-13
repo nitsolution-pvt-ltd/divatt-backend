@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,6 +41,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 @SpringBootApplication(scanBasePackages = { "com.divatt.admin" })
 @OpenAPIDefinition(info = @Info(title = "DIVATT ADMIN", version = "3.0", description = "Admin"))
 @SecurityScheme(name = "NIT SOLUTION PVT. LTD.", scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
+@EnableEurekaClient
 public class AdminApplication implements CommandLineRunner{
 
 	@Autowired

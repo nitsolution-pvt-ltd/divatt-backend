@@ -13,5 +13,6 @@ public interface UserAddressRepo extends MongoRepository<UserAddressEntity, Long
 	List<UserAddressEntity> findByUserId(Long userId);
 	@Query("{'email':?0}")
 	Optional<UserAddressEntity> findByUserEmail(String email);
+	
 
 }

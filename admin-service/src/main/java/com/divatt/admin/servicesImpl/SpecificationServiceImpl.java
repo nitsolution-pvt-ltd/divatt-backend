@@ -60,15 +60,16 @@ public class SpecificationServiceImpl implements SpecificationService {
 	public List<SpecificationEntity> listOfSpecification(Integer categoryId) {
 		try {
 			String categoryName = categoryRepo.findById(categoryId).get().getCategoryName();
-			System.out.println(categoryName);
 			if (categoryName.toLowerCase().contains("women")) {
 				categoryName = "Women";
 			} else if (categoryName.toLowerCase().contains("men")) {
-				// System.out.println("Hiii");
 				categoryName = "Men";
-			} else if (categoryName.toLowerCase().contains("kid")) {
-				categoryName = "Kid";
-			} else {
+			} else if (categoryName.toLowerCase().contains("girls")) {
+				categoryName = "Girls";
+			} else if (categoryName.toLowerCase().contains("boys")) {
+				categoryName = "Boys";
+			}  
+			else {
 				throw new CustomException(MessageConstant.INVALID_ID.getMessage());
 			}
 			Query query = new Query();

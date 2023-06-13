@@ -29,7 +29,7 @@
 					<td colspan="5" style="padding: 20px 20px; text-align: center;">
 						<div
 							style="font-family: 'Lato', sans-serif; font-size: 22px; text-transform: uppercase; margin-top: 12px; letter-spacing: 1.5px; font-weight: 600;">Order
-							canceled.</div>
+							cancelled.</div>
 				<tr th:each="data1 : ${data2}" style="font-size: 20px;">
 					<td colspan="5"
 						style="padding: 20px 20px; text-align: left; font-family: 'Lato', sans-serif;">
@@ -39,11 +39,11 @@
                         </div> -->
 						<div
 							style="font-family: 'Lato', sans-serif; text-align: center; font-size: 15px; margin-top: 12px; font-weight: bold; line-height: 25px; color: #5b5b5b;">
-							Your order has been canceled by <span
+							Your order has been cancelled by <span
 								th:text="${data2.designerName}"></span>. Reason of cancel.
 						</div>
 						<div
-							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #ffffff; background-color: #87c048; padding: 6px 12px;">
+							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; padding: 6px 12px;">
 							We are writing to you about your order <span
 								th:text="${data2.OrderId}"></span>. We are sorry to let you know
 							that the order has been cancelled due to unexpected constraints
@@ -60,7 +60,7 @@
 						</div>
 						<div style="margin-top: 40px;">Your cancel reason</div>
 						<div
-							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; color: #ffffff; background-color: #87c048; padding: 6px 12px;">
+							style="font-family: 'Lato', sans-serif; font-size: 15px; margin-top: 12px; line-height: 25px; padding: 6px 12px;">
 							<span th:text="${data2.comment}"></span>
 						</div>
 						<hr

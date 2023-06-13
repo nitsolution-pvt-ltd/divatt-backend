@@ -1,5 +1,7 @@
 package com.divatt.admin.entity;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -12,83 +14,72 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DesignerProfile {
-
-	@NotNull
-	@Field(name = "email")
-	private String email;
 	
-	@JsonProperty(access = Access.WRITE_ONLY)
-	@NotNull
-	@Field(name = "password")
+	
+
+	private String email;
+
 	private String password;
-	@NotNull
-	@Field(name = "first_name1")
+	
 	private String firstName1;
-	@NotNull
-	@Field(name = "last_name1")
+	
 	private String lastName1;
 
-	@Field(name = "first_name2")
 	private String firstName2;
 
-	@Field(name = "last_name2")
+	
 	private String lastName2;
-	@NotNull
-	@Field(name = "display_name")
+	
 	private String displayName;
-	@NotNull
-	@Field(name = "mobile_no")
+	
 	private String mobileNo;
 
-	@Field(name = "alt_mobile_no")
+	
 	private String altMobileNo;
 
-	@Field(name = "digital_signature")
 	private String digitalSignature;
 
-	@Field(name = "country")
+
 	private String country;
 
-	@Field(name = "state")
+
 	private String state;
 
-	@Field(name = "city")
 	private String city;
+	
+	
+    private String designerName;
 
-	@NotNull
-	@JsonFormat(shape = Shape.STRING, pattern = "yyyy/MM/dd")
-
-	@Field(name = "dob")
+	
 	private String dob;
-	@NotNull
-
-	@Field(name = "gender")
+	
 	private String gender;
 
-	@NotNull(message = "User profile picture must not be null")
-	@Field(name = "profile_pic")
+	
 	private String profilePic;
 
-	@Field(name = "designer_category")
+	
 	private String designerCategory;
 
-	@Field(name = "pin_code")
+	
 	private String pinCode;
 	
-	@Field(name = "uid")
 	private String uid;
+	
+	 private String type;
+	
+	@Field(name="notes")
+	private List<String>notes;
 
 	public DesignerProfile() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public DesignerProfile(@NotNull String email, @NotNull String password, @NotNull String firstName1,
-			@NotNull String lastName1, String firstName2, String lastName2, @NotNull String displayName,
-			@NotNull String mobileNo, String altMobileNo, String digitalSignature, String country, String state,
-			String city, @NotNull String dob, @NotNull String gender,
-			@NotNull(message = "User profile picture must not be null") String profilePic, String designerCategory,
-			String pinCode, String uid) {
+	public DesignerProfile(String email, String password, String firstName1, String lastName1, String firstName2,
+			String lastName2, String displayName, String mobileNo, String altMobileNo, String digitalSignature,
+			String country, String state, String city, String designerName, String dob, String gender,
+			String profilePic, String designerCategory, String pinCode, String uid, String type, List<String> notes) {
 		super();
 		this.email = email;
 		this.password = password;
@@ -103,22 +94,15 @@ public class DesignerProfile {
 		this.country = country;
 		this.state = state;
 		this.city = city;
+		this.designerName = designerName;
 		this.dob = dob;
 		this.gender = gender;
 		this.profilePic = profilePic;
 		this.designerCategory = designerCategory;
 		this.pinCode = pinCode;
 		this.uid = uid;
-	}
-
-	@Override
-	public String toString() {
-		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
-				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
-				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
-				+ ", digitalSignature=" + digitalSignature + ", country=" + country + ", state=" + state + ", city="
-				+ city + ", dob=" + dob + ", gender=" + gender + ", profilePic=" + profilePic + ", designerCategory="
-				+ designerCategory + ", pinCode=" + pinCode + ", uid=" + uid + "]";
+		this.type = type;
+		this.notes = notes;
 	}
 
 	public String getEmail() {
@@ -225,6 +209,14 @@ public class DesignerProfile {
 		this.city = city;
 	}
 
+	public String getDesignerName() {
+		return designerName;
+	}
+
+	public void setDesignerName(String designerName) {
+		this.designerName = designerName;
+	}
+
 	public String getDob() {
 		return dob;
 	}
@@ -273,6 +265,35 @@ public class DesignerProfile {
 		this.uid = uid;
 	}
 
-	
+	public String getType() {
+		return type;
+	}
 
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public List<String> getNotes() {
+		return notes;
+	}
+
+	public void setNotes(List<String> notes) {
+		this.notes = notes;
+	}
+
+	@Override
+	public String toString() {
+		return "DesignerProfile [email=" + email + ", password=" + password + ", firstName1=" + firstName1
+				+ ", lastName1=" + lastName1 + ", firstName2=" + firstName2 + ", lastName2=" + lastName2
+				+ ", displayName=" + displayName + ", mobileNo=" + mobileNo + ", altMobileNo=" + altMobileNo
+				+ ", digitalSignature=" + digitalSignature + ", country=" + country + ", state=" + state + ", city="
+				+ city + ", designerName=" + designerName + ", dob=" + dob + ", gender=" + gender + ", profilePic="
+				+ profilePic + ", designerCategory=" + designerCategory + ", pinCode=" + pinCode + ", uid=" + uid
+				+ ", type=" + type + ", notes=" + notes + "]";
+	}
+	
+//	@Field(name="razorpayX")
+//	private RazorpayX razorpayX;
+
+	
 }

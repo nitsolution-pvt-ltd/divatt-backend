@@ -27,6 +27,9 @@ public interface OrderTrackingRepo extends MongoRepository<OrderTrackingEntity,I
 	
 	List<OrderTrackingEntity> findByOrderIdAndUserIdAndDesignerIdAndProductId(String trackingId,int usderid,int DesignerId,int ProductId);
 	
+
+	
+	
 	
 }
  

@@ -39,6 +39,12 @@ public class RestTemplateConstants {
 	public static final String GET_ALL_CATEGORYDETAILS="category/getAllCategoryDetails";
 	public static final String DESIGNER_BY_ID="designer/";
 	public static final String GOOGLE_GEOCODING_URL="https://maps.googleapis.com/maps/api/geocode/json?";
+	public static final String ADMIN_ADD_CONTACTS = "payOutDetails/contacts";
+	public static final String ADMIN_ADD_FUNDS_ACCOUNT = "payOutDetails/funds";
+	public static final String ADMIN_ADD_PAYOUT_DATA = "payOutDetails/addPayOut";
+	public static final String GET_USER_ORDER = "userOrder/getUserOrderForInt/";
+
+	
 
 }
 

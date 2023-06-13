@@ -4,13 +4,14 @@ import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.divatt.auth.entity.AdminLoginEntity;
 
 
 
 
-
+@Repository
 public interface AdminLoginRepository extends MongoRepository<AdminLoginEntity, Object> {
 
 //	Optional<LoginEntity> findByUserName(String userName);

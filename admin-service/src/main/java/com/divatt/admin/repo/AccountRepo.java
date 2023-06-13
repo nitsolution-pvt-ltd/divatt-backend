@@ -39,5 +39,9 @@ public interface AccountRepo extends MongoRepository<AccountEntity, Long>{
 	@Query(value = "{ '_id': ?0 }")
 	Optional<AccountEntity> findByAccountId(long accountId);
 
+	@Query("{$or :[{'designer_return_amount': { $elemMatch: {'designer_id':'?0'} }},{'designer_return_amount': { $elemMatch: {'order_id':'?1'} }},{'designer_return_amount': { $elemMatch: {'product_id':'?2'} }}]}")
+	List<AccountEntity> findByDesignerIdAndOrderIdAndProductId(Long designer_id, String order_id, int product_id);
+	@Query("{$or :[{'designer_return_amount': { $elemMatch: {'razorpayXPaymentId':'?0'} }}]}")
+	List<AccountEntity> findByRazorpayXPaymentId(String razorpayXPaymentId);
 
 }

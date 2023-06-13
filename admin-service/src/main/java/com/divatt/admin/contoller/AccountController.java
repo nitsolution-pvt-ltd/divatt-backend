@@ -171,7 +171,8 @@ public class AccountController {
 			@RequestParam(defaultValue = "") String userOrder, @RequestParam(defaultValue = "") String ReturnStatus,
 			@RequestParam(defaultValue = "") String settlement, @RequestParam(defaultValue = "0") int year,
 			@RequestParam(defaultValue = "0") int month, @RequestParam Optional<String> sortBy,
-			@RequestParam(defaultValue = "") String designerId) {
+			@RequestParam(defaultValue = "") String designerId,
+			@RequestParam(defaultValue = "") String sortDateType) {
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Inside - AccountController.getAccountDetails()");
@@ -191,7 +192,7 @@ public class AccountController {
 			}
 			return this.accountService.getAccountDetails(page, limit, sort, sortName, isDeleted, keyword,
 					designerReturn, serviceCharge, govtCharge, userOrder, ReturnStatus, settlement, year, month,
-					designerId, sortBy);
+					designerId, sortBy, sortDateType);
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("Application name: {},Request URL: {},Response message: {},Response code: {}", interfaceId,

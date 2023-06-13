@@ -6,13 +6,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 public class BankDetails {
 	
-	@NotNull
+	
 	@Field(name = "bank_name") private String bankName;
 	
-	@NotNull
+	
 	@Field(name = "account_number") private String accountNumber;
 	
-	@NotNull
+	
 	@Field(name = "ifsc_code") private String ifscCode;
 
 	public BankDetails() {

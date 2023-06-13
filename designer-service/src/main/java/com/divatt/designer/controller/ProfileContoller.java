@@ -16,11 +16,13 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +37,9 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.NearQuery;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -51,19 +56,26 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+
 import com.divatt.designer.config.JWTConfig;
 import com.divatt.designer.constant.MessageConstant;
 import com.divatt.designer.constant.RestTemplateConstants;
+import com.divatt.designer.dto.DesignerContactDto;
+import com.divatt.designer.entity.DesignerContactEntity;
 import com.divatt.designer.entity.LoginEntity;
 import com.divatt.designer.entity.Measurement;
 import com.divatt.designer.entity.UserDesignerEntity;
 import com.divatt.designer.entity.product.ProductMasterEntity2;
+import com.divatt.designer.entity.profile.BankDetails;
+import com.divatt.designer.entity.profile.DesignerFundsAccount;
 import com.divatt.designer.entity.profile.DesignerLoginEntity;
 import com.divatt.designer.entity.profile.DesignerPersonalInfoEntity;
 import com.divatt.designer.entity.profile.DesignerProfile;
 import com.divatt.designer.entity.profile.DesignerProfileEntity;
 import com.divatt.designer.entity.profile.Geometry;
+import com.divatt.designer.entity.profile.PayOutDTO;
 import com.divatt.designer.entity.profile.ProfileImage;
+import com.divatt.designer.entity.profile.RazorpayX;
 import com.divatt.designer.entity.profile.SocialProfile;
 import com.divatt.designer.exception.CustomException;
 import com.divatt.designer.helper.CustomFunction;
@@ -102,6 +114,9 @@ public class ProfileContoller {
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	@Autowired
+	ProductController2 productController2;
 
 	@Autowired
 	private DesignerPersonalInfoRepo designerPersonalInfoRepo;
@@ -151,7 +166,7 @@ public class ProfileContoller {
 
 	@Value("${GOOGLE_MAP_APIKEY}")
 	private String GOOGLE_MAP_APIKEY;
-	
+
 	@Value("${DISTANCE}")
 	private String Max_Map_Distance;
 
@@ -168,58 +183,69 @@ public class ProfileContoller {
 	}
 
 	@GetMapping("/{id}")
+
 	public ResponseEntity<?> getDesigner(@PathVariable Long id) {
 		try {
 			Optional<DesignerProfileEntity> findById = designerProfileRepo.findBydesignerId(id);
-
-			if (findById.isPresent())
-				;
-			DesignerProfileEntity designerProfileEntity = findById.get();
-			try {
-				if (designerProfileEntity.getSocialProfile() == null)
+			if (findById.isPresent()) {
+				DesignerProfileEntity designerProfileEntity = findById.get();
+				try {
+					if (designerProfileEntity.getSocialProfile() == null)
+						designerProfileEntity.setSocialProfile(new SocialProfile());
+				} catch (Exception e) {
 					designerProfileEntity.setSocialProfile(new SocialProfile());
-			} catch (Exception e) {
-				designerProfileEntity.setSocialProfile(new SocialProfile());
-			}
-			try {
-				DesignerLoginEntity designerLoginEntity = designerLoginRepo.findById(id).get();
-				// LOGGER.info(designerLoginEntity.getDesignerCurrentStatus());
-				designerProfileEntity.setAccountStatus(designerLoginEntity.getAccountStatus());
-				designerProfileEntity.setProfileStatus(designerLoginEntity.getProfileStatus());
-				designerProfileEntity.setIsDeleted(designerLoginEntity.getIsDeleted());
-				designerProfileEntity.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
-				designerLoginEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
-				designerProfileEntity
-						.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
-				designerProfileEntity
-						.setProductCount(productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActive(false,
-								"Approved", id.intValue(), true));
-				designerProfileEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
-				org.json.simple.JSONObject countData = countData(id);
-				String followerCount = countData.get("FollowersData").toString();
-				designerProfileEntity.setFollowerCount(Integer.parseInt(followerCount));
-
-			} catch (Exception e) {
-
-			}
-			List<Measurement> findByDesignerId = measurementRepo.findByDesignerId(id.intValue());
-			if (findByDesignerId.size() > 0) {
-				findByDesignerId.stream().forEach(measurement -> {
-					if (measurement.getMeasurementsMen() != null) {
-						designerProfileEntity.setMenChartData(measurement);
-					} else if (measurement.getMeasurementsWomen() != null) {
-						designerProfileEntity.setWomenChartData(measurement);
+				}
+				try {
+					// DesignerPersonalInfoEntity designerPersonalInfoEntity =
+					// designerPersonalInfoRepo.findByDesignerId(id).get();
+					DesignerLoginEntity designerLoginEntity = designerLoginRepo.findById(id).get();
+					designerProfileEntity.setAccountStatus(designerLoginEntity.getAccountStatus());
+					designerProfileEntity.setProfileStatus(designerLoginEntity.getProfileStatus());
+					designerProfileEntity.setIsDeleted(designerLoginEntity.getIsDeleted());
+					designerProfileEntity.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
+					designerLoginEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
+					if (designerPersonalInfoRepo.findByDesignerId(id).isPresent()) {
+						designerProfileEntity
+								.setDesignerPersonalInfoEntity(designerPersonalInfoRepo.findByDesignerId(id).get());
+					} else {
+						designerProfileEntity
+								.setDesignerPersonalInfoEntity(findById.get().getDesignerPersonalInfoEntity());
 					}
-				});
+					designerProfileEntity.setProductCount(
+							productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActiveAndSohNot(false,
+									"Approved", id.intValue(), true, 0));
+					designerProfileEntity.setDesignerCurrentStatus(designerLoginEntity.getDesignerCurrentStatus());
+					org.json.simple.JSONObject countData = countData(id);
+					String followerCount = countData.get("FollowersData").toString();
+					designerProfileEntity.setFollowerCount(Integer.parseInt(followerCount));
+//				ResponseEntity<DesignerProfileEntity> postForEntity = restTemplate .postForEntity
+//						                                             (ADMIN_SERVICE+RestTemplateConstants.ADMIN_ADD_CONTACTS,null,DesignerProfileEntity.class );
+//				DesignerProfileEntity body = postForEntity.getBody();
+//				designerProfileRepo.save(body);
+				} catch (Exception e1) {
+					throw new CustomException(e1.getMessage());
+				}
+				List<Measurement> findByDesignerId = measurementRepo.findByDesignerId(id.intValue());
+				if (findByDesignerId.size() > 0) {
+					findByDesignerId.stream().forEach(measurement -> {
+						if (measurement.getMeasurementsMen() != null) {
+							designerProfileEntity.setMenChartData(measurement);
+						} else if (measurement.getMeasurementsWomen() != null) {
+							designerProfileEntity.setWomenChartData(measurement);
+						}
+					});
+				} else {
+					designerProfileEntity.setWomenChartData(null);
+					designerProfileEntity.setMenChartData(null);
+				}
+				return ResponseEntity.ok(designerProfileEntity);
+
 			} else {
-				designerProfileEntity.setWomenChartData(null);
-				designerProfileEntity.setMenChartData(null);
+				throw new CustomException(MessageConstant.DESIGNER_NOT_FOUND.getMessage());
 			}
-			return ResponseEntity.ok(designerProfileEntity);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
-
 	}
 
 	@GetMapping("/user/{id}")
@@ -252,6 +278,14 @@ public class ProfileContoller {
 
 			Optional<DesignerProfileEntity> findByBoutiqueName = designerProfileRepo
 					.findByBoutiqueName(designerProfileEntity.getBoutiqueProfile().getBoutiqueName());
+
+			if (findByBoutiqueName.isPresent()) {
+
+				throw new CustomException(MessageConstant.BOUTIQUE_NAME.getMessage());
+			}
+			if (findByBoutiqueName.isPresent()) {
+				throw new CustomException(MessageConstant.BOUTIQUE_NAME.getMessage());
+			}
 			Optional<DesignerLoginEntity> findByDesignerProfileEmail = designerLoginRepo
 					.findByEmailAndAccountStatusNot(designerProfileEntity.getDesignerProfile().getEmail(), "INACTIVE");
 
@@ -311,9 +345,6 @@ public class ProfileContoller {
 					designerProfileEntity.setDesignerProfile(designerProfile);
 					designerProfileEntity.setDesignerCurrentStatus("Online");
 					designerProfileEntity.setUid(uid);
-//					Geometry geometry = designerProfileEntity.getGeometry();
-//					geometry.setType("Point");
-//					designerProfileEntity.setGeometry(geometry);
 					if (findByBoutiqueName.isPresent()) {
 						designerProfileEntity.setId(findByBoutiqueName.get().getId());
 					}
@@ -334,8 +365,17 @@ public class ProfileContoller {
 
 				return ResponseEntity.ok(new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
 						MessageConstant.REGISTERED.getMessage(), 200));
-			} else {
-				throw new CustomException(MessageConstant.BOUTIQUE_NAME.getMessage());
+
+			}
+
+			else {
+				throw new CustomException(MessageConstant.EMAIL_EXIST.getMessage());
+
+//			} else {
+//				throw new CustomException(MessageConstant.EMAIL_ALREADY_EXIST.getMessage());
+//			
+//			
+
 			}
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -381,9 +421,9 @@ public class ProfileContoller {
 			designerLoginEntityDB.setIsDeleted(designerLoginEntity.getIsDeleted());
 			designerLoginEntityDB.setIsProfileCompleted(designerLoginEntity.getIsProfileCompleted());
 			designerLoginEntityDB.setUid(designerLoginEntity.getUid());
-
+			LOGGER.info("string" + this.getDesigner(designerLoginEntityDB.getdId()).getBody());
 			Object string = this.getDesigner(designerLoginEntityDB.getdId()).getBody();
-
+			LOGGER.info("string" + string);
 			String designerId = null;
 			ObjectMapper mapper = new ObjectMapper();
 			try {
@@ -396,11 +436,18 @@ public class ProfileContoller {
 			String string2 = jsonNode.getObject().get("designerName").toString();
 			String email = designerLoginEntityDB.getEmail();
 			designerLoginRepo.save(designerLoginEntityDB);
-
 			try {
-				LoginEntity forEntity = restTemplate.getForEntity(ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME
-						+ MessageConstant.ADMIN_ROLES.getMessage(), LoginEntity.class).getBody();
-				String email2 = forEntity.getEmail();
+//				LoginEntity forEntity = restTemplate.getForEntity(ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME
+//						+ MessageConstant.ADMIN_ROLES.getMessage(), LoginEntity.class).getBody();
+
+				ResponseEntity<List<LoginEntity>> responseData = restTemplate.exchange(
+						ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME
+								+ MessageConstant.ADMIN_ROLES.getMessage(),
+						HttpMethod.GET, null, new ParameterizedTypeReference<List<LoginEntity>>() {
+						});
+				List<LoginEntity> loginData = responseData.getBody();
+				String email2 = loginData.get(0).getEmail();
+				LOGGER.info(email2);
 				if (designerLoginEntity.getProfileStatus().equals("REJECTED")) {
 					designerLoginEntityDB.setAdminComment(designerLoginEntity.getAdminComment());
 					Context context = new Context();
@@ -498,10 +545,16 @@ public class ProfileContoller {
 			designerLoginEntityDB.setUid(designerProfileEntity.getUid());
 			designerLoginRepo.save(designerLoginEntityDB);
 			try {
-				LoginEntity forEntity = restTemplate.getForEntity(ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME
-						+ MessageConstant.ADMIN_ROLES.getMessage(), LoginEntity.class).getBody();
 
-				String email2 = forEntity.getEmail();
+				ResponseEntity<List<org.json.simple.JSONObject>> forEntity = restTemplate.exchange(
+						ADMIN_SERVICE + RestTemplateConstants.ADMIN_ROLE_NAME
+								+ MessageConstant.ADMIN_ROLES.getMessage(),
+						HttpMethod.GET, null, new ParameterizedTypeReference<List<org.json.simple.JSONObject>>() {
+						});
+				List<org.json.simple.JSONObject> loginData = forEntity.getBody();
+
+				String email2 = loginData.get(0).get("email").toString();
+
 				String email = designerProfileEntity.getDesignerProfile().getEmail();
 				Context context = new Context();
 				context.setVariable("designerName", designerProfileEntity.getDesignerName());
@@ -594,7 +647,69 @@ public class ProfileContoller {
 					o.printStackTrace();
 				}
 				return e;
-			}).filter(e -> e.getDesignerProfileEntity().getDesignerProfile().getDesignerCategory().equals("Pop"));
+			});
+
+			// .filter(e ->
+			// e.getDesignerProfileEntity().getDesignerProfile().getDesignerCategory().equals("Pop"))
+
+			return ResponseEntity.ok(map);
+
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+	}
+
+	@GetMapping("/userDesignerPopList")
+	public ResponseEntity<?> userDesignerPopList() {
+		try {
+			long count = databaseSeqRepo.findById(DesignerLoginEntity.SEQUENCE_NAME).get().getSeq();
+			Random rd = new Random();
+			List<DesignerLoginEntity> designerLoginEntity = new ArrayList<>();
+			List<ProductMasterEntity2> productMasterData = new ArrayList<>();
+			List<DesignerLoginEntity> findAll = designerLoginRepo
+					.findByIsDeletedAndAndIsProfileCompletedAndAccountStatusAndDesignerCurrentStatus(false, true,
+							"ACTIVE", "Online");			
+			findAll.stream().forEach(data -> {
+				List<ProductMasterEntity2> productByDesignerId = productRepo2.findByDesignerId(data.getdId());
+				productMasterData.addAll(productByDesignerId);
+			});			
+			List<DesignerLoginEntity> collect = productMasterData.stream()
+					.flatMap(d -> findAll.stream().filter(d1 -> d1.getdId().equals(d.getDesignerId().longValue()))).distinct()
+					.collect(Collectors.toList());
+			List<Integer> lst = new ArrayList<>();
+			if (collect.size() <= 15) {
+				designerLoginEntity = collect;
+			} else {
+				Boolean flag = true;
+				while (flag) {
+					int nextInt = rd.nextInt((int) count);
+					for (DesignerLoginEntity obj : collect) {
+
+						if (obj.getdId() == nextInt && !lst.contains(nextInt)) {
+							lst.add(nextInt);
+							designerLoginEntity.add(obj);
+						}
+						if (designerLoginEntity.size() > 14)
+							flag = false;
+					}
+				}
+			}
+			Stream<DesignerLoginEntity> map = designerLoginEntity.stream().map(e -> {
+						try {
+							e.setProductCount(
+									productRepo2.countByIsDeletedAndAdminStatusAndDesignerIdAndIsActiveAndSohNot(false,
+											"Approved", e.getdId().intValue(), true, 0));
+							org.json.simple.JSONObject countData = countData(e.getdId());
+							String followerCount = countData.get("FollowersData").toString();
+							e.setFollwerCount(Integer.parseInt(followerCount));
+							e.setDesignerProfileEntity(
+									designerProfileRepo.findBydesignerId(Long.parseLong(e.getdId().toString())).get());
+						} catch (Exception o) {
+							o.printStackTrace();
+						}
+						return e;
+					})
+					.filter(e -> e.getDesignerProfileEntity().getDesignerProfile().getDesignerCategory().equals("Pop"));
 			return ResponseEntity.ok(map);
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
@@ -618,25 +733,46 @@ public class ProfileContoller {
 			}
 
 			Page<DesignerLoginEntity> findAll = null;
-			Page<DesignerLoginEntity> dataForSubmittedAndCOMPLETED = designerLoginRepo
-					.findByIsDeletedAndIsProfileCompletedAndProfileStatusOrProfileStatus(isDeleted, true, "SUBMITTED",
-							"COMPLETED", pagingSort);
+			List<DesignerLoginEntity> dataForSubmittedAndCOMPLETED = designerLoginRepo
+					.findByIsDeletedAndIsProfileCompleted(isDeleted, true, pagingSort).stream()
 
-			if (profileStatus != "") {
+					.filter(e -> e.getProfileStatus().equals("COMPLETED") || e.getProfileStatus().equals("SUBMITTED"))
+					.collect(Collectors.toList());
+//			Page<DesignerLoginEntity> findByIsDeletedAndIsProfileCompletedAndProfileStatusOrProfileStatus = this.designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatusOrProfileStatus(isDeleted, true,
+//					"COMPLETED", "SUBMITTED", pagingSort);
+
+//					.filter(e -> e.getProfileStatus().equals("COMPLETED") || e.getProfileStatus().equals("SUBMITTED"))
+//					.collect(Collectors.toList());
+
+			if (!StringUtils.isEmpty(profileStatus)) {
 				if (profileStatus.equals("changeRequest")) {
 					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, true,
 							"SUBMITTED", pagingSort);
+					;
 				} else if (profileStatus.equals("COMPLETED")) {
-					findAll = dataForSubmittedAndCOMPLETED;
+					int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+					int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(),
+							dataForSubmittedAndCOMPLETED.size());
+
+					List<DesignerLoginEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
+							: dataForSubmittedAndCOMPLETED.subList(startOfPage, endOfPage);
+
+					findAll = new PageImpl<DesignerLoginEntity>(subList, pagingSort,
+							dataForSubmittedAndCOMPLETED.size());
+//					findAll=findByIsDeletedAndIsProfileCompletedAndProfileStatusOrProfileStatus;
+					findAll = new PageImpl<DesignerLoginEntity>(subList, pagingSort,
+							dataForSubmittedAndCOMPLETED.size());
+
 				} else if (profileStatus.equals("SUBMITTED")) {
-					findAll = designerLoginRepo.findByIsDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, false,
+					findAll = designerLoginRepo.findByisDeletedAndIsProfileCompletedAndProfileStatus(isDeleted, false,
 							"SUBMITTED", pagingSort);
+
 				} else {
 					findAll = designerLoginRepo.findByIsDeletedAndProfileStatusAndAccountStatus(isDeleted,
 							profileStatus, "ACTIVE", pagingSort);
 				}
-			} else if (profileStatus == "" || keyword == "") {
-				findAll = designerLoginRepo.findDesignerisDeleted(isDeleted, pagingSort);
+			} else if (StringUtils.isEmpty(profileStatus) || StringUtils.isEmpty(keyword)) {
+				findAll = designerLoginRepo.findDesignerisDeleted(true, pagingSort);
 			} else {
 				findAll = designerLoginRepo.SearchByDeletedAndProfileStatus(keyword, isDeleted, profileStatus,
 						pagingSort);
@@ -665,7 +801,6 @@ public class ProfileContoller {
 			if (totalPage < 0) {
 				totalPage = 0;
 			}
-
 			Map<String, Object> response = new HashMap<>();
 			response.put("data", findAll.getContent());
 			response.put("currentPage", findAll.getNumber());
@@ -677,8 +812,11 @@ public class ProfileContoller {
 					.findByProfileStatusAndAccountStatusAndIsDeleted("waitForApprove", "ACTIVE", false).size());
 			response.put("waitingForSubmit", designerLoginRepo
 					.findByProfileStatusAndAccountStatusAndIsDeleted("APPROVE", "ACTIVE", false).size());
-			response.put("submitted", designerLoginRepo
-					.findByProfileStatusAndAccountStatusAndIsProfileCompleted("SUBMITTED", "ACTIVE", false).size());
+//			response.put("submitted", designerLoginRepo
+//					.findByProfileStatusAndAccountStatusAndIsProfileCompleted("SUBMITTED", "ACTIVE", false).size());	
+			response.put("submitted",
+					designerLoginRepo.findByProfileStatusAndAccountStatusAndIsProfileCompletedAndIsDeleted("SUBMITTED",
+							"ACTIVE", false, false).size());
 			response.put("completed", (designerLoginRepo
 					.findByProfileStatusAndAccountStatusAndIsDeleted("COMPLETED", "ACTIVE", false).size()
 					+ designerLoginRepo.findByDeletedAndIsProfileCompletedAndProfileStatus(false, true, "SUBMITTED")
@@ -756,31 +894,52 @@ public class ProfileContoller {
 
 	@GetMapping("/getDesignerDetails/{designerCategories}")
 	public List<DesignerLoginEntity> getDesignerDetails(@RequestParam(defaultValue = "") String usermail,
+			@RequestParam(defaultValue = "0") Double longitude, @RequestParam(defaultValue = "0") Double latitude,
 			@PathVariable String designerCategories) {
 		try {
+			List<DesignerProfileEntity> mappedResults = new ArrayList<>();
 			List<DesignerLoginEntity> blankList = new ArrayList<>();
+			List<DesignerProfileEntity> collectDesigner = new ArrayList<>();
+			NearQuery geoNear = NearQuery.near(longitude, latitude, Metrics.KILOMETERS)
+					.maxDistance(new Distance(Long.parseLong(Max_Map_Distance), Metrics.KILOMETERS)).minDistance(0)
+					.spherical(true);
+			Aggregation agg = Aggregation.newAggregation(Aggregation.geoNear(geoNear, "coordinates"));
+			AggregationResults<DesignerProfileEntity> result = mongoTemplate.aggregate(agg, DesignerProfileEntity.class,
+					DesignerProfileEntity.class);
+			mappedResults = result.getMappedResults();
 			if (!designerCategories.equals("all")) {
-				List<DesignerProfileEntity> designerProfileDetailsByCategory = this.designerProfileRepo
-						.findByDesignerCategory(designerCategories);
-				if (designerProfileDetailsByCategory.size() <= 0) {
+				if (longitude != 0 && latitude != 0) {
+
+					collectDesigner = mappedResults.stream()
+							.filter(data -> data.getDesignerProfile().getDesignerCategory().equals(designerCategories))
+							.collect(Collectors.toList());
+				} else {
+					collectDesigner = this.designerProfileRepo.findByDesignerCategory(designerCategories);
+
+				}
+
+				if (collectDesigner.size() <= 0) {
 					return blankList;
 				}
-				String designerCategory = designerProfileDetailsByCategory.get(0).getDesignerProfile()
-						.getDesignerCategory();
+				String designerCategory = collectDesigner.get(0).getDesignerProfile().getDesignerCategory();
 				if (designerCategory.isEmpty()) {
 					return blankList;
 				}
 
 				List<Long> list = new ArrayList<>();
-				for (DesignerProfileEntity dCategory : designerProfileDetailsByCategory) {
+				for (DesignerProfileEntity dCategory : collectDesigner) {
 					list.add(dCategory.getDesignerId());
 				}
 
-				List<DesignerLoginEntity> designerData = this.designerLoginRepo
-						.findBydIdInAndDesignerCurrentStatus(list, "Online");
+				List<DesignerLoginEntity> designerData = designerLoginRepo
+						.findByIsDeletedAndAndIsProfileCompletedAndAccountStatusAndDesignerCurrentStatus(false, true,
+								"ACTIVE", "Online");
+				List<DesignerLoginEntity> collectData = collectDesigner.stream()
+						.flatMap(e -> designerData.stream().filter(e1 -> e1.getdId().equals(e.getDesignerId())))
+						.collect(Collectors.toList());
 
-				if (designerData.size() > 0) {
-					designerData.forEach(dRow -> {
+				if (collectData.size() > 0) {
+					collectData.forEach(dRow -> {
 						Query query2 = new Query();
 						query2.addCriteria(Criteria.where("designerId").is(dRow.getdId())
 								.andOperator(Criteria.where("designerCurrentStatus").is("Online")));
@@ -795,28 +954,40 @@ public class ProfileContoller {
 					});
 				}
 				if (usermail.equals("")) {
-					return designerData;
+					return collectData;
 				} else {
 					UserDesignerEntity[] userDesignerEntity = restTemplate
 							.getForEntity(USER_SERVICES + RestTemplateConstants.USER_DESIGNER_DETAILS + usermail,
 									UserDesignerEntity[].class)
 							.getBody();
 					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
-					designerData.stream().forEach(designer -> {
+					collectData.stream().forEach(designer -> {
 						if (designerList.stream().filter(dl -> dl.getDesignerId().equals(designer.getdId()))
 								.count() > 0)
 							designer.setIsFollowing(true);
 						else
 							designer.setIsFollowing(false);
 					});
-					return designerData;
+					return collectData;
 				}
 			} else {
+				if (longitude != 0 && latitude != 0) {
+					collectDesigner = mappedResults;
+				} else {
+					collectDesigner = this.designerProfileRepo
+							.findByIsDeletedAndIsProfileCompletedAndDesignerCurrentStatusAndProfileStatus(false, true,
+									"Online", "COMPLETED");
+				}
+
 				List<DesignerLoginEntity> designerData = designerLoginRepo
 						.findByIsDeletedAndAndIsProfileCompletedAndAccountStatusAndDesignerCurrentStatus(false, true,
 								"ACTIVE", "Online");
 
-				designerData.forEach(designerRow -> {
+				List<DesignerLoginEntity> collectData = collectDesigner.stream()
+						.flatMap(e -> designerData.stream().filter(e1 -> e1.getdId().equals(e.getDesignerId())))
+						.collect(Collectors.toList());
+
+				collectData.forEach(designerRow -> {
 					Query query2 = new Query();
 					query2.addCriteria(Criteria.where("designerId").is(designerRow.getdId())
 							.andOperator(Criteria.where("designerCurrentStatus").is("Online")));
@@ -832,21 +1003,21 @@ public class ProfileContoller {
 				});
 
 				if (usermail.equals("")) {
-					return designerData;
+					return collectData;
 				} else {
 					UserDesignerEntity[] userDesignerEntity = restTemplate
 							.getForEntity(USER_SERVICES + RestTemplateConstants.USER_DESIGNER_DETAILS + usermail,
 									UserDesignerEntity[].class)
 							.getBody();
 					List<UserDesignerEntity> designerList = Arrays.asList(userDesignerEntity);
-					designerData.stream().forEach(designer -> {
+					collectData.stream().forEach(designer -> {
 						if (designerList.stream().filter(dl -> dl.getDesignerId().equals(designer.getdId()))
 								.count() > 0)
 							designer.setIsFollowing(true);
 						else
 							designer.setIsFollowing(false);
 					});
-					return designerData;
+					return collectData;
 				}
 			}
 		} catch (Exception e) {
@@ -928,13 +1099,18 @@ public class ProfileContoller {
 			} else {
 				throw new CustomException(MessageConstant.USER_NOT_FOUND.getMessage());
 			}
+			if (status.equals("Online")) {
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.STATUS_ACTIVE.getMessage(), 200);
+			} else {
+				return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
+						MessageConstant.STATUS_INACTIVE.getMessage(), 200);
+			}
 		} catch (RuntimeException e) {
 			throw new CustomException("Token Expired");
 		} catch (Exception ex) {
 			throw new CustomException(ex.getMessage());
 		}
-		return new GlobalResponce(MessageConstant.SUCCESS.getMessage(),
-				MessageConstant.DESIGNER_STATUS_CHANGE.getMessage(), 200);
 	}
 
 	@PostMapping("/profilePicUpdate")
@@ -1052,68 +1228,133 @@ public class ProfileContoller {
 		}
 	}
 
-	@GetMapping("/getDesignerByArea")
-	public Map<String, Object> getDesignerByArea(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
-			@RequestParam(defaultValue = "createdOn") String sortName,
-			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam Optional<String> sortBy,
-			@RequestParam(defaultValue = "") double longitude, @RequestParam(defaultValue = "") double latitude) {
+	@PostMapping("/postContacts")
+
+	public GlobalResponce postContactsDetails(@RequestParam Long designerId,
+			@RequestBody DesignerContactEntity designerContactEntity) {
+
 		try {
-			int CountData = (int) designerProfileRepo.count();
-			Pageable pagingSort = null;
-			if (limit == 0) {
-				limit = CountData;
-			}
-			if (sort.equals("ASC")) {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
-			} else {
-				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
-			}
 
-			Page<ProductMasterEntity2> findAll = null;
-			NearQuery geoNear = NearQuery.near(longitude, latitude, Metrics.KILOMETERS)
-					.maxDistance(new Distance(Long.parseLong(Max_Map_Distance), Metrics.KILOMETERS)).minDistance(0)
-					.spherical(true);
+//			 
 
-			Aggregation agg = Aggregation.newAggregation(Aggregation.geoNear(geoNear, "coordinates"));
-			AggregationResults<DesignerProfileEntity> result = mongoTemplate.aggregate(agg, DesignerProfileEntity.class,
-					DesignerProfileEntity.class);
-			List<DesignerProfileEntity> mappedResults = result.getMappedResults();
-			List<ProductMasterEntity2> products = new ArrayList<>();
-			mappedResults.forEach(e -> {
-				List<ProductMasterEntity2> filterProduct = this.productRepo2
-						.findByDesignerId(Integer.parseInt(e.getDesignerId().toString())).stream()
-						.filter(prod -> prod.getSoh() != 0).filter(prod -> prod.getIsActive().equals(true))
-						.filter(prod -> prod.getIsDeleted().equals(false))
-						.filter(prod -> !prod.getAdminStatus().equals("Rejected")).collect(Collectors.toList());
-				products.addAll(filterProduct);
-			});
+			DesignerProfileEntity designerProfileEntity = designerProfileRepo.findBydesignerId(designerId).get();
+			ResponseEntity<RazorpayX> postForEntity = restTemplate.postForEntity(
+					ADMIN_SERVICE + RestTemplateConstants.ADMIN_ADD_CONTACTS + "?designerId=" + designerId,
+					designerContactEntity, RazorpayX.class);
+			RazorpayX body = postForEntity.getBody();
+			designerProfileEntity.setRazorpayX(body);
 
-			int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
-			int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), products.size());
-
-			List<ProductMasterEntity2> subList = startOfPage >= endOfPage ? new ArrayList<>()
-					: products.subList(startOfPage, endOfPage);
-			findAll = new PageImpl<ProductMasterEntity2>(subList, pagingSort, products.size());
-
-			int totalPage = findAll.getTotalPages() - 1;
-			if (totalPage < 0) {
-				totalPage = 0;
-			}
-
-			Map<String, Object> response = new HashMap<>();
-			response.put("data", findAll.getContent());
-			response.put("currentPage", findAll.getNumber());
-			response.put("total", findAll.getTotalElements());
-			response.put("totalPage", totalPage);
-			response.put("perPage", findAll.getSize());
-			response.put("perPageElement", findAll.getNumberOfElements());
-			return response;
+			designerProfileRepo.save(designerProfileEntity);
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), 200);
 
 		} catch (Exception e) {
 			throw new CustomException(e.getMessage());
 		}
 	}
+
+	@PostMapping("/postFundsAccount")
+
+	public GlobalResponce postFundAccountDetails(@RequestParam Long designerId,
+			@RequestBody DesignerFundsAccount designerFundsAccount) {
+		try {
+
+			DesignerProfileEntity designerProfileEntity = designerProfileRepo.findBydesignerId(designerId).get();
+			ResponseEntity<RazorpayX> postForEntity = restTemplate.postForEntity(
+					ADMIN_SERVICE + RestTemplateConstants.ADMIN_ADD_FUNDS_ACCOUNT + "?designerId=" + designerId,
+					designerFundsAccount, RazorpayX.class);
+			DesignerProfileEntity profileEntity = new DesignerProfileEntity();
+			List<String> contacts = designerProfileEntity.getRazorpayX().getContacts();
+			RazorpayX body = postForEntity.getBody();
+			RazorpayX razorpayX = new RazorpayX();
+
+			designerProfileEntity.setRazorpayX(body);
+
+			designerProfileRepo.save(designerProfileEntity);
+
+			return new GlobalResponce(MessageConstant.SUCCESS.getMessage(), 200);
+		} catch (Exception e) {
+			throw new CustomException(e.getMessage());
+		}
+
+	}
+
+//	@PostMapping("/addPayOutsData")
+//	public ResponseEntity<?> addPayOutDetails(@RequestParam Long designerId, @RequestBody PayOutDTO payOutDTO){
+//		try {
+//			//Long designerId = payOutDTO.getDesignerId();
+//			DesignerProfileEntity designerProfileEntity = designerProfileRepo.findBydesignerId(designerId).get();
+//			RazorpayX razorPayData = restTemplate .postForEntity
+//			        (ADMIN_SERVICE+RestTemplateConstants.ADMIN_ADD_PAYOUT_DATA + "?designerId="+ designerId, payOutDTO, RazorpayX.class ).getBody();
+//			designerProfileEntity.setRazorpayX(razorPayData);
+//			designerProfileRepo.save(designerProfileEntity);
+//			return new ResponseEntity<>("added successfully", HttpStatus.OK);
+//		}catch (Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
+
+//	@GetMapping("/getDesignerByArea")
+//	public Map<String, Object> getDesignerByArea(@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "DESC") String sort,
+//			@RequestParam(defaultValue = "designerId") String sortName,
+//			@RequestParam(defaultValue = "false") Boolean isDeleted, @RequestParam Optional<String> sortBy,
+//			@RequestParam(defaultValue = "") double longitude, @RequestParam(defaultValue = "") double latitude) {
+//		try {
+//			int CountData = (int) designerProfileRepo.count();
+//			Pageable pagingSort = null;
+//			if (limit == 0) {
+//				limit = CountData;
+//			}
+//			if (sort.equals("ASC")) {
+//				pagingSort = PageRequest.of(page, limit, Sort.Direction.ASC, sortBy.orElse(sortName));
+//			} else {
+//				pagingSort = PageRequest.of(page, limit, Sort.Direction.DESC, sortBy.orElse(sortName));
+//			}
+//
+//			Page<DesignerProfileEntity> findAll = null;
+//			NearQuery geoNear = NearQuery.near(longitude, latitude, Metrics.KILOMETERS)
+//					.maxDistance(new Distance(Long.parseLong(Max_Map_Distance), Metrics.KILOMETERS)).minDistance(0)
+//					.spherical(true);
+//
+//			Aggregation agg = Aggregation.newAggregation(Aggregation.geoNear(geoNear, "coordinates"));
+//			AggregationResults<DesignerProfileEntity> result = mongoTemplate.aggregate(agg, DesignerProfileEntity.class,
+//					DesignerProfileEntity.class);
+//			List<DesignerProfileEntity> mappedResults = result.getMappedResults();
+////			List<ProductMasterEntity2> products = new ArrayList<>();
+////			mappedResults.forEach(e -> {
+////				List<ProductMasterEntity2> filterProduct = this.productRepo2
+////						.findByDesignerId(Integer.parseInt(e.getDesignerId().toString())).stream()
+////						.filter(prod -> prod.getSoh() != 0).filter(prod -> prod.getIsActive().equals(true))
+////						.filter(prod -> prod.getIsDeleted().equals(false))
+////						.filter(prod -> !prod.getAdminStatus().equals("Rejected")).collect(Collectors.toList());
+////				products.addAll(filterProduct);
+////			});
+//
+//			int startOfPage = pagingSort.getPageNumber() * pagingSort.getPageSize();
+//			int endOfPage = Math.min(startOfPage + pagingSort.getPageSize(), mappedResults.size());
+//
+//			List<DesignerProfileEntity> subList = startOfPage >= endOfPage ? new ArrayList<>()
+//					: mappedResults.subList(startOfPage, endOfPage);
+//			findAll = new PageImpl<DesignerProfileEntity>(subList, pagingSort, mappedResults.size());
+//
+//			int totalPage = findAll.getTotalPages() - 1;
+//			if (totalPage < 0) {
+//				totalPage = 0;
+//			}
+//
+//			Map<String, Object> response = new HashMap<>();
+//			response.put("data", findAll.getContent());
+//			response.put("currentPage", findAll.getNumber());
+//			response.put("total", findAll.getTotalElements());
+//			response.put("totalPage", totalPage);
+//			response.put("perPage", findAll.getSize());
+//			response.put("perPageElement", findAll.getNumberOfElements());
+//			return response;
+//
+//		} catch (Exception e) {
+//			throw new CustomException(e.getMessage());
+//		}
+//	}
 
 //	@GetMapping("/getGeoAddress")
 //	public ResponseEntity<?> getGoogleAddress(@RequestHeader("Authorization") String token,
