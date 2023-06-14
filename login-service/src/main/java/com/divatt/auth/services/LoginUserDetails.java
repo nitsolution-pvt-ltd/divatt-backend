@@ -44,7 +44,7 @@ public class LoginUserDetails implements UserDetailsService {
 			return admin.map(LoginAdminData :: new).get();
 		} else {
 			Optional<DesignerLoginEntity> designer = designerLoginRepo.findByEmail(username);
-			if (designer.isPresent() && "DESIGNER".equals(type)) {
+			if (designer.isPresent()) {
 				designer.orElseThrow(() -> new CustomException("Please check the username"));
 				return designer.map(LoginDesignerData :: new).get();
 			}else {
@@ -52,16 +52,12 @@ public class LoginUserDetails implements UserDetailsService {
 				if (user.isPresent()) {
 					user.orElseThrow(() -> new CustomException("Please check the username"));
 					return user.map(LoginUserData :: new).get();
-			}
-			
+			}		
 				throw new CustomException("Please check the username");
 		}
 	}
-	
-
 
 }
-
 	public String getType() {
 		return type;
 	}

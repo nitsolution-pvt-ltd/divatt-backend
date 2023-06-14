@@ -62,25 +62,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			String headers = request.getHeader("Authorization");
 			String username = null;
 			String jwtToken = null;
-			
 			if (headers != null && headers.startsWith("Bearer ")) {
 				jwtToken = headers.substring(7);
-				
 				try {
 					username = this.jwtUtil.extractUsername(jwtToken);
 				} catch (Exception e) {
 					throw new CustomException("The Token Has Been Expired");
 				}
-				
-				
 				 Optional<AdminLoginEntity> findByUserName = loginRepository.findByEmail(username);
-				 
 				if (findByUserName.isPresent()) {
 					this.userDetails = loginUserDetails.loadUserByUsername(username);
 				} else {
 					Optional<DesignerLoginEntity> findByEmail = designerLoginRepo.findByEmail(username);
-					if(findByEmail.isPresent())
+					if(findByEmail.isPresent()) {
 						this.userDetails = loginUserDetails.loadUserByUsername(username);
+					}
 					else {
 						Optional<UserLoginEntity> findByEmail1 = userLoginRepo.findByEmail(username);
 						if(findByEmail1.isPresent()) {
@@ -88,11 +84,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 						}else {
 							throw new CustomException("The Token Has Been Expired");
 						}
-					}
-						
-					
-				}
-				
+					}					
+				}				
 				if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 					
 					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
